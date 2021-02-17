@@ -1,0 +1,88 @@
+{% extends 'base.html' %} 
+
+{% load static %}
+
+{% block body %}
+<!-- django variables: object_list, is_paginated, page_obj -->
+<div class="container">
+    <h1 class="title">DG Search</h1> 
+	
+    <form class="form-inline" action="" method="GET">
+        {{ form }}
+        <button class="btn green" name ="clicked" value = "true" type="submit">Search</button>
+        </fieldset>
+    </form>
+
+    <table id = "t01" style="display:none">
+        <caption style="display: none;"> Search results </caption>
+        <tr>
+        	<th id="label">Label</th>
+            <th id="safety_manual">Safety Manual</th>
+        	<th id="commercial">Commercial Reference</th>
+        	<th id="description">Description</th>
+        	<th id="ean">EAN13 Code</th>          
+            <th id="un">UN Code</th>
+        </tr> 
+        {% for object in object_list %} 
+        <tr>
+        	<td>
+                {% if object.un_code %}
+                    <img alt="un code" src= "/images/portfolio/images/UN{{object.un_code}}.jpg"> 
+                {% endif %}
+			</td>
+            <td>
+                {% if object.un_code %}
+                    <a href= "/images/portfolio/files/UN{{object.un_code}}.pdf"download> Download Guide</a> 
+                {% endif %}
+            </td>
+        	<td>{{object.commercial_reference}}</td>
+        	<td>{{object.commercial_designation_in_english}}</td>
+        	<td>{{object.code_ean13}}</td>       
+            <td>{{object.un_code}}</td>
+        </tr>
+        {% endfor %} 
+    </table>
+
+<script>
+	function getParameterByName(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    }
+	
+	function display_table() {
+		var clicked = getParameterByName('clicked');
+		if (clicked === "true") {
+			var x = document.getElementById("t01");
+			x.style.display = "";
+        } else {
+            x.style.display = "none";
+        }			 	
+    }
+
+    display_table();
+</script>   
+
+
+{% if is_paginated %}
+<ul class="pagination center-align">
+    {% if page_obj.has_previous %}
+    <li class="waves-effect">
+        <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+    </li>
+    {% endif %}
+    <li class="waves-effect">
+        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.</span>
+    </li>
+    {% if page_obj.has_next %}
+    <li class="waves-effect">
+        <a href="?page={{ page_obj.next_page_number }}">Next</a>
+    </li>
+    {% endif %}
+</ul>
+{% endif %}
+    
+</div>
+
+{% endblock %}

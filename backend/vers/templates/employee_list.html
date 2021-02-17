@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<!-- django variables: object_list, is_paginated, page_obj -->
+
+<h3 class = "title">All Employees</h3>
+
+<div id="menu">
+</div>
+
+
+<div class="collection">
+	<table id="employee_list">
+        <caption style="display: none;"> Employee List</caption>
+		<tr>
+			<th id="image">Image</th>
+			<th id="employee_no">SESAID</th>
+			<th id="first_name">First Name</th>
+			<th id="last_name">Last Name</th>
+			<th id="gender">Gender</th>
+			<th id="update_action">Update Action</th>
+			<th id="delete_action">Delete Action</th>
+		</tr>
+		{% for employee in employee_list %}
+		<tr>
+			<td>
+				{% if employee.profile_pic %}
+    				<img alt="img" src="{% url 'index' %}{{ employee.profile_pic }}" onerror="this.onerror=null; this.src='{% url 'static' %}media/placeholder.jpg'">
+				{% endif %}
+			</td>
+			<td>{{employee.sesa_id}}</td>
+			<td>{{employee.first_name}}</td>
+			<td>{{employee.last_name}}</td>
+			<td>{{employee.gender}}</td>
+			<td>
+				<a class="collection-item" href="{% url 'employee_form'%}?no={{ employee.no }}">
+					Update
+				</a>
+			</td>
+            <td>
+				<a class="collection-item" href="{% url 'employee_delete_form'%}?no={{ employee.no }}">
+					Delete
+				</a>
+			</td>
+		</tr>	
+		{% endfor %}
+	</table>
+</div>
+
+{% if is_paginated %}
+<ul class="pagination center-align">
+    {% if page_obj.has_previous %}
+    <li class="waves-effect">
+        <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+    </li>
+    {% endif %}
+    <li class="waves-effect">
+        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.</span>
+    </li>
+    {% if page_obj.has_next %}
+    <li class="waves-effect">
+        <a href="?page={{ page_obj.next_page_number }}">Next</a>
+    </li>
+    {% endif %}
+</ul>
+{% endif %}
+
+
+{% endblock %}

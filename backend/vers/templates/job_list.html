@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<!-- django variables: object_list, is_paginated, page_obj -->
+
+<h3 class = "title">All Jobs</h3>
+
+<div id="menu">
+</div>
+
+
+<div class="collection">
+	<table id="employee_list">
+        <caption style="display: none;"> Job List</caption>
+		<tr>
+			<th id="title">Title</th>
+			<th id="from">From</th>
+			<th id="to">To</th>
+			<th id="headcount">Headcount</th>
+            <th id="salary">Salary</th>
+            <th id="skills">Skills</th>
+            <th id="employee_assigned">Employees Assigned</th>
+			<th id="update_action">Update Action</th>
+			<th id="delete_action">Delete Action</th>
+		</tr>
+		{% for job in job_list %}
+		<tr>
+			<td>{{job.title}}</td>
+			<td>{{job.from_date}}</td>
+			<td>{{job.to_date}}</td>
+			<td>{{job.ppl_amt_required}}</td>
+            <td>{{job.salary}}</td>
+            <td>{{job.skills_required}}</td>
+            <td>{{job.emp_assigned}}</td>
+			<td>
+				<a class="collection-item" href="{% url 'job_form'%}?no={{ job.no }}">
+					Update
+				</a>
+			</td>
+            <td>
+				<a class="collection-item" href="{% url 'job_delete_form'%}?no={{ job.no }}">
+					Delete
+				</a>
+			</td>
+		</tr>	
+		{% endfor %}
+	</table>
+</div>
+
+{% if is_paginated %}
+<ul class="pagination center-align">
+    {% if page_obj.has_previous %}
+    <li class="waves-effect">
+        <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+    </li>
+    {% endif %}
+    <li class="waves-effect">
+        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.</span>
+    </li>
+    {% if page_obj.has_next %}
+    <li class="waves-effect">
+        <a href="?page={{ page_obj.next_page_number }}">Next</a>
+    </li>
+    {% endif %}
+</ul>
+{% endif %}
+
+
+{% endblock %}

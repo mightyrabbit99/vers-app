@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<div class="container">
+
+    <h3>Create New Profile</h3>
+    <!-- :: enctype="multipart/form-data" includes files in post request -->
+    <form enctype="multipart/form-data" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <!-- :: .as_p = wrapped in <p> -->
+        <input type="submit" value="Submit" />
+    </form>
+
+</div>
+
+{% endblock %}

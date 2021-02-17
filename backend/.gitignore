@@ -1,0 +1,7 @@
+__pycache__
+.vscode
+*.sqlite3
+migrations
+files
+env
+*.zip
