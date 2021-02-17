@@ -29,8 +29,6 @@ class DepartmentDetail(generics.RetrieveUpdateDestroyAPIView):
 class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = serializers.UserSerializer
-    permission_classes = [my_perms.UserProfileEditDeletePermission]
-
 
 class UserDetail(generics.RetrieveUpdateAPIView):
     serializer_class = serializers.UserSerializer
@@ -94,23 +92,29 @@ def perform_get_queryset(view, user):
     objects = get_objects(view)
     if user.is_superuser:
         return objects.all()
-    if not user.is_authenticated or 'vers_user' not in user.__dict__:
+    try:
+        user.vers_user
+    except AttributeError:
+        return objects.none()
+    if not user.is_authenticated:
         return objects.none()
     grp = get_group(view, user)
     if grp == NONE:
         return objects.none()
-
-    return objects.all()
+    return objects.filter(owner=user)
 
 def has_create_permission(view, user):
     if user.is_superuser:
         return True
-    if not user.is_authenticated or 'vers_user' not in user.__dict__:
+    try:
+        user.vers_user
+    except AttributeError:
+        return False
+    if not user.is_authenticated:
         return False
     grp = get_group(view, user)
     if grp == NONE or grp == USER:
         return False
-
     return True
 
 class PlantView(viewsets.ModelViewSet):

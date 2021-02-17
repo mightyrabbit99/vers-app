@@ -22,8 +22,9 @@ class UserSerializer(serializers.ModelSerializer):
             is_superuser=False,
         )
         user.set_password(validated_data['password'])
-        models.VersUser.objects.create(user=user)
+        vers_user = models.VersUser(user=user)
         user.save()
+        vers_user.save()
         return user
 
     def update(self, instance, validated_data):

@@ -54,7 +54,7 @@ class VersPermission1(permissions.BasePermission):
             return True
         if request.method == 'POST':
             return False
-        return False
+        return obj.owner == request.user
 
 
 class UserProfileEditDeletePermission(permissions.BasePermission):
