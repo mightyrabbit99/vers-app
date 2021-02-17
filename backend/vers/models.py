@@ -10,10 +10,9 @@ def up_path(path):
 
 class VersUser(models.Model):
     PERMISSION_GROUP_CHOICES = [
-        (1, 'super_user'),
-        (2, 'owner'),
-        (3, 'admin'),
-        (4, 'user'),
+        (1, 'owner'),
+        (2, 'user'),
+        (3, 'none'),
     ]
     # TODO
     user = models.OneToOneField(
@@ -45,7 +44,8 @@ class VersUser(models.Model):
 
 class Plant(models.Model):
     name = models.CharField(max_length=50)
-
+    owner = models.ForeignKey(
+        User, related_name='plants', on_delete=models.SET_NULL, null=True)
     def __str__(self):
         return self.name
 
@@ -57,7 +57,8 @@ class Sector(models.Model):
     name = models.CharField(max_length=50)
     plant = models.ForeignKey(
         Plant, related_name='sectors', on_delete=models.PROTECT)
-
+    owner = models.ForeignKey(
+        User, related_name='sectors', on_delete=models.SET_NULL, null=True)
     def __str__(self):
         return self.name
 
@@ -72,7 +73,8 @@ class Subsector(models.Model):
     cycle_time = models.IntegerField()
     efficiency = models.IntegerField()
     unit = models.CharField(max_length=50, null=True)
-
+    owner = models.ForeignKey(
+        User, related_name='subsectors', on_delete=models.SET_NULL, null=True)
     def __str__(self):
         return self.name
 
@@ -86,6 +88,8 @@ class Skill(models.Model):
     percentage_of_sector = models.IntegerField()
     subsector = models.ForeignKey(
         Subsector, related_name='skills', on_delete=models.PROTECT)
+    owner = models.ForeignKey(
+        User, related_name='skills', on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return self.name
@@ -131,6 +135,8 @@ class Employee(models.Model):
         upload_to=up_path("profile_pic"), null=True)
     
     user = models.OneToOneField(User, related_name="employee", null=True, on_delete=models.SET_NULL)
+    owner = models.ForeignKey(
+        User, related_name='created_employee', on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return "%s %s" % (self.first_name, self.last_name)
@@ -171,6 +177,8 @@ class Job(models.Model):
     emp_assigned = models.ManyToManyField(Employee, blank=True)
     from_date = models.DateField()
     to_date = models.DateField()
+    owner = models.ForeignKey(
+        User, related_name='jobs', on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return "%s" % (self.title)

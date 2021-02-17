@@ -38,10 +38,12 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', "password",
                   'vers_user', 'is_superuser', 'is_active']
 
+OWNER_USERNAME = 'owner.username'
 
 class PlantSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source=OWNER_USERNAME)
     sectors = serializers.PrimaryKeyRelatedField(
-        many=True, read_only=True)  # or queryset = ...
+        many=True, read_only=True)
 
     class Meta:
         model = models.Plant
@@ -49,6 +51,7 @@ class PlantSerializer(serializers.ModelSerializer):
 
 
 class SectorSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source=OWNER_USERNAME)
     subsectors = serializers.PrimaryKeyRelatedField(
         many=True, read_only=True)
 
@@ -58,6 +61,7 @@ class SectorSerializer(serializers.ModelSerializer):
 
 
 class SubsectorSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source=OWNER_USERNAME)
     skills = serializers.PrimaryKeyRelatedField(
         many=True, queryset=models.Skill.objects.all())
     employees = serializers.PrimaryKeyRelatedField(
@@ -71,7 +75,7 @@ class SubsectorSerializer(serializers.ModelSerializer):
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
-    owner = serializers.ReadOnlyField(source='owner.username')
+    owner = serializers.ReadOnlyField(source=OWNER_USERNAME)
     employees = serializers.PrimaryKeyRelatedField(
         many=True, read_only=True)
 
@@ -101,6 +105,14 @@ class UserSerializer2(serializers.ModelSerializer):
 class EmployeeSerializer(serializers.ModelSerializer):
     skills = EmpSkillMatrixSerializer(many=True)
     user = UserSerializer2()
+    owner = serializers.ReadOnlyField(source=OWNER_USERNAME)
+
+    def get_request_user(self):
+        user = None
+        request = self.context.get("request")
+        if request and hasattr(request, "user"):
+            user = request.user
+        return user
 
     def create(self, validated_data):
         skills_data = validated_data.pop('skills')
@@ -115,7 +127,8 @@ class EmployeeSerializer(serializers.ModelSerializer):
         )
         vers_user.user = user
         user.set_password(validated_data['sesa_id'])
-        emp = models.Employee(user=user, **validated_data)
+        owner = self.get_request_user()
+        emp = models.Employee(user=user, owner=owner, **validated_data)
         user.save() # must save user first
         vers_user.save()
         emp.save()
@@ -159,6 +172,11 @@ class JobSkillMatrixSerializer(serializers.ModelSerializer):
 
 class JobSerializer(serializers.ModelSerializer):
     skills_required = JobSkillMatrixSerializer(many=True, read_only=True)
+    owner = serializers.ReadOnlyField(source=OWNER_USERNAME)
+
+    def create(self, validated_data):
+        skills_data = validated_data.pop('skills')
+
 
     class Meta:
         model = models.Job

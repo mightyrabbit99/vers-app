@@ -1,11 +1,3 @@
-from django.http import HttpRequest, HttpResponseRedirect, JsonResponse
-from django.http.response import HttpResponse
-from django.shortcuts import render, get_object_or_404
-from django.urls import reverse
-
-from django.views import View
-from django.views.generic import ListView
-
 from rest_framework import status, viewsets, generics, parsers
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -16,7 +8,6 @@ from . import models
 from . import serializers
 from . import permissions as my_perms
 from rest_framework import permissions
-from .permissions import IsOwnerOrReadOnly
 
 # raw data serving
 
@@ -64,31 +55,158 @@ class VersUserDetail(generics.RetrieveUpdateAPIView):
 
 # model view sets to be used in router
 
+def get_objects(view):
+    if view == "plant":
+        return models.Plant.objects 
+    elif view == "sector":
+        return models.Sector.objects
+    elif view == "subsector":
+        return models.Subsector.objects
+    elif view == "skill":
+        return models.Skill.objects 
+    elif view == "employee":
+        return models.Employee.objects
+    elif view == "department":
+        return models.Department.objects
+    elif view == "job":
+        return models.Job.objects
+
+def get_group(view, user):
+    if view == "plant":
+        return user.vers_user.plant_group
+    elif view == "sector":
+        return user.vers_user.sector_group
+    elif view == "subsector":
+        return user.vers_user.subsector_group
+    elif view == "skill":
+        return user.vers_user.skill_group
+    elif view == "employee":
+        return user.vers_user.employee_group
+    elif view == "department":
+        return user.vers_user.department_group
+    elif view == "job":
+        return user.vers_user.job_group
+
+NONE = 3
+USER = 2
+
+def perform_get_queryset(view, user):
+    objects = get_objects(view)
+    if user.is_superuser:
+        return objects.all()
+    if not user.is_authenticated or 'vers_user' not in user.__dict__:
+        return objects.none()
+    grp = get_group(view, user)
+    if grp == NONE:
+        return objects.none()
+
+    return objects.all()
+
+def has_create_permission(view, user):
+    if user.is_superuser:
+        return True
+    if not user.is_authenticated or 'vers_user' not in user.__dict__:
+        return False
+    grp = get_group(view, user)
+    if grp == NONE or grp == USER:
+        return False
+
+    return True
 
 class PlantView(viewsets.ModelViewSet):
+    txt = "plant"
     serializer_class = serializers.PlantSerializer
-    queryset = models.Plant.objects.all()
+    permission_classes = [my_perms.VersPermission1]
 
+    def get_queryset(self):
+        return perform_get_queryset(self.txt, self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        if has_create_permission(self.txt, self.request.user):
+            return super().create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+    
+    def perform_create(self, serializer):
+        if self.request.user.is_authenticated:
+            serializer.save(owner=self.request.user)
+        else:
+            serializer.save()
 
 class SectorView(viewsets.ModelViewSet):
+    txt = "sector"
     serializer_class = serializers.SectorSerializer
     queryset = models.Sector.objects.all()
 
+    def get_queryset(self):
+        return perform_get_queryset(self.txt, self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        if has_create_permission(self.txt, self.request.user):
+            return super().create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def perform_create(self, serializer):
+        if self.request.user.is_authenticated:
+            serializer.save(owner=self.request.user)
+        else:
+            serializer.save()
+
 
 class SubsectorView(viewsets.ModelViewSet):
+    txt = "subsector"
     serializer_class = serializers.SubsectorSerializer
     queryset = models.Subsector.objects.all()
 
+    def get_queryset(self):
+        return perform_get_queryset(self.txt, self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        if has_create_permission(self.txt, self.request.user):
+            return super().create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def perform_create(self, serializer):
+        if self.request.user.is_authenticated:
+            serializer.save(owner=self.request.user)
+        else:
+            serializer.save()
 
 class SkillView(viewsets.ModelViewSet):
+    txt = "skill"
     serializer_class = serializers.SkillSerializer
     queryset = models.Skill.objects.all()
 
+    def get_queryset(self):
+        return perform_get_queryset(self.txt, self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        if has_create_permission(self.txt, self.request.user):
+            return super().create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def perform_create(self, serializer):
+        if self.request.user.is_authenticated:
+            serializer.save(owner=self.request.user)
+        else:
+            serializer.save()
 
 class DepartmentView(viewsets.ModelViewSet):
+    txt = "department"
     serializer_class = serializers.DepartmentSerializer
-    queryset = models.Department.objects.all()
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return perform_get_queryset(self.txt, self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        if has_create_permission(self.txt, self.request.user):
+            return super().create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
 
     def perform_create(self, serializer):
         if self.request.user.is_authenticated:
@@ -98,8 +216,24 @@ class DepartmentView(viewsets.ModelViewSet):
 
 
 class EmployeeView(viewsets.ModelViewSet):
+    txt = "employee"
     serializer_class = serializers.EmployeeSerializer
     queryset = models.Employee.objects.all()
+
+    def get_queryset(self):
+        return perform_get_queryset(self.txt, self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        if has_create_permission(self.txt, self.request.user):
+            return super().create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def perform_create(self, serializer):
+        if self.request.user.is_authenticated:
+            serializer.save(owner=self.request.user)
+        else:
+            serializer.save()
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -115,14 +249,23 @@ class EmpSkillMatrixView(viewsets.ModelViewSet):
 
 
 class JobView(viewsets.ModelViewSet):
+    txt = "job"
     serializer_class = serializers.JobSerializer
 
     def get_queryset(self):
-        queryset = models.Job.objects.all()
-        employee = self.request.query_params.get('emp', None)
-        if employee is not None:
-            queryset = queryset.filter(emp_assigned=employee)
-        return queryset
+        return perform_get_queryset(self.txt, self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        if has_create_permission(self.txt, self.request.user):
+            return super().create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def perform_create(self, serializer):
+        if self.request.user.is_authenticated:
+            serializer.save(owner=self.request.user)
+        else:
+            serializer.save()
 
 
 class JobSkillMatrixView(viewsets.ModelViewSet):
@@ -131,6 +274,13 @@ class JobSkillMatrixView(viewsets.ModelViewSet):
 
 # main page
 
+from django.http import HttpRequest, HttpResponseRedirect, JsonResponse
+from django.http.response import HttpResponse
+from django.shortcuts import render, get_object_or_404
+from django.urls import reverse
+
+from django.views import View
+from django.views.generic import ListView
 
 class IndexView(View):
     def get(self, request, *args, **kwargs):

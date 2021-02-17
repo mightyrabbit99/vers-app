@@ -18,48 +18,43 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
 
 '''
 permissions
-  view
-    1. cannot view (cannot create)
-    2. can view self
-    3. can view all
-  create
-    1. cannot create (cannot edit/delete)
-    2. can create (can view self, can edit/delete self)
-  edit/delete
-    1. cannot edit/delete (cannot create)
-    2. can edit/delete self
-    3. can edit/delete all (can view all, can create)
-
-
+	view (GET)
+		1. cannot view (cannot create)
+		2. can view self
+		3. can view all
+	create (POST)
+		1. cannot create (cannot edit/delete)
+		2. can create (can view self, can edit/delete self)
+	edit/delete (PUT/DELETE)
+		1. cannot edit/delete (cannot create)
+		2. can edit/delete self
+		3. can edit/delete all (can view all, can create)
+	
+	
 groups
-  1. super user
-    3, 2, 3
-  2. owner
-    3, 2, 2
-  3. admin
-    2, 2, 2
-  4. user
-    2, 1, 1
+	1. owner
+		2, 2, 2
+	2. user
+		2, 1, 1
+	3. none
+		1, 1, 1
 '''
 
 
-class ReadPermission(permissions.BasePermission):
+class VersPermission1(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-        return True
-
-
-class CreatePermission(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
-        return super().has_object_permission(request, view, obj)
-
-
-class UserProfileListPermission(permissions.BasePermission):
-    # TODO: does not get called, dunno why
-    def has_object_permission(self, request, view, obj):
+        if not request.user.is_authenticated:
+            print("bbb")
+            return False
         if request.user.is_superuser:
             return True
-        else:
-            return obj == request.user
+        if 'vers_user' not in request.user.__dict__:
+            return False
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        if request.method == 'POST':
+            return False
+        return False
 
 
 class UserProfileEditDeletePermission(permissions.BasePermission):
