@@ -5,8 +5,6 @@ interface UserData extends Data {
   is_superuser: boolean;
   is_active: boolean;
   vers_user: {
-    id: number;
-    user: string;
     plant_group: number;
     sector_group: number;
     subsector_group: number;

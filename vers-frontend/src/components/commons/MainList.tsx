@@ -46,8 +46,9 @@ const ItemMainList: React.FC<IMainListProps> = (props) => {
     selectedOnChange = (lst) => {},
   } = props;
 
-  const [limit, setLimit] = React.useState(10);
-  const [selectedIds, setSelectedIds] = React.useState<number[]>(selected ?? []);
+  const [selectedIds, setSelectedIds] = React.useState<number[]>(
+    selected ?? []
+  );
   React.useEffect(() => {
     setSelectedIds(selected ?? []);
   }, [selected]);
@@ -77,60 +78,56 @@ const ItemMainList: React.FC<IMainListProps> = (props) => {
   };
 
   return (
-    <React.Fragment>
-      <TableContainer className={classes.content}>
-        <Table stickyHeader>
-          <TableHead>
-            <TableRow>
+    <TableContainer className={classes.content}>
+      <Table stickyHeader>
+        <TableHead>
+          <TableRow>
+            <TableCell padding="checkbox">
+              <Checkbox
+                checked={selectedIds.length === lst.length}
+                color="primary"
+                indeterminate={
+                  selectedIds.length > 0 && selectedIds.length < lst.length
+                }
+                disabled={lst.length === 0}
+                onChange={handleSelectAll}
+              />
+            </TableCell>
+            {cols.map((x, idx) => (
+              <TableCell key={idx}>
+                <b>{x.title}</b>
+              </TableCell>
+            ))}
+            <TableCell padding="checkbox"></TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {lst.map((plant, idx) => (
+            <TableRow
+              hover
+              key={idx}
+              selected={selectedIds.indexOf(plant.id) !== -1}
+            >
               <TableCell padding="checkbox">
                 <Checkbox
-                  checked={selectedIds.length === lst.length}
-                  color="primary"
-                  indeterminate={
-                    selectedIds.length > 0 && selectedIds.length < lst.length
-                  }
-                  disabled={lst.length === 0}
-                  onChange={handleSelectAll}
+                  checked={selectedIds.indexOf(plant.id) !== -1}
+                  onChange={(event) => handleSelectOne(event, plant.id)}
+                  value="true"
                 />
               </TableCell>
               {cols.map((x, idx) => (
-                <TableCell key={idx}>
-                  <b>{x.title}</b>
-                </TableCell>
+                <TableCell key={idx}>{x.extractor(plant)}</TableCell>
               ))}
-              <TableCell padding="checkbox"></TableCell>
+              <TableCell padding="checkbox" align="right">
+                <IconButton onClick={() => onEdit(plant.id)}>
+                  <EditIcon />
+                </IconButton>
+              </TableCell>
             </TableRow>
-          </TableHead>
-          <TableBody>
-            {lst.slice(0, limit).map((plant, idx) => (
-              <TableRow
-                hover
-                key={idx}
-                selected={selectedIds.indexOf(plant.id) !== -1}
-              >
-                <TableCell padding="checkbox">
-                  <Checkbox
-                    checked={selectedIds.indexOf(plant.id) !== -1}
-                    onChange={(event) => handleSelectOne(event, plant.id)}
-                    value="true"
-                  />
-                </TableCell>
-                {cols.map((x, idx) => (
-                  <TableCell key={idx}>{x.extractor(plant)}</TableCell>
-                ))}
-                <TableCell padding="checkbox" align="right">
-                  <IconButton
-                    onClick={() => onEdit(plant.id)}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </React.Fragment>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
 

@@ -105,8 +105,6 @@ const generator = (): Employee => ({
     is_superuser: false,
     is_active: false,
     vers_user: {
-      id: -1,
-      user: "",
       plant_group: 1,
       sector_group: 1,
       subsector_group: 1,
@@ -119,5 +117,5 @@ const generator = (): Employee => ({
 
 const EmployeeStore = store<Employee>(get, post, put, del, generator);
 
-export type { Employee };
+export type { Employee, EmpSkillData };
 export default EmployeeStore;

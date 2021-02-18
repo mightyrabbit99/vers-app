@@ -5,11 +5,11 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
+import CardActions from "@material-ui/core/CardActions";
 
-import { Skill } from "src/kernel";
-import { FormChoices } from "./types";
-
-
+import { EmpSkillData, Skill } from "src/kernel";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -28,58 +28,49 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface CardProps {
-  item: Skill;
+  empSkill: EmpSkillData;
+  skill: Skill;
+  level: number;
+  onSubmit: (empSkill: EmpSkillData) => void;
   onDelete: () => void;
-  defaultChoice?: number;
-  choices?: FormChoices;
-  onChange?: (val: number) => void;
 }
 
 const SkillLevelForm: React.FC<CardProps> = (props) => {
   const classes = useStyles();
-  const { item, onDelete, defaultChoice, choices, onChange } = props;
+  const { empSkill, skill, level, onSubmit, onDelete } = props;
 
-  const [c, setC] = React.useState(defaultChoice ?? item.id);
-  React.useEffect(() => {
-    setC(defaultChoice ?? item.id);
-  }, [defaultChoice]);
+  const lvlChoices = [1, 2, 3, 4];
 
   const handleChange = (e: React.ChangeEvent<any>) => {
-    const { name, value: val } = e.target;
-    onChange ? onChange(val) : setC(val);
-  };
+    const { name, value: newLvl } = e.target;
+    const newEmpSkill = {...empSkill, level: newLvl};
+    onSubmit(newEmpSkill);
+  }
 
   return (
-    <div className={classes.root}>
-      <div className={classes.content}>
-        {`${item.name}:   `}
-        {choices ? (
+    <Card className={classes.root}>
+      <CardContent className={classes.content}>
+        {`${skill.name}:   `}
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            value={c}
+            value={level}
             onChange={handleChange}
           >
-            {Object.entries(choices).map((x, idx) => (
-              <MenuItem value={x[1]} key={idx}>
-                {x[0]}
+            {lvlChoices.map((x, idx) => (
+              <MenuItem value={x} key={idx}>
+                {x}
               </MenuItem>
             ))}
           </Select>
-        ) : (
-          item.level
-        )}
-      </div>
-      <div className={classes.ctrlPanel}>
-        <IconButton
-          edge="end"
-          aria-label="delete"
-          onClick={onDelete}
-        >
+        
+      </CardContent>
+      <CardActions className={classes.ctrlPanel}>
+        <IconButton edge="end" aria-label="delete" onClick={onDelete}>
           <DeleteIcon />
         </IconButton>
-      </div>
-    </div>
+      </CardActions>
+    </Card>
   );
 };
 

@@ -11,9 +11,16 @@ class VersUserSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class VersUserSerializer2(serializers.ModelSerializer):
+    class Meta:
+        model = models.VersUser
+        fields = ['plant_group', 'sector_group', 'subsector_group',
+                  'employee_group', 'job_group', 'skill_group']
+
+
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
-    vers_user = VersUserSerializer(many=False, read_only=True)
+    vers_user = VersUserSerializer2(many=False, read_only=True)
     is_superuser = serializers.BooleanField(read_only=True)
 
     def create(self, validated_data):
@@ -39,7 +46,9 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', "password",
                   'vers_user', 'is_superuser', 'is_active']
 
+
 OWNER_USERNAME = 'owner.username'
+
 
 class PlantSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source=OWNER_USERNAME)
@@ -92,7 +101,7 @@ class EmpSkillMatrixSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer2(serializers.ModelSerializer):
-    vers_user = VersUserSerializer(many=False)
+    vers_user = VersUserSerializer2(many=False)
     is_superuser = serializers.BooleanField(read_only=True)
     is_active = serializers.BooleanField(read_only=True)
     username = serializers.BooleanField(read_only=True)
@@ -119,7 +128,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
         skills_data = validated_data.pop('skills')
         user_data = validated_data.pop('user')
         vers_user_data = user_data.pop('vers_user')
-        vers_user = models.VersUser(**vers_user_data) # user empty for now
+        vers_user = models.VersUser(**vers_user_data)  # user empty for now
         user = User(
             username=validated_data['sesa_id'],
             is_superuser=False,
@@ -130,7 +139,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['sesa_id'])
         owner = self.get_request_user()
         emp = models.Employee(user=user, owner=owner, **validated_data)
-        user.save() # must save user first
+        user.save()  # must save user first
         vers_user.save()
         emp.save()
         models.EmpSkillMatrix.objects.bulk_create(skills_data)
@@ -147,7 +156,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
         for s in skills_data:
             new_emp_skill = models.EmpSkillMatrix(**s)
             new_emp_skill.save()
-        
+
         if user_data:
             vers_user_data = user_data.pop('vers_user')
             vers_user = models.Employee.objects.get(
@@ -177,7 +186,6 @@ class JobSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         skills_data = validated_data.pop('skills')
-
 
     class Meta:
         model = models.Job
