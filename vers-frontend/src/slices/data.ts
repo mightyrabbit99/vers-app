@@ -18,6 +18,8 @@ function selLst(type: ItemType, state: DataState): { [id: number]: Item } {
       return state.departments;
     case ItemType.Employee:
       return state.employees;
+    case ItemType.Job:
+      return state.jobs;
     default:
       return {};
   }
@@ -30,6 +32,7 @@ export const initialState: DataState = {
   departments: {},
   skills: {},
   employees: {},
+  jobs: {},
   loading: true,
   calculating: false,
 };
@@ -39,18 +42,20 @@ const dataSlice = createSlice({
   initialState,
   reducers: {
     _reload: (state, { payload }: PayloadAction<any>) => {
-      state.plants = payload.plants;
-      state.newPlant = payload.newPlant;
-      state.sectors = payload.sectors;
-      state.newSector = payload.newSector;
-      state.subsectors = payload.subsectors;
-      state.newSubsector = payload.newSubsector;
-      state.skills = payload.skills;
-      state.newSkill = payload.newSkill;
-      state.departments = payload.departments;
-      state.newDepartment = payload.newDepartment;
-      state.employees = payload.employees;
-      state.newEmployee = payload.newEmployee;
+      state.plants = payload.plants ?? {};
+      state.newPlant = payload.newPlant ?? undefined;
+      state.sectors = payload.sectors ?? {};
+      state.newSector = payload.newSector ?? undefined;
+      state.subsectors = payload.subsectors ?? {};
+      state.newSubsector = payload.newSubsector ?? undefined;
+      state.skills = payload.skills ?? {};
+      state.newSkill = payload.newSkill ?? undefined;
+      state.departments = payload.departments ?? {};
+      state.newDepartment = payload.newDepartment ?? undefined;
+      state.employees = payload.employees ?? {};
+      state.newEmployee = payload.newEmployee ?? undefined;
+      state.jobs = payload.jobs ?? {};
+      state.newJob = payload.newJob ?? undefined;
     },
     reload: (state) => {
       state.loading = true;

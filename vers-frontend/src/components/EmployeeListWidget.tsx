@@ -40,8 +40,10 @@ interface IEmployeeListWidgetProps {
   departmentLst: { [id: number]: Department };
   newEmployee?: Employee;
   feedback?: any;
+  edit?: boolean;
   onSubmit: (p: Employee) => void;
   onDelete: (...ps: Employee[]) => void;
+  onReset: () => void;
 }
 
 const EmployeeListWidget: React.FunctionComponent<IEmployeeListWidgetProps> = (
@@ -54,8 +56,10 @@ const EmployeeListWidget: React.FunctionComponent<IEmployeeListWidgetProps> = (
     departmentLst,
     newEmployee,
     feedback,
+    edit = true,
     onSubmit,
     onDelete,
+    onReset,
   } = props;
 
   const [selected, setSelected] = React.useState<number[]>([]);
@@ -91,6 +95,11 @@ const EmployeeListWidget: React.FunctionComponent<IEmployeeListWidgetProps> = (
     setFormOpen(true);
   };
 
+  const handleFormClose = () => {
+    setFormOpen(false);
+    onReset();
+  }
+
   return (
     <React.Fragment>
       <div className={classes.header}>
@@ -107,6 +116,7 @@ const EmployeeListWidget: React.FunctionComponent<IEmployeeListWidgetProps> = (
           <Button
             variant="contained"
             color="primary"
+            disabled={!edit}
             onClick={handleCreateOnClick}
           >
             Create
@@ -114,7 +124,7 @@ const EmployeeListWidget: React.FunctionComponent<IEmployeeListWidgetProps> = (
           <Button
             variant="contained"
             color="primary"
-            disabled={selected.length === 0}
+            disabled={selected.length === 0 || !edit}
             onClick={handleDeleteOnClick}
           >
             Delete
@@ -128,10 +138,10 @@ const EmployeeListWidget: React.FunctionComponent<IEmployeeListWidgetProps> = (
           subsectorLst={subsectorLst}
           selected={selected}
           selectedOnChange={setSelected}
-          onEdit={handleEditOnClick}
+          onEdit={edit ? handleEditOnClick : undefined}
         />
       </div>
-      <MyDialog open={formOpen} onClose={() => setFormOpen(false)}>
+      <MyDialog open={formOpen} onClose={handleFormClose}>
         <div className={classes.form}>
           <div className={classes.formTitle}>
             <Typography
@@ -155,7 +165,7 @@ const EmployeeListWidget: React.FunctionComponent<IEmployeeListWidgetProps> = (
                 departmentLst={departmentLst}
                 feedback={feedback}
                 onSubmit={handleSubmit}
-                onCancel={() => setFormOpen(false)}
+                onCancel={handleFormClose}
               />
             ) : null}
           </div>

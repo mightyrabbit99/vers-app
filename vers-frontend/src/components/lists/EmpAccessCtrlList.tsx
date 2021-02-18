@@ -36,7 +36,7 @@ const EmployeeAccessCtrlList: React.FC<IEmployeeAccessCtrlListProps> = (
       return isValidName(name) ? vers_user[name] : "";
     }
 
-    const genSelector = (label: string, name: string) => {
+    const genSelector = (name: string) => {
       const val = getVal(name);
       const handleChange = (e: React.ChangeEvent<any>) => {
         const { name, value } = e.target;
@@ -54,7 +54,6 @@ const EmployeeAccessCtrlList: React.FC<IEmployeeAccessCtrlListProps> = (
       };
       return (
         <FormControl>
-          <InputLabel id="demo-simple-select-label">{label}</InputLabel>
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
@@ -73,7 +72,12 @@ const EmployeeAccessCtrlList: React.FC<IEmployeeAccessCtrlListProps> = (
     return (
       <TableRow hover key={idx}>
         <TableCell>{getName(emp)}</TableCell>
-        <TableCell>{genSelector("Plant group", "plant_group")}</TableCell>
+        <TableCell>{genSelector("plant_group")}</TableCell>
+        <TableCell>{genSelector("sector_group")}</TableCell>
+        <TableCell>{genSelector("subsector_group")}</TableCell>
+        <TableCell>{genSelector("department_group")}</TableCell>
+        <TableCell>{genSelector("employee_group")}</TableCell>
+        <TableCell>{genSelector("job_group")}</TableCell>
       </TableRow>
     );
   };
@@ -85,6 +89,24 @@ const EmployeeAccessCtrlList: React.FC<IEmployeeAccessCtrlListProps> = (
           <TableRow>
             <TableCell>
               <b>Employee</b>
+            </TableCell>
+            <TableCell>
+              <b>Plant</b>
+            </TableCell>
+            <TableCell>
+              <b>Sector</b>
+            </TableCell>
+            <TableCell>
+              <b>Subsector</b>
+            </TableCell>
+            <TableCell>
+              <b>Department</b>
+            </TableCell>
+            <TableCell>
+              <b>Employee</b>
+            </TableCell>
+            <TableCell>
+              <b>Job</b>
             </TableCell>
           </TableRow>
         </TableHead>

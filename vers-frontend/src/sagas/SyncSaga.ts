@@ -21,8 +21,14 @@ import {
 import { CreateNewAction, EraseAction, ModifyAction } from "src/types";
 
 function* fetchDatas() {
-  let plants, sectors, subsectors, skills, departments, employees;
-  let newPlant, newSector, newSubsector, newSkill, newDepartment, newEmployee;
+  let plants, sectors, subsectors, skills, departments, employees, jobs;
+  let newPlant,
+    newSector,
+    newSubsector,
+    newSkill,
+    newDepartment,
+    newEmployee,
+    newJob;
   yield put(reload());
   try {
     yield call(k.refresh);
@@ -38,6 +44,8 @@ function* fetchDatas() {
     newDepartment = k.deptStore.getNew();
     employees = k.empStore.getLst();
     newEmployee = k.empStore.getNew();
+    jobs = k.jobStore.getLst();
+    newJob = k.jobStore.getNew();
     yield put(
       _reload({
         plants,
@@ -52,6 +60,8 @@ function* fetchDatas() {
         newDepartment,
         employees,
         newEmployee,
+        jobs,
+        newJob,
       })
     );
     yield put(reloadSuccess());

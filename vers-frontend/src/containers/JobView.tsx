@@ -3,10 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { Grid, Paper, makeStyles } from "@material-ui/core";
 
-import SkillListWidget from "../components/SkillListWidget";
+import JobListWidget from "src/components/JobListWidget";
 import { getData, getSync, getSession } from "src/selectors";
 import { delData, saveData } from "src/slices/data";
-import { Skill } from "src/kernel";
+import { Job } from "src/kernel";
 import { clearFeedback } from "src/slices/sync";
 
 const useStyles = makeStyles((theme) => ({
@@ -19,22 +19,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface ISkillViewProps {}
+interface IJobViewProps {}
 
-const SkillView: React.FunctionComponent<ISkillViewProps> = (props) => {
-  const classes = useStyles();
+const JobView: React.FunctionComponent<IJobViewProps> = (props) => {
   const dispatch = useDispatch();
-  const { skills, newSkill, subsectors} = useSelector(getData);
+  const classes = useStyles();
+  const { jobs, newJob } = useSelector(getData);
   const { feedback } = useSelector(getSync);
   const { user } = useSelector(getSession);
 
   const canEdit = () => {
-    return user?.vers_user.skill_group === 1;
+    return user?.vers_user.job_group === 1;
   }
-  const handleSubmit = (data: Skill) => {
+  const handleSubmit = (data: Job) => {
     dispatch(saveData(data));
   };
-  const handleDelete = (...data: Skill[]) => {
+  const handleDelete = (...data: Job[]) => {
     dispatch(delData(data));
   };
   const handleReset = () => {
@@ -45,12 +45,11 @@ const SkillView: React.FunctionComponent<ISkillViewProps> = (props) => {
     <Grid container spacing={3}>
       <Grid item xs={12}>
         <Paper className={classes.list}>
-          <SkillListWidget
-            lst={skills}
-            subsectorLst={subsectors}
-            newSkill={newSkill}
-            edit={canEdit()}
+          <JobListWidget
+            lst={jobs}
+            newJob={newJob}
             feedback={feedback}
+            edit={canEdit()}
             onSubmit={handleSubmit}
             onDelete={handleDelete}
             onReset={handleReset}
@@ -61,4 +60,4 @@ const SkillView: React.FunctionComponent<ISkillViewProps> = (props) => {
   );
 };
 
-export default SkillView;
+export default JobView;

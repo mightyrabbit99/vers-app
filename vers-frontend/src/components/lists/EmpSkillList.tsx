@@ -25,7 +25,7 @@ const EmpSkillList: React.FunctionComponent<IEmpSkillListProps> = (props) => {
   };
 
   return (
-    <div>
+    <React.Fragment>
       {item.skills.map((x, idx) => (
         <SkillLevelCard
           empSkill={x}
@@ -35,7 +35,7 @@ const EmpSkillList: React.FunctionComponent<IEmpSkillListProps> = (props) => {
           onDelete={() => handleDelete(idx)}
         />
       ))}
-    </div>
+    </React.Fragment>
   );
 };
 

@@ -1,10 +1,12 @@
 import * as React from "react";
-import { Typography, Button, makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import Typography from "@material-ui/core/Typography";
+import Button from "@material-ui/core/Button";
 
-import { Plant } from "src/kernel";
+import { Job } from "src/kernel";
+import JobList from "src/components/lists/JobMainList";
+import JobForm from "src/components/forms/JobForm";
 import MyDialog from "src/components/commons/Dialog";
-import PlantForm from "src/components/forms/PlantForm";
-import PlantList from "src/components/lists/PlantMainList";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -34,23 +36,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface IPlantListWidgetProps {
-  lst: { [id: number]: Plant };
-  newPlant?: Plant;
+interface IJobListWidgetProps {
+  lst: { [id: number]: Job };
+  newJob?: Job;
   feedback?: any;
   edit?: boolean;
-  onSubmit: (p: Plant) => void;
-  onDelete: (...ps: Plant[]) => void;
+  onSubmit: (p: Job) => void;
+  onDelete: (...ps: Job[]) => void;
   onReset: () => void;
 }
 
-const PlantListWidget: React.FunctionComponent<IPlantListWidgetProps> = (
-  props
-) => {
+const JobListWidget: React.FunctionComponent<IJobListWidgetProps> = (props) => {
   const classes = useStyles();
   const {
     lst,
-    newPlant,
+    newJob,
     feedback,
     edit = true,
     onSubmit,
@@ -68,15 +68,15 @@ const PlantListWidget: React.FunctionComponent<IPlantListWidgetProps> = (
   };
 
   const [formOpen, setFormOpen] = React.useState(false);
-  const [formData, setFormData] = React.useState(newPlant);
+  const [formData, setFormData] = React.useState(newJob);
   React.useEffect(() => {
-    setFormData(newPlant);
-  }, [newPlant]);
+    setFormData(newJob);
+  }, [newJob]);
   React.useEffect(() => {
     setFormOpen(!!feedback);
   }, [feedback]);
 
-  const handleSubmit = (data: Plant) => {
+  const handleSubmit = (data: Job) => {
     onSubmit(data);
     setFormOpen(false);
   };
@@ -84,13 +84,15 @@ const PlantListWidget: React.FunctionComponent<IPlantListWidgetProps> = (
     setFormData(lst[id]);
     setFormOpen(true);
   };
+
   const handleFormClose = () => {
     setFormOpen(false);
     onReset();
   };
 
   const handleCreateOnClick = () => {
-    setFormData(newPlant);
+    console.log(newJob);
+    setFormData(newJob);
     setFormOpen(true);
   };
 
@@ -104,13 +106,13 @@ const PlantListWidget: React.FunctionComponent<IPlantListWidgetProps> = (
           color="primary"
           gutterBottom
         >
-          Plants
+          Jobs
         </Typography>
         <div className={classes.ctrlButtons}>
           <Button
-            disabled={!edit}
             variant="contained"
             color="primary"
+            disabled={!edit}
             onClick={handleCreateOnClick}
           >
             Create
@@ -126,8 +128,8 @@ const PlantListWidget: React.FunctionComponent<IPlantListWidgetProps> = (
         </div>
       </div>
       <div className={classes.content}>
-        <PlantList
-          lst={Object.values(lst)}
+        <JobList
+          lst={lst}
           selected={selected}
           selectedOnChange={setSelected}
           onEdit={edit ? handleEditOnClick : undefined}
@@ -143,14 +145,12 @@ const PlantListWidget: React.FunctionComponent<IPlantListWidgetProps> = (
               color="primary"
               gutterBottom
             >
-              {formData && formData.id === -1
-                ? "Create New Plant"
-                : "Edit Plant"}
+              {formData && formData.id === -1 ? "Create New Job" : "Edit Job"}
             </Typography>
           </div>
           <div className={classes.formContent}>
             {formData ? (
-              <PlantForm
+              <JobForm
                 data={formData}
                 feedback={feedback}
                 onSubmit={handleSubmit}
@@ -164,4 +164,4 @@ const PlantListWidget: React.FunctionComponent<IPlantListWidgetProps> = (
   );
 };
 
-export default PlantListWidget;
+export default JobListWidget;

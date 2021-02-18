@@ -1,4 +1,4 @@
-import { Plant, Data, Sector, Subsector, Department, Skill, Employee } from "src/kernel";
+import { Plant, Data, Sector, Subsector, Department, Skill, Employee, Job } from "src/kernel";
 import { UserData } from "src/kernel/data/UserData";
 import { delData, saveData, _saveNewData } from "src/slices/data";
 import { changeUserDetail, login } from "src/slices/session";
@@ -69,6 +69,8 @@ export interface DataState {
   newDepartment?: Department;
   employees: IdMap<Employee>;
   newEmployee?: Employee;
+  jobs: IdMap<Job>;
+  newJob?: Job;
   loading: boolean;
   calculating: boolean;
   error?: any;

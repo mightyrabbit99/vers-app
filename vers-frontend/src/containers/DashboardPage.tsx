@@ -2,14 +2,6 @@ import React from "react";
 import clsx from "clsx";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import PlantView from "./PlantView";
-import SectorView from "./SectorView";
-import SubsectorView from "./SubsectorView";
-import DepartmentView from "./DepartmentView";
-import SkillView from "./SkillView";
-import EmployeeView from "./EmployeeView";
-
-import { fetchData } from "src/slices/sync";
 
 import {
   createMuiTheme,
@@ -44,6 +36,16 @@ import AssignmentIcon from "@material-ui/icons/Assignment";
 import { green, purple } from "@material-ui/core/colors";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
+
+import PlantView from "./PlantView";
+import SectorView from "./SectorView";
+import SubsectorView from "./SubsectorView";
+import DepartmentView from "./DepartmentView";
+import SkillView from "./SkillView";
+import EmployeeView from "./EmployeeView";
+import JobView from "./JobView";
+
+import { fetchData, clearFeedback } from "src/slices/sync";
 import { logout } from "src/slices/session";
 import { getSession } from "src/selectors";
 
@@ -142,16 +144,21 @@ const theme = createMuiTheme({
   },
 });
 
+enum DashboardView {
+  Plant,
+  Sector,
+  Subsector,
+  Skill,
+  Department,
+  Employee,
+  Job,
+}
+
 const Dashboard: React.FC = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { authenticated: auth, user } = useSelector(getSession);
 
-  const [username, setUsername] = React.useState("");
-  React.useEffect(() => {
-    setUsername(user ? user.username : "");
-    console.log(user);
-  }, [user]);
   React.useEffect(() => {
     dispatch(fetchData());
   }, []);
@@ -174,6 +181,7 @@ const Dashboard: React.FC = () => {
   };
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    dispatch(clearFeedback());
     setAnchorEl(event.currentTarget);
   };
 
@@ -187,45 +195,108 @@ const Dashboard: React.FC = () => {
 
   const handleViewProfile = () => {
     history.push("/user");
-  }
+  };
+
+  const cannotView = (i: number) => {
+    if (user?.is_superuser) return false;
+    switch (i) {
+      case DashboardView.Plant:
+        return user?.vers_user.plant_group === 3;
+      case DashboardView.Sector:
+        return user?.vers_user.sector_group === 3;
+      case DashboardView.Subsector:
+        return user?.vers_user.subsector_group === 3;
+      case DashboardView.Skill:
+        return user?.vers_user.skill_group === 3;
+      case DashboardView.Department:
+        return user?.vers_user.department_group === 3;
+      case DashboardView.Employee:
+        return user?.vers_user.employee_group === 3;
+      case DashboardView.Job:
+        return user?.vers_user.job_group === 3;
+      default:
+        return false;
+    }
+  };
 
   const mainListItems = (
     <div>
-      <ListItem button selected={currView === 0} onClick={handleListClick(0)}>
+      <ListItem
+        button
+        disabled={cannotView(DashboardView.Plant)}
+        selected={currView === DashboardView.Plant}
+        onClick={handleListClick(DashboardView.Plant)}
+      >
         <ListItemIcon>
           <DashboardIcon />
         </ListItemIcon>
         <ListItemText primary="Plants" />
       </ListItem>
-      <ListItem button selected={currView === 1} onClick={handleListClick(1)}>
+      <ListItem
+        button
+        disabled={cannotView(DashboardView.Sector)}
+        selected={currView === DashboardView.Sector}
+        onClick={handleListClick(DashboardView.Sector)}
+      >
         <ListItemIcon>
           <ShoppingCartIcon />
         </ListItemIcon>
         <ListItemText primary="Sectors" />
       </ListItem>
-      <ListItem button selected={currView === 2} onClick={handleListClick(2)}>
+      <ListItem
+        button
+        disabled={cannotView(DashboardView.Subsector)}
+        selected={currView === DashboardView.Subsector}
+        onClick={handleListClick(DashboardView.Subsector)}
+      >
         <ListItemIcon>
           <PeopleIcon />
         </ListItemIcon>
         <ListItemText primary="Subsectors" />
       </ListItem>
-      <ListItem button selected={currView === 3} onClick={handleListClick(3)}>
+      <ListItem
+        button
+        disabled={cannotView(DashboardView.Skill)}
+        selected={currView === DashboardView.Skill}
+        onClick={handleListClick(DashboardView.Skill)}
+      >
         <ListItemIcon>
           <BarChartIcon />
         </ListItemIcon>
         <ListItemText primary="Skills" />
       </ListItem>
-      <ListItem button selected={currView === 4} onClick={handleListClick(4)}>
+      <ListItem
+        button
+        disabled={cannotView(DashboardView.Department)}
+        selected={currView === DashboardView.Department}
+        onClick={handleListClick(DashboardView.Department)}
+      >
         <ListItemIcon>
           <LayersIcon />
         </ListItemIcon>
         <ListItemText primary="Departments" />
       </ListItem>
-      <ListItem button selected={currView === 5} onClick={handleListClick(5)}>
+      <ListItem
+        button
+        disabled={cannotView(DashboardView.Employee)}
+        selected={currView === DashboardView.Employee}
+        onClick={handleListClick(DashboardView.Employee)}
+      >
         <ListItemIcon>
           <LayersIcon />
         </ListItemIcon>
         <ListItemText primary="Employees" />
+      </ListItem>
+      <ListItem
+        button
+        disabled={cannotView(DashboardView.Job)}
+        selected={currView === DashboardView.Job}
+        onClick={handleListClick(DashboardView.Job)}
+      >
+        <ListItemIcon>
+          <LayersIcon />
+        </ListItemIcon>
+        <ListItemText primary="Jobs" />
       </ListItem>
     </div>
   );
@@ -245,29 +316,25 @@ const Dashboard: React.FC = () => {
         </ListItemIcon>
         <ListItemText primary="Last quarter" />
       </ListItem>
-      <ListItem button>
-        <ListItemIcon>
-          <AssignmentIcon />
-        </ListItemIcon>
-        <ListItemText primary="Year-end sale" />
-      </ListItem>
     </div>
   );
 
   const genView = () => {
     switch (currView) {
-      case 0:
+      case DashboardView.Plant:
         return <PlantView />;
-      case 1:
+      case DashboardView.Sector:
         return <SectorView />;
-      case 2:
+      case DashboardView.Subsector:
         return <SubsectorView />;
-      case 3:
+      case DashboardView.Skill:
         return <SkillView />;
-      case 4:
+      case DashboardView.Department:
         return <DepartmentView />;
-      case 5:
+      case DashboardView.Employee:
         return <EmployeeView />;
+      case DashboardView.Job:
+        return <JobView />;
       default:
         return <PlantView />;
     }
@@ -304,7 +371,9 @@ const Dashboard: React.FC = () => {
               Dashboard
             </Typography>
             <div>
-              <Typography variant="caption">{username}</Typography>
+              <Typography variant="caption">
+                {user ? user.username : "Guest"}
+              </Typography>
               <IconButton color="inherit" onClick={handleMenuClick}>
                 <Badge badgeContent={4} color="secondary">
                   <NotificationsIcon />

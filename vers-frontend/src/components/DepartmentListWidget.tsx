@@ -38,6 +38,7 @@ interface IDepartmentListWidgetProps {
   lst: { [id: number]: Department };
   newDepartment?: Department;
   feedback?: any;
+  edit?: boolean;
   onSubmit: (p: Department) => void;
   onDelete: (...ps: Department[]) => void;
   onReset: () => void;
@@ -47,7 +48,7 @@ const DepartmentListWidget: React.FunctionComponent<IDepartmentListWidgetProps> 
   props
 ) => {
   const classes = useStyles();
-  const { lst, newDepartment, feedback, onSubmit, onDelete, onReset } = props;
+  const { lst, newDepartment, feedback, edit = true, onSubmit, onDelete, onReset } = props;
 
   const [selected, setSelected] = React.useState<number[]>([]);
   React.useEffect(() => {
@@ -95,13 +96,13 @@ const DepartmentListWidget: React.FunctionComponent<IDepartmentListWidgetProps> 
           Departments
         </Typography>
         <div className={classes.ctrlButtons}>
-          <Button variant="contained" color="primary" onClick={handleCreateOnClick}>
+          <Button disabled={!edit} variant="contained" color="primary" onClick={handleCreateOnClick}>
             Create
           </Button>
           <Button
             variant="contained"
             color="primary"
-            disabled={selected.length === 0}
+            disabled={selected.length === 0 || !edit}
             onClick={handleDeleteOnClick}
           >
             Delete
@@ -113,7 +114,7 @@ const DepartmentListWidget: React.FunctionComponent<IDepartmentListWidgetProps> 
           lst={Object.values(lst)}
           selected={selected}
           selectedOnChange={setSelected}
-          onEdit={handleEditOnClick}
+          onEdit={edit? handleEditOnClick: undefined}
         />
       </div>
       <MyDialog open={formOpen} onClose={handleFormClose}>

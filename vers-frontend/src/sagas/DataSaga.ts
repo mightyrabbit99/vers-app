@@ -1,6 +1,8 @@
 import { all, put, takeLatest } from "redux-saga/effects";
 
 import {
+  reload,
+  _reload,
   calculate,
   calculateSuccess,
   saveData,
@@ -14,6 +16,10 @@ import k from "src/kernel";
 
 function* calculateDatas() {
   yield put(calculateSuccess());
+}
+
+function* clearAll() {
+  yield put(_reload({}));
 }
 
 function* delDataCascadeThenCalculate({ payload }: DeleteDataAction): any {
@@ -49,6 +55,7 @@ function* saveDataCascadeThenCalculate({ payload }: SaveDataAction) {
 
 function* dataSaga() {
   yield all([
+    takeLatest(reload.type, clearAll),
     takeLatest(calculate.type, calculateDatas),
     takeLatest(saveData.type, saveDataCascadeThenCalculate),
     takeLatest(delData.type, delDataCascadeThenCalculate),

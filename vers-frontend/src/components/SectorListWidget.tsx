@@ -39,6 +39,7 @@ interface ISectorListWidgetProps {
   plantLst: { [id: number]: Plant };
   newSector?: Sector;
   feedback?: any;
+  edit?: boolean;
   onSubmit: (p: Sector) => void;
   onDelete: (...ps: Sector[]) => void;
   onReset: () => void;
@@ -48,7 +49,7 @@ const SectorListWidget: React.FunctionComponent<ISectorListWidgetProps> = (
   props
 ) => {
   const classes = useStyles();
-  const { lst, plantLst, newSector, feedback, onSubmit, onDelete, onReset } = props;
+  const { lst, plantLst, newSector, feedback, edit = true, onSubmit, onDelete, onReset } = props;
 
   const [selected, setSelected] = React.useState<number[]>([]);
   React.useEffect(() => {
@@ -99,13 +100,13 @@ const SectorListWidget: React.FunctionComponent<ISectorListWidgetProps> = (
           Sectors
         </Typography>
         <div className={classes.ctrlButtons}>
-          <Button variant="contained" color="primary" onClick={handleCreateOnClick}>
+          <Button disabled={!edit} variant="contained" color="primary" onClick={handleCreateOnClick}>
             Create
           </Button>
           <Button
             variant="contained"
             color="primary"
-            disabled={selected.length === 0}
+            disabled={selected.length === 0 || !edit}
             onClick={handleDeleteOnClick}
           >
             Delete
@@ -118,7 +119,7 @@ const SectorListWidget: React.FunctionComponent<ISectorListWidgetProps> = (
           plantLst={plantLst}
           selected={selected}
           selectedOnChange={setSelected}
-          onEdit={handleEditOnClick}
+          onEdit={edit ? handleEditOnClick : undefined}
         />
       </div>
       <MyDialog open={formOpen} onClose={handleFormClose}>

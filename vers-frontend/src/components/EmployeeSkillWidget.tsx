@@ -44,7 +44,13 @@ const EmployeeSkillWidget: React.FunctionComponent<IEmployeeSkillWidgetProps> = 
       </Grid>
       <Divider orientation="vertical" flexItem />
       <Grid item xs={9}>
-        <EmpSkillList item={lst[sel]} skillLst={skillLst} onSubmit={onSubmit}/>
+        {sel !== -1 ? (
+          <EmpSkillList
+            item={lst[sel]}
+            skillLst={skillLst}
+            onSubmit={onSubmit}
+          />
+        ) : null}
       </Grid>
     </Grid>
   );

@@ -1,6 +1,6 @@
 import { all, call, put, takeLatest } from "redux-saga/effects";
 import k, { Result } from "src/kernel";
-
+import { reload } from "src/slices/data";
 import {
   initLogin,
   login,
@@ -12,6 +12,7 @@ import {
 import { EditUserAction, LoginAction } from "src/types";
 
 function* init() {
+  yield put(reload());
   if (k.isLoggedIn()) {
     let res: any = yield call(k.getUser);
     if (res.success) {

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Grid, Paper, makeStyles } from "@material-ui/core";
 
 import PlantListWidget from "src/components/PlantListWidget";
-import { getData, getSync } from "src/selectors";
+import { getData, getSession, getSync } from "src/selectors";
 import { delData, saveData } from "src/slices/data";
 import { Plant } from "src/kernel";
 import { clearFeedback } from "src/slices/sync";
@@ -26,6 +26,10 @@ const PlantView: React.FunctionComponent<IPlantViewProps> = (props) => {
   const classes = useStyles();
   const { plants, newPlant } = useSelector(getData);
   const { feedback } = useSelector(getSync);
+  const { user } = useSelector(getSession);
+  const canEdit = () => {
+    return user?.vers_user.plant_group === 1;
+  }
 
   const handleSubmit = (data: Plant) => {
     dispatch(saveData(data));
@@ -45,6 +49,7 @@ const PlantView: React.FunctionComponent<IPlantViewProps> = (props) => {
             lst={plants}
             newPlant={newPlant}
             feedback={feedback}
+            edit={canEdit()}
             onSubmit={handleSubmit}
             onDelete={handleDelete}
             onReset={handleReset}

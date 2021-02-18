@@ -48,9 +48,14 @@ function store<T extends Item>(
     static generator = generator;
 
     refresh = async () => {
+      this.clearAll();
       let lst = await get();
       lst.forEach(this.add);
     };
+
+    private clearAll = () => {
+      this.store = {};
+    }
 
     private add = (t: T) => {
       this.store[t.id] = t;

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Grid, Paper, makeStyles } from "@material-ui/core";
 
 import SubsectorListWidget from "../components/SubsectorListWidget";
-import { getData, getSync } from "src/selectors";
+import { getData, getSync, getSession } from "src/selectors";
 import { delData, saveData } from "src/slices/data";
 import { Subsector } from "src/kernel";
 import { clearFeedback } from "src/slices/sync";
@@ -26,7 +26,11 @@ const SectorView: React.FunctionComponent<ISectorViewProps> = (props) => {
   const dispatch = useDispatch();
   const { subsectors, newSubsector, sectors } = useSelector(getData);
   const { feedback } = useSelector(getSync);
+  const { user } = useSelector(getSession);
 
+  const canEdit = () => {
+    return user?.vers_user.subsector_group === 1;
+  }
   const handleSubmit = (data: Subsector) => {
     dispatch(saveData(data));
   };
@@ -46,6 +50,7 @@ const SectorView: React.FunctionComponent<ISectorViewProps> = (props) => {
             sectorLst={sectors}
             newSubsector={newSubsector}
             feedback={feedback}
+            edit={canEdit()}
             onSubmit={handleSubmit}
             onDelete={handleDelete}
             onReset={handleReset}

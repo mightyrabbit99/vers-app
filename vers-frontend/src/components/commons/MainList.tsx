@@ -38,13 +38,7 @@ const useStyles = makeStyles((themes) => ({
 
 const ItemMainList: React.FC<IMainListProps> = (props) => {
   const classes = useStyles();
-  const {
-    lst,
-    cols,
-    selected,
-    onEdit = (i) => {},
-    selectedOnChange = (lst) => {},
-  } = props;
+  const { lst, cols, selected, onEdit, selectedOnChange = (lst) => {} } = props;
 
   const [selectedIds, setSelectedIds] = React.useState<number[]>(
     selected ?? []
@@ -98,7 +92,7 @@ const ItemMainList: React.FC<IMainListProps> = (props) => {
                 <b>{x.title}</b>
               </TableCell>
             ))}
-            <TableCell padding="checkbox"></TableCell>
+            {onEdit ? <TableCell padding="checkbox"></TableCell> : null}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -118,11 +112,13 @@ const ItemMainList: React.FC<IMainListProps> = (props) => {
               {cols.map((x, idx) => (
                 <TableCell key={idx}>{x.extractor(plant)}</TableCell>
               ))}
-              <TableCell padding="checkbox" align="right">
-                <IconButton onClick={() => onEdit(plant.id)}>
-                  <EditIcon />
-                </IconButton>
-              </TableCell>
+              {onEdit ? (
+                <TableCell padding="checkbox" align="right">
+                  <IconButton onClick={() => onEdit(plant.id)}>
+                    <EditIcon />
+                  </IconButton>
+                </TableCell>
+              ) : null}
             </TableRow>
           ))}
         </TableBody>
