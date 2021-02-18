@@ -40,13 +40,14 @@ interface IDepartmentListWidgetProps {
   feedback?: any;
   onSubmit: (p: Department) => void;
   onDelete: (...ps: Department[]) => void;
+  onReset: () => void;
 }
 
 const DepartmentListWidget: React.FunctionComponent<IDepartmentListWidgetProps> = (
   props
 ) => {
   const classes = useStyles();
-  const { lst, newDepartment, feedback, onSubmit, onDelete } = props;
+  const { lst, newDepartment, feedback, onSubmit, onDelete, onReset } = props;
 
   const [selected, setSelected] = React.useState<number[]>([]);
   React.useEffect(() => {
@@ -71,6 +72,10 @@ const DepartmentListWidget: React.FunctionComponent<IDepartmentListWidgetProps> 
     setFormData(lst[id]);
     setFormOpen(true);
   };
+  const handleFormClose = () => {
+    setFormOpen(false);
+    onReset();
+  }
 
   const handleCreateOnClick = () => {
     setFormData(newDepartment);
@@ -111,7 +116,7 @@ const DepartmentListWidget: React.FunctionComponent<IDepartmentListWidgetProps> 
           onEdit={handleEditOnClick}
         />
       </div>
-      <MyDialog open={formOpen} onClose={() => setFormOpen(false)}>
+      <MyDialog open={formOpen} onClose={handleFormClose}>
         <div className={classes.form}>
           <div className={classes.formTitle}>
             <Typography
@@ -132,7 +137,7 @@ const DepartmentListWidget: React.FunctionComponent<IDepartmentListWidgetProps> 
                 data={formData}
                 feedback={feedback}
                 onSubmit={handleSubmit}
-                onCancel={() => setFormOpen(false)}
+                onCancel={handleFormClose}
               />
             ) : null}
           </div>

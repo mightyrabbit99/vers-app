@@ -7,6 +7,7 @@ import EmployeeListWidget from "src/components/EmployeeListWidget";
 import { getData, getSync } from "src/selectors";
 import { delData, saveData } from "src/slices/data";
 import { Employee } from "src/kernel";
+import EmployeeAccessCtrlWidget from "src/components/EmployeeAccessControlWidget";
 
 const useStyles = makeStyles((theme) => ({
   list: {
@@ -23,7 +24,9 @@ interface IEmployeeViewProps {}
 const EmployeeView: React.FunctionComponent<IEmployeeViewProps> = (props) => {
   const dispatch = useDispatch();
   const classes = useStyles();
-  const { employees, subsectors, departments, newEmployee } = useSelector(getData);
+  const { employees, subsectors, departments, newEmployee } = useSelector(
+    getData
+  );
   const { feedback } = useSelector(getSync);
   const handleSubmit = (data: Employee) => {
     dispatch(saveData(data));
@@ -45,6 +48,11 @@ const EmployeeView: React.FunctionComponent<IEmployeeViewProps> = (props) => {
             onSubmit={handleSubmit}
             onDelete={handleDelete}
           />
+        </Paper>
+      </Grid>
+      <Grid item xs={12}>
+        <Paper className={classes.list}>
+          <EmployeeAccessCtrlWidget lst={employees} onSubmit={handleSubmit} />
         </Paper>
       </Grid>
     </Grid>

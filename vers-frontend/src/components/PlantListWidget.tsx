@@ -40,13 +40,14 @@ interface IPlantListWidgetProps {
   feedback?: any;
   onSubmit: (p: Plant) => void;
   onDelete: (...ps: Plant[]) => void;
+  onReset: () => void;
 }
 
 const PlantListWidget: React.FunctionComponent<IPlantListWidgetProps> = (
   props
 ) => {
   const classes = useStyles();
-  const { lst, newPlant, feedback, onSubmit, onDelete } = props;
+  const { lst, newPlant, feedback, onSubmit, onDelete, onReset } = props;
 
   const [selected, setSelected] = React.useState<number[]>([]);
   React.useEffect(() => {
@@ -62,6 +63,9 @@ const PlantListWidget: React.FunctionComponent<IPlantListWidgetProps> = (
   React.useEffect(() => {
     setFormData(newPlant);
   }, [newPlant]);
+  React.useEffect(() => {
+    setFormOpen(!!feedback);
+  }, [feedback]);
 
   const handleSubmit = (data: Plant) => {
     onSubmit(data);
@@ -71,6 +75,10 @@ const PlantListWidget: React.FunctionComponent<IPlantListWidgetProps> = (
     setFormData(lst[id]);
     setFormOpen(true);
   };
+  const handleFormClose = () => {
+    setFormOpen(false);
+    onReset();
+  }
 
   const handleCreateOnClick = () => {
     setFormData(newPlant);
@@ -115,7 +123,7 @@ const PlantListWidget: React.FunctionComponent<IPlantListWidgetProps> = (
           onEdit={handleEditOnClick}
         />
       </div>
-      <MyDialog open={formOpen} onClose={() => setFormOpen(false)}>
+      <MyDialog open={formOpen} onClose={handleFormClose}>
         <div className={classes.form}>
           <div className={classes.formTitle}>
             <Typography
@@ -136,7 +144,7 @@ const PlantListWidget: React.FunctionComponent<IPlantListWidgetProps> = (
                 data={formData}
                 feedback={feedback}
                 onSubmit={handleSubmit}
-                onCancel={() => setFormOpen(false)}
+                onCancel={handleFormClose}
               />
             ) : null}
           </div>

@@ -7,6 +7,7 @@ import DepartmentListWidget from "src/components/DepartmentListWidget";
 import { getData } from "src/selectors";
 import { delData, saveData } from "src/slices/data";
 import { Department } from "src/kernel";
+import { clearFeedback } from "src/slices/sync";
 
 const useStyles = makeStyles((theme) => ({
   list: {
@@ -31,6 +32,9 @@ const DepartmentView: React.FunctionComponent<IDepartmentViewProps> = (props) =>
   const handleDelete = (...data: Department[]) => {
     dispatch(delData(data));
   };
+  const handleReset = () => {
+    dispatch(clearFeedback());
+  }
 
   return (
     <Grid container spacing={3}>
@@ -41,6 +45,7 @@ const DepartmentView: React.FunctionComponent<IDepartmentViewProps> = (props) =>
             newDepartment={newDepartment}
             onSubmit={handleSubmit}
             onDelete={handleDelete}
+            onReset={handleReset}
           />
         </Paper>
       </Grid>

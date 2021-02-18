@@ -7,6 +7,7 @@ import PlantListWidget from "src/components/PlantListWidget";
 import { getData } from "src/selectors";
 import { delData, saveData } from "src/slices/data";
 import { Plant } from "src/kernel";
+import { clearFeedback } from "src/slices/sync";
 
 const useStyles = makeStyles((theme) => ({
   list: {
@@ -31,6 +32,9 @@ const PlantView: React.FunctionComponent<IPlantViewProps> = (props) => {
   const handleDelete = (...data: Plant[]) => {
     dispatch(delData(data));
   };
+  const handleReset = () => {
+    dispatch(clearFeedback());
+  }
 
   return (
     <Grid container spacing={3}>
@@ -41,6 +45,7 @@ const PlantView: React.FunctionComponent<IPlantViewProps> = (props) => {
             newPlant={newPlant}
             onSubmit={handleSubmit}
             onDelete={handleDelete}
+            onReset={handleReset}
           />
         </Paper>
       </Grid>

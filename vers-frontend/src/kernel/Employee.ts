@@ -108,6 +108,7 @@ const generator = (): Employee => ({
       plant_group: 1,
       sector_group: 1,
       subsector_group: 1,
+      department_group: 1,
       employee_group: 1,
       job_group: 1,
       skill_group: 1,

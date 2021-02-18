@@ -7,6 +7,7 @@ import SkillListWidget from "../components/SkillListWidget";
 import { getData } from "src/selectors";
 import { delData, saveData } from "src/slices/data";
 import { Skill } from "src/kernel";
+import { clearFeedback } from "src/slices/sync";
 
 const useStyles = makeStyles((theme) => ({
   list: {
@@ -31,6 +32,9 @@ const SkillView: React.FunctionComponent<ISkillViewProps> = (props) => {
   const handleDelete = (...data: Skill[]) => {
     dispatch(delData(data));
   };
+  const handleReset = () => {
+    dispatch(clearFeedback());
+  }
 
   return (
     <Grid container spacing={3}>
@@ -42,6 +46,7 @@ const SkillView: React.FunctionComponent<ISkillViewProps> = (props) => {
             newSkill={newSkill}
             onSubmit={handleSubmit}
             onDelete={handleDelete}
+            onReset={handleReset}
           />
         </Paper>
       </Grid>

@@ -41,13 +41,14 @@ interface ISectorListWidgetProps {
   feedback?: any;
   onSubmit: (p: Sector) => void;
   onDelete: (...ps: Sector[]) => void;
+  onReset: () => void;
 }
 
 const SectorListWidget: React.FunctionComponent<ISectorListWidgetProps> = (
   props
 ) => {
   const classes = useStyles();
-  const { lst, plantLst, newSector, feedback, onSubmit, onDelete } = props;
+  const { lst, plantLst, newSector, feedback, onSubmit, onDelete, onReset } = props;
 
   const [selected, setSelected] = React.useState<number[]>([]);
   React.useEffect(() => {
@@ -63,6 +64,9 @@ const SectorListWidget: React.FunctionComponent<ISectorListWidgetProps> = (
   React.useEffect(() => {
     setFormData(newSector);
   }, [newSector]);
+  React.useEffect(() => {
+    setFormOpen(!!feedback);
+  }, [feedback]);
 
   const handleSubmit = (data: Sector) => {
     onSubmit(data);
@@ -72,6 +76,10 @@ const SectorListWidget: React.FunctionComponent<ISectorListWidgetProps> = (
     setFormData(lst[id]);
     setFormOpen(true);
   };
+  const handleFormClose = () => {
+    setFormOpen(false);
+    onReset();
+  }
 
   const handleCreateOnClick = () => {
     setFormData(newSector);
@@ -113,7 +121,7 @@ const SectorListWidget: React.FunctionComponent<ISectorListWidgetProps> = (
           onEdit={handleEditOnClick}
         />
       </div>
-      <MyDialog open={formOpen} onClose={() => setFormOpen(false)}>
+      <MyDialog open={formOpen} onClose={handleFormClose}>
         <div className={classes.form}>
           <div className={classes.formTitle}>
             <Typography
@@ -135,7 +143,7 @@ const SectorListWidget: React.FunctionComponent<ISectorListWidgetProps> = (
                 plantLst={plantLst}
                 feedback={feedback}
                 onSubmit={handleSubmit}
-                onCancel={() => setFormOpen(false)}
+                onCancel={handleFormClose}
               />
             ) : null}
           </div>

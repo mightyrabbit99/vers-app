@@ -8,6 +8,7 @@ interface UserData extends Data {
     plant_group: number;
     sector_group: number;
     subsector_group: number;
+    department_group: number;
     employee_group: number;
     job_group: number;
     skill_group: number;

@@ -7,6 +7,7 @@ import SubsectorListWidget from "../components/SubsectorListWidget";
 import { getData } from "src/selectors";
 import { delData, saveData } from "src/slices/data";
 import { Subsector } from "src/kernel";
+import { clearFeedback } from "src/slices/sync";
 
 const useStyles = makeStyles((theme) => ({
   list: {
@@ -31,6 +32,9 @@ const SectorView: React.FunctionComponent<ISectorViewProps> = (props) => {
   const handleDelete = (...data: Subsector[]) => {
     dispatch(delData(data));
   };
+  const handleReset = () => {
+    dispatch(clearFeedback());
+  }
 
   return (
     <Grid container spacing={3}>
@@ -42,6 +46,7 @@ const SectorView: React.FunctionComponent<ISectorViewProps> = (props) => {
             newSubsector={newSubsector}
             onSubmit={handleSubmit}
             onDelete={handleDelete}
+            onReset={handleReset}
           />
         </Paper>
       </Grid>
