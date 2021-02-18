@@ -100,11 +100,11 @@ const ItemMainList: React.FC<IMainListProps> = (props) => {
             <TableRow
               hover
               key={idx}
-              selected={selectedIds.indexOf(plant.id) !== -1}
+              selected={selectedIds.includes(plant.id)}
             >
               <TableCell padding="checkbox">
                 <Checkbox
-                  checked={selectedIds.indexOf(plant.id) !== -1}
+                  checked={selectedIds.includes(plant.id)}
                   onChange={(event) => handleSelectOne(event, plant.id)}
                   value="true"
                 />

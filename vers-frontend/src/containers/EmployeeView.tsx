@@ -40,7 +40,7 @@ const EmployeeView: React.FunctionComponent<IEmployeeViewProps> = (props) => {
   const { user } = useSelector(getSession);
 
   const canEdit = () => {
-    return user?.vers_user.employee_group === 1;
+    return user?.is_superuser ? true : user?.vers_user.employee_group === 1;
   }
   const handleSubmit = (data: Employee) => {
     dispatch(saveData(data));

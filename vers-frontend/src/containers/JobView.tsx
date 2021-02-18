@@ -29,8 +29,8 @@ const JobView: React.FunctionComponent<IJobViewProps> = (props) => {
   const { user } = useSelector(getSession);
 
   const canEdit = () => {
-    return user?.vers_user.job_group === 1;
-  }
+    return user?.is_superuser ? true : user?.vers_user.job_group === 1;
+  };
   const handleSubmit = (data: Job) => {
     dispatch(saveData(data));
   };
@@ -39,7 +39,7 @@ const JobView: React.FunctionComponent<IJobViewProps> = (props) => {
   };
   const handleReset = () => {
     dispatch(clearFeedback());
-  }
+  };
 
   return (
     <Grid container spacing={3}>

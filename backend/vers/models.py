@@ -166,11 +166,10 @@ class EmpSkillMatrix(models.Model):
     skill = models.ForeignKey(
         Skill, related_name='employees', on_delete=models.CASCADE)
     level = models.IntegerField(choices=LEVEL_CHOICES)
-    desc = models.CharField(max_length=300)
+    desc = models.CharField(max_length=300, blank=True)
 
     class Meta:
         db_table = 'employee_skills'
-        unique_together = (('employee', 'skill'),)
 
 
 class Job(models.Model):
@@ -212,8 +211,7 @@ class JobSkillMatrix(models.Model):
     skill = models.ForeignKey(
         Skill, related_name='jobs', on_delete=models.CASCADE)
     level = models.IntegerField(choices=LEVEL_CHOICES)
-    desc = models.CharField(max_length=300)
+    desc = models.CharField(max_length=300, blank=True)
 
     class Meta:
         db_table = 'job_skills'
-        unique_together = (('job', 'skill'),)

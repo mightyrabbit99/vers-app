@@ -29,8 +29,9 @@ const SkillView: React.FunctionComponent<ISkillViewProps> = (props) => {
   const { user } = useSelector(getSession);
 
   const canEdit = () => {
-    return user?.vers_user.skill_group === 1;
+    return user?.is_superuser ? true : user?.vers_user.skill_group === 1;
   }
+  
   const handleSubmit = (data: Skill) => {
     dispatch(saveData(data));
   };

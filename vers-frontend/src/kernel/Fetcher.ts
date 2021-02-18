@@ -16,17 +16,18 @@ const axios = new FakeServer();
 */
 type Result<T> = { data: T[] };
 
-const userUrl = "http://127.0.0.1:8000/user_modify/";
-const apiTokenAuth = "http://127.0.0.1:8000/api-token-auth/";
-const plantUrl = "http://127.0.0.1:8000/api/plant/";
-const secUrl = "http://127.0.0.1:8000/api/sec/";
-const subsecUrl = "http://127.0.0.1:8000/api/subsec/";
-const empUrl = "http://127.0.0.1:8000/api/emp/";
-const deptUrl = "http://127.0.0.1:8000/api/dept/";
-const skillUrl = "http://127.0.0.1:8000/api/skill/";
-const jobUrl = "http://127.0.0.1:8000/api/job/";
-const empSkillUrl = "http://127.0.0.1:8000/api/emp_skill/";
-const jobSkillUrl = "http://127.0.0.1:8000/api/job_skill/";
+const url = "http://127.0.0.1:8000";
+const userUrl = `${url}/user_modify/`;
+const apiTokenAuth = `${url}/api-token-auth/`;
+const plantUrl = `${url}/api/plant/`;
+const secUrl = `${url}/api/sec/`;
+const subsecUrl = `${url}/api/subsec/`;
+const empUrl = `${url}/api/emp/`;
+const deptUrl = `${url}/api/dept/`;
+const skillUrl = `${url}/api/skill/`;
+const jobUrl = `${url}/api/job/`;
+const empSkillUrl = `${url}/api/emp_skill/`;
+const jobSkillUrl = `${url}/api/job_skill/`;
 
 const getCookie = (name: string) => {
   var cookieValue = null;

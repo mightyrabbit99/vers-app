@@ -29,8 +29,9 @@ const SectorView: React.FunctionComponent<ISectorViewProps> = (props) => {
   const { user } = useSelector(getSession);
 
   const canEdit = () => {
-    return user?.vers_user.subsector_group === 1;
+    return user?.is_superuser ? true : user?.vers_user.subsector_group === 1;
   }
+  
   const handleSubmit = (data: Subsector) => {
     dispatch(saveData(data));
   };

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Grid, Paper, makeStyles } from "@material-ui/core";
 
 import DepartmentListWidget from "src/components/DepartmentListWidget";
-import { getData, getSync } from "src/selectors";
+import { getData, getSession, getSync } from "src/selectors";
 import { delData, saveData } from "src/slices/data";
 import { Department } from "src/kernel";
 import { clearFeedback } from "src/slices/sync";
@@ -26,6 +26,11 @@ const DepartmentView: React.FunctionComponent<IDepartmentViewProps> = (props) =>
   const classes = useStyles();
   const { departments, newDepartment } = useSelector(getData);
   const { feedback } = useSelector(getSync);
+  const { user } = useSelector(getSession);
+
+  const canEdit = () => {
+    return user?.is_superuser ? true : user?.vers_user.department_group === 1;
+  }
 
   const handleSubmit = (data: Department) => {
     dispatch(saveData(data));
@@ -45,6 +50,7 @@ const DepartmentView: React.FunctionComponent<IDepartmentViewProps> = (props) =>
             lst={departments}
             newDepartment={newDepartment}
             feedback={feedback}
+            edit={canEdit()}
             onSubmit={handleSubmit}
             onDelete={handleDelete}
             onReset={handleReset}

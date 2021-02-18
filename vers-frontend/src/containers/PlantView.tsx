@@ -28,7 +28,7 @@ const PlantView: React.FunctionComponent<IPlantViewProps> = (props) => {
   const { feedback } = useSelector(getSync);
   const { user } = useSelector(getSession);
   const canEdit = () => {
-    return user?.vers_user.plant_group === 1;
+    return user?.is_superuser ? true : user?.vers_user.plant_group === 1;
   }
 
   const handleSubmit = (data: Plant) => {

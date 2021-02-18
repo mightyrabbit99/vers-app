@@ -15,7 +15,7 @@ class VersUserSerializer2(serializers.ModelSerializer):
     class Meta:
         model = models.VersUser
         fields = ['plant_group', 'sector_group', 'subsector_group',
-                  'employee_group', 'job_group', 'skill_group']
+                  'employee_group', 'job_group', 'skill_group', 'department_group']
 
 
 class UserSerializer(serializers.ModelSerializer):
