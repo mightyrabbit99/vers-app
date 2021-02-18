@@ -30,16 +30,18 @@ const useStyles = makeStyles((theme) => ({
 interface CardProps {
   empSkill: EmpSkillData;
   skill: Skill;
-  level: number;
   onSubmit: (empSkill: EmpSkillData) => void;
   onDelete: () => void;
 }
 
 const SkillLevelForm: React.FC<CardProps> = (props) => {
   const classes = useStyles();
-  const { empSkill, skill, level, onSubmit, onDelete } = props;
+  const { empSkill, skill, onSubmit, onDelete } = props;
 
   const lvlChoices = [1, 2, 3, 4];
+  const getLvl = () => {
+    return empSkill.level === -1 ? "": empSkill.level;
+  }
 
   const handleChange = (e: React.ChangeEvent<any>) => {
     const { name, value: newLvl } = e.target;
@@ -54,7 +56,7 @@ const SkillLevelForm: React.FC<CardProps> = (props) => {
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            value={level}
+            value={getLvl()}
             onChange={handleChange}
           >
             {lvlChoices.map((x, idx) => (

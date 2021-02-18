@@ -30,7 +30,6 @@ const EmpSkillList: React.FunctionComponent<IEmpSkillListProps> = (props) => {
         <SkillLevelCard
           empSkill={x}
           skill={skillLst[x.skill]}
-          level={x.level}
           key={idx}
           onSubmit={(empSkill: EmpSkillData) => handleSubmit(idx, empSkill)}
           onDelete={() => handleDelete(idx)}

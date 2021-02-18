@@ -33,7 +33,7 @@ const EmployeeAccessCtrlList: React.FC<IEmployeeAccessCtrlListProps> = (
       return value in vers_user;
     }
     function getVal(name: string) {
-      return isValidName(name) ? vers_user[name] : -1;
+      return isValidName(name) ? vers_user[name] : "";
     }
 
     const genSelector = (label: string, name: string) => {
@@ -58,6 +58,7 @@ const EmployeeAccessCtrlList: React.FC<IEmployeeAccessCtrlListProps> = (
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
+            name={name}
             value={val}
             onChange={handleChange}
           >
@@ -72,7 +73,7 @@ const EmployeeAccessCtrlList: React.FC<IEmployeeAccessCtrlListProps> = (
     return (
       <TableRow hover key={idx}>
         <TableCell>{getName(emp)}</TableCell>
-        <TableCell>{genSelector("Name", "name")}</TableCell>
+        <TableCell>{genSelector("Plant group", "plant_group")}</TableCell>
       </TableRow>
     );
   };

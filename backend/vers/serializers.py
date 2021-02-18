@@ -104,7 +104,7 @@ class UserSerializer2(serializers.ModelSerializer):
     vers_user = VersUserSerializer2(many=False)
     is_superuser = serializers.BooleanField(read_only=True)
     is_active = serializers.BooleanField(read_only=True)
-    username = serializers.BooleanField(read_only=True)
+    username = serializers.CharField(read_only=True)
 
     class Meta:
         model = User
@@ -137,20 +137,18 @@ class EmployeeSerializer(serializers.ModelSerializer):
         )
         vers_user.user = user
         user.set_password(validated_data['sesa_id'])
-        owner = self.get_request_user()
-        emp = models.Employee(user=user, owner=owner, **validated_data)
+        emp = models.Employee(user=user, **validated_data)
         user.save()  # must save user first
         vers_user.save()
         emp.save()
         models.EmpSkillMatrix.objects.bulk_create(skills_data)
         return emp
 
-    def update(self, validated_data):
+    def update(self, instance, validated_data):
         skills_data = validated_data.pop('skills')
         user_data = validated_data.pop('user')
 
-        origin_skills = models.Employee.objects.get(
-            pk=validated_data.pk).skills.all()
+        origin_skills = instance.skills.all()
         for s in origin_skills:
             s.delete()
         for s in skills_data:
@@ -159,15 +157,15 @@ class EmployeeSerializer(serializers.ModelSerializer):
 
         if user_data:
             vers_user_data = user_data.pop('vers_user')
-            vers_user = models.Employee.objects.get(
-                pk=validated_data.pk).user.vers_user
+            vers_user = instance.user.vers_user
             for (key, value) in vers_user_data.items():
                 setattr(vers_user, key, value)
             vers_user.save()
 
-        emp = models.Employee.objects.filter(
-            pk=validated_data.pk).update(**validated_data)
-        return emp
+        for (key, value) in validated_data.items():
+            setattr(instance, key, value)
+        instance.save()
+        return instance
 
     class Meta:
         model = models.Employee
@@ -183,9 +181,6 @@ class JobSkillMatrixSerializer(serializers.ModelSerializer):
 class JobSerializer(serializers.ModelSerializer):
     skills_required = JobSkillMatrixSerializer(many=True, read_only=True)
     owner = serializers.ReadOnlyField(source=OWNER_USERNAME)
-
-    def create(self, validated_data):
-        skills_data = validated_data.pop('skills')
 
     class Meta:
         model = models.Job

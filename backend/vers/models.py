@@ -25,7 +25,8 @@ class VersUser(models.Model):
         choices=PERMISSION_GROUP_CHOICES, default=1)
     subsector_group = models.IntegerField(
         choices=PERMISSION_GROUP_CHOICES, default=1)
-
+    department_group = models.IntegerField(
+        choices=PERMISSION_GROUP_CHOICES, default=1)
     # able to create, delete, edit employees. assign skills to employees
     employee_group = models.IntegerField(
         choices=PERMISSION_GROUP_CHOICES, default=1)
@@ -46,6 +47,7 @@ class Plant(models.Model):
     name = models.CharField(max_length=50)
     owner = models.ForeignKey(
         User, related_name='plants', on_delete=models.SET_NULL, null=True)
+
     def __str__(self):
         return self.name
 
@@ -59,6 +61,7 @@ class Sector(models.Model):
         Plant, related_name='sectors', on_delete=models.PROTECT)
     owner = models.ForeignKey(
         User, related_name='sectors', on_delete=models.SET_NULL, null=True)
+
     def __str__(self):
         return self.name
 
@@ -75,6 +78,7 @@ class Subsector(models.Model):
     unit = models.CharField(max_length=50, null=True)
     owner = models.ForeignKey(
         User, related_name='subsectors', on_delete=models.SET_NULL, null=True)
+
     def __str__(self):
         return self.name
 
@@ -133,8 +137,9 @@ class Employee(models.Model):
     hire_date = models.DateField()
     profile_pic = models.ImageField(
         upload_to=up_path("profile_pic"), null=True)
-    
-    user = models.OneToOneField(User, related_name="employee", null=True, on_delete=models.SET_NULL)
+
+    user = models.OneToOneField(
+        User, related_name="employee", null=True, on_delete=models.SET_NULL)
     owner = models.ForeignKey(
         User, related_name='created_employee', on_delete=models.SET_NULL, null=True)
 

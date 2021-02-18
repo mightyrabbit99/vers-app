@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Grid, Paper, makeStyles } from "@material-ui/core";
 
 import SectorListWidget from "../components/SectorListWidget";
-import { getData } from "src/selectors";
+import { getData, getSync } from "src/selectors";
 import { delData, saveData } from "src/slices/data";
 import { Sector } from "src/kernel";
 import { clearFeedback } from "src/slices/sync";
@@ -25,6 +25,7 @@ const SectorView: React.FunctionComponent<ISectorViewProps> = (props) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { sectors, newSector, plants } = useSelector(getData);
+  const { feedback } = useSelector(getSync);
 
   const handleSubmit = (data: Sector) => {
     dispatch(saveData(data));
@@ -44,6 +45,7 @@ const SectorView: React.FunctionComponent<ISectorViewProps> = (props) => {
             lst={sectors}
             plantLst={plants}
             newSector={newSector}
+            feedback={feedback}
             onSubmit={handleSubmit}
             onDelete={handleDelete}
             onReset={handleReset}

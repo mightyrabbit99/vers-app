@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Grid, Paper, makeStyles } from "@material-ui/core";
 
 import PlantListWidget from "src/components/PlantListWidget";
-import { getData } from "src/selectors";
+import { getData, getSync } from "src/selectors";
 import { delData, saveData } from "src/slices/data";
 import { Plant } from "src/kernel";
 import { clearFeedback } from "src/slices/sync";
@@ -25,6 +25,7 @@ const PlantView: React.FunctionComponent<IPlantViewProps> = (props) => {
   const dispatch = useDispatch();
   const classes = useStyles();
   const { plants, newPlant } = useSelector(getData);
+  const { feedback } = useSelector(getSync);
 
   const handleSubmit = (data: Plant) => {
     dispatch(saveData(data));
@@ -43,6 +44,7 @@ const PlantView: React.FunctionComponent<IPlantViewProps> = (props) => {
           <PlantListWidget
             lst={plants}
             newPlant={newPlant}
+            feedback={feedback}
             onSubmit={handleSubmit}
             onDelete={handleDelete}
             onReset={handleReset}
