@@ -30,10 +30,10 @@ function dataToObj(x: EmployeeData): Employee {
     department: x.department,
     skills: x.skills,
     available: x.available,
-    birthDate: x.birth_date,
+    birthDate: x.birth_date ?? "",
     reportTo: x.report_to ?? -1,
     gender: x.gender,
-    hireDate: x.hire_date,
+    hireDate: x.hire_date ?? "",
     user: x.user,
   };
 }
@@ -48,10 +48,10 @@ function objToData(x: Employee): EmployeeData {
     department: x.department,
     skills: x.skills,
     available: x.available,
-    birth_date: x.birthDate,
+    birth_date: x.birthDate === "" ? undefined : x.birthDate,
     report_to: x.reportTo === -1 ? undefined : x.reportTo,
     gender: x.gender,
-    hire_date: x.hireDate,
+    hire_date: x.hireDate === "" ? undefined : x.hireDate,
     user: x.user,
   };
 }

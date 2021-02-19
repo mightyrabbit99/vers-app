@@ -121,7 +121,7 @@ class Gender(models.TextChoices):
 
 
 class Employee(models.Model):
-    sesa_id = models.CharField(unique=True, max_length=20)
+    sesa_id = models.CharField(unique=True, max_length=10)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     subsector = models.ForeignKey(
@@ -130,11 +130,11 @@ class Employee(models.Model):
         Department, related_name='employees', on_delete=models.CASCADE)
     report_to = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
 
-    birth_date = models.DateField()
+    birth_date = models.DateField(null=True)
     gender = models.CharField(
         max_length=1, choices=Gender.choices, default=Gender.MALE)
     available = models.BooleanField(default=1)
-    hire_date = models.DateField()
+    hire_date = models.DateField(null=True)
     profile_pic = models.ImageField(
         upload_to=up_path("profile_pic"), null=True)
 

@@ -1,5 +1,5 @@
 import Excel from "exceljs";
-import { Employee } from "./Employee";
+import { Employee, EmpSkillData } from "./Employee";
 import k from "./Kernel";
 import { Plant } from "./Plant";
 import { ItemType } from "./Store";
@@ -35,6 +35,10 @@ class ExcelProcessor {
     });
   };
 
+  readSkillFile = async (file: File) => {
+    
+  }
+
   readEmployeeFile = async (file: File) => {
     let deptDic: any = {};
     Object.values(k.deptStore.getLst()).forEach(x => { deptDic[x.name] = x.id; });
@@ -49,7 +53,8 @@ class ExcelProcessor {
       if (!(dept && deptDic[dept])) throw Error();
       if (!(home_location && homeLocDic[home_location])) throw Error();
     }
-    const rowToEmp = (row: Excel.Row) => {
+    const rowToEmp = (row: Excel.Row): Employee => {
+      const skills: EmpSkillData[] = [];
       return {
         id: -1,
         _type: ItemType.Employee,
@@ -58,11 +63,11 @@ class ExcelProcessor {
         lastName: `${row.getCell(3).value}`,
         subsector: homeLocDic[row.getCell(5).value?.toString() ?? 0],
         department: deptDic[row.getCell(4).value?.toString() ?? 0],
-        skills: [],
+        skills,
         available: true,
         reportTo: -1,
         birthDate: "",
-        gender: "",
+        gender: "M",
         hireDate: "",
         user: {
           id: -1,

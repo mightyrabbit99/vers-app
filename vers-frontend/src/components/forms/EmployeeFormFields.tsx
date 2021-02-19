@@ -238,6 +238,7 @@ const EmployeeFF: React.FunctionComponent<IEmployeeFFProps> = (props) => {
             <Select
               labelId="demo-simple-select-label"
               className={classes.department}
+              disabled={choices["department"].choices.length === 0}
               {...genActiveProps("department")}
             >
               {choices["department"].choices.map((x, idx) => (
@@ -254,6 +255,7 @@ const EmployeeFF: React.FunctionComponent<IEmployeeFFProps> = (props) => {
             <Select
               labelId="demo-simple-select-label"
               className={classes.subsector}
+              disabled={choices["subsector"].choices.length === 0}
               {...genActiveProps("subsector")}
             >
               {choices["subsector"].choices.map((x, idx) => (
@@ -270,6 +272,7 @@ const EmployeeFF: React.FunctionComponent<IEmployeeFFProps> = (props) => {
             <Select
               labelId="demo-simple-select-label"
               className={classes.reportTo}
+              disabled={choices["reportTo"].choices.length === 0}
               {...genActiveProps("reportTo")}
             >
               {choices["reportTo"].choices.map((x, idx) => (

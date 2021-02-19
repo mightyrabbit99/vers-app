@@ -134,9 +134,9 @@ class EmployeeSerializer(serializers.ModelSerializer):
         validated_data['sesa_id'] = validated_data['sesa_id'].upper()
         skills_data = validated_data.pop('skills')
         user_data = validated_data.pop('user')
-        vers_user_data = user_data.pop('vers_user')
+        user_data.pop('vers_user')
         user_data.pop('is_superuser')
-        vers_user = models.VersUser(**vers_user_data)  # user empty for now
+        vers_user = models.VersUser()  # user empty for now
         user = User(
             username=validated_data['sesa_id'],
             is_superuser=False,

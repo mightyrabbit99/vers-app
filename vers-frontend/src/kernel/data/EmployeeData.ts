@@ -12,9 +12,9 @@ interface EmployeeData extends Data {
   skills: EmpSkillData[];
   user: UserData;
   available: boolean;
-  birth_date: string;
+  birth_date?: string;
   gender: string;
-  hire_date: string;
+  hire_date?: string;
   profile_pic?: string | File;
 }
 
