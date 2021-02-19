@@ -101,7 +101,7 @@ def perform_get_queryset(view, user):
     grp = get_group(view, user)
     if grp == NONE:
         return objects.none()
-    return objects.filter(owner=user)
+    return objects#.filter(owner=user)
 
 def has_create_permission(view, user):
     if user.is_superuser:

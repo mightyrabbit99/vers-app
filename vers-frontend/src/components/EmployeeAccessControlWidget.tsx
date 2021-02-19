@@ -16,12 +16,13 @@ const useStyles = makeStyles((theme) => ({
 
 interface IEmpAccessCtrlProps {
   lst: { [id: number]: Employee };
-  onSubmit: (p: Employee) => void;
+  onSubmit?: (p: Employee) => void;
+  editSuper?: boolean;
 }
 
 const EmpAccessCtrl: React.FunctionComponent<IEmpAccessCtrlProps> = (props) => {
   const classes = useStyles();
-  const { lst, onSubmit } = props;
+  const { lst, onSubmit, editSuper = false } = props;
   return (
     <React.Fragment>
       <div className={classes.header}>
@@ -35,7 +36,7 @@ const EmpAccessCtrl: React.FunctionComponent<IEmpAccessCtrlProps> = (props) => {
           Employee Access Control
         </Typography>
       </div>
-      <EmployeeAccessCtrlList lst={lst} onSubmit={onSubmit} />
+      <EmployeeAccessCtrlList lst={lst} onSubmit={onSubmit} editSuper={editSuper} />
     </React.Fragment>
   );
 };

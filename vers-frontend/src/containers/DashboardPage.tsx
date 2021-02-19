@@ -3,11 +3,7 @@ import clsx from "clsx";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 
-import {
-  createMuiTheme,
-  makeStyles,
-  ThemeProvider,
-} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Drawer from "@material-ui/core/Drawer";
 import Box from "@material-ui/core/Box";
@@ -33,7 +29,6 @@ import PeopleIcon from "@material-ui/icons/People";
 import BarChartIcon from "@material-ui/icons/BarChart";
 import LayersIcon from "@material-ui/icons/Layers";
 import AssignmentIcon from "@material-ui/icons/Assignment";
-import { green, purple } from "@material-ui/core/colors";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 
@@ -136,13 +131,6 @@ const useStyles = makeStyles((theme) => ({
     height: 240,
   },
 }));
-
-const theme = createMuiTheme({
-  palette: {
-    primary: green,
-    secondary: purple,
-  },
-});
 
 enum DashboardView {
   Plant,
@@ -341,7 +329,7 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <ThemeProvider theme={theme}>
+    <React.Fragment>
       <div className={classes.root}>
         <CssBaseline />
         <AppBar
@@ -419,7 +407,7 @@ const Dashboard: React.FC = () => {
         <MenuItem onClick={handleViewProfile}>Profile</MenuItem>
         <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>
-    </ThemeProvider>
+    </React.Fragment>
   );
 };
 

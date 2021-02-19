@@ -25,7 +25,9 @@ SECRET_KEY = 'kspo-rfd)z(fnsrba5&b2vmiq9)rurrf#)src5+&&%15*i@gu)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '*'
+]
 
 
 # Application definition

@@ -44,4 +44,5 @@ urlpatterns = [
     path('user_modify/', views.UserDetail.as_view()),
     path('vers_users/', views.VersUserList.as_view()),
     path('vers_users/<int:pk>/', views.VersUserDetail.as_view()),
+    path(r'^.*/$', views.IndexView.as_view(), name='base'), 
 ]

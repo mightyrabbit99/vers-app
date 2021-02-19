@@ -1,6 +1,8 @@
 import * as React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Redirect, Route, Switch } from "react-router-dom";
+import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
+import { green, purple } from "@material-ui/core/colors";
 import SigninPage from "./SignInPage";
 import DashboardPage from "./DashboardPage";
 import { getSession } from "src/selectors";
@@ -25,6 +27,13 @@ const MainRoute: React.FC<MainRouteProps> = (props) => {
   return <Route {...otherProps} />;
 };
 
+const theme = createMuiTheme({
+  palette: {
+    primary: green,
+    secondary: purple,
+  },
+});
+
 const App: React.FC<IAppProps> = () => {
   const dispatch = useDispatch();
   const { authenticated: auth, syncing } = useSelector(getSession);
@@ -32,42 +41,44 @@ const App: React.FC<IAppProps> = () => {
   React.useEffect(() => {
     dispatch(initLogin());
   }, []);
-  
+
   if (auth === undefined || syncing) return <SpinningBall />;
   return (
-    <Switch>
-      <Route exact path="/">
-        {auth ? <Redirect to="/dashboard" /> : <Redirect to="signin" />}
-      </Route>
-      <MainRoute
-        exact
-        auth={auth}
-        type="private"
-        path="/dashboard"
-        render={() => <DashboardPage />}
-      />
-      <MainRoute
-        exact
-        auth={auth}
-        type="private"
-        path="/user"
-        render={() => <ProfilePage />}
-      />
-      <MainRoute
-        exact
-        auth={auth}
-        type="private"
-        path="/user_edit"
-        render={() => <UserEditPage />}
-      />
-      <MainRoute
-        exact
-        auth={auth}
-        type="guest"
-        path="/signin"
-        component={() => <SigninPage />}
-      />
-    </Switch>
+    <ThemeProvider theme={theme}>
+      <Switch>
+        <Route exact path="/">
+          {auth ? <Redirect to="/dashboard" /> : <Redirect to="signin" />}
+        </Route>
+        <MainRoute
+          exact
+          auth={auth}
+          type="private"
+          path="/dashboard"
+          render={() => <DashboardPage />}
+        />
+        <MainRoute
+          exact
+          auth={auth}
+          type="private"
+          path="/user"
+          render={() => <ProfilePage />}
+        />
+        <MainRoute
+          exact
+          auth={auth}
+          type="private"
+          path="/user_edit"
+          render={() => <UserEditPage />}
+        />
+        <MainRoute
+          exact
+          auth={auth}
+          type="guest"
+          path="/signin"
+          component={() => <SigninPage />}
+        />
+      </Switch>
+    </ThemeProvider>
   );
 };
 

@@ -33,7 +33,7 @@ permissions
 	
 groups
 	1. owner
-		2, 2, 2
+		3, 2, 3
 	2. user
 		2, 1, 1
 	3. none

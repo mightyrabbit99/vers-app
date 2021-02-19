@@ -20,24 +20,24 @@ class VersUser(models.Model):
 
     # able to create,  delete, edit plant/sector/subsectors
     plant_group = models.IntegerField(
-        choices=PERMISSION_GROUP_CHOICES, default=1)
+        choices=PERMISSION_GROUP_CHOICES, default=3)
     sector_group = models.IntegerField(
-        choices=PERMISSION_GROUP_CHOICES, default=1)
+        choices=PERMISSION_GROUP_CHOICES, default=3)
     subsector_group = models.IntegerField(
-        choices=PERMISSION_GROUP_CHOICES, default=1)
+        choices=PERMISSION_GROUP_CHOICES, default=3)
     department_group = models.IntegerField(
-        choices=PERMISSION_GROUP_CHOICES, default=1)
+        choices=PERMISSION_GROUP_CHOICES, default=3)
     # able to create, delete, edit employees. assign skills to employees
     employee_group = models.IntegerField(
-        choices=PERMISSION_GROUP_CHOICES, default=1)
+        choices=PERMISSION_GROUP_CHOICES, default=3)
 
     # able to create, delete, edit jobs. assign skills to jobs
     job_group = models.IntegerField(
-        choices=PERMISSION_GROUP_CHOICES, default=1)
+        choices=PERMISSION_GROUP_CHOICES, default=3)
 
     # able to create, delete, edit skills. assign skills to employee / jobs
     skill_group = models.IntegerField(
-        choices=PERMISSION_GROUP_CHOICES, default=1)
+        choices=PERMISSION_GROUP_CHOICES, default=3)
 
     class Meta:
         db_table = "vers_users"

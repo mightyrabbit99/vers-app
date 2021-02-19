@@ -16,7 +16,8 @@ const axios = new FakeServer();
 */
 type Result<T> = { data: T[] };
 
-const url = "http://127.0.0.1:8000";
+const apiLocation = "http://127.0.0.1:8000";
+const url = apiLocation; // `http://${window.location.host}`
 const userUrl = `${url}/user_modify/`;
 const apiTokenAuth = `${url}/api-token-auth/`;
 const plantUrl = `${url}/api/plant/`;

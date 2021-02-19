@@ -12,8 +12,6 @@ import { delData, saveData } from "src/slices/data";
 import { clearFeedback } from "src/slices/sync";
 import { Employee } from "src/kernel";
 
-
-
 const useStyles = makeStyles((theme) => ({
   list: {
     padding: theme.spacing(2),
@@ -40,8 +38,8 @@ const EmployeeView: React.FunctionComponent<IEmployeeViewProps> = (props) => {
   const { user } = useSelector(getSession);
 
   const canEdit = () => {
-    return user?.is_superuser ? true : user?.vers_user.employee_group === 1;
-  }
+    return user?.is_superuser || user?.vers_user.employee_group === 1;
+  };
   const handleSubmit = (data: Employee) => {
     dispatch(saveData(data));
   };
@@ -50,7 +48,7 @@ const EmployeeView: React.FunctionComponent<IEmployeeViewProps> = (props) => {
   };
   const handleReset = () => {
     dispatch(clearFeedback());
-  }
+  };
 
   return (
     <Grid container spacing={3}>
@@ -69,17 +67,23 @@ const EmployeeView: React.FunctionComponent<IEmployeeViewProps> = (props) => {
           />
         </Paper>
       </Grid>
-      <Grid item xs={12}>
-        <Paper className={classes.list}>
-          <EmployeeAccessCtrlWidget lst={employees} onSubmit={handleSubmit} />
-        </Paper>
-      </Grid>
+      {canEdit() ? (
+        <Grid item xs={12}>
+          <Paper className={classes.list}>
+            <EmployeeAccessCtrlWidget
+              lst={employees}
+              onSubmit={handleSubmit}
+              editSuper={user?.is_superuser}
+            />
+          </Paper>
+        </Grid>
+      ) : null}
       <Grid item xs={12}>
         <Paper className={classes.list}>
           <EmployeeSkillWidget
             lst={employees}
             skillLst={skills}
-            onSubmit={handleSubmit}
+            onSubmit={canEdit() ? handleSubmit : undefined}
           />
         </Paper>
       </Grid>

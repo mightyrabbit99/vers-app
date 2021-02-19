@@ -9,15 +9,18 @@ import { getSession } from "src/selectors";
 import Avatar from "@material-ui/core/Avatar";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Link from "@material-ui/core/Link";
-import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import Snackbar from "@material-ui/core/Snackbar";
-import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
-import { makeStyles } from "@material-ui/core/styles";
+import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
+import {
+  makeStyles,
+  ThemeProvider,
+  createMuiTheme,
+} from "@material-ui/core/styles";
+import { green, purple } from "@material-ui/core/colors";
 import Container from "@material-ui/core/Container";
-
 
 function Copyright() {
   return (
@@ -32,6 +35,13 @@ function Copyright() {
   );
 }
 
+const theme = createMuiTheme({
+  palette: {
+    primary: green,
+    secondary: purple,
+  },
+});
+
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
@@ -41,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
   },
   avatar: {
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
+    backgroundColor: theme.palette.primary.main,
   },
   form: {
     width: "100%", // Fix IE 11 issue.
@@ -67,9 +77,9 @@ const SignIn: React.FC = () => {
   React.useEffect(() => {
     setOpen(!!feedback);
   }, [feedback, auth]);
-  const handleClose = (e: React.ChangeEvent<any>)=> {
+  const handleClose = (e: React.ChangeEvent<any>) => {
     setOpen(false);
-  }
+  };
 
   const handleSubmit = (data: any) => {
     dispatch(
@@ -83,18 +93,20 @@ const SignIn: React.FC = () => {
   };
 
   return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <div className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Sign in
-        </Typography>
-        <div>
-          <SignInForm onSubmit={handleSubmit} feedback={feedback} />
-        </div>
+    <ThemeProvider theme={theme}>
+      <Container component="main" maxWidth="xs">
+        <CssBaseline />
+        <div className={classes.paper}>
+          <Avatar className={classes.avatar}>
+            <LockOutlinedIcon />
+          </Avatar>
+          <Typography component="h1" variant="h5">
+            Sign in
+          </Typography>
+          <div>
+            <SignInForm onSubmit={handleSubmit} feedback={feedback} />
+          </div>
+          {/*
         <Grid container>
           <Grid item xs>
             <Link href="#" variant="body2">
@@ -106,17 +118,21 @@ const SignIn: React.FC = () => {
               {"Don't have an account? Sign Up"}
             </Link>
           </Grid>
-        </Grid>
-      </div>
-      <Box mt={8}>
-        <Copyright />
-      </Box>
-      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity={!feedback ? "success" : "error"}>
-          {!feedback ? "Successful" : "Wrong Username/Password"}
-        </Alert>
-      </Snackbar>
-    </Container>
+        </Grid>*/}
+        </div>
+        <Box mt={8}>
+          <Copyright />
+        </Box>
+        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+          <Alert
+            onClose={handleClose}
+            severity={!feedback ? "success" : "error"}
+          >
+            {!feedback ? "Successful" : "Wrong Username/Password"}
+          </Alert>
+        </Snackbar>
+      </Container>
+    </ThemeProvider>
   );
 };
 

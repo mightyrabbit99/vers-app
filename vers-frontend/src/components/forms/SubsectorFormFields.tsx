@@ -101,7 +101,7 @@ const SubsectorFF: React.FunctionComponent<ISubsectorFFProps> = (props) => {
             {...genActiveProps("name")}
           />
           <FormControl className={classes.formControl}>
-            <InputLabel id="demo-simple-select-label">Plant</InputLabel>
+            <InputLabel id="demo-simple-select-label">Sector</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               {...genProps("sector")}

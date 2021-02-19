@@ -9,20 +9,21 @@ import TableBody from "@material-ui/core/TableBody";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
-import InputLabel from "@material-ui/core/InputLabel";
 
 import { Employee } from "src/kernel";
+import Checkbox from "@material-ui/core/Checkbox";
 
 interface IEmployeeAccessCtrlListProps {
   lst: { [id: number]: Employee };
-  onSubmit: (e: Employee) => void;
+  onSubmit?: (e: Employee) => void;
+  editSuper?: boolean;
 }
 const getName = (p: Employee) => `${p.firstName}, ${p.lastName}`;
 
 const EmployeeAccessCtrlList: React.FC<IEmployeeAccessCtrlListProps> = (
   props
 ) => {
-  const { lst, onSubmit } = props;
+  const { lst, onSubmit, editSuper = false } = props;
 
   const empLst = Object.values(lst);
 
@@ -50,7 +51,7 @@ const EmployeeAccessCtrlList: React.FC<IEmployeeAccessCtrlListProps> = (
             },
           },
         };
-        onSubmit(newEmp);
+        onSubmit && onSubmit(newEmp);
       };
       return (
         <FormControl>
@@ -60,6 +61,7 @@ const EmployeeAccessCtrlList: React.FC<IEmployeeAccessCtrlListProps> = (
             name={name}
             value={val}
             onChange={handleChange}
+            disabled={!onSubmit || emp.user.is_superuser}
           >
             <MenuItem value={1}>Owner</MenuItem>
             <MenuItem value={2}>User</MenuItem>
@@ -69,14 +71,36 @@ const EmployeeAccessCtrlList: React.FC<IEmployeeAccessCtrlListProps> = (
       );
     };
 
+    const handleSuperuserChange = (e: React.ChangeEvent<any>) => {
+      const { checked } = e.target;
+      const newEmp: Employee = {
+        ...emp,
+        user: {
+          ...emp.user,
+          is_superuser: checked,
+        },
+      };
+      onSubmit && onSubmit(newEmp);
+    };
+
     return (
       <TableRow hover key={idx}>
         <TableCell>{getName(emp)}</TableCell>
+        {editSuper ? (
+          <TableCell padding="checkbox">
+            <Checkbox
+              name="is_superuser"
+              checked={emp.user.is_superuser}
+              onChange={handleSuperuserChange}
+            />
+          </TableCell>
+        ) : null}
         <TableCell>{genSelector("plant_group")}</TableCell>
         <TableCell>{genSelector("sector_group")}</TableCell>
         <TableCell>{genSelector("subsector_group")}</TableCell>
         <TableCell>{genSelector("department_group")}</TableCell>
         <TableCell>{genSelector("employee_group")}</TableCell>
+        <TableCell>{genSelector("skill_group")}</TableCell>
         <TableCell>{genSelector("job_group")}</TableCell>
       </TableRow>
     );
@@ -88,8 +112,13 @@ const EmployeeAccessCtrlList: React.FC<IEmployeeAccessCtrlListProps> = (
         <TableHead>
           <TableRow>
             <TableCell>
-              <b>Employee</b>
+              <b>User</b>
             </TableCell>
+            {editSuper ? (
+              <TableCell padding="checkbox">
+                <b>Superuser</b>
+              </TableCell>
+            ) : null}
             <TableCell>
               <b>Plant</b>
             </TableCell>
@@ -104,6 +133,9 @@ const EmployeeAccessCtrlList: React.FC<IEmployeeAccessCtrlListProps> = (
             </TableCell>
             <TableCell>
               <b>Employee</b>
+            </TableCell>
+            <TableCell>
+              <b>Skill</b>
             </TableCell>
             <TableCell>
               <b>Job</b>

@@ -1,10 +1,13 @@
 import * as React from "react";
 import { Typography, Button, makeStyles } from "@material-ui/core";
+import IconButton from "@material-ui/core/IconButton";
+import PublishIcon from "@material-ui/icons/Publish";
 
 import { Plant } from "src/kernel";
 import MyDialog from "src/components/commons/Dialog";
 import PlantForm from "src/components/forms/PlantForm";
 import PlantList from "src/components/lists/PlantMainList";
+import ExcelProcessor from "src/kernel/ExcelProcessor";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -18,6 +21,9 @@ const useStyles = makeStyles((theme) => ({
     "& > *": {
       margin: theme.spacing(1),
     },
+  },
+  iconButton: {
+    height: "100%",
   },
   title: {
     height: "15%",
@@ -94,8 +100,22 @@ const PlantListWidget: React.FunctionComponent<IPlantListWidgetProps> = (
     setFormOpen(true);
   };
 
+  const handleExcelFileUpload = async (e: React.ChangeEvent<any>) => {
+    const { files } = e.target;
+    console.log(files[0]);
+    let ep = new ExcelProcessor();
+    let lst = await ep.readPlantFile(files[0]);
+    console.log(lst);
+  };
+
   return (
     <React.Fragment>
+      <input
+        hidden
+        id="icon-excel-upload-button"
+        onChange={handleExcelFileUpload}
+        type="file"
+      />
       <div className={classes.header}>
         <Typography
           className={classes.title}
@@ -107,6 +127,16 @@ const PlantListWidget: React.FunctionComponent<IPlantListWidgetProps> = (
           Plants
         </Typography>
         <div className={classes.ctrlButtons}>
+          <label htmlFor="icon-excel-upload-button">
+            <IconButton
+              className={classes.iconButton}
+              color="primary"
+              aria-label="upload excel"
+              component="span"
+            >
+              <PublishIcon />
+            </IconButton>
+          </label>
           <Button
             disabled={!edit}
             variant="contained"

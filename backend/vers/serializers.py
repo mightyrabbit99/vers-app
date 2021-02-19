@@ -102,7 +102,7 @@ class EmpSkillMatrixSerializer(serializers.ModelSerializer):
 
 class UserSerializer2(serializers.ModelSerializer):
     vers_user = VersUserSerializer2(many=False)
-    is_superuser = serializers.BooleanField(read_only=True)
+    is_superuser = serializers.BooleanField()
     is_active = serializers.BooleanField(read_only=True)
     username = serializers.CharField(read_only=True)
 
@@ -111,11 +111,17 @@ class UserSerializer2(serializers.ModelSerializer):
         fields = ['id', 'username',
                   'vers_user', 'is_superuser', 'is_active']
 
+def sesa_id_val(value):
+    if len(value) < 4:
+        raise serializers.ValidationError('This field must have at least 4 letters.')
+    if value[:4].upper() != 'SESA':
+        raise serializers.ValidationError('This field must start with \'SESA\'')
 
 class EmployeeSerializer(serializers.ModelSerializer):
     skills = EmpSkillMatrixSerializer(many=True)
     user = UserSerializer2()
     owner = serializers.ReadOnlyField(source=OWNER_USERNAME)
+    sesa_id = serializers.CharField(validators=[sesa_id_val])
 
     def get_request_user(self):
         user = None
@@ -125,9 +131,11 @@ class EmployeeSerializer(serializers.ModelSerializer):
         return user
 
     def create(self, validated_data):
+        validated_data['sesa_id'] = validated_data['sesa_id'].upper()
         skills_data = validated_data.pop('skills')
         user_data = validated_data.pop('user')
         vers_user_data = user_data.pop('vers_user')
+        user_data.pop('is_superuser')
         vers_user = models.VersUser(**vers_user_data)  # user empty for now
         user = User(
             username=validated_data['sesa_id'],
@@ -145,6 +153,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
         return emp
 
     def update(self, instance, validated_data):
+        validated_data['sesa_id'] = validated_data['sesa_id'].upper()
         skills_data = validated_data.pop('skills')
         user_data = validated_data.pop('user')
 
@@ -161,6 +170,12 @@ class EmployeeSerializer(serializers.ModelSerializer):
             for (key, value) in vers_user_data.items():
                 setattr(vers_user, key, value)
             vers_user.save()
+
+            user = self.get_request_user()
+            if user and user.is_superuser:
+                superuser = user_data.pop('is_superuser')
+                instance.user.is_superuser = superuser
+                instance.user.save()
 
         for (key, value) in validated_data.items():
             setattr(instance, key, value)
