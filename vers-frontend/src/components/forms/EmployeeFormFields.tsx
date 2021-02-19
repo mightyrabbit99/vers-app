@@ -250,7 +250,7 @@ const EmployeeFF: React.FunctionComponent<IEmployeeFFProps> = (props) => {
         </Grid>
         <Grid item xs={4}>
           <FormControl className={classes.formControl}>
-            <InputLabel id="demo-simple-select-label">Subsector</InputLabel>
+            <InputLabel id="demo-simple-select-label">Home Location</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               className={classes.subsector}

@@ -172,5 +172,5 @@ class Kernel {
 }
 
 const k = new Kernel();
-export type { Item, Data };
+export type { Item, Data, Kernel };
 export default k;
