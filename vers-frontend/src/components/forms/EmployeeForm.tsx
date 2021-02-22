@@ -57,23 +57,21 @@ const EmployeeForm: React.FunctionComponent<IEmployeeFormProps> = (props) => {
   };
 
   return (
-    <React.Fragment>
-      <Grid container spacing={1}>
-        <Grid item xs={12}>
-          <EmployeeFormFields
-            data={newData}
-            choices={choices}
-            feedback={feedback}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <div>
-            {onCancel ? <Button onClick={onCancel}>Cancel</Button> : null}
-            {!onChange ? <Button onClick={handleSubmit}>Submit</Button> : null}
-          </div>
-        </Grid>
+    <Grid container spacing={1}>
+      <Grid item xs={12}>
+        <EmployeeFormFields
+          data={newData}
+          choices={choices}
+          feedback={feedback}
+        />
       </Grid>
-    </React.Fragment>
+      <Grid item xs={12}>
+        <div>
+          {onCancel ? <Button onClick={onCancel}>Cancel</Button> : null}
+          {!onChange ? <Button onClick={handleSubmit}>Submit</Button> : null}
+        </div>
+      </Grid>
+    </Grid>
   );
 };
 

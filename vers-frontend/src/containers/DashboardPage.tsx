@@ -40,9 +40,11 @@ import SkillView from "./SkillView";
 import EmployeeView from "./EmployeeView";
 import JobView from "./JobView";
 
-import { fetchData, clearFeedback } from "src/slices/sync";
+import { fetchData, clearFeedback, submitExcel } from "src/slices/sync";
 import { logout } from "src/slices/session";
-import { getSession } from "src/selectors";
+import { getSession, getSync } from "src/selectors";
+import MyDialog from "src/components/commons/Dialog";
+import ExcelUploadForm from "src/components/forms/ExcelUploadForm";
 
 function Copyright() {
   return (
@@ -130,6 +132,13 @@ const useStyles = makeStyles((theme) => ({
   fixedHeight: {
     height: 240,
   },
+  form: {},
+  formTitle: {
+    height: "15%",
+  },
+  formContent: {
+    height: "85%",
+  },
 }));
 
 enum DashboardView {
@@ -146,6 +155,7 @@ const Dashboard: React.FC = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { authenticated: auth, user } = useSelector(getSession);
+  const { feedback } = useSelector(getSync);
 
   React.useEffect(() => {
     dispatch(fetchData());
@@ -183,6 +193,20 @@ const Dashboard: React.FC = () => {
 
   const handleViewProfile = () => {
     history.push("/user");
+  };
+
+  const [excelFormOpen, setExcelFormOpen] = React.useState(false);
+  const handleExcelFormOpen = () => {
+    setAnchorEl(null);
+    setExcelFormOpen(true);
+  };
+  const handleExcelFormClose = () => {
+    setExcelFormOpen(false);
+  };
+
+  const handleExcelFileUpload = (file: File) => {
+    dispatch(submitExcel(file));
+    handleExcelFormClose();
   };
 
   const cannotView = (i: number) => {
@@ -405,8 +429,31 @@ const Dashboard: React.FC = () => {
         onClose={handleClose}
       >
         <MenuItem onClick={handleViewProfile}>Profile</MenuItem>
+        <MenuItem onClick={handleExcelFormOpen}>Upload Excel</MenuItem>
         <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>
+      <MyDialog open={excelFormOpen} onClose={handleExcelFormClose}>
+        <div className={classes.form}>
+          <div className={classes.formTitle}>
+            <Typography
+              className={classes.title}
+              component="h2"
+              variant="h6"
+              color="primary"
+              gutterBottom
+            >
+              Upload Excel Data
+            </Typography>
+          </div>
+          <div className={classes.formContent}>
+            <ExcelUploadForm
+              feedback={feedback}
+              onSubmit={handleExcelFileUpload}
+              onCancel={handleExcelFormClose}
+            />
+          </div>
+        </div>
+      </MyDialog>
     </React.Fragment>
   );
 };

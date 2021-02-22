@@ -79,16 +79,16 @@ const dataSlice = createSlice({
       }
       for (let p of payload) {
         const { _type: type, id } = p;
-        Object.assign(selLst(type, state)[id], p);
+        let lst = selLst(type, state);
+        if (lst[id]) {
+          Object.assign(lst[id], p);
+        } else {
+          lst[id] = p;
+        }
       }
     },
-    saveData: (state, { payload }: PayloadAction<Item>) => {
+    saveData: (state, { payload }: PayloadAction<Item | Item[]>) => {
       state.loading = true;
-    },
-    _saveNewData: (state, { payload }: PayloadAction<Item>) => {
-      const { _type: type, id } = payload;
-      console.log(payload);
-      selLst(type, state)[id] = payload;
     },
     delData: (state, { payload }: PayloadAction<Item | Item[]>) => {
       state.loading = true;
@@ -126,7 +126,6 @@ export const {
   calculateSuccess,
   saveData,
   _saveData,
-  _saveNewData,
   delData,
   _delData,
   saveItemProp,

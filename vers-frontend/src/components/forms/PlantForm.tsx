@@ -21,19 +21,17 @@ const PlantForm: React.FunctionComponent<IPlantFormProps> = (props) => {
   };
 
   return (
-    <React.Fragment>
-      <Grid container spacing={1}>
-        <Grid item xs={12}>
-          <PlantFormFields data={newData} feedback={feedback} />
-        </Grid>
-        <Grid item xs={12}>
-          <div>
-            {onCancel ? <Button onClick={onCancel}>Cancel</Button> : null}
-            {!onChange ? <Button onClick={handleSubmit}>Submit</Button> : null}
-          </div>
-        </Grid>
+    <Grid container spacing={1}>
+      <Grid item xs={12}>
+        <PlantFormFields data={newData} feedback={feedback} />
       </Grid>
-    </React.Fragment>
+      <Grid item xs={12}>
+        <div>
+          {onCancel ? <Button onClick={onCancel}>Cancel</Button> : null}
+          {!onChange ? <Button onClick={handleSubmit}>Submit</Button> : null}
+        </div>
+      </Grid>
+    </Grid>
   );
 };
 

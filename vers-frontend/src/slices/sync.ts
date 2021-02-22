@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Data } from "src/kernel";
+import { Data, ItemType } from "src/kernel";
 import { SyncState } from "src/types";
 
 export const initialState: SyncState = {
@@ -40,6 +40,9 @@ const syncSlice = createSlice({
     clearFeedback: (state) => {
       state.feedback = undefined;
     },
+    submitExcel: (state, { payload }: PayloadAction<File>) => {
+      state.syncing = true;
+    },
   },
 });
 
@@ -53,6 +56,7 @@ export const {
   modify,
   erase,
   clearFeedback,
+  submitExcel,
 } = syncSlice.actions;
 
 export default syncSlice.reducer;

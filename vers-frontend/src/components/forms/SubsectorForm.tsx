@@ -2,7 +2,9 @@ import * as React from "react";
 
 import { Grid, Button } from "@material-ui/core";
 import { Subsector, Sector } from "src/kernel";
-import SubsectorFormFields, { SubsectorFormChoices } from "./SubsectorFormFields";
+import SubsectorFormFields, {
+  SubsectorFormChoices,
+} from "./SubsectorFormFields";
 
 interface ISubsectorFormProps {
   data: Subsector;
@@ -32,23 +34,21 @@ const SubsectorForm: React.FunctionComponent<ISubsectorFormProps> = (props) => {
   };
 
   return (
-    <React.Fragment>
-      <Grid container spacing={1}>
-        <Grid item xs={12}>
-          <SubsectorFormFields
-            data={newData}
-            choices={choices}
-            feedback={feedback}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <div>
-            {onCancel ? <Button onClick={onCancel}>Cancel</Button> : null}
-            {!onChange ? <Button onClick={handleSubmit}>Submit</Button> : null}
-          </div>
-        </Grid>
+    <Grid container spacing={1}>
+      <Grid item xs={12}>
+        <SubsectorFormFields
+          data={newData}
+          choices={choices}
+          feedback={feedback}
+        />
       </Grid>
-    </React.Fragment>
+      <Grid item xs={12}>
+        <div>
+          {onCancel ? <Button onClick={onCancel}>Cancel</Button> : null}
+          {!onChange ? <Button onClick={handleSubmit}>Submit</Button> : null}
+        </div>
+      </Grid>
+    </Grid>
   );
 };
 

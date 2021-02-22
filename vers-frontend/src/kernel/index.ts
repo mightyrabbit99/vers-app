@@ -1,4 +1,5 @@
-import Kernel from "./Kernel"
+import Kernel from "./Kernel";
+import ExcelProcessor from "./ExcelProcessor";
 export default Kernel;
 export * from "./Kernel";
 export * from "./Plant";
@@ -9,3 +10,4 @@ export * from "./Department";
 export * from "./Employee";
 export * from "./Store";
 export * from "./Job";
+export { ExcelProcessor };

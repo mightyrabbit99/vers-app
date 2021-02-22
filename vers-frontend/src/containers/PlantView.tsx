@@ -6,7 +6,8 @@ import { Grid, Paper, makeStyles } from "@material-ui/core";
 import PlantListWidget from "src/components/PlantListWidget";
 import { getData, getSession, getSync } from "src/selectors";
 import { delData, saveData } from "src/slices/data";
-import { Plant } from "src/kernel";
+import { submitExcel } from "src/slices/sync";
+import { ItemType, Plant } from "src/kernel";
 import { clearFeedback } from "src/slices/sync";
 
 const useStyles = makeStyles((theme) => ({
@@ -29,7 +30,7 @@ const PlantView: React.FunctionComponent<IPlantViewProps> = (props) => {
   const { user } = useSelector(getSession);
   const canEdit = () => {
     return user?.is_superuser ? true : user?.vers_user.plant_group === 1;
-  }
+  };
 
   const handleSubmit = (data: Plant) => {
     dispatch(saveData(data));
@@ -39,7 +40,7 @@ const PlantView: React.FunctionComponent<IPlantViewProps> = (props) => {
   };
   const handleReset = () => {
     dispatch(clearFeedback());
-  }
+  };
 
   return (
     <Grid container spacing={3}>
