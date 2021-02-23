@@ -1,5 +1,12 @@
 import { all, put, takeLatest, call } from "redux-saga/effects";
-import k, { Result, ExcelProcessor } from "src/kernel";
+import k, { Result, ExcelProcessor, ItemType } from "src/kernel";
+import {
+  DepartmentObj,
+  SectorObj,
+  SubsectorObj,
+  SkillObj,
+  EmployeeObj,
+} from "src/kernel/ExcelProcessor";
 
 import {
   calculate,
@@ -8,6 +15,7 @@ import {
   _saveData,
   reloadSuccess,
   reloadError,
+  saveItemProp,
 } from "src/slices/data";
 import {
   createNew,
@@ -128,23 +136,74 @@ function* deleteItem({ payload }: EraseAction) {
   }
 }
 
+function* saveExcelDatas(sectors: SectorObj[], departments: DepartmentObj[]) {
+  function* saveEmp(emp: EmployeeObj) {
+    if (!emp.id) {
+      let res = yield k.saveNew({ id: -1, _type: ItemType.Employee, ...emp.data})
+    }
+  }
+  function* saveDept(dept: DepartmentObj) {
+    if (!dept.id) {
+      yield k.saveNew({
+        id: -1,
+        _type: ItemType.Department,
+        name: dept.data.name,
+      });
+    }
+  }
+  function* saveSkill(skill: SkillObj) {
+    if (!skill.id) {
+      let res = yield k.saveNew({ id: -1, _type: ItemType.Skill, ...skill.data, subsector: subsecId})
+      skill.id = res.data.id;
+    } else {
+      yield k.save({ id: -1, _type: ItemType.Skill, ...skill.data, subsector: subsecId});
+    }
+  }
+  function* saveSubsec(subsec: SubsectorObj) {
+    if (!subsec.id) {
+      let res = yield k.saveNew({ id: -1, _type: ItemType.Subsector, ...subsec.data});
+      subsec.id = res.data.id;
+      subsec.employees.forEach(x => x.data.subsector = subsec.id);
+      subsec.skills.forEach(x => x.data.subsector = subsec.id);
+    } else {
+      yield k.save({ id: subsec.id, _type: ItemType.Subsector, ...subsec.data });
+    }
+    for (let skill of subsec.skills) {
+      yield saveSkill(skill);
+    }
+    for (let emp of subsec.employees) {
+      yield saveEmp(emp);
+    }
+  }
+  function* saveSector(sec: SectorObj) {
+    if (!sec.id) {
+      let res = yield k.saveNew({ id: -1, _type: ItemType.Sector, name: sec.data.name });
+      sec.id = res.data.id;
+      sec.subsectors.forEach(x => x.data.sector = sec.id);
+    }
+    for (let subsec of sec.subsectors) {
+      yield saveSubsec(subsec);
+    }
+  }
+  for (let sec of sectors) {
+    yield saveSector(sec);
+  }
+  for (let dept of departments) {
+    yield saveDept(dept);
+  }
+}
+
 function* processExcel({ payload: file }: SubmitExcelAction) {
-  let lst = [];
+  let sectors = [],
+    departments = [];
   try {
-    lst = yield ExcelProcessor.readFile(file);
+    [sectors, departments] = yield ExcelProcessor.readFile(file);
   } catch (error) {
     yield put(submitSuccess(error));
     return;
   }
-  let mods = lst.filter((x: any) => x.id > 0);
-  let news = lst.filter((x: any) => x.id < 0);
   try {
-    for (let p of mods) {
-      yield k.save(p);
-    }
-    for (let p of news) {
-      yield k.saveNew(p);
-    }
+    saveExcelDatas(sectors, departments);
   } catch (error) {
     yield put(submitError(error));
   }

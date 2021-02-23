@@ -1,22 +1,27 @@
 import Excel from "exceljs";
 
 interface EmployeeObjData {
+  department?: number;
+  subsector?: number;
   sesaId: string;
   firstName: string;
   lastName: string;
 }
 
 interface EmployeeObj {
+  id?: number;
   data: EmployeeObjData;
 }
 
 interface SkillObjData {
+  subsector?: number;
   name: string;
   priority: number;
   percentageOfSector: number;
 }
 
 interface SkillObj {
+  id?: number;
   data: SkillObjData;
 }
 
@@ -25,11 +30,13 @@ interface DepartmentObjData {
 }
 
 interface DepartmentObj {
+  id?: number;
   data: DepartmentObjData;
   employees: EmployeeObj[];
 }
 
 interface SubsectorObjData {
+  sector?: number;
   name: string;
   unit: string;
   cycleTime: number;
@@ -37,6 +44,7 @@ interface SubsectorObjData {
 }
 
 interface SubsectorObj {
+  id?: number;
   data: SubsectorObjData;
   skills: SkillObj[];
   employees: EmployeeObj[];
@@ -47,6 +55,7 @@ interface SectorObjData {
 }
 
 interface SectorObj {
+  id?: number;
   data: SectorObjData;
   subsectors: SubsectorObj[];
 }
@@ -168,34 +177,92 @@ const readEmployeeWorksheetSubsec = (ws: Excel.Worksheet) => {
   return ans;
 };
 
-const getSkills = (subsecSkillMap: Mapp<SkillObjData>): Mapp<SkillObj> => {
-  return {};
+const getSkills = (
+  subsecSkillMap: Mapp<SkillObjData>
+): { [name: string]: SkillObj } => {
+  let ans: { [name: string]: SkillObj } = {};
+  for (let arr of Object.values(subsecSkillMap)) {
+    for (let x of arr) {
+      if (ans[x.name]) continue;
+      ans[x.name] = {
+        data: x,
+      };
+    }
+  }
+  return ans;
 };
 
-const getEmps = (deptEmpMap: Mapp<EmployeeObjData>): Mapp<EmployeeObj> => {
-  return {};
+const getEmps = (
+  deptEmpMap: Mapp<EmployeeObjData>
+): { [sesaId: string]: EmployeeObj } => {
+  let ans: { [sesaId: string]: EmployeeObj } = {};
+  for (let arr of Object.values(deptEmpMap)) {
+    for (let x of arr) {
+      if (ans[x.sesaId]) continue;
+      ans[x.sesaId] = {
+        data: x,
+      };
+    }
+  }
+  return ans;
 };
 
 const getDepts = (
   deptEmpMap: Mapp<EmployeeObjData>,
-  emps: Mapp<EmployeeObj>
-): Mapp<DepartmentObj> => {
-  return {};
+  emps: { [sesaId: string]: EmployeeObj }
+): { [name: string]: DepartmentObj } => {
+  let ans: { [name: string]: DepartmentObj } = {};
+  for (let [deptName, empObjDatas] of Object.entries(deptEmpMap)) {
+    ans[deptName] = {
+      data: {
+        name: deptName,
+      },
+      employees: empObjDatas.map((x) => emps[x.sesaId]),
+    };
+  }
+  return ans;
 };
 
 const getSubsecs = (
+  secSubsecMap: Mapp<SubsectorObjData>,
   subsecEmpMap: Mapp<EmployeeObjData>,
-  emps: Mapp<EmployeeObj>,
-  skills: Mapp<SkillObj>
-): Mapp<SubsectorObj> => {
-  return {};
+  subsecSkillMap: Mapp<SkillObjData>,
+  emps: { [sesaId: string]: EmployeeObj },
+  skills: { [name: string]: SkillObj }
+): { [name: string]: SubsectorObj } => {
+  let ans: { [name: string]: SubsectorObj } = {};
+  for (let [secName, subsecNames] of Object.entries(secSubsecMap)) {
+    for (let y of subsecNames) {
+      ans[y.name] = {
+        data: y,
+        skills: [],
+        employees: [],
+      };
+    }
+  }
+  for (let [subsecName, empObjDatas] of Object.entries(subsecEmpMap)) {
+    ans[subsecName].employees = empObjDatas.map((x) => emps[x.sesaId]);
+  }
+  for (let [subsecName, skillObjDatas] of Object.entries(subsecSkillMap)) {
+    ans[subsecName].skills = skillObjDatas.map((x) => skills[x.name]);
+  }
+  return ans;
 };
 
 const getSectors = (
   secSubsecMap: Mapp<SubsectorObjData>,
-  subsecs: Mapp<SubsectorObj>
-): Mapp<SectorObj> => {
-  return {};
+  subsecs: { [name: string]: SubsectorObj }
+): { [name: string]: SectorObj } => {
+  let ans: { [name: string]: SectorObj } = {};
+  for (let [secName, subsecObjDatas] of Object.entries(secSubsecMap)) {
+    ans[secName] = {
+      data: {
+        name: secName,
+      },
+      subsectors: subsecObjDatas.map((x) => subsecs[x.name]),
+    };
+  }
+  return ans;
 };
 
 const getRoots = (
@@ -207,12 +274,18 @@ const getRoots = (
   let skills = getSkills(subsecSkillMap);
   let emps = getEmps(deptEmpMap);
   let depts = getDepts(deptEmpMap, emps);
-  let subsecs = getSubsecs(subsecEmpMap, emps, skills);
-  let sectors: Mapp<SectorObj> = getSectors(secSubsecMap, subsecs);
+  let subsecs = getSubsecs(
+    secSubsecMap,
+    subsecEmpMap,
+    subsecSkillMap,
+    emps,
+    skills
+  );
+  let sectors = getSectors(secSubsecMap, subsecs);
 
   return {
-    sectors: Object.values(sectors).flatMap((x) => x),
-    departments: Object.values(depts).flatMap((x) => x),
+    sectors: Object.values(sectors),
+    departments: Object.values(depts),
   };
 };
 
@@ -252,4 +325,5 @@ class ExcelProcessor {
   };
 }
 
+export type { SubsectorObj, SectorObj, DepartmentObj, SkillObj, EmployeeObj };
 export default ExcelProcessor;
