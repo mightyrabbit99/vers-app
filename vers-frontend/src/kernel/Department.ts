@@ -25,11 +25,12 @@ function objToData(x: Department): DepartmentData {
   };
 }
 
-const generator = (): Department => ({
+const generator = (init?: any): Department => ({
   _type: ItemType.Department,
   id: -1,
   name: "",
   employees: [],
+  ...init,
 });
 
 const get = async () => {

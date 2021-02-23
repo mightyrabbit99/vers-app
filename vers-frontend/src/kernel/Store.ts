@@ -26,9 +26,8 @@ const emptyDelete = async () => ({ success: false, data: {} });
 interface Store<T extends Item> {
   refresh: () => Promise<void>;
   get: (id: number) => T;
-  search: (obj: any) => T[];
-  getLst: () => { [id: number]: T };
-  getNew: () => T;
+  getLst: (filterer?: (t: T) => boolean) => { [id: number]: T };
+  getNew: (init?: any) => T;
   submit: (t: T) => Promise<Result>;
   submitNew: (t: T) => Promise<Result>;
   remove: (t: T) => Promise<void>;
@@ -39,8 +38,7 @@ function store<T extends Item>(
   post: (t: T) => Promise<Result>,
   put: (t: T) => Promise<Result>,
   del: (t: T) => Promise<void>,
-  generator: () => T,
-  filterer?: (obj: any, lst: T[]) => T[]
+  generator: (init?: any) => T
 ) {
   return class implements Store<T> {
     private store: { [id: number]: T } = {};
@@ -55,7 +53,7 @@ function store<T extends Item>(
 
     private clearAll = () => {
       this.store = {};
-    }
+    };
 
     private add = (t: T) => {
       this.store[t.id] = t;
@@ -67,17 +65,16 @@ function store<T extends Item>(
 
     get = (id: number) => this.store[id];
 
-    search = (obj: any) =>
-      filterer
-        ? filterer(obj, Object.values(this.store))
-        : Object.values(this.store);
-
-    getLst = (): { [id: number]: T } => {
-      return { ...this.store };
+    getLst = (filterer?: (t: T) => boolean): { [id: number]: T } => {
+      return filterer
+        ? Object.fromEntries(
+            Object.entries(this.store).filter((x) => filterer(x[1]))
+          )
+        : { ...this.store };
     };
 
-    getNew = (): T => {
-      return generator();
+    getNew = (init?: any): T => {
+      return generator(init);
     };
 
     submitNew = async (t: T) => {

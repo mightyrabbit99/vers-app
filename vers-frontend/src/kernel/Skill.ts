@@ -37,7 +37,7 @@ function objToData(x: Skill): SkillData {
   };
 }
 
-const generator = (): Skill => ({
+const generator = (init?: any): Skill => ({
   _type: ItemType.Skill,
   id: -1,
   name: "",
@@ -46,6 +46,7 @@ const generator = (): Skill => ({
   subsector: -1,
   employees: [],
   jobs: [],
+  ...init,
 });
 
 const get = async () => {

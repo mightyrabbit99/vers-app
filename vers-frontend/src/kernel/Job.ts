@@ -71,7 +71,7 @@ const del = async (t: Job) => {
   await Fetcher.deleteJob(objToData(t));
 };
 
-const generator = (): Job => ({
+const generator = (init?: any): Job => ({
   id: -1,
   _type: ItemType.Job,
   title: "",
@@ -82,6 +82,7 @@ const generator = (): Job => ({
   skillsRequired: [],
   empAssigned: [],
   subsector: -1,
+  ...init,
 });
 
 const JobStore = store<Job>(get, post, put, del, generator);

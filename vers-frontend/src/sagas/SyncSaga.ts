@@ -1,5 +1,5 @@
 import { all, put, takeLatest, call } from "redux-saga/effects";
-import k, { Result, ExcelProcessor, ItemType } from "src/kernel";
+import k, { Result, ExcelProcessor } from "src/kernel";
 import {
   DepartmentObj,
   SectorObj,
@@ -15,7 +15,6 @@ import {
   _saveData,
   reloadSuccess,
   reloadError,
-  saveItemProp,
 } from "src/slices/data";
 import {
   createNew,
@@ -136,53 +135,90 @@ function* deleteItem({ payload }: EraseAction) {
   }
 }
 
+function genMap<T>(lst: { [id: number]: T}, idMapper: (x: T) => any) {
+  return Object.values(lst).reduce((prev, curr) => { 
+    prev[idMapper(curr)] = curr;
+    return prev;
+  }, {} as { [name: string]: T });
+}
+
 function* saveExcelDatas(sectors: SectorObj[], departments: DepartmentObj[]) {
-  function* saveEmp(emp: EmployeeObj) {
-    if (!emp.id) {
-      let res = yield k.saveNew({ id: -1, _type: ItemType.Employee, ...emp.data})
-    }
-  }
-  function* saveDept(dept: DepartmentObj) {
-    if (!dept.id) {
-      yield k.saveNew({
-        id: -1,
-        _type: ItemType.Department,
-        name: dept.data.name,
-      });
-    }
-  }
+  let plantId = 1;
+  let sectorLst = k.secStore.getLst(x => x.plant == plantId);
+  let subsectorLst = k.subsecStore.getLst(x => x.sector in sectorLst);
+  let employeeLst = k.empStore.getLst(x => x.subsector in subsectorLst);
+
+  let sectorNameMap = genMap(sectorLst, x => x.name);
+  let subsectorNameMap = genMap(subsectorLst, x => x.name);
+  let empSesaMap = genMap(employeeLst, x => x.sesaId);
+
   function* saveSkill(skill: SkillObj) {
-    if (!skill.id) {
-      let res = yield k.saveNew({ id: -1, _type: ItemType.Skill, ...skill.data, subsector: subsecId})
-      skill.id = res.data.id;
+    if (skill.data.name in subsectorNameMap) {
+      let origin = subsectorNameMap[skill.data.name];
+      Object.assign(origin, skill.data);
+      yield k.save(origin);
+      skill.id = origin.id;
     } else {
-      yield k.save({ id: -1, _type: ItemType.Skill, ...skill.data, subsector: subsecId});
+      let res = yield k.saveNew(k.skillStore.getNew(skill.data));
+      skill.id = res.data.id;
     }
   }
-  function* saveSubsec(subsec: SubsectorObj) {
-    if (!subsec.id) {
-      let res = yield k.saveNew({ id: -1, _type: ItemType.Subsector, ...subsec.data});
-      subsec.id = res.data.id;
-      subsec.employees.forEach(x => x.data.subsector = subsec.id);
-      subsec.skills.forEach(x => x.data.subsector = subsec.id);
+  function* saveEmployee(emp: EmployeeObj) {
+    if (emp.data.sesaId in empSesaMap) {
+      let origin = empSesaMap[emp.data.sesaId];
+      Object.assign(origin, emp.data);
+      yield k.save(origin);
+      emp.id = origin.id;
     } else {
-      yield k.save({ id: subsec.id, _type: ItemType.Subsector, ...subsec.data });
+      let res = yield k.saveNew(k.empStore.getNew(emp.data));
+      emp.id = res.data.id;
     }
+  }
+  function* performSaveSubsector(subsec: SubsectorObj) {
+    if (subsec.data.name in subsectorNameMap) {
+      let origin = subsectorNameMap[subsec.data.name];
+      Object.assign(origin, subsec.data);
+      yield k.save(origin);
+      subsec.id = origin.id;
+    } else {
+      let res = yield k.saveNew(k.subsecStore.getNew(subsec.data));
+      subsec.id = res.data.id;
+    }
+    subsec.skills.forEach(x => x.data.subsector = subsec.id);
+    subsec.employees.forEach(x => x.data.subsector = subsec.id);
+  }
+  function* saveSubsector(subsec: SubsectorObj) {
+    yield performSaveSubsector(subsec);
     for (let skill of subsec.skills) {
       yield saveSkill(skill);
     }
     for (let emp of subsec.employees) {
-      yield saveEmp(emp);
+      yield saveEmployee(emp);
     }
   }
-  function* saveSector(sec: SectorObj) {
-    if (!sec.id) {
-      let res = yield k.saveNew({ id: -1, _type: ItemType.Sector, name: sec.data.name });
+  function* performSaveSector(sec: SectorObj) {
+    if (sec.data.name in sectorNameMap) {
+      let origin = sectorNameMap[sec.data.name];
+      Object.assign(origin, sec.data);
+      yield k.save(origin);
+      sec.id = origin.id;
+    } else {
+      let res = yield k.saveNew(k.secStore.getNew({ ...sec.data, plant: plantId }));
       sec.id = res.data.id;
-      sec.subsectors.forEach(x => x.data.sector = sec.id);
     }
+    sec.subsectors.forEach(x => x.data.sector = sec.id);
+  }
+  function* saveSector(sec: SectorObj) {
+    yield performSaveSector(sec);
     for (let subsec of sec.subsectors) {
-      yield saveSubsec(subsec);
+      yield saveSubsector(subsec);
+    }
+  }
+  function* performSaveDept(dept: DepartmentObj) {}
+  function* saveDept(dept: DepartmentObj) {
+    yield performSaveDept(dept);
+    for (let emp of dept.employees) {
+      yield saveEmployee(emp);
     }
   }
   for (let sec of sectors) {

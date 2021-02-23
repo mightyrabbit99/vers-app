@@ -69,7 +69,7 @@ const del = async (t: Subsector) => {
   await Fetcher.deleteSubsec(objToData(t));
 };
 
-const generator = (): Subsector => ({
+const generator = (init?: any): Subsector => ({
   _type: ItemType.Subsector,
   id: -1,
   name: "",
@@ -79,6 +79,7 @@ const generator = (): Subsector => ({
   skills: [],
   employees: [],
   jobs: [],
+  ...init,
 });
 
 const SubsectorStore = store<Subsector>(get, post, put, del, generator);

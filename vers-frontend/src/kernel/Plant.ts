@@ -25,11 +25,12 @@ function objToData(x: Plant): PlantData {
   };
 }
 
-const generator = (): Plant => ({
+const generator = (init?: any): Plant => ({
   _type: ItemType.Plant,
   id: -1,
   name: "",
   sectors: [],
+  ...init,
 });
 
 const get = async () => {

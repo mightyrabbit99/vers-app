@@ -57,12 +57,13 @@ const del = async (t: Sector) => {
   await Fetcher.deleteSec(objToData(t));
 };
 
-const generator = (): Sector => ({
+const generator = (init?: any): Sector => ({
   _type: ItemType.Sector,
   id: -1,
   name: "",
   plant: -1,
   subsectors: [],
+  ...init,
 });
 
 const SectorStore = store<Sector>(get, post, put, del, generator);

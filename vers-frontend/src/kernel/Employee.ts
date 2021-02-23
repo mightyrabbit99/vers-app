@@ -85,7 +85,7 @@ const del = async (t: Employee) => {
   await Fetcher.deleteEmp(objToData(t));
 };
 
-const generator = (): Employee => ({
+const generator = (init?: any): Employee => ({
   id: -1,
   _type: ItemType.Employee,
   sesaId: "",
@@ -99,11 +99,13 @@ const generator = (): Employee => ({
   birthDate: "",
   gender: "",
   hireDate: "",
+  ...init,
   user: {
     id: -1,
     username: "",
     is_superuser: false,
     is_active: false,
+    ...init.user,
     vers_user: {
       plant_group: 1,
       sector_group: 1,
@@ -112,6 +114,7 @@ const generator = (): Employee => ({
       employee_group: 1,
       job_group: 1,
       skill_group: 1,
+      ...init.user.vers_user,
     }
   }
 });
