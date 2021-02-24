@@ -16,14 +16,13 @@ interface ISectorFormProps {
 const SectorForm: React.FunctionComponent<ISectorFormProps> = (props) => {
   const { data, feedback, plantLst, onSubmit, onChange, onCancel } = props;
   const newData = { ...data };
-  const plants = Object.values(plantLst);
   const choices: SectorFormChoices = {
     plant: {
-      choices: plants.map((x) => ({
+      choices: [{name: plantLst[data.plant].name, value: plantLst[data.plant].id}],/*plants.map((x) => ({
         name: x.name,
         value: x.id,
-      })),
-      init: plants.findIndex((x) => x.id === data.plant),
+      })),*/
+      init: 0,
     },
   };
 

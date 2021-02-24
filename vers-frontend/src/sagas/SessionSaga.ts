@@ -8,12 +8,19 @@ import {
   changeUserDetail,
   _setAuthenticated,
 } from "src/slices/session";
+import { fetchData } from "src/slices/sync";
 import { EditUserAction, LoginAction } from "src/types";
 
 function* init() {
   if (k.isLoggedIn()) {
-    let res: any = yield k.getUser();
+    let res: any;
+    try {
+      res = yield k.getUser();
+    } catch (e) {
+      console.log(e);
+    }
     if (res.success) {
+      yield put(fetchData());
       yield put(_setAuthenticated({ authenticated: true, user: res.data }));
     } else {
       k.logout();
@@ -30,10 +37,8 @@ function* logoutThenUpdatePermission() {
 
 function* loginThenUpdatePermission({ payload }: LoginAction) {
   const feedback: Result = yield k.login(payload.username, payload.password);
-  console.log(feedback);
   if (feedback.success) {
     let res: any = yield k.getUser();
-    console.log(res);
     yield put(_setAuthenticated({ authenticated: true, user: res.data }));
     yield put(loginSuccess(undefined));
   } else {
@@ -43,7 +48,6 @@ function* loginThenUpdatePermission({ payload }: LoginAction) {
 
 function* editUser({ payload }: EditUserAction) {
   const feedback: Result = yield k.editUser(payload.username, payload.password);
-  console.log(feedback);
   if (feedback.success) {
     yield put(_setAuthenticated({ authenticated: false }));
     yield put(loginSuccess(undefined));

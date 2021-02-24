@@ -50,6 +50,12 @@ const EmployeeView: React.FunctionComponent<IEmployeeViewProps> = (props) => {
     dispatch(clearFeedback());
   };
 
+  const employeeExcludeSelf = Object.fromEntries(
+    Object.entries(employees).filter(
+      (x) => x[1].user.username !== user?.username
+    )
+  );
+
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
@@ -71,7 +77,7 @@ const EmployeeView: React.FunctionComponent<IEmployeeViewProps> = (props) => {
         <Grid item xs={12}>
           <Paper className={classes.list}>
             <EmployeeAccessCtrlWidget
-              lst={employees}
+              lst={employeeExcludeSelf}
               onSubmit={handleSubmit}
               editSuper={user?.is_superuser}
             />

@@ -128,6 +128,9 @@ const dataSlice = createSlice({
         selLst(type, state)[id][prop] = val;
       }
     },
+    selPlant: (state, { payload }: PayloadAction<number | undefined>) => {
+      state.selectedPlantId = payload;
+    },
   },
 });
 
@@ -143,6 +146,7 @@ export const {
   delData,
   _delData,
   saveItemProp,
+  selPlant,
 } = dataSlice.actions;
 
 export default dataSlice.reducer;

@@ -10,6 +10,7 @@ import {
   _saveData,
   delData,
   _delData,
+  selPlant,
 } from "src/slices/data";
 import { createNew, modify, erase } from "src/slices/sync";
 import { SaveDataAction, DeleteDataAction, ReloadDataAction } from "src/types";
@@ -33,7 +34,7 @@ function* reloadData({ payload: p }: ReloadDataAction) {
   plants = k.plantStore.getLst();
   newPlant = k.plantStore.getNew();
   sectors = k.secStore.getLst(p ? (x) => x.plant === p : undefined);
-  newSector = k.secStore.getNew();
+  newSector = k.secStore.getNew({ plant: p });
   subsectors = k.subsecStore.getLst((x) => x.sector in sectors);
   newSubsector = k.subsecStore.getNew();
   skills = k.skillStore.getLst((x) => x.subsector in subsectors);
@@ -68,6 +69,11 @@ function* reloadData({ payload: p }: ReloadDataAction) {
   yield put(reloadSuccess());
 }
 
+function* selectPlant({ payload: p }: ReloadDataAction) {
+  p ? localStorage.setItem("lastPlant", `${p}`) : localStorage.removeItem("lastPlant");
+  yield p && put(reload(p));
+}
+
 function* calculateDatas() {
   yield put(calculateSuccess());
 }
@@ -85,7 +91,6 @@ function* delDataCascadeThenCalculate({ payload }: DeleteDataAction): any {
     finalMods.push(...mods);
     finalDels.push(...dels);
   }
-  console.log(finalDels);
   yield put(modify(finalMods));
   yield put(erase(finalDels));
   yield put(_saveData(finalMods));
@@ -106,6 +111,7 @@ function* saveDataCascadeThenCalculate({ payload }: SaveDataAction) {
 function* dataSaga() {
   yield all([
     takeLatest(reload.type, reloadData),
+    takeLatest(selPlant.type, selectPlant),
     takeLatest(calculate.type, calculateDatas),
     takeLatest(saveData.type, saveDataCascadeThenCalculate),
     takeLatest(delData.type, delDataCascadeThenCalculate),

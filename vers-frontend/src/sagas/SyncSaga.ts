@@ -1,7 +1,7 @@
 import { all, put, takeLatest } from "redux-saga/effects";
 import k, { Result } from "src/kernel";
 
-import { calculate, _reload, reload, _saveData } from "src/slices/data";
+import { calculate, _reload, reload, _saveData, selPlant } from "src/slices/data";
 import {
   createNew,
   modify,
@@ -22,15 +22,18 @@ function* fetchDatas() {
     return;
   }
   yield put(fetchDataSuccess());
-  yield put(reload());
-  yield put(calculate());
+  let lPstr = localStorage.getItem("lastPlant");
+  let lP = lPstr ? parseInt(lPstr, 10) : undefined;
+  if (!((lPstr ?? "") in k.plantStore.getLst())) {
+    lP = undefined;
+    localStorage.removeItem("lastPlant");
+  }
+  yield lP ? put(selPlant(lP)) : put(reload());
 }
 
 function* postItemThenSave({ payload }: CreateNewAction) {
   try {
-    console.log(payload);
     const feedback: Result = yield k.saveNew(payload);
-    console.log(feedback);
     if (feedback.success) {
       yield put(_saveData(feedback.data));
       yield put(submitSuccess(undefined));

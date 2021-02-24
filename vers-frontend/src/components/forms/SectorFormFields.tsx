@@ -88,6 +88,7 @@ const SectorFF: React.FunctionComponent<ISectorFFProps> = (props) => {
           defaultValue={1}
           value={getDataIdx("plant")}
           onChange={handleChange}
+          disabled={choices["plant"].choices.length < 2}
         >
           {choices["plant"].choices.map((x, idx) => (
             <MenuItem key={idx} value={idx}>

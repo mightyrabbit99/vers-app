@@ -5,11 +5,12 @@ import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { green, purple } from "@material-ui/core/colors";
 import SigninPage from "./SignInPage";
 import DashboardPage from "./DashboardPage";
-import { getSession } from "src/selectors";
+import { getData, getSession } from "src/selectors";
 import { initLogin } from "src/slices/session";
 import SpinningBall from "./SpinningBall";
 import ProfilePage from "./ProfilePage";
 import UserEditPage from "./UserEditPage";
+import PlantPage from "./PlantPage";
 
 interface IAppProps {}
 
@@ -37,6 +38,7 @@ const theme = createMuiTheme({
 const App: React.FC<IAppProps> = () => {
   const dispatch = useDispatch();
   const { authenticated: auth, syncing } = useSelector(getSession);
+  const { selectedPlantId: pId } = useSelector(getData);
 
   React.useEffect(() => {
     dispatch(initLogin());
@@ -47,15 +49,38 @@ const App: React.FC<IAppProps> = () => {
     <ThemeProvider theme={theme}>
       <Switch>
         <Route exact path="/">
-          {auth ? <Redirect to="/dashboard" /> : <Redirect to="signin" />}
+          {auth ? (
+            pId ? (
+              <Redirect to="/dashboard" />
+            ) : (
+              <Redirect to="/plants" />
+            )
+          ) : (
+            <Redirect to="/signin" />
+          )}
         </Route>
-        <MainRoute
-          exact
-          auth={auth}
-          type="private"
-          path="/dashboard"
-          render={() => <DashboardPage />}
-        />
+        <Route exact path="/dashboard">
+          {auth ? (
+            pId ? (
+              <DashboardPage />
+            ) : (
+              <Redirect to="/plants" />
+            )
+          ) : (
+            <Redirect to="/" />
+          )}
+        </Route>
+        <Route exact path="/plants">
+          {auth ? (
+            pId ? (
+              <Redirect to="/dashboard" />
+            ) : (
+              <PlantPage />
+            )
+          ) : (
+            <Redirect to="/" />
+          )}
+        </Route>
         <MainRoute
           exact
           auth={auth}

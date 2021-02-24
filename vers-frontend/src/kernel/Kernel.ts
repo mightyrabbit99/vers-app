@@ -200,15 +200,18 @@ class Kernel {
     let sectorLst = k.secStore.getLst((x) => x.plant === plantId);
     let subsectorLst = k.subsecStore.getLst((x) => x.sector in sectorLst);
     let employeeLst = k.empStore.getLst((x) => x.subsector in subsectorLst);
+    let departmentLst = k.deptStore.getLst();
+    let skillLst = k.skillStore.getLst((x) => x.subsector in subsectorLst);
 
     let sectorNameMap = genMap(sectorLst, (x) => x.name);
     let subsectorNameMap = genMap(subsectorLst, (x) => x.name);
     let empSesaMap = genMap(employeeLst, (x) => x.sesaId);
+    let deptNameMap = genMap(departmentLst, (x) => x.name);
+    let skillNameMap = genMap(skillLst, (x) => x.name);
 
     const saveSkill = async (skill: SkillObj) => {
-      if (skill.data.name in subsectorNameMap) {
-        let origin = subsectorNameMap[skill.data.name][0];
-        Object.assign(origin, skill.data);
+      if (skill.data.name in skillNameMap) {
+        let origin = { ...skillNameMap[skill.data.name][0], ...skill.data };
         await k.save(origin);
         skill.id = origin.id;
       } else {
@@ -217,24 +220,30 @@ class Kernel {
       }
     };
     const saveEmployee = async (emp: EmployeeObj) => {
+      if (!emp.data.department) return;
+      let data;
       if (emp.data.sesaId in empSesaMap) {
-        let origin = empSesaMap[emp.data.sesaId][0];
-        Object.assign(origin, emp.data);
-        await k.save(origin);
-        emp.id = origin.id;
+        data = { ...empSesaMap[emp.data.sesaId][0], ...emp.data };
+        await k.save(data);
+        emp.id = data.id;
       } else {
-        let res = await this.saveNew(k.empStore.getNew(emp.data));
+        data = k.empStore.getNew(emp.data);
+        let res = await this.saveNew(data);
         emp.id = res.data.id;
       }
     };
     const performSaveSubsector = async (subsec: SubsectorObj) => {
+      let data;
       if (subsec.data.name in subsectorNameMap) {
-        let origin = subsectorNameMap[subsec.data.name][0];
-        Object.assign(origin, subsec.data);
-        await this.save(origin);
-        subsec.id = origin.id;
+        data = {
+          ...subsectorNameMap[subsec.data.name][0],
+          ...subsec.data,
+        };
+        await this.save(data);
+        subsec.id = data.id;
       } else {
-        let res = await this.saveNew(k.subsecStore.getNew(subsec.data));
+        data = k.subsecStore.getNew(subsec.data);
+        let res = await this.saveNew(data);
         subsec.id = res.data.id;
       }
       subsec.skills.forEach((x) => (x.data.subsector = subsec.id));
@@ -250,15 +259,18 @@ class Kernel {
       }
     };
     const performSaveSector = async (sec: SectorObj) => {
+      let data;
       if (sec.data.name in sectorNameMap) {
-        let origin = sectorNameMap[sec.data.name][0];
-        Object.assign(origin, sec.data);
-        await this.save(origin);
-        sec.id = origin.id;
+        data = {
+          ...sectorNameMap[sec.data.name][0],
+          ...sec.data,
+          plant: plantId,
+        };
+        await this.save(data);
+        sec.id = data.id;
       } else {
-        let res = await this.saveNew(
-          k.secStore.getNew({ ...sec.data, plant: plantId })
-        );
+        data = k.secStore.getNew({ ...sec.data, plant: plantId });
+        let res = await this.saveNew(data);
         sec.id = res.data.id;
       }
       sec.subsectors.forEach((x) => (x.data.sector = sec.id));
@@ -269,7 +281,17 @@ class Kernel {
         await saveSubsector(subsec);
       }
     };
-    const performSaveDept = async (dept: DepartmentObj) => {};
+    const performSaveDept = async (dept: DepartmentObj) => {
+      if (dept.data.name in deptNameMap) {
+        let origin = { ...deptNameMap[dept.data.name][0], ...dept.data };
+        await this.save(origin);
+        dept.id = origin.id;
+      } else {
+        let res = await this.saveNew(k.deptStore.getNew(dept.data));
+        dept.id = res.data.id;
+      }
+      dept.employees.forEach((x) => (x.data.department = dept.id));
+    };
     const saveDept = async (dept: DepartmentObj) => {
       await performSaveDept(dept);
       for (let emp of dept.employees) {

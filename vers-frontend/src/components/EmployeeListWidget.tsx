@@ -90,7 +90,6 @@ const EmployeeListWidget: React.FunctionComponent<IEmployeeListWidgetProps> = (
   };
 
   const handleCreateOnClick = () => {
-    console.log(newEmployee);
     setFormData(newEmployee);
     setFormOpen(true);
   };

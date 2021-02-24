@@ -27,7 +27,6 @@ const SectorView: React.FunctionComponent<ISectorViewProps> = (props) => {
   const { sectors, newSector, plants } = useSelector(getData);
   const { feedback } = useSelector(getSync);
   const { user } = useSelector(getSession);
-
   const canEdit = () => {
     return user?.is_superuser ? true : user?.vers_user.sector_group === 1;
   }

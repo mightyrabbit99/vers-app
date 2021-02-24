@@ -58,6 +58,7 @@ type IdMap<T> = { [id: number]: T};
 
 export interface DataState {
   plants: IdMap<Plant>;
+  selectedPlantId?: number;
   newPlant?: Plant;
   sectors: IdMap<Sector>;
   newSector?: Sector;

@@ -91,7 +91,6 @@ const JobListWidget: React.FunctionComponent<IJobListWidgetProps> = (props) => {
   };
 
   const handleCreateOnClick = () => {
-    console.log(newJob);
     setFormData(newJob);
     setFormOpen(true);
   };

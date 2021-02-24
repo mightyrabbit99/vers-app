@@ -75,7 +75,6 @@ class Fetcher {
     if (res.data.token) {
       Fetcher.setToken(res.data.token);
     }
-    console.log("sss")
     return res;
   };
 

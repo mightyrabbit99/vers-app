@@ -31,6 +31,7 @@ import LayersIcon from "@material-ui/icons/Layers";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
+import ButtonBase from "@material-ui/core/ButtonBase";
 
 import PlantView from "./PlantView";
 import SectorView from "./SectorView";
@@ -39,13 +40,14 @@ import DepartmentView from "./DepartmentView";
 import SkillView from "./SkillView";
 import EmployeeView from "./EmployeeView";
 import JobView from "./JobView";
-
-import { fetchData, clearFeedback, } from "src/slices/sync";
-import { logout } from "src/slices/session";
-import { getSession, getSync } from "src/selectors";
-import k from "src/kernel";
 import MyDialog from "src/components/commons/Dialog";
 import ExcelUploadForm from "src/components/forms/ExcelUploadForm";
+
+import { clearFeedback } from "src/slices/sync";
+import { logout } from "src/slices/session";
+import { selPlant } from "src/slices/data";
+import { getData, getSession, getSync } from "src/selectors";
+import k from "src/kernel";
 
 function Copyright() {
   return (
@@ -97,8 +99,9 @@ const useStyles = makeStyles((theme) => ({
   menuButtonHidden: {
     display: "none",
   },
-  title: {
-    flexGrow: 1,
+  title: {},
+  settings: {
+    marginLeft: "auto",
   },
   drawerPaper: {
     position: "relative",
@@ -133,6 +136,10 @@ const useStyles = makeStyles((theme) => ({
   fixedHeight: {
     height: 240,
   },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
   form: {},
   formTitle: {
     height: "15%",
@@ -155,18 +162,21 @@ enum DashboardView {
 const Dashboard: React.FC = () => {
   const dispatch = useDispatch();
   const history = useHistory();
+  const { selectedPlantId: pId, plants } = useSelector(getData);
   const { authenticated: auth, user } = useSelector(getSession);
   const { feedback } = useSelector(getSync);
-
-  React.useEffect(() => {
-    dispatch(fetchData());
-  }, []);
 
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
   let lastI = localStorage.getItem("lastDashboardView");
   const [currView, setCurrView] = React.useState(lastI ? parseInt(lastI) : 0);
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [mainAnchorEl, setMainAnchorEl] = React.useState<null | HTMLElement>(
+    null
+  );
+  const [
+    settingsAnchorEl,
+    setSettingsAnchorEl,
+  ] = React.useState<null | HTMLElement>(null);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -174,6 +184,11 @@ const Dashboard: React.FC = () => {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  const handleMainTitleClick = (e: React.ChangeEvent<any>) => {
+    setMainAnchorEl(e.currentTarget);
+  };
+
   const handleListClick = (i: number) => () => {
     localStorage.setItem("lastDashboardView", `${i}`);
     setCurrView(i);
@@ -181,11 +196,15 @@ const Dashboard: React.FC = () => {
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     dispatch(clearFeedback());
-    setAnchorEl(event.currentTarget);
+    setSettingsAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
+  const handleSettingsClose = () => {
+    setSettingsAnchorEl(null);
+  };
+
+  const handlePageSelClose = () => {
+    setMainAnchorEl(null);
   };
 
   const handleLogout = () => {
@@ -196,9 +215,13 @@ const Dashboard: React.FC = () => {
     history.push("/user");
   };
 
+  const toPlant = () => {
+    dispatch(selPlant());
+  };
+
   const [excelFormOpen, setExcelFormOpen] = React.useState(false);
   const handleExcelFormOpen = () => {
-    setAnchorEl(null);
+    setSettingsAnchorEl(null);
     setExcelFormOpen(true);
   };
   const handleExcelFormClose = () => {
@@ -207,7 +230,7 @@ const Dashboard: React.FC = () => {
 
   const handleExcelFileUpload = (file: File) => {
     handleExcelFormClose();
-    k.submitExcel(1, file).catch(console.log);
+    pId && k.submitExcel(pId, file).catch(console.log);
   };
 
   const cannotView = (i: number) => {
@@ -234,17 +257,6 @@ const Dashboard: React.FC = () => {
 
   const mainListItems = (
     <div>
-      <ListItem
-        button
-        disabled={cannotView(DashboardView.Plant)}
-        selected={currView === DashboardView.Plant}
-        onClick={handleListClick(DashboardView.Plant)}
-      >
-        <ListItemIcon>
-          <DashboardIcon />
-        </ListItemIcon>
-        <ListItemText primary="Plants" />
-      </ListItem>
       <ListItem
         button
         disabled={cannotView(DashboardView.Sector)}
@@ -285,7 +297,7 @@ const Dashboard: React.FC = () => {
         onClick={handleListClick(DashboardView.Department)}
       >
         <ListItemIcon>
-          <LayersIcon />
+          <DashboardIcon />
         </ListItemIcon>
         <ListItemText primary="Departments" />
       </ListItem>
@@ -374,16 +386,15 @@ const Dashboard: React.FC = () => {
             >
               <MenuIcon />
             </IconButton>
-            <Typography
-              component="h1"
-              variant="h6"
-              color="inherit"
-              noWrap
+            <ButtonBase
               className={classes.title}
+              onClick={handleMainTitleClick}
             >
-              Dashboard
-            </Typography>
-            <div>
+              <Typography component="h1" variant="h6" color="inherit" noWrap>
+                {pId ? plants[pId]?.name : null}: Dashboard
+              </Typography>
+            </ButtonBase>
+            <div className={classes.settings}>
               <Typography variant="caption">
                 {user ? user.username : "Guest"}
               </Typography>
@@ -424,14 +435,24 @@ const Dashboard: React.FC = () => {
       </div>
       <Menu
         id="simple-menu"
-        anchorEl={anchorEl}
+        anchorEl={settingsAnchorEl}
         keepMounted
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
+        open={Boolean(settingsAnchorEl)}
+        onClose={handleSettingsClose}
       >
         <MenuItem onClick={handleViewProfile}>Profile</MenuItem>
         <MenuItem onClick={handleExcelFormOpen}>Upload Excel</MenuItem>
         <MenuItem onClick={handleLogout}>Logout</MenuItem>
+      </Menu>
+      <Menu
+        id="simple-menu"
+        anchorEl={mainAnchorEl}
+        keepMounted
+        open={Boolean(mainAnchorEl)}
+        onClose={handlePageSelClose}
+      >
+        <MenuItem onClick={handlePageSelClose}>Dashboard</MenuItem>
+        <MenuItem onClick={toPlant}>Plants</MenuItem>
       </Menu>
       <MyDialog open={excelFormOpen} onClose={handleExcelFormClose}>
         <div className={classes.form}>

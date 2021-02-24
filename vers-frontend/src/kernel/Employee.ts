@@ -97,7 +97,7 @@ const generator = (init?: any): Employee => ({
   available: true,
   reportTo: -1,
   birthDate: "",
-  gender: "",
+  gender: "M",
   hireDate: "",
   ...init,
   user: {
