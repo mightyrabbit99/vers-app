@@ -57,8 +57,22 @@ const dataSlice = createSlice({
       state.jobs = payload.jobs ?? {};
       state.newJob = payload.newJob ?? undefined;
     },
-    reload: (state) => {
+    reload: (state, { payload }: PayloadAction<number | undefined>) => {
       state.loading = true;
+      state.plants = {};
+      state.newPlant = undefined;
+      state.sectors = {};
+      state.newSector = undefined;
+      state.subsectors = {};
+      state.newSubsector = undefined;
+      state.skills = {};
+      state.newSkill = undefined;
+      state.departments = {};
+      state.newDepartment = undefined;
+      state.employees = {};
+      state.newEmployee = undefined;
+      state.jobs = {};
+      state.newJob = undefined;
     },
     reloadSuccess: (state) => {
       state.loading = false;

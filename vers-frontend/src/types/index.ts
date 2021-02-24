@@ -1,12 +1,12 @@
 import { Plant, Data, Sector, Subsector, Department, Skill, Employee, Job, ItemType } from "src/kernel";
 import { UserData } from "src/kernel/data/UserData";
-import { delData, saveData } from "src/slices/data";
+import { delData, saveData, reload } from "src/slices/data";
 import { changeUserDetail, login } from "src/slices/session";
-import { createNew, erase, modify, submitExcel } from "src/slices/sync";
+import { createNew, erase, modify } from "src/slices/sync";
 
-export interface SubmitExcelAction {
-  type: typeof submitExcel.type
-  payload: File;
+export interface ReloadDataAction {
+  type: typeof reload.type;
+  payload: number | undefined;
 }
 
 export interface EraseAction {

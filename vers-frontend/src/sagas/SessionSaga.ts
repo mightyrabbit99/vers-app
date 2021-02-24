@@ -1,6 +1,5 @@
-import { all, call, put, takeLatest } from "redux-saga/effects";
+import { all, put, takeLatest } from "redux-saga/effects";
 import k, { Result } from "src/kernel";
-import { reload } from "src/slices/data";
 import {
   initLogin,
   login,
@@ -12,9 +11,8 @@ import {
 import { EditUserAction, LoginAction } from "src/types";
 
 function* init() {
-  yield put(reload());
   if (k.isLoggedIn()) {
-    let res: any = yield call(k.getUser);
+    let res: any = yield k.getUser();
     if (res.success) {
       yield put(_setAuthenticated({ authenticated: true, user: res.data }));
     } else {
@@ -31,12 +29,10 @@ function* logoutThenUpdatePermission() {
 }
 
 function* loginThenUpdatePermission({ payload }: LoginAction) {
-  const feedback: Result = yield call(async () =>
-    k.login(payload.username, payload.password)
-  );
+  const feedback: Result = yield k.login(payload.username, payload.password);
   console.log(feedback);
   if (feedback.success) {
-    let res: any = yield call(k.getUser);
+    let res: any = yield k.getUser();
     console.log(res);
     yield put(_setAuthenticated({ authenticated: true, user: res.data }));
     yield put(loginSuccess(undefined));
@@ -46,9 +42,7 @@ function* loginThenUpdatePermission({ payload }: LoginAction) {
 }
 
 function* editUser({ payload }: EditUserAction) {
-  const feedback: Result = yield call(async () =>
-    k.editUser(payload.username, payload.password)
-  );
+  const feedback: Result = yield k.editUser(payload.username, payload.password);
   console.log(feedback);
   if (feedback.success) {
     yield put(_setAuthenticated({ authenticated: false }));

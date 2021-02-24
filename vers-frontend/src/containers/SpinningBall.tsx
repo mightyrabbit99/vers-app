@@ -4,7 +4,7 @@ interface ISpinningBallProps {
 }
 
 const SpinningBall: React.FunctionComponent<ISpinningBallProps> = (props) => {
-  return <div/>;
+  return <div>Loading</div>;
 };
 
 export default SpinningBall;

@@ -105,7 +105,7 @@ const generator = (init?: any): Employee => ({
     username: "",
     is_superuser: false,
     is_active: false,
-    ...init.user,
+    ...init?.user,
     vers_user: {
       plant_group: 1,
       sector_group: 1,
@@ -114,7 +114,7 @@ const generator = (init?: any): Employee => ({
       employee_group: 1,
       job_group: 1,
       skill_group: 1,
-      ...init.user.vers_user,
+      ...init?.user?.vers_user,
     }
   }
 });

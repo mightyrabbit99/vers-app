@@ -16,8 +16,9 @@ const syncSlice = createSlice({
     fetchDataSuccess: (state) => {
       state.syncing = false;
     },
-    fetchDataError: (state) => {
+    fetchDataError: (state, { payload }: PayloadAction<string>) => {
       state.syncing = false;
+      state.error = payload;
     },
     submitError: (state, { payload }: PayloadAction<string>) => {
       state.syncing = false;
@@ -40,9 +41,6 @@ const syncSlice = createSlice({
     clearFeedback: (state) => {
       state.feedback = undefined;
     },
-    submitExcel: (state, { payload }: PayloadAction<File>) => {
-      state.syncing = true;
-    },
   },
 });
 
@@ -56,7 +54,6 @@ export const {
   modify,
   erase,
   clearFeedback,
-  submitExcel,
 } = syncSlice.actions;
 
 export default syncSlice.reducer;

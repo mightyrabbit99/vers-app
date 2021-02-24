@@ -6,8 +6,7 @@ import { Grid, Paper, makeStyles } from "@material-ui/core";
 import PlantListWidget from "src/components/PlantListWidget";
 import { getData, getSession, getSync } from "src/selectors";
 import { delData, saveData } from "src/slices/data";
-import { submitExcel } from "src/slices/sync";
-import { ItemType, Plant } from "src/kernel";
+import { Plant } from "src/kernel";
 import { clearFeedback } from "src/slices/sync";
 
 const useStyles = makeStyles((theme) => ({

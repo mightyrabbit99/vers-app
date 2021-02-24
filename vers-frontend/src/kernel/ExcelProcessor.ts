@@ -65,12 +65,23 @@ type Mapp<T> = { [name: string]: T[] };
 const readSubsectorWorksheet = (ws: Excel.Worksheet) => {
   let sets: { [sector: string]: Set<string> } = {};
   let ans: { [sector: string]: SubsectorObjData[] } = {};
-  let secName, subsecName, unit, cycleTime, efficiency;
+  let subsecName, secName, unit, cycleTime, efficiency;
+  function checkRow(row: Excel.Row) {
+    if (
+      [1, 2, 3, 4, 5].some((x) => `${row.getCell(x).value}`.trim().length === 0)
+    )
+      return false;
+    return true;
+  }
   ws.eachRow((row, rowIndex) => {
-    if (rowIndex === 1) return;
-    [secName, subsecName, unit, cycleTime, efficiency] = [1, 2, 3, 4, 5].map(
-      (x) => `${row.getCell(x).value}`
-    );
+    if (rowIndex === 1 || !checkRow(row)) return;
+    [subsecName, secName, unit, cycleTime, efficiency] = [
+      1,
+      2,
+      3,
+      4,
+      5,
+    ].map((x) => `${row.getCell(x).value}`.trim());
     if (!sets[secName]) {
       sets[secName] = new Set();
       ans[secName] = [];
@@ -93,8 +104,13 @@ const readSkillWorksheet = (ws: Excel.Worksheet) => {
   let sets: { [subsector: string]: Set<string> } = {};
   let ans: { [subsector: string]: SkillObjData[] } = {};
   let subsecName, skillName, priority, percentage;
+  function checkRow(row: Excel.Row) {
+    if ([1, 2, 3, 4].some((x) => `${row.getCell(x).value}`.trim().length === 0))
+      return false;
+    return true;
+  }
   ws.eachRow((row, rowIndex) => {
-    if (rowIndex === 1) return;
+    if (rowIndex === 1 || !checkRow(row)) return;
     [skillName, subsecName, priority, percentage] = [1, 2, 3, 4].map(
       (x) => `${row.getCell(x).value}`
     );
@@ -119,15 +135,23 @@ const readEmployeeWorksheetDept = (ws: Excel.Worksheet) => {
   let sets: { [dept: string]: Set<string> } = {};
   let ans: { [dept: string]: EmployeeObjData[] } = {};
   let sesaId, firstName, lastName, department, homeLocation;
+  function checkRow(row: Excel.Row) {
+    if (
+      [1, 2, 3, 4, 5].some((x) => `${row.getCell(x).value}`.trim().length === 0)
+    )
+      return false;
+    return true;
+  }
   ws.eachRow((row, rowIndex) => {
-    if (rowIndex === 1) return;
+    if (rowIndex === 1 || !checkRow(row)) return;
     [sesaId, firstName, lastName, department, homeLocation] = [
       1,
       2,
       3,
       4,
       5,
-    ].map((x) => `${row.getCell(x).value}`);
+    ].map((x) => `${row.getCell(x).value}`.trim());
+    if (sesaId === "") return;
 
     if (!sets[department]) {
       sets[department] = new Set();
@@ -150,8 +174,15 @@ const readEmployeeWorksheetSubsec = (ws: Excel.Worksheet) => {
   let sets: { [dept: string]: Set<string> } = {};
   let ans: { [dept: string]: EmployeeObjData[] } = {};
   let sesaId, firstName, lastName, department, homeLocation;
+  function checkRow(row: Excel.Row) {
+    if (
+      [1, 2, 3, 4, 5].some((x) => `${row.getCell(x).value}`.trim().length === 0)
+    )
+      return false;
+    return true;
+  }
   ws.eachRow((row, rowIndex) => {
-    if (rowIndex === 1) return;
+    if (rowIndex === 1 || !checkRow(row)) return;
     [sesaId, firstName, lastName, department, homeLocation] = [
       1,
       2,

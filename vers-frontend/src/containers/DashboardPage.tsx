@@ -40,9 +40,10 @@ import SkillView from "./SkillView";
 import EmployeeView from "./EmployeeView";
 import JobView from "./JobView";
 
-import { fetchData, clearFeedback, submitExcel } from "src/slices/sync";
+import { fetchData, clearFeedback, } from "src/slices/sync";
 import { logout } from "src/slices/session";
 import { getSession, getSync } from "src/selectors";
+import k from "src/kernel";
 import MyDialog from "src/components/commons/Dialog";
 import ExcelUploadForm from "src/components/forms/ExcelUploadForm";
 
@@ -205,8 +206,8 @@ const Dashboard: React.FC = () => {
   };
 
   const handleExcelFileUpload = (file: File) => {
-    dispatch(submitExcel(file));
     handleExcelFormClose();
+    k.submitExcel(1, file).catch(console.log);
   };
 
   const cannotView = (i: number) => {

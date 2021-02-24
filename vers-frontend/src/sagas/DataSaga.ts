@@ -3,6 +3,7 @@ import { all, put, takeLatest } from "redux-saga/effects";
 import {
   reload,
   _reload,
+  reloadSuccess,
   calculate,
   calculateSuccess,
   saveData,
@@ -11,15 +12,64 @@ import {
   _delData,
 } from "src/slices/data";
 import { createNew, modify, erase } from "src/slices/sync";
-import { SaveDataAction, DeleteDataAction } from "src/types";
-import k from "src/kernel";
+import { SaveDataAction, DeleteDataAction, ReloadDataAction } from "src/types";
+import k, { Department, Sector, Subsector } from "src/kernel";
+
+function* reloadData({ payload: p }: ReloadDataAction) {
+  let plants,
+    sectors: { [id: number]: Sector },
+    subsectors: { [id: number]: Subsector },
+    skills,
+    departments: { [id: number]: Department },
+    employees,
+    jobs;
+  let newPlant,
+    newSector,
+    newSubsector,
+    newSkill,
+    newDepartment,
+    newEmployee,
+    newJob;
+  plants = k.plantStore.getLst();
+  newPlant = k.plantStore.getNew();
+  sectors = k.secStore.getLst(p ? (x) => x.plant === p : undefined);
+  newSector = k.secStore.getNew();
+  subsectors = k.subsecStore.getLst((x) => x.sector in sectors);
+  newSubsector = k.subsecStore.getNew();
+  skills = k.skillStore.getLst((x) => x.subsector in subsectors);
+  newSkill = k.skillStore.getNew();
+  departments = k.deptStore.getLst();
+  newDepartment = k.deptStore.getNew();
+  employees = k.empStore.getLst(
+    (x) => x.department in departments && x.subsector in subsectors
+  );
+  newEmployee = k.empStore.getNew();
+  jobs = k.jobStore.getLst();
+  newJob = k.jobStore.getNew();
+  yield put(
+    _reload({
+      plants,
+      newPlant,
+      sectors,
+      newSector,
+      subsectors,
+      newSubsector,
+      skills,
+      newSkill,
+      departments,
+      newDepartment,
+      employees,
+      newEmployee,
+      jobs,
+      newJob,
+    })
+  );
+  yield put(calculate());
+  yield put(reloadSuccess());
+}
 
 function* calculateDatas() {
   yield put(calculateSuccess());
-}
-
-function* clearAll() {
-  yield put(_reload({}));
 }
 
 function* delDataCascadeThenCalculate({ payload }: DeleteDataAction): any {
@@ -55,7 +105,7 @@ function* saveDataCascadeThenCalculate({ payload }: SaveDataAction) {
 
 function* dataSaga() {
   yield all([
-    takeLatest(reload.type, clearAll),
+    takeLatest(reload.type, reloadData),
     takeLatest(calculate.type, calculateDatas),
     takeLatest(saveData.type, saveDataCascadeThenCalculate),
     takeLatest(delData.type, delDataCascadeThenCalculate),

@@ -8,7 +8,29 @@ import SkillStore, { Skill } from "./Skill";
 import { Store, Item, ItemType } from "./Store";
 import SubsectorStore, { Subsector } from "./Subsector";
 
+import ExcelProcessor, {
+  DepartmentObj,
+  SectorObj,
+  SubsectorObj,
+  SkillObj,
+  EmployeeObj,
+} from "src/kernel/ExcelProcessor";
+
 type Data = Plant | Sector | Subsector | Department | Skill | Employee | Job;
+
+function genMap<T>(
+  lst: { [id: number]: T },
+  idMapper: (x: T) => any,
+  filterer?: (x: T) => boolean
+) {
+  return Object.values(lst).reduce((prev, curr) => {
+    if (filterer && !filterer(curr)) return prev;
+    const newId = idMapper(curr);
+    if (!prev[newId]) prev[newId] = [];
+    prev[newId].push(curr);
+    return prev;
+  }, {} as { [name: string]: T[] });
+}
 
 class Kernel {
   plantStore: Store<Plant>;
@@ -168,6 +190,103 @@ class Kernel {
     } catch (e) {
       return { success: false };
     }
+  };
+
+  private saveExcelDatas = async (
+    plantId: number,
+    sectors: SectorObj[],
+    departments: DepartmentObj[]
+  ) => {
+    let sectorLst = k.secStore.getLst((x) => x.plant === plantId);
+    let subsectorLst = k.subsecStore.getLst((x) => x.sector in sectorLst);
+    let employeeLst = k.empStore.getLst((x) => x.subsector in subsectorLst);
+
+    let sectorNameMap = genMap(sectorLst, (x) => x.name);
+    let subsectorNameMap = genMap(subsectorLst, (x) => x.name);
+    let empSesaMap = genMap(employeeLst, (x) => x.sesaId);
+
+    const saveSkill = async (skill: SkillObj) => {
+      if (skill.data.name in subsectorNameMap) {
+        let origin = subsectorNameMap[skill.data.name][0];
+        Object.assign(origin, skill.data);
+        await k.save(origin);
+        skill.id = origin.id;
+      } else {
+        let res = await this.saveNew(k.skillStore.getNew(skill.data));
+        skill.id = res.data.id;
+      }
+    };
+    const saveEmployee = async (emp: EmployeeObj) => {
+      if (emp.data.sesaId in empSesaMap) {
+        let origin = empSesaMap[emp.data.sesaId][0];
+        Object.assign(origin, emp.data);
+        await k.save(origin);
+        emp.id = origin.id;
+      } else {
+        let res = await this.saveNew(k.empStore.getNew(emp.data));
+        emp.id = res.data.id;
+      }
+    };
+    const performSaveSubsector = async (subsec: SubsectorObj) => {
+      if (subsec.data.name in subsectorNameMap) {
+        let origin = subsectorNameMap[subsec.data.name][0];
+        Object.assign(origin, subsec.data);
+        await this.save(origin);
+        subsec.id = origin.id;
+      } else {
+        let res = await this.saveNew(k.subsecStore.getNew(subsec.data));
+        subsec.id = res.data.id;
+      }
+      subsec.skills.forEach((x) => (x.data.subsector = subsec.id));
+      subsec.employees.forEach((x) => (x.data.subsector = subsec.id));
+    };
+    const saveSubsector = async (subsec: SubsectorObj) => {
+      await performSaveSubsector(subsec);
+      for (let skill of subsec.skills) {
+        await saveSkill(skill);
+      }
+      for (let emp of subsec.employees) {
+        await saveEmployee(emp);
+      }
+    };
+    const performSaveSector = async (sec: SectorObj) => {
+      if (sec.data.name in sectorNameMap) {
+        let origin = sectorNameMap[sec.data.name][0];
+        Object.assign(origin, sec.data);
+        await this.save(origin);
+        sec.id = origin.id;
+      } else {
+        let res = await this.saveNew(
+          k.secStore.getNew({ ...sec.data, plant: plantId })
+        );
+        sec.id = res.data.id;
+      }
+      sec.subsectors.forEach((x) => (x.data.sector = sec.id));
+    };
+    const saveSector = async (sec: SectorObj) => {
+      await performSaveSector(sec);
+      for (let subsec of sec.subsectors) {
+        await saveSubsector(subsec);
+      }
+    };
+    const performSaveDept = async (dept: DepartmentObj) => {};
+    const saveDept = async (dept: DepartmentObj) => {
+      await performSaveDept(dept);
+      for (let emp of dept.employees) {
+        await saveEmployee(emp);
+      }
+    };
+    for (let sec of sectors) {
+      await saveSector(sec);
+    }
+    for (let dept of departments) {
+      await saveDept(dept);
+    }
+  };
+
+  public submitExcel = async (plantId: number, file: File) => {
+    let { sectors, departments } = await ExcelProcessor.readFile(file);
+    this.saveExcelDatas(plantId, sectors, departments);
   };
 }
 
