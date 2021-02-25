@@ -1,18 +1,17 @@
 import { all, put, takeLatest } from "redux-saga/effects";
 import k, { Result } from "src/kernel";
-
-import { calculate, _reload, reload, _saveData, selPlant } from "src/slices/data";
+import { calculate, reload, selPlant, _saveData } from "src/slices/data";
 import {
   createNew,
-  modify,
   erase,
-  submitError,
-  submitSuccess,
   fetchData,
   fetchDataError,
-  fetchDataSuccess,
+  fetchDataSuccess, modify,
+  submitError,
+  submitSuccess
 } from "src/slices/sync";
 import { CreateNewAction, EraseAction, ModifyAction } from "src/types";
+
 
 function* fetchDatas() {
   try {

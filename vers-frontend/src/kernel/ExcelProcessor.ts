@@ -1,4 +1,10 @@
 import Excel from "exceljs";
+import { Department } from "./Department";
+import { Employee } from "./Employee";
+import { Kernel } from "./Kernel";
+import { Sector } from "./Sector";
+import { Skill } from "./Skill";
+import { Subsector } from "./Subsector";
 
 interface EmployeeObjData {
   department?: number;
@@ -325,6 +331,65 @@ interface ReadResult {
   departments: DepartmentObj[];
 }
 
+const writeSubsectors = (
+  ws: Excel.Worksheet,
+  subsecs: Subsector[],
+  sectors: { [id: number]: Sector }
+) => {
+  ws.columns = [
+    { header: "Subsector", key: "name", width: 20 },
+    { header: "Sector", key: "sector" },
+    { header: "Unit", key: "unit" },
+    { header: "Cycle Time", key: "cycleTime" },
+    { header: "Efficiency", key: "efficiency" },
+  ] as Excel.Column[];
+
+  for (let i = 0; i < subsecs.length; i++) {
+    let ss = subsecs[i];
+    ws.addRow({ ...ss, sector: sectors[ss.sector].name });
+  }
+};
+
+const writeSkills = (
+  ws: Excel.Worksheet,
+  skills: Skill[],
+  subsectors: { [id: number]: Subsector }
+) => {
+  ws.columns = [
+    { header: "Skill", key: "name", width: 20 },
+    { header: "Subsector", key: "subsector" },
+    { header: "Priority", key: "priority" },
+    { header: "% of Sector", key: "percentageOfSector" },
+  ] as Excel.Column[];
+
+  for (let ss of skills) {
+    ws.addRow({ ...ss, subsector: subsectors[ss.subsector].name });
+  }
+};
+
+const writeEmployees = (
+  ws: Excel.Worksheet,
+  emps: Employee[],
+  departments: { [id: number]: Department },
+  subsectors: { [id: number]: Subsector }
+) => {
+  ws.columns = [
+    { header: "SESA ID", key: "sesaId", width: 20 },
+    { header: "First Name", key: "firstName" },
+    { header: "Last Name", key: "lastName" },
+    { header: "Department", key: "department" },
+    { header: "Home Location", key: "subsector" },
+  ] as Excel.Column[];
+
+  for (let ss of emps) {
+    ws.addRow({
+      ...ss,
+      subsector: subsectors[ss.subsector]?.name,
+      department: departments[ss.department].name,
+    });
+  }
+};
+
 class ExcelProcessor {
   static readFile = async (file: File): Promise<ReadResult> => {
     return new Promise((resolve, reject) => {
@@ -353,6 +418,36 @@ class ExcelProcessor {
       };
       reader.readAsArrayBuffer(file);
     });
+  };
+
+  static toFile = async (pId: number, k: Kernel) => {
+    const wb = new Excel.Workbook();
+    const subsecSheet = wb.addWorksheet("Subsectors");
+    const skillSheet = wb.addWorksheet("Skills");
+    const empSheet = wb.addWorksheet("Employees");
+
+    wb.creator = "Me";
+    wb.lastModifiedBy = "Her";
+    wb.created = new Date();
+    wb.modified = new Date();
+    writeSubsectors(
+      subsecSheet,
+      Object.values(k.subsecStore.getLst()),
+      k.secStore.getLst()
+    );
+    writeSkills(
+      skillSheet,
+      Object.values(k.skillStore.getLst()),
+      k.subsecStore.getLst()
+    );
+    writeEmployees(
+      empSheet,
+      Object.values(k.empStore.getLst()),
+      k.deptStore.getLst(),
+      k.subsecStore.getLst()
+    );
+
+    return await wb.xlsx.writeBuffer();
   };
 }
 

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Data, ItemType } from "src/kernel";
+import { Data } from "src/kernel";
 import { SyncState } from "src/types";
 
 export const initialState: SyncState = {

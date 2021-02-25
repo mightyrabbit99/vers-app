@@ -310,6 +310,8 @@ class Kernel {
     let { sectors, departments } = await ExcelProcessor.readFile(file);
     this.saveExcelDatas(plantId, sectors, departments);
   };
+
+  public getExcel = async (plantId: number) => await ExcelProcessor.toFile(plantId, this);
 }
 
 const k = new Kernel();

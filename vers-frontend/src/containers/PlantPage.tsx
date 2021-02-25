@@ -8,15 +8,18 @@ import Grid from "@material-ui/core/Grid";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Card from "@material-ui/core/Card";
+import CardActionArea from "@material-ui/core/CardActionArea";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
+
+import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+
 import { getData, getSession } from "src/selectors";
 import { Plant } from "src/kernel";
 import PlantCard from "src/components/cards/PlantCard";
 import { selPlant, saveData, delData } from "src/slices/data";
 import MyDialog from "src/components/commons/Dialog";
 import PlantForm from "src/components/forms/PlantForm";
-import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -37,12 +40,18 @@ const useStyles = makeStyles((theme) => ({
     height: "100%",
     display: "flex",
     flexDirection: "column",
-  },
-  cardMedia: {
-    paddingTop: "56.25%", // 16:9
+    alignItems: "center",
+    justifyContent: "center",
   },
   cardContent: {
-    flexGrow: 1,
+    height: "100%",
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+  },
+  addCircleIcon: {
+    width: "40%",
+    height: "40%",
   },
   footer: {
     backgroundColor: theme.palette.background.paper,
@@ -68,7 +77,7 @@ const PlantPage: React.FunctionComponent<IPlantPageProps> = (props) => {
   const history = useHistory();
   const { plants: lst, newPlant } = useSelector(getData);
   const { feedback } = useSelector(getSession);
-  
+
   const handlePlantSelect = (id: number) => {
     dispatch(selPlant(id));
     history.push("/dashboard");
@@ -131,8 +140,13 @@ const PlantPage: React.FunctionComponent<IPlantPageProps> = (props) => {
               </Grid>
             ))}
             <Grid item xs={12} sm={6} md={4}>
-              <Card>
-                <Button onClick={handleCreateOnClick}>Add</Button>
+              <Card className={classes.card}>
+                <CardActionArea
+                  className={classes.cardContent}
+                  onClick={handleCreateOnClick}
+                >
+                  <AddCircleOutlineIcon className={classes.addCircleIcon}/>
+                </CardActionArea>
               </Card>
             </Grid>
           </Grid>
@@ -141,7 +155,7 @@ const PlantPage: React.FunctionComponent<IPlantPageProps> = (props) => {
       {/* Footer */}
       <footer className={classes.footer}>
         <Typography variant="h6" align="center" gutterBottom>
-          Footer
+          Schneider Electric
         </Typography>
         <Typography
           variant="subtitle1"
@@ -149,7 +163,7 @@ const PlantPage: React.FunctionComponent<IPlantPageProps> = (props) => {
           color="textSecondary"
           component="p"
         >
-          Something here to give the footer a purpose!
+          Life is On!
         </Typography>
       </footer>
       {/* End footer */}

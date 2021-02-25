@@ -7,6 +7,7 @@ interface Subsector extends Item {
   name: string;
   cycleTime: number;
   efficiency: number;
+  unit?: string;
   sector: number;
   skills: number[];
   employees: number[];
@@ -21,6 +22,7 @@ function dataToObj(x: SubsectorData): Subsector {
     cycleTime: x.cycle_time,
     efficiency: x.efficiency,
     sector: x.sector,
+    unit: x.unit,
     skills: x.skills,
     employees: x.employees,
     jobs: x.jobs,
@@ -34,6 +36,7 @@ function objToData(x: Subsector): SubsectorData {
     sector: x.sector,
     cycle_time: x.cycleTime,
     efficiency: x.efficiency,
+    unit: x.unit,
     skills: x.skills,
     employees: x.employees,
     jobs: x.jobs,

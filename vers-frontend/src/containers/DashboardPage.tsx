@@ -2,6 +2,7 @@ import React from "react";
 import clsx from "clsx";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
+import { saveAs } from "file-saver";
 
 import { makeStyles } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -13,25 +14,25 @@ import List from "@material-ui/core/List";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
-import Badge from "@material-ui/core/Badge";
 import Container from "@material-ui/core/Container";
 import Link from "@material-ui/core/Link";
-import MenuIcon from "@material-ui/icons/Menu";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import NotificationsIcon from "@material-ui/icons/Notifications";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import ListSubheader from "@material-ui/core/ListSubheader";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import ButtonBase from "@material-ui/core/ButtonBase";
+
 import DashboardIcon from "@material-ui/icons/Dashboard";
+import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+import NotificationsIcon from "@material-ui/icons/Notifications";
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import PeopleIcon from "@material-ui/icons/People";
 import BarChartIcon from "@material-ui/icons/BarChart";
 import LayersIcon from "@material-ui/icons/Layers";
 import AssignmentIcon from "@material-ui/icons/Assignment";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import ButtonBase from "@material-ui/core/ButtonBase";
+import MenuIcon from '@material-ui/icons/Menu';
 
 import PlantView from "./PlantView";
 import SectorView from "./SectorView";
@@ -45,9 +46,10 @@ import ExcelUploadForm from "src/components/forms/ExcelUploadForm";
 
 import { clearFeedback } from "src/slices/sync";
 import { logout } from "src/slices/session";
-import { selPlant } from "src/slices/data";
+import { selPlant, reload } from "src/slices/data";
 import { getData, getSession, getSync } from "src/selectors";
 import k from "src/kernel";
+import { Stream } from "stream";
 
 function Copyright() {
   return (
@@ -163,7 +165,7 @@ const Dashboard: React.FC = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { selectedPlantId: pId, plants } = useSelector(getData);
-  const { authenticated: auth, user } = useSelector(getSession);
+  const { user } = useSelector(getSession);
   const { feedback } = useSelector(getSync);
 
   const classes = useStyles();
@@ -228,9 +230,21 @@ const Dashboard: React.FC = () => {
     setExcelFormOpen(false);
   };
 
-  const handleExcelFileUpload = (file: File) => {
+  const handleExcelFileUpload = async (file: File) => {
     handleExcelFormClose();
-    pId && k.submitExcel(pId, file).catch(console.log);
+    pId && (await k.submitExcel(pId, file).catch(console.log));
+    dispatch(reload(pId));
+  };
+
+  const handleExcelFileDownload = async () => {
+    let s = pId ? await k.getExcel(pId) : undefined;
+    var blob = s
+      ? new Blob([s], {
+          type:
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        })
+      : undefined;
+    blob && saveAs(blob, `${plants[pId ?? 0].name}.xlsx`);
   };
 
   const cannotView = (i: number) => {
@@ -308,7 +322,7 @@ const Dashboard: React.FC = () => {
         onClick={handleListClick(DashboardView.Employee)}
       >
         <ListItemIcon>
-          <LayersIcon />
+          <AssignmentIcon />
         </ListItemIcon>
         <ListItemText primary="Employees" />
       </ListItem>
@@ -328,19 +342,6 @@ const Dashboard: React.FC = () => {
 
   const secondaryListItems = (
     <div>
-      <ListSubheader inset>Saved reports</ListSubheader>
-      <ListItem button>
-        <ListItemIcon>
-          <AssignmentIcon />
-        </ListItemIcon>
-        <ListItemText primary="Current month" />
-      </ListItem>
-      <ListItem button>
-        <ListItemIcon>
-          <AssignmentIcon />
-        </ListItemIcon>
-        <ListItemText primary="Last quarter" />
-      </ListItem>
     </div>
   );
 
@@ -399,9 +400,7 @@ const Dashboard: React.FC = () => {
                 {user ? user.username : "Guest"}
               </Typography>
               <IconButton color="inherit" onClick={handleMenuClick}>
-                <Badge badgeContent={4} color="secondary">
-                  <NotificationsIcon />
-                </Badge>
+                <MoreVertIcon />
               </IconButton>
             </div>
           </Toolbar>
@@ -442,6 +441,7 @@ const Dashboard: React.FC = () => {
       >
         <MenuItem onClick={handleViewProfile}>Profile</MenuItem>
         <MenuItem onClick={handleExcelFormOpen}>Upload Excel</MenuItem>
+        <MenuItem onClick={handleExcelFileDownload}>Export Excel</MenuItem>
         <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>
       <Menu

@@ -25,7 +25,7 @@ const ExcelUploadForm: React.FunctionComponent<IExcelUploadFormProps> = (
     <Grid container spacing={1}>
       {feedback ? (
         <Grid item xs={12}>
-          {feedback.map((x: any) => (
+          {feedback["non-field-errors"]?.map((x: any) => (
             <p>{x}</p>
           ))}
         </Grid>

@@ -46,8 +46,7 @@ const PlantCard: React.FunctionComponent<IPlantCardProps> = (props) => {
           {p.name}
         </Typography>
         <Typography>
-          This is a media card. You can use this section to describe the
-          content.
+          Hello! 
         </Typography>
       </CardContent>
       </CardActionArea>

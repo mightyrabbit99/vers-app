@@ -5,6 +5,7 @@ interface SubsectorData extends Data {
   sector: number;
   cycle_time: number;
   efficiency: number;
+  unit?: string;
   skills: number[];
   employees: number[];
   jobs: number[];
