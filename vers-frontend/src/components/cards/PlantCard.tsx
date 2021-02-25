@@ -26,8 +26,8 @@ const useStyles = makeStyles((theme) => ({
 interface IPlantCardProps {
   p: Plant;
   onClick: () => void;
-  onDelete: () => void;
-  onEditClick: () => void;
+  onDelete?: () => void;
+  onEditClick?: () => void;
 }
 
 const PlantCard: React.FunctionComponent<IPlantCardProps> = (props) => {
@@ -35,28 +35,30 @@ const PlantCard: React.FunctionComponent<IPlantCardProps> = (props) => {
   const classes = useStyles();
   return (
     <Card className={classes.card}>
-      <CardActionArea  onClick={onClick}>
-      <CardMedia
-        className={classes.cardMedia}
-        image="https://source.unsplash.com/random"
-        title="Image title"
-      />
-      <CardContent className={classes.cardContent}>
-        <Typography gutterBottom variant="h5" component="h2">
-          {p.name}
-        </Typography>
-        <Typography>
-          Hello! 
-        </Typography>
-      </CardContent>
+      <CardActionArea onClick={onClick}>
+        <CardMedia
+          className={classes.cardMedia}
+          image="https://source.unsplash.com/random"
+          title="Image title"
+        />
+        <CardContent className={classes.cardContent}>
+          <Typography gutterBottom variant="h5" component="h2">
+            {p.name}
+          </Typography>
+          <Typography>Hello!</Typography>
+        </CardContent>
       </CardActionArea>
       <CardActions>
-        <Button size="small" color="primary" onClick={onEditClick}>
-          Edit
-        </Button>
-        <Button size="small" color="primary" onClick={onDelete}>
-          Delete
-        </Button>
+        {onEditClick ? (
+          <Button size="small" color="primary" onClick={onEditClick}>
+            Edit
+          </Button>
+        ) : null}
+        {onDelete ? (
+          <Button size="small" color="primary" onClick={onDelete}>
+            Delete
+          </Button>
+        ) : null}
       </CardActions>
     </Card>
   );

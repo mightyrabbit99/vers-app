@@ -116,6 +116,13 @@ const SubsectorFF: React.FunctionComponent<ISubsectorFFProps> = (props) => {
         </Grid>
         <Grid item xs={12}>
           <TextField
+            fullWidth
+            label="Unit"
+            {...genActiveProps("unit")}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
             required
             fullWidth
             label="Cycle Time"

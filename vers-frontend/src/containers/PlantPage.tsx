@@ -2,7 +2,6 @@ import * as React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import AppBar from "@material-ui/core/AppBar";
-import CameraIcon from "@material-ui/icons/PhotoCamera";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Grid from "@material-ui/core/Grid";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -11,8 +10,13 @@ import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import IconButton from "@material-ui/core/IconButton";
 
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import CameraIcon from "@material-ui/icons/PhotoCamera";
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 import { getData, getSession } from "src/selectors";
 import { Plant } from "src/kernel";
@@ -20,6 +24,8 @@ import PlantCard from "src/components/cards/PlantCard";
 import { selPlant, saveData, delData } from "src/slices/data";
 import MyDialog from "src/components/commons/Dialog";
 import PlantForm from "src/components/forms/PlantForm";
+import { logout } from "src/slices/session";
+
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -31,6 +37,9 @@ const useStyles = makeStyles((theme) => ({
   },
   heroButtons: {
     marginTop: theme.spacing(4),
+  },
+  settings: {
+    marginLeft: "auto",
   },
   cardGrid: {
     paddingTop: theme.spacing(8),
@@ -76,7 +85,7 @@ const PlantPage: React.FunctionComponent<IPlantPageProps> = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { plants: lst, newPlant } = useSelector(getData);
-  const { feedback } = useSelector(getSession);
+  const { user, feedback } = useSelector(getSession);
 
   const handlePlantSelect = (id: number) => {
     dispatch(selPlant(id));
@@ -114,6 +123,31 @@ const PlantPage: React.FunctionComponent<IPlantPageProps> = (props) => {
     setFormOpen(true);
   };
 
+  const canEdit = () => {
+    return user?.is_superuser ? true : user?.vers_user.plant_group === 1;
+  };
+
+  const [
+    settingsAnchorEl,
+    setSettingsAnchorEl,
+  ] = React.useState<null | HTMLElement>(null);
+
+  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setSettingsAnchorEl(event.currentTarget);
+  };
+
+  const handleSettingsClose = () => {
+    setSettingsAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    dispatch(logout());
+  };
+
+  const handleViewProfile = () => {
+    history.push("/user");
+  };
+
   return (
     <React.Fragment>
       <CssBaseline />
@@ -123,6 +157,14 @@ const PlantPage: React.FunctionComponent<IPlantPageProps> = (props) => {
           <Typography variant="h6" color="inherit" noWrap>
             Plants
           </Typography>
+          <div className={classes.settings}>
+              <Typography variant="caption">
+                {user ? user.username : "Guest"}
+              </Typography>
+              <IconButton color="inherit" onClick={handleMenuClick}>
+                <MoreVertIcon />
+              </IconButton>
+            </div>
         </Toolbar>
       </AppBar>
       <main>
@@ -134,8 +176,12 @@ const PlantPage: React.FunctionComponent<IPlantPageProps> = (props) => {
                 <PlantCard
                   p={p}
                   onClick={() => handlePlantSelect(p.id)}
-                  onDelete={() => handleDeleteOnClick(p.id)}
-                  onEditClick={() => handleEditOnClick(p.id)}
+                  onDelete={
+                    canEdit() ? () => handleDeleteOnClick(p.id) : undefined
+                  }
+                  onEditClick={
+                    canEdit() ? () => handleEditOnClick(p.id) : undefined
+                  }
                 />
               </Grid>
             ))}
@@ -145,7 +191,7 @@ const PlantPage: React.FunctionComponent<IPlantPageProps> = (props) => {
                   className={classes.cardContent}
                   onClick={handleCreateOnClick}
                 >
-                  <AddCircleOutlineIcon className={classes.addCircleIcon}/>
+                  <AddCircleOutlineIcon className={classes.addCircleIcon} />
                 </CardActionArea>
               </Card>
             </Grid>
@@ -167,6 +213,16 @@ const PlantPage: React.FunctionComponent<IPlantPageProps> = (props) => {
         </Typography>
       </footer>
       {/* End footer */}
+      <Menu
+        id="simple-menu"
+        anchorEl={settingsAnchorEl}
+        keepMounted
+        open={Boolean(settingsAnchorEl)}
+        onClose={handleSettingsClose}
+      >
+        <MenuItem onClick={handleViewProfile}>Profile</MenuItem>
+        <MenuItem onClick={handleLogout}>Logout</MenuItem>
+      </Menu>
       <MyDialog open={formOpen} onClose={handleFormClose}>
         <div className={classes.form}>
           <div className={classes.formTitle}>

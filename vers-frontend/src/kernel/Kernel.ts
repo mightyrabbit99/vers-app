@@ -184,12 +184,13 @@ class Kernel {
   };
 
   public editUser = async (username: string, password: string) => {
+    let res;
     try {
-      let res = await Fetcher.putUser(username, password);
-      return { success: res.status === 200, data: res.data };
+      res = await Fetcher.putUser(username, password);
     } catch (e) {
-      return { success: false };
+      res = e.response
     }
+    return { success: res.status === 200, data: res.data };
   };
 
   private saveExcelDatas = async (

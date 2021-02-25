@@ -1,18 +1,22 @@
-import * as React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router';
-import UserEditForm from 'src/components/forms/UserEditForm';
-import { getSession } from 'src/selectors';
+import * as React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router";
+import UserEditForm from "src/components/forms/UserEditForm";
+import { getSession } from "src/selectors";
 
-import { changeUserDetail } from "src/slices/session";
+import { changeUserDetail, clearFeedback } from "src/slices/session";
 
-interface IUserEditProps {
-}
+interface IUserEditProps {}
 
 const UserEdit: React.FunctionComponent<IUserEditProps> = (props) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const { user, feedback } = useSelector(getSession);
+  React.useEffect(() => {
+    return () => {
+      dispatch(clearFeedback());
+    };
+  }, []);
   const handleSubmit = (data: any) => {
     dispatch(
       changeUserDetail({
@@ -20,10 +24,13 @@ const UserEdit: React.FunctionComponent<IUserEditProps> = (props) => {
         password: data.password,
       })
     );
-    history.push("/");
   };
 
-  return <><UserEditForm onSubmit={handleSubmit} user={user} feedback={feedback} /></>;
+  return (
+    <>
+      <UserEditForm onSubmit={handleSubmit} user={user} feedback={feedback} />
+    </>
+  );
 };
 
 export default UserEdit;

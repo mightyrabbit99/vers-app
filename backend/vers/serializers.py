@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from . import models
 from django.contrib.auth.models import User
+from django.core import exceptions
+import django.contrib.auth.password_validation as validators
 
 
 class VersUserSerializer(serializers.ModelSerializer):
@@ -40,6 +42,22 @@ class UserSerializer(serializers.ModelSerializer):
         instance.set_password(a)
         instance.save()
         return instance
+
+    def validate(self, data):
+         # get the password from the data
+         password = data.get('password')
+
+         errors = dict() 
+         try:
+             validators.validate_password(password=password, user=User)
+
+         except exceptions.ValidationError as e:
+             errors['password'] = list(e.messages)
+
+         if errors:
+             raise serializers.ValidationError(errors)
+
+         return super().validate(data)
 
     class Meta:
         model = User
@@ -111,11 +129,15 @@ class UserSerializer2(serializers.ModelSerializer):
         fields = ['id', 'username',
                   'vers_user', 'is_superuser', 'is_active']
 
+
 def sesa_id_val(value):
     if len(value) < 4:
-        raise serializers.ValidationError('This field must have at least 4 letters.')
+        raise serializers.ValidationError(
+            'This field must have at least 4 letters.')
     if value[:4].upper() != 'SESA':
-        raise serializers.ValidationError('This field must start with \'SESA\'')
+        raise serializers.ValidationError(
+            'This field must start with \'SESA\'')
+
 
 class EmployeeSerializer(serializers.ModelSerializer):
     skills = EmpSkillMatrixSerializer(many=True)

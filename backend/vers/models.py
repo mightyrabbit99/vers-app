@@ -75,7 +75,7 @@ class Subsector(models.Model):
         Sector, related_name='subsectors', on_delete=models.PROTECT)
     cycle_time = models.IntegerField()
     efficiency = models.IntegerField()
-    unit = models.CharField(max_length=50, null=True)
+    unit = models.CharField(max_length=50, null=True, blank=True)
     owner = models.ForeignKey(
         User, related_name='subsectors', on_delete=models.SET_NULL, null=True)
 

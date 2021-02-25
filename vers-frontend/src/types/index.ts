@@ -1,4 +1,4 @@
-import { Plant, Data, Sector, Subsector, Department, Skill, Employee, Job, ItemType } from "src/kernel";
+import { Plant, Data, Sector, Subsector, Department, Skill, Employee, Job } from "src/kernel";
 import { UserData } from "src/kernel/data/UserData";
 import { delData, saveData, reload } from "src/slices/data";
 import { changeUserDetail, login } from "src/slices/session";

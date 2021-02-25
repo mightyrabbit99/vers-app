@@ -72,6 +72,12 @@ const SignInForm: React.FC<FormProps> = (props) => {
     onChange: handleChange,
   });
 
+  const genProps = (name: string) => ({
+    ...genActiveProps(name),
+    error: getFeedback(name) !== "",
+    helperText: getFeedback(name),
+  });
+
   const handleClick = () => {
     onSubmit(data);
   };
@@ -88,9 +94,7 @@ const SignInForm: React.FC<FormProps> = (props) => {
           label="Username"
           autoComplete="username"
           autoFocus
-          {...genActiveProps("username")}
-          error={getFeedback("username") !== ""}
-          helperText={getFeedback("username")}
+          {...genProps("username")}
         />
         <TextField
           variant="outlined"
@@ -99,11 +103,10 @@ const SignInForm: React.FC<FormProps> = (props) => {
           fullWidth
           label="Password"
           type="password"
-          id="password"
-          autoComplete="current-password"
-          {...genActiveProps("password")}
-          error={getFeedback("username") !== ""}
-          helperText={getFeedback("username")}
+          inputProps={{
+            autoComplete: "new-password",
+          }}
+          {...genProps("password")}
         />
         <FormHelperText>{getFeedback("non_field_errors")}</FormHelperText>
       </FormControl>

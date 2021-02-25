@@ -51,8 +51,9 @@ function* editUser({ payload }: EditUserAction) {
   if (feedback.success) {
     yield put(_setAuthenticated({ authenticated: false }));
     yield put(loginSuccess(undefined));
+    yield put(logout());
   } else {
-    yield put(loginSuccess("changes failed"));
+    yield put(loginSuccess(feedback.data));
   }
 }
 

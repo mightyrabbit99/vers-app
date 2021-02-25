@@ -35,6 +35,9 @@ const sessionSlice = createSlice({
     changeUserDetail: (state, { payload }: PayloadAction<any>) => {
       state.syncing = true;
     },
+    clearFeedback: (state) => {
+      state.feedback = undefined;
+    },
   },
 });
 
@@ -46,6 +49,7 @@ export const {
   _setAuthenticated,
   logout,
   changeUserDetail,
+  clearFeedback,
 } = sessionSlice.actions;
 
 export default sessionSlice.reducer;
