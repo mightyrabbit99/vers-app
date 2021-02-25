@@ -25,7 +25,6 @@ import ButtonBase from "@material-ui/core/ButtonBase";
 
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import NotificationsIcon from "@material-ui/icons/Notifications";
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import PeopleIcon from "@material-ui/icons/People";
@@ -49,13 +48,12 @@ import { logout } from "src/slices/session";
 import { selPlant, reload } from "src/slices/data";
 import { getData, getSession, getSync } from "src/selectors";
 import k from "src/kernel";
-import { Stream } from "stream";
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {"Copyright © "}
-      <Link color="inherit" href="https://material-ui.com/">
+      <Link color="inherit" href="https://se.com/">
         Schneider Electric
       </Link>{" "}
       {new Date().getFullYear()}

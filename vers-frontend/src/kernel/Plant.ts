@@ -35,6 +35,7 @@ const generator = (init?: any): Plant => ({
 
 const get = async () => {
   let res = await Fetcher.getPlants();
+  console.log(res);
   return res.data.map(dataToObj);
 };
 

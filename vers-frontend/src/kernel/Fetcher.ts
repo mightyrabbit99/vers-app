@@ -15,9 +15,7 @@ import FakeServer from "./FakeServer";
 const axios = new FakeServer();
 */
 type Result<T> = { data: T[] };
-
-const apiLocation = "http://127.0.0.1:8000";
-const url = apiLocation; // `http://${window.location.host}`
+const url = process.env.REACT_APP_API_URL; // `http://${window.location.host}`
 const userUrl = `${url}/user_modify/`;
 const apiTokenAuth = `${url}/api-token-auth/`;
 const plantUrl = `${url}/api/plant/`;
@@ -86,7 +84,6 @@ class Fetcher {
 
   // GET
   static getUser = async (): Promise<any> => {
-    console.log(Fetcher.getConfig())
     return await axios.get(userUrl, Fetcher.getConfig());
   };
 
