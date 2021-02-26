@@ -107,13 +107,6 @@ const EmployeeFF: React.FunctionComponent<IEmployeeFFProps> = (props) => {
     return state[name];
   };
 
-  const numValueSetter = (e: React.ChangeEvent<any>) => {
-    let { name, value } = e.target;
-    let num = parseInt(value, 10);
-    value = isNaN(num) ? 0 : num;
-    chg(name, value);
-  };
-
   const genActiveProps = (name: string) => ({
     name,
     value: getDataProp(name),

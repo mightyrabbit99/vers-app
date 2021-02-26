@@ -59,17 +59,14 @@ const EmployeeSkillWidget: React.FunctionComponent<IEmployeeSkillWidgetProps> = 
   const [availSkills, setAvailSkills] = React.useState<Skill[]>([]);
   const [selectedLst, setSelectedLst] = React.useState<number[]>([]);
   
-  const recalcAvailSkills = () => {
+  React.useEffect(() => {
     if (sel === -1) return;
     let skillIds = lst[sel].skills.map((x) => x.skill);
     let newAvailSkills = Object.entries(skillLst)
       .filter(([k, v]) => !skillIds.includes(v.id))
       .map((x) => x[1]);
     setAvailSkills(newAvailSkills);
-  }
-  React.useEffect(() => {
-    recalcAvailSkills();
-  }, [sel, lst]);
+  }, [sel, lst, skillLst]);
 
   const handleListItemClick = (event: React.ChangeEvent<any>, i: number) => {
     setSel(i);

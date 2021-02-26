@@ -42,7 +42,7 @@ const App: React.FC<IAppProps> = () => {
 
   React.useEffect(() => {
     dispatch(initLogin());
-  }, []);
+  }, [dispatch]);
 
   if (auth === undefined || syncing) return <SpinningBall />;
   return (

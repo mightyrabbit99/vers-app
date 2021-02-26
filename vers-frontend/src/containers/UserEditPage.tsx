@@ -14,7 +14,7 @@ const UserEdit: React.FunctionComponent<IUserEditProps> = (props) => {
     return () => {
       dispatch(clearFeedback());
     };
-  }, []);
+  }, [dispatch]);
   const handleSubmit = (data: any) => {
     dispatch(
       changeUserDetail({
