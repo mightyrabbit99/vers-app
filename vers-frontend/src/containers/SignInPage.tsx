@@ -1,6 +1,5 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import SignInForm from "src/components/forms/SignInForm";
 
 import { login } from "src/slices/session";
 import { useHistory } from "react-router";
@@ -21,6 +20,8 @@ import {
 } from "@material-ui/core/styles";
 import { green, purple } from "@material-ui/core/colors";
 import Container from "@material-ui/core/Container";
+
+import SignInForm from "src/components/forms/SignInForm";
 
 function Copyright() {
   return (

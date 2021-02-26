@@ -20,6 +20,9 @@ const syncSlice = createSlice({
       state.syncing = false;
       state.error = payload;
     },
+    syncing: (state) => {
+      state.syncing = true;
+    },
     submitError: (state, { payload }: PayloadAction<string>) => {
       state.syncing = false;
       state.error = payload;
@@ -48,6 +51,7 @@ export const {
   fetchData,
   fetchDataSuccess,
   fetchDataError,
+  syncing,
   submitSuccess,
   submitError,
   createNew,

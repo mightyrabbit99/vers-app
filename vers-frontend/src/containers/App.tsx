@@ -95,13 +95,9 @@ const App: React.FC<IAppProps> = () => {
           path="/user_edit"
           render={() => <UserEditPage />}
         />
-        <MainRoute
-          exact
-          auth={auth}
-          type="guest"
-          path="/signin"
-          component={() => <SigninPage />}
-        />
+        <Route exact path="/signin">
+          <SigninPage />
+        </Route>
       </Switch>
     </ThemeProvider>
   );

@@ -47,13 +47,19 @@ const getCookie = (name: string) => {
 class Fetcher {
   private static token: string | null = localStorage.getItem("Token");
 
-  private static setToken = (token?: string) => {
+  public static setToken = (token?: string) => {
     if (token) {
-      localStorage.setItem("Token", token);
       Fetcher.token = token;
     } else {
-      localStorage.removeItem("Token");
       Fetcher.token = null;
+    }
+  };
+
+  public static saveToken = () => {
+    if (Fetcher.token) {
+      localStorage.setItem("Token", Fetcher.token);
+    } else {
+      localStorage.removeItem("Token");
     }
   };
 
@@ -69,7 +75,7 @@ class Fetcher {
   };
 
   static login = async (username: string, password: string) => {
-    const res = await axios.post(apiTokenAuth, { username, password });
+    let res = await axios.post(apiTokenAuth, { username, password });
     if (res.data.token) {
       Fetcher.setToken(res.data.token);
     }
@@ -78,6 +84,7 @@ class Fetcher {
 
   static logout = () => {
     Fetcher.setToken();
+    Fetcher.saveToken();
   };
 
   static isLoggedIn = () => !!Fetcher.token;

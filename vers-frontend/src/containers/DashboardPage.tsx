@@ -43,7 +43,7 @@ import JobView from "./JobView";
 import MyDialog from "src/components/commons/Dialog";
 import ExcelUploadForm from "src/components/forms/ExcelUploadForm";
 
-import { clearFeedback } from "src/slices/sync";
+import { syncing, submitSuccess, submitError, clearFeedback } from "src/slices/sync";
 import { logout } from "src/slices/session";
 import { selPlant, reload } from "src/slices/data";
 import { getData, getSession, getSync } from "src/selectors";
@@ -229,9 +229,15 @@ const Dashboard: React.FC = () => {
   };
 
   const handleExcelFileUpload = async (file: File) => {
-    handleExcelFormClose();
-    pId && (await k.submitExcel(pId, file).catch(console.log));
+    dispatch(syncing());
+    try {
+      pId && (await k.submitExcel(pId, file));
+      dispatch(submitSuccess(undefined));
+    } catch (e) {
+      dispatch(submitError(e)); 
+    }
     dispatch(reload(pId));
+    handleExcelFormClose();
   };
 
   const handleExcelFileDownload = async () => {

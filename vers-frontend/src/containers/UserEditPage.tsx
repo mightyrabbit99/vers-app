@@ -1,6 +1,5 @@
 import * as React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router";
 import UserEditForm from "src/components/forms/UserEditForm";
 import { getSession } from "src/selectors";
 
@@ -9,7 +8,6 @@ import { changeUserDetail, clearFeedback } from "src/slices/session";
 interface IUserEditProps {}
 
 const UserEdit: React.FunctionComponent<IUserEditProps> = (props) => {
-  const history = useHistory();
   const dispatch = useDispatch();
   const { user, feedback } = useSelector(getSession);
   React.useEffect(() => {
@@ -25,7 +23,6 @@ const UserEdit: React.FunctionComponent<IUserEditProps> = (props) => {
       })
     );
   };
-
   return (
     <>
       <UserEditForm onSubmit={handleSubmit} user={user} feedback={feedback} />

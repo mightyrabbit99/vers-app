@@ -1,4 +1,5 @@
-import React from "react";
+import * as React from "react";
+import Mousetrap from "mousetrap";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -63,7 +64,7 @@ const SignInForm: React.FC<FormProps> = (props) => {
     if (name === "remember") {
       value = checked;
     }
-    setFeedback({ ...feedback, [name]: undefined});
+    setFeedback({ ...feedback, [name]: undefined });
     setData({ ...data, [name]: value });
   };
 
@@ -76,6 +77,14 @@ const SignInForm: React.FC<FormProps> = (props) => {
   const handleClick = () => {
     onSubmit(data);
   };
+  /*
+  React.useEffect(() => {
+    Mousetrap.prototype.stopCallback = () => false;
+    Mousetrap.bind(["enter"], handleClick);
+    return () => {
+      Mousetrap.unbind(["enter"]);
+    };
+  }, []);*/
 
   return (
     <React.Fragment>

@@ -163,9 +163,10 @@ class Kernel {
     return [mods, dels];
   };
 
-  public login = async (username: string, password: string) => {
+  public login = async (username: string, password: string, remember: boolean = false) => {
     try {
       let res = await Fetcher.login(username, password);
+      remember && Fetcher.saveToken();
       return { success: res.status === 200, data: res.data };
     } catch (e) {
       return { success: false };
@@ -211,17 +212,22 @@ class Kernel {
     let skillNameMap = genMap(skillLst, (x) => x.name);
 
     const saveSkill = async (skill: SkillObj) => {
+      if (!skill.data.subsector) return;
+      if (skill.data.subsector < 0) return;
+      let data;
       if (skill.data.name in skillNameMap) {
-        let origin = { ...skillNameMap[skill.data.name][0], ...skill.data };
-        await k.save(origin);
-        skill.id = origin.id;
+        data = { ...skillNameMap[skill.data.name][0], ...skill.data };
+        await k.save(data);
+        skill.id = data.id;
       } else {
-        let res = await this.saveNew(k.skillStore.getNew(skill.data));
+        data = k.skillStore.getNew(skill.data);
+        let res = await this.saveNew(data);
         skill.id = res.data.id;
       }
     };
     const saveEmployee = async (emp: EmployeeObj) => {
-      if (!emp.data.department) return;
+      if (!emp.data.department || !emp.data.subsector) return;
+      if (emp.data.department < 0 || emp.data.subsector < 0) return;
       let data;
       if (emp.data.sesaId in empSesaMap) {
         data = { ...empSesaMap[emp.data.sesaId][0], ...emp.data };
@@ -234,6 +240,8 @@ class Kernel {
       }
     };
     const performSaveSubsector = async (subsec: SubsectorObj) => {
+      if (!subsec.data.sector) return;
+      if (subsec.data.sector === -1) return;
       let data;
       if (subsec.data.name in subsectorNameMap) {
         data = {

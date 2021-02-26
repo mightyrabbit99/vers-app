@@ -16,7 +16,7 @@ import IconButton from "@material-ui/core/IconButton";
 
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import CameraIcon from "@material-ui/icons/PhotoCamera";
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import MoreVertIcon from "@material-ui/icons/MoreVert";
 
 import { getData, getSession } from "src/selectors";
 import { Plant } from "src/kernel";
@@ -25,7 +25,6 @@ import { selPlant, saveData, delData } from "src/slices/data";
 import MyDialog from "src/components/commons/Dialog";
 import PlantForm from "src/components/forms/PlantForm";
 import { logout } from "src/slices/session";
-
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -158,13 +157,13 @@ const PlantPage: React.FunctionComponent<IPlantPageProps> = (props) => {
             Plants
           </Typography>
           <div className={classes.settings}>
-              <Typography variant="caption">
-                {user ? user.username : "Guest"}
-              </Typography>
-              <IconButton color="inherit" onClick={handleMenuClick}>
-                <MoreVertIcon />
-              </IconButton>
-            </div>
+            <Typography variant="caption">
+              {user ? user.username : "Guest"}
+            </Typography>
+            <IconButton color="inherit" onClick={handleMenuClick}>
+              <MoreVertIcon />
+            </IconButton>
+          </div>
         </Toolbar>
       </AppBar>
       <main>

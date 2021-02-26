@@ -1,4 +1,5 @@
 import { all, put, takeLatest } from "redux-saga/effects";
+import { push } from 'connected-react-router'; 
 import k, { Result } from "src/kernel";
 import {
   initLogin,
@@ -22,6 +23,7 @@ function* init() {
     if (res.success) {
       yield put(fetchData());
       yield put(_setAuthenticated({ authenticated: true, user: res.data }));
+      yield put(push('/plants'));
     } else {
       k.logout();
       yield put(_setAuthenticated({ authenticated: false }));
@@ -36,11 +38,12 @@ function* logoutThenUpdatePermission() {
 }
 
 function* loginThenUpdatePermission({ payload }: LoginAction) {
-  const feedback: Result = yield k.login(payload.username, payload.password);
+  const feedback: Result = yield k.login(payload.username, payload.password, payload.remember);
   if (feedback.success) {
     let res: any = yield k.getUser();
     yield put(_setAuthenticated({ authenticated: true, user: res.data }));
     yield put(loginSuccess(undefined));
+    yield put(fetchData());
   } else {
     yield put(loginSuccess("Wrong Username/Password"));
   }
