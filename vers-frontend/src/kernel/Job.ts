@@ -17,14 +17,14 @@ function dataToObj(x: JobData): Job {
   return {
     id: x.id,
     _type: ItemType.Job,
-    title: "",
+    title: x.title,
     pplAmtRequired: 0,
     salaryAmount: 0,
-    fromDate: "",
-    toDate: "",
-    subsector: -1,
-    empAssigned: [],
-    skillsRequired: [],
+    fromDate: x.from_date,
+    toDate: x.to_date,
+    subsector: x.subsector,
+    empAssigned: x.emp_assigned,
+    skillsRequired: x.skills_required,
   };
 }
 

@@ -216,8 +216,31 @@ class JobSkillMatrixSerializer(serializers.ModelSerializer):
 
 
 class JobSerializer(serializers.ModelSerializer):
-    skills_required = JobSkillMatrixSerializer(many=True, read_only=True)
+    skills_required = JobSkillMatrixSerializer(many=True)
     owner = serializers.ReadOnlyField(source=OWNER_USERNAME)
+
+    def create(self, validated_data):
+        skills_data = validated_data.pop('skills_required')
+        job = models.Job(**validated_data)
+        job.save()
+        models.JobSkillMatrix.objects.bulk_create(skills_data)
+        return job
+
+    def update(self, instance, validated_data):
+        skills_data = validated_data.pop('skills_required')
+        employees_data = validated_data.pop('emp_assigned')
+
+        origin_skills = instance.skills_required.all()
+        for s in origin_skills:
+            s.delete()
+        for s in skills_data:
+            new_job_skill = models.JobSkillMatrix(**s)
+            new_job_skill.save()
+
+        for (key, value) in validated_data.items():
+            setattr(instance, key, value)
+        instance.save()
+        return instance
 
     class Meta:
         model = models.Job

@@ -117,7 +117,7 @@ const JobSkillWidget: React.FunctionComponent<IJobSkillWidgetProps> = (
       onClick={(event) => handleListItemClick(event, e.id)}
       key={idx}
     >
-      <ListItemText primary={`${e.firstName}`} />
+      <ListItemText primary={`${e.title}`} />
     </ListItem>
   );
 

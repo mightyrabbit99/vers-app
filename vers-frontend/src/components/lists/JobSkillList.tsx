@@ -67,7 +67,7 @@ const JobSkillList: React.FunctionComponent<IJobSkillListProps> = (props) => {
   const genSkillTableRow = (x: JobSkillData, idx: number) => {
     const handleChange = (e: React.ChangeEvent<any>) => {
       const { value } = e.target;
-      const newSkills = [...item.skills];
+      const newSkills = [...item.skillsRequired];
       newSkills[idx] = { ...newSkills[idx], level: value };
       const newJob: Job = {
         ...item,
@@ -128,7 +128,7 @@ const JobSkillList: React.FunctionComponent<IJobSkillListProps> = (props) => {
             <TableCell>Level</TableCell>
           </TableRow>
         </TableHead>
-        <TableBody>{item.skills.map(genSkillTableRow)}</TableBody>
+        <TableBody>{item.skillsRequired.map(genSkillTableRow)}</TableBody>
       </Table>
     </TableContainer>
   );

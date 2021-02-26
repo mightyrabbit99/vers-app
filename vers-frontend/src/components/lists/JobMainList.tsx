@@ -10,8 +10,6 @@ interface IJobMainListProps {
   onEdit?: (id: number) => void;
 }
 
-const getName = (p: Job) => `${p.firstName}, ${p.lastName}`;
-
 const JobMainList: React.FC<IJobMainListProps> = (props) => {
   const {
     lst,
@@ -22,7 +20,7 @@ const JobMainList: React.FC<IJobMainListProps> = (props) => {
   const cols = [
     {
       title: "Name",
-      extractor: (p: Job) => getName(p),
+      extractor: (p: Job) => p.title,
     },
   ];
 
