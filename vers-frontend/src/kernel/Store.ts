@@ -80,7 +80,7 @@ function store<T extends Item>(
     submitNew = async (t: T) => {
       try {
         let ans = await post(t);
-        if (ans.success) this.add(t);
+        if (ans.success) await this.refresh();
         return ans;
       } catch (error) {
         return { success: false, data: error };

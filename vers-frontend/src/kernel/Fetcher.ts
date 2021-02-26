@@ -132,12 +132,7 @@ class Fetcher {
 
   // POST
   static postPlant = async (data: PlantData): Promise<Result<PlantData>> => {
-    try {
-      return await axios.post(plantUrl, data, Fetcher.getConfig());
-    } catch (e) {
-      return Promise.reject(e);
-    }
-    
+    return await axios.post(plantUrl, data, Fetcher.getConfig());
   };
 
   static postSec = async (data: SectorData): Promise<Result<SectorData>> => {

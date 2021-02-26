@@ -71,15 +71,7 @@ const App: React.FC<IAppProps> = () => {
           )}
         </Route>
         <Route exact path="/plants">
-          {auth ? (
-            pId ? (
-              <Redirect to="/dashboard" />
-            ) : (
-              <PlantPage />
-            )
-          ) : (
-            <Redirect to="/" />
-          )}
+          {auth ? <PlantPage /> : <Redirect to="/" />}
         </Route>
         <MainRoute
           exact
