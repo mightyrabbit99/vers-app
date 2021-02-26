@@ -13,6 +13,12 @@ import Container from "@material-ui/core/Container";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import IconButton from "@material-ui/core/IconButton";
+import Dialog from "src/components/commons/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import Button from "@material-ui/core/Button";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContentText from "@material-ui/core/DialogContentText";
 
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import CameraIcon from "@material-ui/icons/PhotoCamera";
@@ -91,9 +97,18 @@ const PlantPage: React.FunctionComponent<IPlantPageProps> = (props) => {
     history.push("/dashboard");
   };
 
+  const [confirmDel, setConfirmDel] = React.useState<number | undefined>(undefined);
   const handleDeleteOnClick = (id: number) => {
-    dispatch(delData(lst[id]));
+    setConfirmDel(id);
   };
+  const handleDelConfirmClose = () => {
+    setConfirmDel(undefined);
+  }
+  const handleConfirmDel = () => {
+    confirmDel && dispatch(delData(lst[confirmDel]));
+    handleDelConfirmClose();
+  }
+  
 
   const [formOpen, setFormOpen] = React.useState(false);
   const [formData, setFormData] = React.useState(newPlant);
@@ -249,6 +264,29 @@ const PlantPage: React.FunctionComponent<IPlantPageProps> = (props) => {
           </div>
         </div>
       </MyDialog>
+      <Dialog
+        open={!!confirmDel}
+        onClose={handleDelConfirmClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Are You Sure?"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            {"Do you really want to delete the plant "}
+            {confirmDel ? lst[confirmDel].name : null}
+            {"?"}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDelConfirmClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmDel} color="primary" autoFocus>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </React.Fragment>
   );
 };

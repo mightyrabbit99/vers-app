@@ -33,6 +33,10 @@ function* reloadData({ payload: p }: ReloadDataAction) {
     newJob;
   plants = k.plantStore.getLst();
   newPlant = k.plantStore.getNew();
+
+  p && !(p in plants) && (p = undefined);
+  !p && (p = (Object.values(plants).length > 0 ? Object.values(plants)[0].id : undefined));
+  p ? localStorage.setItem("lastPlant", `${p}`) : localStorage.removeItem("lastPlant");
   sectors = k.secStore.getLst(p ? (x) => x.plant === p : undefined);
   newSector = k.secStore.getNew({ plant: p });
   subsectors = k.subsecStore.getLst((x) => x.sector in sectors);
@@ -70,7 +74,6 @@ function* reloadData({ payload: p }: ReloadDataAction) {
 }
 
 function* selectPlant({ payload: p }: ReloadDataAction) {
-  p ? localStorage.setItem("lastPlant", `${p}`) : localStorage.removeItem("lastPlant");
   yield p && put(reload(p));
 }
 
