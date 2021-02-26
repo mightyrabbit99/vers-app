@@ -25,7 +25,7 @@ interface IJobViewProps {}
 const JobView: React.FunctionComponent<IJobViewProps> = (props) => {
   const dispatch = useDispatch();
   const classes = useStyles();
-  const { jobs, newJob, skills } = useSelector(getData);
+  const { jobs, newJob, skills, subsectors } = useSelector(getData);
   const { feedback } = useSelector(getSync);
   const { user } = useSelector(getSession);
 
@@ -50,6 +50,7 @@ const JobView: React.FunctionComponent<IJobViewProps> = (props) => {
             lst={jobs}
             newJob={newJob}
             feedback={feedback}
+            subsectorLst={subsectors}
             edit={canEdit()}
             onSubmit={handleSubmit}
             onDelete={handleDelete}

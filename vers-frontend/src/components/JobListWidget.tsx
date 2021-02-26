@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 
-import { Job } from "src/kernel";
+import { Job, Subsector } from "src/kernel";
 import JobList from "src/components/lists/JobMainList";
 import JobForm from "src/components/forms/JobForm";
 import MyDialog from "src/components/commons/Dialog";
@@ -38,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
 
 interface IJobListWidgetProps {
   lst: { [id: number]: Job };
+  subsectorLst: { [id: number]: Subsector };
   newJob?: Job;
   feedback?: any;
   edit?: boolean;
@@ -50,6 +51,7 @@ const JobListWidget: React.FunctionComponent<IJobListWidgetProps> = (props) => {
   const classes = useStyles();
   const {
     lst,
+    subsectorLst,
     newJob,
     feedback,
     edit = true,
@@ -152,6 +154,7 @@ const JobListWidget: React.FunctionComponent<IJobListWidgetProps> = (props) => {
               <JobForm
                 data={formData}
                 feedback={feedback}
+                subsectorLst={subsectorLst}
                 onSubmit={handleSubmit}
                 onCancel={handleFormClose}
               />
