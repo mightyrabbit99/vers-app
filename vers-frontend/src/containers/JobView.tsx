@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Grid, Paper, makeStyles } from "@material-ui/core";
 
 import JobListWidget from "src/components/JobListWidget";
+import JobSkillWidget from "src/components/JobSkillWidget";
 import { getData, getSync, getSession } from "src/selectors";
 import { delData, saveData } from "src/slices/data";
 import { Job } from "src/kernel";
@@ -24,7 +25,7 @@ interface IJobViewProps {}
 const JobView: React.FunctionComponent<IJobViewProps> = (props) => {
   const dispatch = useDispatch();
   const classes = useStyles();
-  const { jobs, newJob } = useSelector(getData);
+  const { jobs, newJob, skills } = useSelector(getData);
   const { feedback } = useSelector(getSync);
   const { user } = useSelector(getSession);
 
@@ -53,6 +54,15 @@ const JobView: React.FunctionComponent<IJobViewProps> = (props) => {
             onSubmit={handleSubmit}
             onDelete={handleDelete}
             onReset={handleReset}
+          />
+        </Paper>
+      </Grid>
+      <Grid item xs={12}>
+        <Paper className={classes.list}>
+          <JobSkillWidget
+            lst={jobs}
+            skillLst={skills}
+            onSubmit={canEdit() ? handleSubmit : undefined}
           />
         </Paper>
       </Grid>

@@ -2,6 +2,8 @@ import * as React from "react";
 
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
+import Typography from "@material-ui/core/Typography";
+import Link from "@material-ui/core/Link";
 
 interface IExcelUploadFormProps {
   feedback?: any;
@@ -23,6 +25,13 @@ const ExcelUploadForm: React.FunctionComponent<IExcelUploadFormProps> = (
   };
   return (
     <Grid container spacing={1}>
+      <Typography variant="body2" color="textSecondary" align="center">
+        {"Click "}
+        <Link color="inherit" href={process.env.REACT_APP_EXCEL_TEMPLATE_URL}>
+          here
+        </Link>
+        {" for template"}
+      </Typography>
       {feedback ? (
         <Grid item xs={12}>
           {feedback["non-field-errors"]?.map((x: any) => (

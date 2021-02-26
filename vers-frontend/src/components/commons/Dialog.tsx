@@ -5,15 +5,15 @@ import { makeStyles } from "@material-ui/core/styles";
 import { TransitionProps } from "@material-ui/core/transitions";
 import React from "react";
 
-
 const useStyles = makeStyles({
   root: {
-    width: "fit-content",
-    margin: "auto"
+    width: "100%",
+    margin: "auto",
   },
   content: {
-    width: "fit-content"
-  }
+    margin: "auto",
+    overflow: "hidden",
+  },
 });
 
 const Transition = React.forwardRef(function Transition(
