@@ -215,3 +215,37 @@ class JobSkillMatrix(models.Model):
 
     class Meta:
         db_table = 'job_skills'
+
+
+class Log(models.Model):
+    CREATE = 1
+    EDIT = 2
+    DELETE = 3
+    TYPE_CHOICES = [
+        (CREATE, '1'),
+        (EDIT, '2'),
+        (DELETE, '3'),
+    ]
+
+    PLANT = 1
+    SECTOR = 2
+    SUBSECTOR = 3
+    SKILL = 4
+    EMPLOYEE = 5
+    JOB = 6
+    DATA_CHOICES = [
+        (PLANT, 'Plant'),
+        (SECTOR, 'Sector'),
+        (SUBSECTOR, 'Subsector'),
+        (SKILL, 'Skill'),
+        (EMPLOYEE, 'Employee'),
+        (JOB, 'Job'),
+    ]
+    type = models.IntegerField(choices=TYPE_CHOICES)
+    data_type = models.IntegerField(choices=DATA_CHOICES)
+    user = User
+    change_id = models.IntegerField()
+    desc = models.CharField(max_length=100, blank=True)
+
+    class Meta:
+        db_name = 'logs'

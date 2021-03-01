@@ -7,6 +7,7 @@ import SectorStore, { Sector } from "./Sector";
 import SkillStore, { Skill } from "./Skill";
 import { Store, Item, ItemType } from "./Store";
 import SubsectorStore, { Subsector } from "./Subsector";
+import LogStore, { Log } from "./Log";
 
 import ExcelProcessor, {
   DepartmentObj,
@@ -40,6 +41,7 @@ class Kernel {
   skillStore: Store<Skill>;
   empStore: Store<Employee>;
   jobStore: Store<Job>;
+  logStore: Store<Log>;
 
   constructor() {
     this.plantStore = new PlantStore();
@@ -49,6 +51,7 @@ class Kernel {
     this.skillStore = new SkillStore();
     this.empStore = new EmployeeStore();
     this.jobStore = new JobStore();
+    this.logStore = new LogStore();
   }
 
   public refresh = async () => {
@@ -59,6 +62,7 @@ class Kernel {
     await this.skillStore.refresh();
     await this.empStore.refresh();
     await this.jobStore.refresh();
+    await this.logStore.refresh();
   };
 
   public saveNew = async (t: Item) => {
@@ -119,6 +123,8 @@ class Kernel {
         return await this.empStore.remove(t as Employee);
       case ItemType.Job:
         return await this.jobStore.remove(t as Job);
+      case ItemType.Log:
+        return await this.logStore.remove(t as Log);
       default:
         return { success: false, data: {} };
     }

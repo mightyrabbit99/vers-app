@@ -7,6 +7,7 @@ enum ItemType {
   Skill,
   Department,
   EmpSkill,
+  Log,
 }
 
 interface Item {

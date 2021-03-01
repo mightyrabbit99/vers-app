@@ -33,6 +33,8 @@ export const initialState: DataState = {
   skills: {},
   employees: {},
   jobs: {},
+  logs: {},
+  personalLogs: [],
   loading: true,
   calculating: false,
 };

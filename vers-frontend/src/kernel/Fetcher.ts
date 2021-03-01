@@ -8,6 +8,7 @@ import {
   SectorData,
   SkillData,
   SubsectorData,
+  LogData,
 } from "./data";
 import axios from "axios";
 /*
@@ -27,6 +28,7 @@ const skillUrl = `${url}/api/skill/`;
 const jobUrl = `${url}/api/job/`;
 const empSkillUrl = `${url}/api/emp_skill/`;
 const jobSkillUrl = `${url}/api/job_skill/`;
+const logUrl = `${url}/api/logs/`;
 
 const getCookie = (name: string) => {
   var cookieValue = null;
@@ -128,6 +130,10 @@ class Fetcher {
 
   static getEmpSkills = async (): Promise<Result<EmpSkillData>> => {
     return await axios.get(empSkillUrl, Fetcher.getConfig());
+  };
+
+  static getLogs = async (): Promise<Result<LogData>> => {
+    return await axios.get(logUrl, Fetcher.getConfig());
   };
 
   // POST
@@ -286,6 +292,12 @@ class Fetcher {
     data: EmpSkillData
   ): Promise<Result<EmpSkillData>> => {
     return await axios.delete(`${empSkillUrl}${data.id}/`, Fetcher.getConfig());
+  };
+
+  static deleteLog = async (
+    data: LogData
+  ): Promise<Result<EmpSkillData>> => {
+    return await axios.delete(`${logUrl}${data.id}/`, Fetcher.getConfig());
   };
 }
 

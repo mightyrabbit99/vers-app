@@ -10,4 +10,5 @@ export * from "./Department";
 export * from "./Employee";
 export * from "./Store";
 export * from "./Job";
+export * from "./Log";
 export { ExcelProcessor };
