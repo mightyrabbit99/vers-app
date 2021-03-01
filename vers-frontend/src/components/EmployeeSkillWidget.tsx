@@ -33,6 +33,11 @@ const useStyles = makeStyles((theme) => ({
   content: {
     height: "85%",
   },
+  list: {
+    height: "100%",
+    overflow: 'auto',
+    maxHeight: 300,
+  },
   form: {},
   formTitle: {
     height: "15%",
@@ -134,7 +139,7 @@ const EmployeeSkillWidget: React.FunctionComponent<IEmployeeSkillWidgetProps> = 
       </div>
       <Grid container spacing={1}>
         <Grid item xs={3}>
-          <List component="nav" aria-label="secondary mailbox folder">
+          <List className={classes.list} aria-label="secondary mailbox folder">
             {Object.values(lst).map(genListItem)}
           </List>
         </Grid>

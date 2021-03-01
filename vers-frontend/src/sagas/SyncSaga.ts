@@ -1,12 +1,15 @@
-import { all, put, takeLatest } from "redux-saga/effects";
+import { all, put, select, takeLatest } from "redux-saga/effects";
 import k, { Result } from "src/kernel";
+import { getData } from "src/selectors";
 import { calculate, reload, selPlant, _saveData } from "src/slices/data";
 import {
   createNew,
   erase,
+  modify,
   fetchData,
   fetchDataError,
-  fetchDataSuccess, modify,
+  fetchDataSuccess,
+  submitExcel,
   submitError,
   submitSuccess
 } from "src/slices/sync";
@@ -73,12 +76,19 @@ function* deleteItem({ payload }: EraseAction) {
   }
 }
 
+function* submitExcelData({ payload }: any) {
+  let { selectedPlantId: pId } = yield select(getData);
+  yield k.saveExcelDatas(pId, payload.sectors ?? [], payload.departments ?? []);
+  yield put(fetchData());
+}
+
 function* syncSaga() {
   yield all([
     takeLatest(fetchData.type, fetchDatas),
     takeLatest(createNew.type, postItemThenSave),
     takeLatest(modify.type, putItem),
     takeLatest(erase.type, deleteItem),
+    takeLatest(submitExcel.type, submitExcelData),
   ]);
 }
 

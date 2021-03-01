@@ -58,6 +58,7 @@ function objToData(x: Employee): EmployeeData {
 
 const get = async () => {
   let res = await Fetcher.getEmps();
+  console.log(res);
   return res.data.map(dataToObj);
 };
 
@@ -68,6 +69,7 @@ const post = async (t: Employee) => {
   } catch (error) {
     res = error.response;
   }
+  console.log(res);
   return { success: res.status === 201, data: dataToObj(res.data) };
 };
 

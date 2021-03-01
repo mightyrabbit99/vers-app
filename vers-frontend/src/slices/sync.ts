@@ -41,6 +41,9 @@ const syncSlice = createSlice({
     erase: (state, { payload }: PayloadAction<Data | Data[]>) => {
       state.syncing = true;
     },
+    submitExcel: (state, { payload }: PayloadAction<any>) => {
+      state.syncing = true;
+    },
     clearFeedback: (state) => {
       state.feedback = undefined;
     },
@@ -57,6 +60,7 @@ export const {
   createNew,
   modify,
   erase,
+  submitExcel,
   clearFeedback,
 } = syncSlice.actions;
 

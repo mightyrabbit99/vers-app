@@ -43,11 +43,12 @@ import JobView from "./JobView";
 import MyDialog from "src/components/commons/Dialog";
 import ExcelUploadForm from "src/components/forms/ExcelUploadForm";
 
-import { syncing, submitSuccess, submitError, clearFeedback } from "src/slices/sync";
+import { submitExcel, clearFeedback } from "src/slices/sync";
 import { logout } from "src/slices/session";
 import { selPlant, reload } from "src/slices/data";
 import { getData, getSession, getSync } from "src/selectors";
 import k from "src/kernel";
+import ExcelProcessor from "src/kernel/ExcelProcessor";
 
 function Copyright() {
   return (
@@ -229,14 +230,8 @@ const Dashboard: React.FC = () => {
   };
 
   const handleExcelFileUpload = async (file: File) => {
-    dispatch(syncing());
-    try {
-      pId && (await k.submitExcel(pId, file));
-      dispatch(submitSuccess(undefined));
-    } catch (e) {
-      dispatch(submitError(e)); 
-    }
-    dispatch(reload(pId));
+    let fileData = await ExcelProcessor.readFile(file);
+    dispatch(submitExcel(fileData));
     handleExcelFormClose();
   };
 

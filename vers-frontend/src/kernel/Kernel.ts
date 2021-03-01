@@ -194,7 +194,7 @@ class Kernel {
     return { success: res.status === 200, data: res.data };
   };
 
-  private saveExcelDatas = async (
+  saveExcelDatas = async (
     plantId: number,
     sectors: SectorObj[],
     departments: DepartmentObj[]
