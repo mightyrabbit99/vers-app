@@ -341,6 +341,14 @@ const Dashboard: React.FC = () => {
 
   const secondaryListItems = (
     <div>
+      <ListItem
+        button
+      >
+        <ListItemIcon>
+          <LayersIcon />
+        </ListItemIcon>
+        <ListItemText primary="Change Log" />
+      </ListItem>
     </div>
   );
 

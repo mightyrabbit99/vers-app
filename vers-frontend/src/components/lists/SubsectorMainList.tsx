@@ -22,6 +22,18 @@ const SubsectorMainList: React.FC<ISubsectorMainListProps> = (props) => {
       title: "Sector",
       extractor: (p: Subsector) => sectorLst[p.sector].name,
     },
+    {
+      title: "Unit",
+      extractor: (p: Subsector) => p.unit ?? "",
+    },
+    {
+      title: "Cycle Time",
+      extractor: (p: Subsector) => `${p.cycleTime}`,
+    },
+    {
+      title: "Efficiency",
+      extractor: (p: Subsector) => `${p.efficiency}`,
+    },
   ];
 
   return (
