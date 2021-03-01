@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import { Skill } from "src/kernel";
 
 import Checklist, { Item } from "../commons/Checklist";

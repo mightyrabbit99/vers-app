@@ -9,9 +9,10 @@ import TableBody from "@material-ui/core/TableBody";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
+import Checkbox from "@material-ui/core/Checkbox";
 
 import { Employee } from "src/kernel";
-import Checkbox from "@material-ui/core/Checkbox";
+
 
 interface IEmployeeAccessCtrlListProps {
   lst: { [id: number]: Employee };

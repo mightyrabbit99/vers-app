@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import clsx from "clsx";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";

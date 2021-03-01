@@ -3,7 +3,7 @@ import FormControl from "@material-ui/core/FormControl";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
-import React from "react";
+import * as React from "react";
 import { UserData } from "src/kernel/data/UserData";
 
 const useStyles = makeStyles((theme) => ({

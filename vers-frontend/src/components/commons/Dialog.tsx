@@ -1,9 +1,11 @@
+import * as React from "react";
+
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import Slide from "@material-ui/core/Slide";
 import { makeStyles } from "@material-ui/core/styles";
 import { TransitionProps } from "@material-ui/core/transitions";
-import React from "react";
+
 
 const useStyles = makeStyles({
   root: {
