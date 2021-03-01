@@ -254,3 +254,8 @@ class SkillSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Skill
         fields = '__all__'
+
+class LogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Log
+        fields = '__all__'

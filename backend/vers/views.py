@@ -1,3 +1,9 @@
+from django.http import HttpRequest, HttpResponseRedirect, JsonResponse
+from django.views.generic import ListView
+from django.views import View
+from django.urls import reverse
+from django.shortcuts import render, get_object_or_404
+from django.http.response import HttpResponse
 from rest_framework import status, viewsets, generics, parsers
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -15,20 +21,18 @@ from rest_framework import permissions
 class DepartmentList(generics.ListCreateAPIView):
     queryset = models.Department.objects.all()
     serializer_class = serializers.DepartmentSerializer
-    #permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
 
 
 class DepartmentDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.Department.objects.all()
     serializer_class = serializers.DepartmentSerializer
     permission_classes = [permissions.AllowAny]
-    # permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
 
 class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = serializers.UserSerializer
+
 
 class UserDetail(generics.RetrieveUpdateAPIView):
     serializer_class = serializers.UserSerializer
@@ -53,21 +57,23 @@ class VersUserDetail(generics.RetrieveUpdateAPIView):
 
 # model view sets to be used in router
 
+
 def get_objects(view):
     if view == "plant":
-        return models.Plant.objects 
+        return models.Plant.objects
     elif view == "sector":
         return models.Sector.objects
     elif view == "subsector":
         return models.Subsector.objects
     elif view == "skill":
-        return models.Skill.objects 
+        return models.Skill.objects
     elif view == "employee":
         return models.Employee.objects
     elif view == "department":
         return models.Department.objects
     elif view == "job":
         return models.Job.objects
+
 
 def get_group(view, user):
     if view == "plant":
@@ -85,8 +91,10 @@ def get_group(view, user):
     elif view == "job":
         return user.vers_user.job_group
 
+
 NONE = 3
 USER = 2
+
 
 def perform_get_queryset(view, user):
     objects = get_objects(view)
@@ -101,7 +109,8 @@ def perform_get_queryset(view, user):
     grp = get_group(view, user)
     if grp == NONE:
         return objects.none()
-    return objects#.filter(owner=user)
+    return objects  # .filter(owner=user)
+
 
 def has_create_permission(view, user):
     if user.is_superuser:
@@ -117,6 +126,7 @@ def has_create_permission(view, user):
         return False
     return True
 
+
 class PlantView(viewsets.ModelViewSet):
     txt = "plant"
     serializer_class = serializers.PlantSerializer
@@ -130,12 +140,13 @@ class PlantView(viewsets.ModelViewSet):
             return super().create(request, *args, **kwargs)
         else:
             return Response(status=status.HTTP_403_FORBIDDEN)
-    
+
     def perform_create(self, serializer):
         if self.request.user.is_authenticated:
             serializer.save(owner=self.request.user)
         else:
             serializer.save()
+
 
 class SectorView(viewsets.ModelViewSet):
     txt = "sector"
@@ -178,6 +189,7 @@ class SubsectorView(viewsets.ModelViewSet):
         else:
             serializer.save()
 
+
 class SkillView(viewsets.ModelViewSet):
     txt = "skill"
     serializer_class = serializers.SkillSerializer
@@ -197,6 +209,7 @@ class SkillView(viewsets.ModelViewSet):
             serializer.save(owner=self.request.user)
         else:
             serializer.save()
+
 
 class DepartmentView(viewsets.ModelViewSet):
     txt = "department"
@@ -247,11 +260,6 @@ class EmployeeView(viewsets.ModelViewSet):
         return super().destroy(self, request, *args, **kwargs)
 
 
-class EmpSkillMatrixView(viewsets.ModelViewSet):
-    serializer_class = serializers.EmpSkillMatrixSerializer
-    queryset = models.EmpSkillMatrix.objects.all()
-
-
 class JobView(viewsets.ModelViewSet):
     txt = "job"
     serializer_class = serializers.JobSerializer
@@ -272,19 +280,12 @@ class JobView(viewsets.ModelViewSet):
             serializer.save()
 
 
-class JobSkillMatrixView(viewsets.ModelViewSet):
-    serializer_class = serializers.JobSkillMatrixSerializer
-    queryset = models.JobSkillMatrix.objects.all()
+class LogView(generics.ListAPIView):
+    queryset = models.Log.objects.all()
+    serializer_class = serializers.LogSerializer
 
 # main page
 
-from django.http import HttpRequest, HttpResponseRedirect, JsonResponse
-from django.http.response import HttpResponse
-from django.shortcuts import render, get_object_or_404
-from django.urls import reverse
-
-from django.views import View
-from django.views.generic import ListView
 
 class IndexView(View):
     def get(self, request, *args, **kwargs):

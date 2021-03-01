@@ -26,8 +26,6 @@ const empUrl = `${url}/api/emp/`;
 const deptUrl = `${url}/api/dept/`;
 const skillUrl = `${url}/api/skill/`;
 const jobUrl = `${url}/api/job/`;
-const empSkillUrl = `${url}/api/emp_skill/`;
-const jobSkillUrl = `${url}/api/job_skill/`;
 const logUrl = `${url}/api/logs/`;
 
 const getCookie = (name: string) => {
@@ -124,14 +122,6 @@ class Fetcher {
     return await axios.get(jobUrl, Fetcher.getConfig());
   };
 
-  static getJobSkills = async (): Promise<Result<JobSkillData>> => {
-    return await axios.get(jobSkillUrl, Fetcher.getConfig());
-  };
-
-  static getEmpSkills = async (): Promise<Result<EmpSkillData>> => {
-    return await axios.get(empSkillUrl, Fetcher.getConfig());
-  };
-
   static getLogs = async (): Promise<Result<LogData>> => {
     return await axios.get(logUrl, Fetcher.getConfig());
   };
@@ -188,18 +178,6 @@ class Fetcher {
     return await axios.post(jobUrl, data, Fetcher.getConfig());
   };
 
-  static postJobSkill = async (
-    data: JobSkillData
-  ): Promise<Result<JobSkillData>> => {
-    return await axios.post(jobSkillUrl, data, Fetcher.getConfig());
-  };
-
-  static postEmpSkill = async (
-    data: EmpSkillData
-  ): Promise<Result<EmpSkillData>> => {
-    return await axios.post(empSkillUrl, data, Fetcher.getConfig());
-  };
-
   static putPlant = async (data: PlantData): Promise<Result<PlantData>> => {
     return await axios.put(`${plantUrl}${data.id}/`, data, Fetcher.getConfig());
   };
@@ -230,18 +208,6 @@ class Fetcher {
 
   static putJob = async (data: JobData): Promise<Result<JobData>> => {
     return await axios.put(`${jobUrl}${data.id}/`, data, Fetcher.getConfig());
-  };
-
-  static putJobSkill = async (
-    data: JobSkillData
-  ): Promise<Result<JobSkillData>> => {
-    return await axios.put(`${jobSkillUrl}${data.id}/`, data, Fetcher.getConfig());
-  };
-
-  static putEmpSkill = async (
-    data: EmpSkillData
-  ): Promise<Result<EmpSkillData>> => {
-    return await axios.put(`${empSkillUrl}${data.id}/`, data, Fetcher.getConfig());
   };
 
   static putUser = async (username: string, password: string) => {
@@ -280,18 +246,6 @@ class Fetcher {
 
   static deleteJob = async (data: JobData): Promise<Result<JobData>> => {
     return await axios.delete(`${jobUrl}${data.id}/`, Fetcher.getConfig());
-  };
-
-  static deleteJobSkill = async (
-    data: JobSkillData
-  ): Promise<Result<JobSkillData>> => {
-    return await axios.delete(`${jobSkillUrl}${data.id}/`, Fetcher.getConfig());
-  };
-
-  static deleteEmpSkill = async (
-    data: EmpSkillData
-  ): Promise<Result<EmpSkillData>> => {
-    return await axios.delete(`${empSkillUrl}${data.id}/`, Fetcher.getConfig());
   };
 
   static deleteLog = async (

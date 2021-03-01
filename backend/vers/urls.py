@@ -27,9 +27,8 @@ router.register(r'subsec', views.SubsectorView, 'subsector')
 router.register(r'dept', views.DepartmentView, 'department')
 router.register(r'skill', views.SkillView, 'skill')
 router.register(r'emp', views.EmployeeView, 'employee')
-router.register(r'emp_skill', views.EmpSkillMatrixView, 'emp_skill')
 router.register(r'job', views.JobView, 'job')
-router.register(r'job_skill', views.JobSkillMatrixView, 'job_skill')
+router.register(r'log', views.LogView, 'log')
 
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),  
