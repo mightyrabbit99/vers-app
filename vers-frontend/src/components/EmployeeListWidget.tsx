@@ -137,7 +137,6 @@ const EmployeeListWidget: React.FunctionComponent<IEmployeeListWidgetProps> = (
       <div className={classes.content}>
         <EmployeeList
           lst={lst}
-          departmentLst={departmentLst}
           subsectorLst={subsectorLst}
           selected={selected}
           selectedOnChange={setSelected}

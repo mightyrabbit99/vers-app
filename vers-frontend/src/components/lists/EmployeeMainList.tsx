@@ -1,12 +1,11 @@
 import * as React from "react";
 
-import { Subsector, Employee, Department } from "src/kernel";
+import { Subsector, Employee } from "src/kernel";
 import MainList from "../commons/MainList";
 
 interface IEmployeeMainListProps {
   lst: { [id: number]: Employee };
   subsectorLst: { [id: number]: Subsector };
-  departmentLst: { [id: number]: Department };
   selected?: number[];
   selectedOnChange?: (ids: number[]) => void;
   onEdit?: (id: number) => void;
@@ -18,7 +17,6 @@ const EmployeeMainList: React.FC<IEmployeeMainListProps> = (props) => {
   const {
     lst,
     subsectorLst,
-    departmentLst,
     selected,
     selectedOnChange,
     onEdit,
@@ -29,14 +27,9 @@ const EmployeeMainList: React.FC<IEmployeeMainListProps> = (props) => {
       extractor: (p: Employee) => getName(p),
     },
     {
-      title: "Subsector",
+      title: "Home Location",
       extractor: (p: Employee) =>
         subsectorLst[p.subsector] ? subsectorLst[p.subsector].name : "",
-    },
-    {
-      title: "Department",
-      extractor: (p: Employee) =>
-        departmentLst[p.department] ? departmentLst[p.department].name : "",
     },
     {
       title: "Report to",

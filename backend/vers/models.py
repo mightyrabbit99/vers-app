@@ -127,7 +127,7 @@ class Employee(models.Model):
     subsector = models.ForeignKey(
         Subsector, related_name='employees', on_delete=models.SET_NULL, null=True)
     department = models.ForeignKey(
-        Department, related_name='employees', on_delete=models.CASCADE)
+        Department, related_name='employees', on_delete=models.CASCADE, null=True)
     report_to = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
 
     birth_date = models.DateField(null=True)

@@ -34,9 +34,45 @@ interface EmployeeObj {
 }
 
 const readEmployeeSheet = (
-  sheet: Excel.Worksheet
-): { [plant: string]: EmployeeObj[] } => {
-  return {};
+  ws: Excel.Worksheet
+): EmployeeObj[] => {
+  let sets: { [homeLocation: string]: Set<string> } = {};
+  let ans: EmployeeObj[] = []
+  let sesaId, firstName, lastName, department, homeLocation;
+  function checkRow(row: Excel.Row) {
+    if (
+      [1, 2, 3, 4, 5].some((x) => `${row.getCell(x).value}`.trim().length === 0)
+    )
+      return false;
+    return true;
+  }
+  ws.eachRow((row, rowIndex) => {
+    if (rowIndex === 1 || !checkRow(row)) return;
+    [sesaId, firstName, lastName, department, homeLocation] = [
+      1,
+      2,
+      3,
+      4,
+      5,
+    ].map((x) => `${row.getCell(x).value}`.trim());
+    if (sesaId === "") return;
+
+    if (!sets[homeLocation]) {
+      sets[homeLocation] = new Set();
+    }
+
+    let s = sets[homeLocation];
+    if (s.has(sesaId)) return;
+    s.add(sesaId);
+    ans.push({
+      sesaId,
+      firstName,
+      lastName,
+      homeLocation,
+      skills: []
+    });
+  });
+  return ans;
 };
 
 const readSkillSheet = (
@@ -119,7 +155,7 @@ class ExcelProcessor2 {
   };
   static readEmployeeFile = async (
     file: File
-  ): Promise<{ [subsector: string]: EmployeeObj[] }> => {
+  ): Promise<EmployeeObj[]> => {
     return readFile(file, readEmployeeSheet);
   };
 

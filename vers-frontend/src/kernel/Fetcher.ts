@@ -1,9 +1,7 @@
 import {
   DepartmentData,
   EmployeeData,
-  EmpSkillData,
   JobData,
-  JobSkillData,
   PlantData,
   SectorData,
   SkillData,
@@ -250,7 +248,7 @@ class Fetcher {
 
   static deleteLog = async (
     data: LogData
-  ): Promise<Result<EmpSkillData>> => {
+  ): Promise<Result<LogData>> => {
     return await axios.delete(`${logUrl}${data.id}/`, Fetcher.getConfig());
   };
 }
