@@ -283,20 +283,46 @@ class Kernel {
   };
 
   private genSectorExcel = async (items: Sector[]) => {
-
-  }
+    const plants = this.plantStore.getLst();
+    return await ExcelProcessor2.genSectorFile(
+      items.map((x) => ({ ...x, plant: plants[x.plant].name }))
+    );
+  };
 
   private genSubsectorExcel = async (items: Subsector[]) => {
-
-  }
+    const sectors = this.secStore.getLst();
+    return await ExcelProcessor2.genSubsectorFile(
+      items.map((x) => ({
+        ...x,
+        sector: sectors[x.sector].name,
+      }))
+    );
+  };
 
   private genSkillExcel = async (items: Skill[]) => {
-
-  }
+    const subsectors = this.subsecStore.getLst();
+    return await ExcelProcessor2.genSkillFile(
+      items.map((x) => ({
+        ...x,
+        subsector: subsectors[x.subsector].name,
+      }))
+    );
+  };
 
   private genEmployeeExcel = async (items: Employee[]) => {
-    
-  }
+    const subsectors = this.subsecStore.getLst();
+    const skills = this.skillStore.getLst();
+    return await ExcelProcessor2.genEmployeeFile(
+      items.map((x) => ({
+        ...x,
+        homeLocation: subsectors[x.subsector].name,
+        skills: x.skills.map((y) => ({
+          skillName: skills[y.skill].name,
+          level: y.level,
+        })),
+      }))
+    );
+  };
 
   public getExcel = async (type: ItemType, items: Item[]) => {
     switch (type) {

@@ -11,7 +11,7 @@ interface SubsectorObj {
   _type: ItemType.Subsector;
   name: string;
   sector: string;
-  unit: string;
+  unit?: string;
   cycleTime: number;
   efficiency: number;
 }

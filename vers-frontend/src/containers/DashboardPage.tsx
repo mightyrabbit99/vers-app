@@ -22,6 +22,8 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import ButtonBase from "@material-ui/core/ButtonBase";
+import Backdrop from "@material-ui/core/Backdrop";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
@@ -151,6 +153,10 @@ const useStyles = makeStyles((theme) => ({
   formContent: {
     height: "85%",
   },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+  },
 }));
 
 enum DashboardView {
@@ -168,7 +174,7 @@ enum DashboardView {
 const Dashboard: React.FC = () => {
   const dispatch = useDispatch();
   const history = useHistory();
-  const { selectedPlantId: pId, plants } = useSelector(getData);
+  const { selectedPlantId: pId, plants, loading } = useSelector(getData);
   const { user } = useSelector(getSession);
   const { feedback } = useSelector(getSync);
 
@@ -511,6 +517,9 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </MyDialog>
+      <Backdrop className={classes.backdrop} open={loading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </React.Fragment>
   );
 };

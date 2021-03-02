@@ -4,7 +4,7 @@ import Fetcher from "./Fetcher";
 import store, { Item, ItemType } from "./Store";
 
 interface Employee extends Item {
-  _type: ItemType;
+  _type: ItemType.Employee;
   sesaId: string;
   firstName: string;
   lastName: string;
