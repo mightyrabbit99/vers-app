@@ -78,7 +78,9 @@ const del = async (t: Skill) => {
   await Fetcher.deleteSkill(objToData(t));
 };
 
-const SkillStore = store<Skill>(get, post, put, del, generator);
+const hasher = (t: Skill) => t.name;
+
+const SkillStore = store<Skill>(get, post, put, del, generator, hasher);
 
 export type { Skill };
 export default SkillStore;

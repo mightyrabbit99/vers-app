@@ -9,13 +9,12 @@ import { Store, Item, ItemType } from "./Store";
 import SubsectorStore, { Subsector } from "./Subsector";
 import LogStore, { Log } from "./Log";
 
-import ExcelProcessor, {
-  DepartmentObj,
-  SectorObj,
-  SubsectorObj,
-  SkillObj,
+import ExcelProcessor2, {
   EmployeeObj,
-} from "src/kernel/ExcelProcessor";
+  SectorObj,
+  SkillObj,
+  SubsectorObj,
+} from "./ExcelProcessor2";
 
 type Data = Plant | Sector | Subsector | Department | Skill | Employee | Job;
 
@@ -169,7 +168,11 @@ class Kernel {
     return [mods, dels];
   };
 
-  public login = async (username: string, password: string, remember: boolean = false) => {
+  public login = async (
+    username: string,
+    password: string,
+    remember: boolean = false
+  ) => {
     try {
       let res = await Fetcher.login(username, password);
       remember && Fetcher.saveToken();
@@ -195,138 +198,118 @@ class Kernel {
     try {
       res = await Fetcher.putUser(username, password);
     } catch (e) {
-      res = e.response
+      res = e.response;
     }
     return { success: res.status === 200, data: res.data };
   };
 
-  saveExcelDatas = async (
-    plantId: number,
-    sectors: SectorObj[],
-    departments: DepartmentObj[]
-  ) => {
-    let sectorLst = k.secStore.getLst((x) => x.plant === plantId);
-    let subsectorLst = k.subsecStore.getLst((x) => x.sector in sectorLst);
-    let employeeLst = k.empStore.getLst((x) => x.subsector in subsectorLst);
-    let departmentLst = k.deptStore.getLst();
-    let skillLst = k.skillStore.getLst((x) => x.subsector in subsectorLst);
-
-    let sectorNameMap = genMap(sectorLst, (x) => x.name);
-    let subsectorNameMap = genMap(subsectorLst, (x) => x.name);
-    let empSesaMap = genMap(employeeLst, (x) => x.sesaId);
-    let deptNameMap = genMap(departmentLst, (x) => x.name);
-    let skillNameMap = genMap(skillLst, (x) => x.name);
-
-    const saveSkill = async (skill: SkillObj) => {
-      if (!skill.data.subsector) return;
-      if (skill.data.subsector < 0) return;
-      let data;
-      if (skill.data.name in skillNameMap) {
-        data = { ...skillNameMap[skill.data.name][0], ...skill.data };
-        await k.save(data);
-        skill.id = data.id;
-      } else {
-        data = k.skillStore.getNew(skill.data);
-        let res = await this.saveNew(data);
-        skill.id = res.data.id;
-      }
-    };
-    const saveEmployee = async (emp: EmployeeObj) => {
-      if (!emp.data.department || !emp.data.subsector) return;
-      if (emp.data.department < 0 || emp.data.subsector < 0) return;
-      let data;
-      if (emp.data.sesaId in empSesaMap) {
-        data = { ...empSesaMap[emp.data.sesaId][0], ...emp.data };
-        await k.save(data);
-        emp.id = data.id;
-      } else {
-        data = k.empStore.getNew(emp.data);
-        let res = await this.saveNew(data);
-        emp.id = res.data.id;
-      }
-    };
-    const performSaveSubsector = async (subsec: SubsectorObj) => {
-      if (!subsec.data.sector) return;
-      if (subsec.data.sector === -1) return;
-      let data;
-      if (subsec.data.name in subsectorNameMap) {
-        data = {
-          ...subsectorNameMap[subsec.data.name][0],
-          ...subsec.data,
-        };
-        await this.save(data);
-        subsec.id = data.id;
-      } else {
-        data = k.subsecStore.getNew(subsec.data);
-        let res = await this.saveNew(data);
-        subsec.id = res.data.id;
-      }
-      subsec.skills.forEach((x) => (x.data.subsector = subsec.id));
-      subsec.employees.forEach((x) => (x.data.subsector = subsec.id));
-    };
-    const saveSubsector = async (subsec: SubsectorObj) => {
-      await performSaveSubsector(subsec);
-      for (let skill of subsec.skills) {
-        await saveSkill(skill);
-      }
-      for (let emp of subsec.employees) {
-        await saveEmployee(emp);
-      }
-    };
-    const performSaveSector = async (sec: SectorObj) => {
-      let data;
-      if (sec.data.name in sectorNameMap) {
-        data = {
-          ...sectorNameMap[sec.data.name][0],
-          ...sec.data,
-          plant: plantId,
-        };
-        await this.save(data);
-        sec.id = data.id;
-      } else {
-        data = k.secStore.getNew({ ...sec.data, plant: plantId });
-        let res = await this.saveNew(data);
-        sec.id = res.data.id;
-      }
-      sec.subsectors.forEach((x) => (x.data.sector = sec.id));
-    };
-    const saveSector = async (sec: SectorObj) => {
-      await performSaveSector(sec);
-      for (let subsec of sec.subsectors) {
-        await saveSubsector(subsec);
-      }
-    };
-    const performSaveDept = async (dept: DepartmentObj) => {
-      if (dept.data.name in deptNameMap) {
-        let origin = { ...deptNameMap[dept.data.name][0], ...dept.data };
-        await this.save(origin);
-        dept.id = origin.id;
-      } else {
-        let res = await this.saveNew(k.deptStore.getNew(dept.data));
-        dept.id = res.data.id;
-      }
-      dept.employees.forEach((x) => (x.data.department = dept.id));
-    };
-    const saveDept = async (dept: DepartmentObj) => {
-      await performSaveDept(dept);
-      for (let emp of dept.employees) {
-        await saveEmployee(emp);
-      }
-    };
-    for (let sec of sectors) {
-      await saveSector(sec);
-    }
-    for (let dept of departments) {
-      await saveDept(dept);
+  private saveSectorObjs = async (plantId: number, objs: SectorObj[]) => {
+    let plant = this.plantStore.get(plantId);
+    for (let o of objs) {
+      if (o.plant !== plant.name) continue;
+      this.secStore.submitOrNew(this.secStore.getNew({ ...o, plant: plantId }));
     }
   };
 
-  public submitExcel = async (plantId: number, file: File) => {
-    let { sectors, departments } = await ExcelProcessor.readFile(file);
-    this.saveExcelDatas(plantId, sectors, departments);
+  private saveSubsectorObjs = async (plantId: number, objs: SubsectorObj[]) => {
+    let sectors = this.secStore.getLst((x) => x.plant === plantId);
+    let secNames = genMap(sectors, (x) => x.name);
+    for (let o of objs) {
+      if (!(o.sector in secNames)) continue;
+      this.subsecStore.submitOrNew(
+        this.subsecStore.getNew({ ...o, sector: secNames[o.sector][0].id })
+      );
+    }
   };
 
-  public getExcel = async (plantId: number) => await ExcelProcessor.toFile(plantId, this);
+  private saveSkillObjs = async (plantId: number, objs: SkillObj[]) => {
+    let sectors = this.secStore.getLst((x) => x.plant === plantId);
+    let subsectors = this.subsecStore.getLst((x) => x.sector in sectors);
+    let subsecNames = genMap(subsectors, (x) => x.name);
+    for (let o of objs) {
+      if (!(o.subsector in subsecNames)) continue;
+      this.skillStore.submitOrNew(
+        this.skillStore.getNew({
+          ...o,
+          subsector: subsecNames[o.subsector][0].id,
+        })
+      );
+    }
+  };
+
+  private saveEmpObjs = async (plantId: number, objs: EmployeeObj[]) => {
+    let sectors = this.secStore.getLst((x) => x.plant === plantId);
+    let subsectors = this.subsecStore.getLst((x) => x.sector in sectors);
+    let subsecNames = genMap(subsectors, (x) => x.name);
+    for (let o of objs) {
+      if (!(o.homeLocation in subsecNames)) continue;
+      this.empStore.submitOrNew(
+        this.empStore.getNew({
+          ...o,
+          department: undefined, // TODO
+          subsector: subsecNames[o.homeLocation][0].id,
+        })
+      );
+    }
+  };
+
+  public submitExcel = async (plantId: number, type: ItemType, file: File) => {
+    switch (type) {
+      case ItemType.Sector:
+        await this.saveSectorObjs(
+          plantId,
+          await ExcelProcessor2.readSectorFile(file)
+        );
+        break;
+      case ItemType.Subsector:
+        await this.saveSubsectorObjs(
+          plantId,
+          await ExcelProcessor2.readSubsectorFile(file)
+        );
+        break;
+      case ItemType.Skill:
+        await this.saveSkillObjs(
+          plantId,
+          await ExcelProcessor2.readSkillFile(file)
+        );
+        break;
+      case ItemType.Employee:
+        await this.saveEmpObjs(
+          plantId,
+          await ExcelProcessor2.readEmployeeFile(file)
+        );
+        break;
+    }
+  };
+
+  private genSectorExcel = async (items: Sector[]) => {
+
+  }
+
+  private genSubsectorExcel = async (items: Subsector[]) => {
+
+  }
+
+  private genSkillExcel = async (items: Skill[]) => {
+
+  }
+
+  private genEmployeeExcel = async (items: Employee[]) => {
+    
+  }
+
+  public getExcel = async (type: ItemType, items: Item[]) => {
+    switch (type) {
+      case ItemType.Sector:
+        return await this.genSectorExcel(items as Sector[]);
+      case ItemType.Subsector:
+        return await this.genSubsectorExcel(items as Subsector[]);
+      case ItemType.Skill:
+        return await this.genSkillExcel(items as Skill[]);
+      case ItemType.Employee:
+        return await this.genEmployeeExcel(items as Employee[]);
+    }
+  };
 }
 
 const k = new Kernel();

@@ -119,7 +119,9 @@ const generator = (init?: any): Employee => ({
   }
 });
 
-const EmployeeStore = store<Employee>(get, post, put, del, generator);
+const hasher = (t: Employee) => t.sesaId;
+
+const EmployeeStore = store<Employee>(get, post, put, del, generator, hasher);
 
 export type { Employee, EmpSkillData };
 export default EmployeeStore;

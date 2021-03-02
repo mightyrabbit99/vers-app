@@ -62,7 +62,9 @@ const del = async (t: Department) => {
   await Fetcher.deleteDept(objToData(t));
 };
 
-const DepartmentStore = store<Department>(get, post, put, del, generator);
+const hasher = (t: Department) => t.name;
+
+const DepartmentStore = store<Department>(get, post, put, del, generator, hasher);
 
 export type { Department };
 export default DepartmentStore;

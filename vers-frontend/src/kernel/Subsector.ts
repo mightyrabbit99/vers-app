@@ -85,7 +85,9 @@ const generator = (init?: any): Subsector => ({
   ...init,
 });
 
-const SubsectorStore = store<Subsector>(get, post, put, del, generator);
+const hasher = (t: Subsector) => t.name;
+
+const SubsectorStore = store<Subsector>(get, post, put, del, generator, hasher);
 
 export type { Subsector };
 export default SubsectorStore;

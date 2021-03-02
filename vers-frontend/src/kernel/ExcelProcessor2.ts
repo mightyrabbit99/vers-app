@@ -1,11 +1,14 @@
 import Excel from "exceljs";
+import { ItemType } from "./Store";
 
 interface SectorObj {
+  _type: ItemType.Sector;
   name: string;
   plant: string;
 }
 
 interface SubsectorObj {
+  _type: ItemType.Subsector;
   name: string;
   sector: string;
   unit: string;
@@ -14,6 +17,7 @@ interface SubsectorObj {
 }
 
 interface SkillObj {
+  _type: ItemType.Skill;
   name: string;
   subsector: string;
   priority: number;
@@ -26,6 +30,7 @@ interface SkillMatrixObj {
 }
 
 interface EmployeeObj {
+  _type: ItemType.Employee;
   sesaId: string;
   firstName: string;
   lastName: string;
@@ -71,6 +76,7 @@ const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
     if (s.has(sesaId)) return;
     s.add(sesaId);
     ans.push({
+      _type: ItemType.Employee,
       sesaId,
       firstName,
       lastName,
@@ -102,6 +108,7 @@ const readSkillSheet = (ws: Excel.Worksheet): SkillObj[] => {
       sets[subsector].add(name);
 
       ans.push({
+        _type: ItemType.Skill,
         name,
         subsector,
         priority: parseInt(priority, 10),
@@ -130,6 +137,7 @@ const readSubsectorSheet = (ws: Excel.Worksheet): SubsectorObj[] => {
       sets[sector].add(name);
 
       ans.push({
+        _type: ItemType.Subsector,
         name,
         sector,
         unit,
@@ -156,6 +164,7 @@ const readSectorSheet = (ws: Excel.Worksheet): SectorObj[] => {
     sets[plant].add(name);
 
     ans.push({
+      _type: ItemType.Sector,
       name,
       plant,
     });
@@ -280,4 +289,5 @@ class ExcelProcessor2 {
   };
 }
 
+export type { SectorObj, SubsectorObj, SkillObj, EmployeeObj };
 export default ExcelProcessor2;

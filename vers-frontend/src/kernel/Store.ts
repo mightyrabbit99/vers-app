@@ -21,9 +21,6 @@ interface Result {
   data: any;
 }
 
-const emptySave = async () => ({ success: false, data: {} });
-const emptyDelete = async () => ({ success: false, data: {} });
-
 interface Store<T extends Item> {
   refresh: () => Promise<void>;
   get: (id: number) => T;
@@ -31,6 +28,7 @@ interface Store<T extends Item> {
   getNew: (init?: any) => T;
   submit: (t: T) => Promise<Result>;
   submitNew: (t: T) => Promise<Result>;
+  submitOrNew: (t: T) => Promise<Result>;
   remove: (t: T) => Promise<void>;
 }
 
@@ -39,10 +37,12 @@ function store<T extends Item>(
   post: (t: T) => Promise<Result>,
   put: (t: T) => Promise<Result>,
   del: (t: T) => Promise<void>,
-  generator: (init?: any) => T
+  generator: (init?: any) => T,
+  hasher?: (t: T) => string
 ) {
   return class implements Store<T> {
     private store: { [id: number]: T } = {};
+    private hStore: { [k: string]: T } = {};
 
     static generator = generator;
 
@@ -54,14 +54,17 @@ function store<T extends Item>(
 
     private clearAll = () => {
       this.store = {};
+      this.hStore = {};
     };
 
     private add = (t: T) => {
       this.store[t.id] = t;
+      hasher && (this.hStore[hasher(t)] = t);
     };
 
     private erase = (t: T) => {
       delete this.store[t.id];
+      hasher && delete this.hStore[hasher(t)];
     };
 
     get = (id: number) => this.store[id];
@@ -98,6 +101,17 @@ function store<T extends Item>(
       }
     };
 
+    submitOrNew = async (t: T) => {
+      if (hasher) {
+        let v = this.hStore[hasher(t)];
+        return v
+          ? await this.submit({ ...t, id: v.id })
+          : await this.submitNew(t);
+      } else {
+        return t.id === -1 ? await this.submitNew(t) : await this.submit(t);
+      }
+    };
+
     remove = async (t: T) => {
       this.erase(t);
       await del(t);
@@ -106,5 +120,5 @@ function store<T extends Item>(
 }
 
 export type { Item, Store, Result };
-export { ItemType, emptySave, emptyDelete };
+export { ItemType };
 export default store;

@@ -241,6 +241,7 @@ const Dashboard: React.FC = () => {
   };
 
   const handleExcelFileDownload = async () => {
+    /*
     let s = pId ? await k.getExcel(pId) : undefined;
     var blob = s
       ? new Blob([s], {
@@ -248,7 +249,7 @@ const Dashboard: React.FC = () => {
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         })
       : undefined;
-    blob && saveAs(blob, `${plants[pId ?? 0].name}.xlsx`);
+    blob && saveAs(blob, `${plants[pId ?? 0].name}.xlsx`);*/
   };
 
   const cannotView = (i: number) => {
