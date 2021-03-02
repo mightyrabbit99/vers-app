@@ -38,9 +38,7 @@ interface IListWidgetProps {
   children: React.ReactNode;
 }
 
-const ListWidget: React.FunctionComponent<IListWidgetProps> = (
-  props
-) => {
+const ListWidget: React.FunctionComponent<IListWidgetProps> = (props) => {
   const classes = useStyles();
   const {
     title,
@@ -90,9 +88,7 @@ const ListWidget: React.FunctionComponent<IListWidgetProps> = (
           </Button>
         </div>
       </div>
-      <div className={classes.content}>
-        {children}
-      </div>
+      <div className={classes.content}>{children}</div>
     </React.Fragment>
   );
 };

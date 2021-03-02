@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { Subsector, Employee } from "src/kernel";
-import MainList from "../commons/MainList";
+import MainList from "./MainList";
 
 interface IEmployeeMainListProps {
   lst: { [id: number]: Employee };

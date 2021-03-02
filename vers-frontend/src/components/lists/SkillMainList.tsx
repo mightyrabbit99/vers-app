@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { Subsector, Skill } from "src/kernel";
-import MainList from "../commons/MainList";
+import MainList from "./MainList";
 
 interface ISkillMainListProps {
   lst: { [id: number]: Skill };

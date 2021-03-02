@@ -249,3 +249,19 @@ class Log(models.Model):
 
     class Meta:
         db_table = 'logs'
+
+
+class ForecastTag(models.Model):
+    date = models.DateField()
+
+    class Meta:
+        db_table = 'forecast_tags'
+
+
+class Forecast(models.Model):
+    tag = models.ForeignKey(ForecastTag, related_name="forecasts")
+    n = models.IntegerField()
+    val = models.FloatField()
+
+    class Meta:
+        db_table = 'forecast'

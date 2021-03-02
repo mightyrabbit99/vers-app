@@ -36,14 +36,22 @@ interface EmployeeObj {
 const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
   let sets: { [homeLocation: string]: Set<string> } = {};
   let ans: EmployeeObj[] = [];
-  let sesaId, firstName, lastName, department, homeLocation;
+
   function checkRow(row: Excel.Row) {
-    if (
-      [1, 2, 3, 4, 5].some((x) => `${row.getCell(x).value}`.trim().length === 0)
-    )
+    if ([1, 2, 3, 4, 5].some((x) => row.getCell(x).text.length === 0))
       return false;
     return true;
   }
+  function getSkillNames(row: Excel.Row) {
+    let ans: { [i: number]: string } = [];
+    for (let i = 6; row.getCell(i).value !== null; i++) {
+      ans[i] = row.getCell(i).text;
+    }
+    return ans;
+  }
+  const skillNames = getSkillNames(ws.getRow(1));
+
+  let sesaId, firstName, lastName, department, homeLocation;
   ws.eachRow((row, rowIndex) => {
     if (rowIndex === 1 || !checkRow(row)) return;
     [sesaId, firstName, lastName, department, homeLocation] = [
@@ -52,7 +60,7 @@ const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
       3,
       4,
       5,
-    ].map((x) => `${row.getCell(x).value}`.trim());
+    ].map((x) => row.getCell(x).text);
     if (sesaId === "") return;
 
     if (!sets[homeLocation]) {
@@ -67,7 +75,12 @@ const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
       firstName,
       lastName,
       homeLocation,
-      skills: [],
+      skills: Object.entries(skillNames)
+        .filter((x) => row.getCell(x[0]) !== null)
+        .map((x) => ({
+          skillName: x[1],
+          level: row.getCell(x[0]).value as number,
+        })),
     });
   });
   return ans;
@@ -80,7 +93,9 @@ const readSkillSheet = (ws: Excel.Worksheet): SkillObj[] => {
   ws.eachRow((row, rowIndex) => {
     try {
       if (rowIndex === 1) return;
-      [name, subsector, priority, percentageOfSector] = [1, 2, 3, 4].map(x => `${row.getCell(x).value}`.trim());
+      [name, subsector, priority, percentageOfSector] = [1, 2, 3, 4].map((x) =>
+        row.getCell(x).text.trim()
+      );
 
       if (sets[subsector] && sets[subsector].has(name)) return;
       !sets[subsector] && (sets[subsector] = new Set());
@@ -107,7 +122,7 @@ const readSubsectorSheet = (ws: Excel.Worksheet): SubsectorObj[] => {
     try {
       if (rowIndex === 1) return;
       [name, sector, unit, cycleTime, efficiency] = [1, 2, 3, 4, 5].map((x) =>
-        `${row.getCell(x).value}`.trim()
+        row.getCell(x).text.trim()
       );
 
       if (sets[sector] && sets[sector].has(name)) return;
@@ -134,7 +149,7 @@ const readSectorSheet = (ws: Excel.Worksheet): SectorObj[] => {
   let name, plant;
   ws.eachRow((row, rowIndex) => {
     if (rowIndex === 1) return;
-    [name, plant] = [1, 2].map((x) => `${row.getCell(x).value}`.trim());
+    [name, plant] = [1, 2].map((x) => row.getCell(x).text.trim());
 
     if (sets[plant] && sets[plant].has(name)) return;
     !sets[plant] && (sets[plant] = new Set());
@@ -150,7 +165,7 @@ const readSectorSheet = (ws: Excel.Worksheet): SectorObj[] => {
 
 const employeeSheetWriter = (emps: EmployeeObj[]) => (ws: Excel.Worksheet) => {
   let skillSet = emps.reduce((prev, curr) => {
-    curr.skills.forEach(x => prev.add(x.skillName));
+    curr.skills.forEach((x) => prev.add(x.skillName));
     return prev;
   }, new Set());
   ws.columns = [
@@ -158,7 +173,7 @@ const employeeSheetWriter = (emps: EmployeeObj[]) => (ws: Excel.Worksheet) => {
     { header: "Subsector", key: "subsector" },
     { header: "Priority", key: "priority" },
     { header: "% of Sector", key: "percentageOfSector" },
-    ...[...skillSet].map(x => ({ header: x, key: x})),
+    ...[...skillSet].map((x) => ({ header: x, key: x })),
   ] as Excel.Column[];
 
   ws.addRows(emps);
@@ -175,7 +190,9 @@ const skillSheetWriter = (skills: SkillObj[]) => (ws: Excel.Worksheet) => {
   ws.addRows(skills);
 };
 
-const subsectorSheetWriter = (subsectors: SubsectorObj[]) => (ws: Excel.Worksheet) => {
+const subsectorSheetWriter = (subsectors: SubsectorObj[]) => (
+  ws: Excel.Worksheet
+) => {
   ws.columns = [
     { header: "Name", key: "name", width: 20 },
     { header: "Sector", key: "sector" },

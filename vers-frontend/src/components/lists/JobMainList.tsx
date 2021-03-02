@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { Job } from "src/kernel";
-import MainList from "../commons/MainList";
+import MainList from "./MainList";
 
 interface IJobMainListProps {
   lst: { [id: number]: Job };

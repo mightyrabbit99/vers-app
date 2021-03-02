@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { Plant, Sector } from "src/kernel";
-import MainList from "../commons/MainList";
+import MainList from "./MainList";
 
 interface ISectorMainListProps {
   lst: { [id: number]: Sector };

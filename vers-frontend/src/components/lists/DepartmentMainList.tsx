@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { Department } from "src/kernel";
-import MainList from "../commons/MainList";
+import MainList from "./MainList";
 
 interface IDepartmentMainListProps {
   lst: Department[];
