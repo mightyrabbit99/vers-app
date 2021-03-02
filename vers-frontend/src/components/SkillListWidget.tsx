@@ -1,10 +1,13 @@
 import * as React from "react";
-import { Typography, Button, makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import Typography from "@material-ui/core/Typography";
 
 import { Skill, Subsector } from "src/kernel";
 import SkillMainList from "./lists/SkillMainList";
 import MyDialog from "./commons/Dialog";
 import SkillForm from "./forms/SkillForm";
+import ExcelUploadForm from "./forms/ExcelUploadForm";
+import ListWidget from "./commons/ListWidget";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -48,6 +51,8 @@ interface ISkillListWidgetProps {
   onSubmit: (s: Skill) => void;
   onDelete: (...s: Skill[]) => void;
   onReset: () => void;
+  uploadExcel?: (file: File) => void;
+  downloadExcel?: () => void;
 }
 
 const SkillListWidget: React.FC<ISkillListWidgetProps> = (props) => {
@@ -61,6 +66,8 @@ const SkillListWidget: React.FC<ISkillListWidgetProps> = (props) => {
     onSubmit,
     onDelete,
     onReset,
+    uploadExcel,
+    downloadExcel,
   } = props;
 
   const [selected, setSelected] = React.useState<number[]>([]);
@@ -99,44 +106,39 @@ const SkillListWidget: React.FC<ISkillListWidgetProps> = (props) => {
     setFormOpen(true);
   };
 
+  const handleExcelDownloadClick = () => {
+    downloadExcel && downloadExcel();
+  };
+
+  const [excelFormOpen, setExcelFormOpen] = React.useState(false);
+  const handleExcelUploadClick = () => {
+    setExcelFormOpen(true);
+  };
+
+  const handleExcelFormClose = () => {
+    setExcelFormOpen(false);
+  };
+
+  const handleExcelFileUpload = (file: File) => {
+    uploadExcel && uploadExcel(file);
+    handleExcelFormClose();
+  };
+
   return (
-    <React.Fragment>
-      <div className={classes.header}>
-        <Typography
-          className={classes.title}
-          component="h2"
-          variant="h6"
-          color="primary"
-          gutterBottom
-        >
-          Skills
-        </Typography>
-        <div className={classes.ctrlButtons}>
-          <Button
-            variant="contained"
-            color="primary"
-            disabled={!edit}
-            onClick={handleCreateOnClick}
-          >
-            Create
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            disabled={selected.length === 0 || !edit}
-            onClick={handleDeleteOnClick}
-          >
-            Delete
-          </Button>
-        </div>
-      </div>
-      <div className={classes.content}>
-        <SkillMainList
-          lst={lst}
-          subsectorLst={subsectorLst}
-          onEdit={edit ? handleEditOnClick : undefined}
-        />
-      </div>
+    <ListWidget
+      title="Skills"
+      disableCreate={!edit}
+      disableDelete={selected.length === 0 || !edit}
+      createOnClick={handleCreateOnClick}
+      deleteOnClick={handleDeleteOnClick}
+      downloadOnClick={handleExcelDownloadClick}
+      uploadOnClick={handleExcelUploadClick}
+    >
+      <SkillMainList
+        lst={lst}
+        subsectorLst={subsectorLst}
+        onEdit={edit ? handleEditOnClick : undefined}
+      />
       <MyDialog open={formOpen} onClose={handleFormClose}>
         <div className={classes.form}>
           <div className={classes.formTitle}>
@@ -165,7 +167,29 @@ const SkillListWidget: React.FC<ISkillListWidgetProps> = (props) => {
           </div>
         </div>
       </MyDialog>
-    </React.Fragment>
+      <MyDialog open={excelFormOpen} onClose={handleExcelFormClose}>
+        <div className={classes.form}>
+          <div className={classes.formTitle}>
+            <Typography
+              className={classes.title}
+              component="h2"
+              variant="h6"
+              color="primary"
+              gutterBottom
+            >
+              Upload Excel Data
+            </Typography>
+          </div>
+          <div className={classes.formContent}>
+            <ExcelUploadForm
+              feedback={feedback}
+              onSubmit={handleExcelFileUpload}
+              onCancel={handleExcelFormClose}
+            />
+          </div>
+        </div>
+      </MyDialog>
+    </ListWidget>
   );
 };
 

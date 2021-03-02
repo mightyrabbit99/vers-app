@@ -248,4 +248,4 @@ class Log(models.Model):
     desc = models.CharField(max_length=100, blank=True)
 
     class Meta:
-        db_name = 'logs'
+        db_table = 'logs'

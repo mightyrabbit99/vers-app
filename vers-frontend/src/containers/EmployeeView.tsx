@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { Grid, Paper, makeStyles } from "@material-ui/core";
 
 import EmployeeListWidget from "src/components/EmployeeListWidget";
-import EmployeeAccessCtrlWidget from "src/components/EmployeeAccessControlWidget";
 import EmployeeSkillWidget from "src/components/EmployeeSkillWidget";
 
 import { getData, getSession, getSync } from "src/selectors";
@@ -50,12 +49,6 @@ const EmployeeView: React.FunctionComponent<IEmployeeViewProps> = (props) => {
     dispatch(clearFeedback());
   };
 
-  const employeeExcludeSelf = Object.fromEntries(
-    Object.entries(employees).filter(
-      (x) => x[1].user.username !== user?.username
-    )
-  );
-
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
@@ -73,17 +66,6 @@ const EmployeeView: React.FunctionComponent<IEmployeeViewProps> = (props) => {
           />
         </Paper>
       </Grid>
-      {canEdit() ? (
-        <Grid item xs={12}>
-          <Paper className={classes.list}>
-            <EmployeeAccessCtrlWidget
-              lst={employeeExcludeSelf}
-              onSubmit={handleSubmit}
-              editSuper={user?.is_superuser}
-            />
-          </Paper>
-        </Grid>
-      ) : null}
       <Grid item xs={12}>
         <Paper className={classes.list}>
           <EmployeeSkillWidget

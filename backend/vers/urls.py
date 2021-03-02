@@ -28,15 +28,17 @@ router.register(r'dept', views.DepartmentView, 'department')
 router.register(r'skill', views.SkillView, 'skill')
 router.register(r'emp', views.EmployeeView, 'employee')
 router.register(r'job', views.JobView, 'job')
-router.register(r'log', views.LogView, 'log')
 
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),  
     path('api/', include(router.urls)),
-    path('dept/', views.DepartmentList.as_view()),
-    path('dept/<int:pk>/', views.DepartmentDetail.as_view()),
     path('api-auth/', include('rest_framework.urls')),
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
+    
+    path('dept/', views.DepartmentList.as_view()),
+    path('dept/<int:pk>/', views.DepartmentDetail.as_view()),
+    path('log/', views.LogList.as_view()),
+    
 
     path('users/', views.UserList.as_view()),
     path('user_modify/', views.UserDetail.as_view()),

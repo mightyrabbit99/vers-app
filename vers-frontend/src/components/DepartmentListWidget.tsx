@@ -1,29 +1,17 @@
 import * as React from "react";
-import { Typography, Button, makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import Typography from "@material-ui/core/Typography";
 
 import { Department } from "src/kernel";
 import MyDialog from "src/components/commons/Dialog";
 import DepartmentForm from "src/components/forms/DepartmentForm";
 import DepartmentList from "src/components/lists/DepartmentMainList";
+import ExcelUploadForm from "./forms/ExcelUploadForm";
+import ListWidget from "./commons/ListWidget";
 
 const useStyles = makeStyles((theme) => ({
-  header: {
-    display: "flex",
-    flexDirection: "row",
-  },
-  ctrlButtons: {
-    display: "flex",
-    flexDirection: "row",
-    marginLeft: "auto",
-    "& > *": {
-      margin: theme.spacing(1),
-    },
-  },
   title: {
     height: "15%",
-  },
-  content: {
-    height: "85%",
   },
   form: {},
   formTitle: {
@@ -42,13 +30,25 @@ interface IDepartmentListWidgetProps {
   onSubmit: (p: Department) => void;
   onDelete: (...ps: Department[]) => void;
   onReset: () => void;
+  uploadExcel?: (file: File) => void;
+  downloadExcel?: () => void;
 }
 
 const DepartmentListWidget: React.FunctionComponent<IDepartmentListWidgetProps> = (
   props
 ) => {
   const classes = useStyles();
-  const { lst, newDepartment, feedback, edit = true, onSubmit, onDelete, onReset } = props;
+  const {
+    lst,
+    newDepartment,
+    feedback,
+    edit = true,
+    onSubmit,
+    onDelete,
+    onReset,
+    uploadExcel,
+    downloadExcel,
+  } = props;
 
   const [selected, setSelected] = React.useState<number[]>([]);
   React.useEffect(() => {
@@ -76,47 +76,47 @@ const DepartmentListWidget: React.FunctionComponent<IDepartmentListWidgetProps> 
   const handleFormClose = () => {
     setFormOpen(false);
     onReset();
-  }
+  };
 
   const handleCreateOnClick = () => {
     setFormData(newDepartment);
     setFormOpen(true);
-  }
+  };
+
+  const handleExcelDownloadClick = () => {
+    downloadExcel && downloadExcel();
+  };
+
+  const [excelFormOpen, setExcelFormOpen] = React.useState(false);
+  const handleExcelUploadClick = () => {
+    setExcelFormOpen(true);
+  };
+
+  const handleExcelFormClose = () => {
+    setExcelFormOpen(false);
+  };
+
+  const handleExcelFileUpload = (file: File) => {
+    uploadExcel && uploadExcel(file);
+    handleExcelFormClose();
+  };
 
   return (
-    <React.Fragment>
-      <div className={classes.header}>
-        <Typography
-          className={classes.title}
-          component="h2"
-          variant="h6"
-          color="primary"
-          gutterBottom
-        >
-          Departments
-        </Typography>
-        <div className={classes.ctrlButtons}>
-          <Button disabled={!edit} variant="contained" color="primary" onClick={handleCreateOnClick}>
-            Create
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            disabled={selected.length === 0 || !edit}
-            onClick={handleDeleteOnClick}
-          >
-            Delete
-          </Button>
-        </div>
-      </div>
-      <div className={classes.content}>
-        <DepartmentList
-          lst={Object.values(lst)}
-          selected={selected}
-          selectedOnChange={setSelected}
-          onEdit={edit? handleEditOnClick: undefined}
-        />
-      </div>
+    <ListWidget
+      title="Departments"
+      disableCreate={!edit}
+      disableDelete={selected.length === 0 || !edit}
+      createOnClick={handleCreateOnClick}
+      deleteOnClick={handleDeleteOnClick}
+      downloadOnClick={handleExcelDownloadClick}
+      uploadOnClick={handleExcelUploadClick}
+    >
+      <DepartmentList
+        lst={Object.values(lst)}
+        selected={selected}
+        selectedOnChange={setSelected}
+        onEdit={edit ? handleEditOnClick : undefined}
+      />
       <MyDialog open={formOpen} onClose={handleFormClose}>
         <div className={classes.form}>
           <div className={classes.formTitle}>
@@ -144,7 +144,29 @@ const DepartmentListWidget: React.FunctionComponent<IDepartmentListWidgetProps> 
           </div>
         </div>
       </MyDialog>
-    </React.Fragment>
+      <MyDialog open={excelFormOpen} onClose={handleExcelFormClose}>
+        <div className={classes.form}>
+          <div className={classes.formTitle}>
+            <Typography
+              className={classes.title}
+              component="h2"
+              variant="h6"
+              color="primary"
+              gutterBottom
+            >
+              Upload Excel Data
+            </Typography>
+          </div>
+          <div className={classes.formContent}>
+            <ExcelUploadForm
+              feedback={feedback}
+              onSubmit={handleExcelFileUpload}
+              onCancel={handleExcelFormClose}
+            />
+          </div>
+        </div>
+      </MyDialog>
+    </ListWidget>
   );
 };
 

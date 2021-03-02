@@ -24,7 +24,7 @@ const empUrl = `${url}/api/emp/`;
 const deptUrl = `${url}/api/dept/`;
 const skillUrl = `${url}/api/skill/`;
 const jobUrl = `${url}/api/job/`;
-const logUrl = `${url}/api/logs/`;
+const logUrl = `${url}/log/`;
 
 const getCookie = (name: string) => {
   var cookieValue = null;

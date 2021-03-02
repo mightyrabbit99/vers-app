@@ -280,7 +280,8 @@ class JobView(viewsets.ModelViewSet):
             serializer.save()
 
 
-class LogView(generics.ListAPIView):
+class LogList(generics.ListAPIView):
+    txt = "log"
     queryset = models.Log.objects.all()
     serializer_class = serializers.LogSerializer
 

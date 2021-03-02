@@ -33,11 +33,9 @@ interface EmployeeObj {
   skills: SkillMatrixObj[];
 }
 
-const readEmployeeSheet = (
-  ws: Excel.Worksheet
-): EmployeeObj[] => {
+const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
   let sets: { [homeLocation: string]: Set<string> } = {};
-  let ans: EmployeeObj[] = []
+  let ans: EmployeeObj[] = [];
   let sesaId, firstName, lastName, department, homeLocation;
   function checkRow(row: Excel.Row) {
     if (
@@ -69,37 +67,134 @@ const readEmployeeSheet = (
       firstName,
       lastName,
       homeLocation,
-      skills: []
+      skills: [],
     });
   });
   return ans;
 };
 
-const readSkillSheet = (
-  sheet: Excel.Worksheet
-): { [plant: string]: SkillObj[] } => {
-  return {};
+const readSkillSheet = (ws: Excel.Worksheet): SkillObj[] => {
+  let sets: { [subsector: string]: Set<string> } = {};
+  let ans: SkillObj[] = [];
+  let name, subsector, priority, percentageOfSector;
+  ws.eachRow((row, rowIndex) => {
+    try {
+      if (rowIndex === 1) return;
+      [name, subsector, priority, percentageOfSector] = [1, 2, 3, 4].map(x => `${row.getCell(x).value}`.trim());
+
+      if (sets[subsector] && sets[subsector].has(name)) return;
+      !sets[subsector] && (sets[subsector] = new Set());
+      sets[subsector].add(name);
+
+      ans.push({
+        name,
+        subsector,
+        priority: parseInt(priority, 10),
+        percentageOfSector: parseInt(percentageOfSector, 10),
+      });
+    } catch (e) {
+      throw new Error(`Error on skill sheet: Row ${rowIndex}`);
+    }
+  });
+  return ans;
 };
 
-const readSubsectorSheet = (
-  sheet: Excel.Worksheet
-): { [plant: string]: SubsectorObj[] } => {
-  return {};
+const readSubsectorSheet = (ws: Excel.Worksheet): SubsectorObj[] => {
+  let sets: { [sector: string]: Set<string> } = {};
+  let ans: SubsectorObj[] = [];
+  let name, sector, unit, cycleTime, efficiency;
+  ws.eachRow((row, rowIndex) => {
+    try {
+      if (rowIndex === 1) return;
+      [name, sector, unit, cycleTime, efficiency] = [1, 2, 3, 4, 5].map((x) =>
+        `${row.getCell(x).value}`.trim()
+      );
+
+      if (sets[sector] && sets[sector].has(name)) return;
+      !sets[sector] && (sets[sector] = new Set());
+      sets[sector].add(name);
+
+      ans.push({
+        name,
+        sector,
+        unit,
+        cycleTime: parseInt(cycleTime, 10),
+        efficiency: parseInt(efficiency, 10),
+      });
+    } catch (e) {
+      throw new Error(`Error on subsector sheet: Row ${rowIndex}`);
+    }
+  });
+  return ans;
 };
 
-const readSectorSheet = (
-  sheet: Excel.Worksheet
-): { [plant: string]: SectorObj[] } => {
-  return {};
+const readSectorSheet = (ws: Excel.Worksheet): SectorObj[] => {
+  let sets: { [plant: string]: Set<string> } = {};
+  let ans: SectorObj[] = [];
+  let name, plant;
+  ws.eachRow((row, rowIndex) => {
+    if (rowIndex === 1) return;
+    [name, plant] = [1, 2].map((x) => `${row.getCell(x).value}`.trim());
+
+    if (sets[plant] && sets[plant].has(name)) return;
+    !sets[plant] && (sets[plant] = new Set());
+    sets[plant].add(name);
+
+    ans.push({
+      name,
+      plant,
+    });
+  });
+  return ans;
 };
 
-const writeEmployeeSheet = (sheet: Excel.Worksheet) => {};
+const employeeSheetWriter = (emps: EmployeeObj[]) => (ws: Excel.Worksheet) => {
+  let skillSet = emps.reduce((prev, curr) => {
+    curr.skills.forEach(x => prev.add(x.skillName));
+    return prev;
+  }, new Set());
+  ws.columns = [
+    { header: "Name", key: "name", width: 20 },
+    { header: "Subsector", key: "subsector" },
+    { header: "Priority", key: "priority" },
+    { header: "% of Sector", key: "percentageOfSector" },
+    ...[...skillSet].map(x => ({ header: x, key: x})),
+  ] as Excel.Column[];
 
-const writeSkillSheet = (sheet: Excel.Worksheet) => {};
+  ws.addRows(emps);
+};
 
-const writeSubsectorSheet = (sheet: Excel.Worksheet) => {};
+const skillSheetWriter = (skills: SkillObj[]) => (ws: Excel.Worksheet) => {
+  ws.columns = [
+    { header: "Name", key: "name", width: 20 },
+    { header: "Subsector", key: "subsector" },
+    { header: "Priority", key: "priority" },
+    { header: "% of Sector", key: "percentageOfSector" },
+  ] as Excel.Column[];
 
-const writeSectorSheet = (sheet: Excel.Worksheet) => {};
+  ws.addRows(skills);
+};
+
+const subsectorSheetWriter = (subsectors: SubsectorObj[]) => (ws: Excel.Worksheet) => {
+  ws.columns = [
+    { header: "Name", key: "name", width: 20 },
+    { header: "Sector", key: "sector" },
+    { header: "Unit", key: "unit" },
+    { header: "Cycle Time", key: "cycleTime" },
+    { header: "Efficiency", key: "efficiency" },
+  ] as Excel.Column[];
+
+  ws.addRows(subsectors);
+};
+
+const sectorSheetWriter = (sectors: SectorObj[]) => (ws: Excel.Worksheet) => {
+  ws.columns = [
+    { header: "Name", key: "name", width: 20 },
+    { header: "Plant", key: "plant" },
+  ] as Excel.Column[];
+
+  ws.addRows(sectors);
+};
 
 function readFile<T>(f: File, read: (ws: Excel.Worksheet) => T): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -138,41 +233,33 @@ async function genFile(...sheetWriters: Array<(ws: Excel.Worksheet) => void>) {
 }
 
 class ExcelProcessor2 {
-  static readSectorFile = async (
-    file: File
-  ): Promise<{ [plant: string]: SectorObj[] }> => {
+  static readSectorFile = async (file: File): Promise<SectorObj[]> => {
     return readFile(file, readSectorSheet);
   };
-  static readSubsectorFile = async (
-    file: File
-  ): Promise<{ [sector: string]: SubsectorObj[] }> => {
+  static readSubsectorFile = async (file: File): Promise<SubsectorObj[]> => {
     return readFile(file, readSubsectorSheet);
   };
-  static readSkillFile = async (
-    file: File
-  ): Promise<{ [subsector: string]: SkillObj[] }> => {
+  static readSkillFile = async (file: File): Promise<SkillObj[]> => {
     return readFile(file, readSkillSheet);
   };
-  static readEmployeeFile = async (
-    file: File
-  ): Promise<EmployeeObj[]> => {
+  static readEmployeeFile = async (file: File): Promise<EmployeeObj[]> => {
     return readFile(file, readEmployeeSheet);
   };
 
   static genSectorFile = async (sectors: SectorObj[]) => {
-    return genFile(writeSectorSheet);
+    return genFile(sectorSheetWriter(sectors));
   };
 
   static genSubsectorFile = async (subsectors: SubsectorObj[]) => {
-    return genFile(writeSubsectorSheet);
+    return genFile(subsectorSheetWriter(subsectors));
   };
 
   static genSkillFile = async (skills: SkillObj[]) => {
-    return genFile(writeSkillSheet);
+    return genFile(skillSheetWriter(skills));
   };
 
   static genEmployeeFile = async (emps: EmployeeObj[]) => {
-    return genFile(writeEmployeeSheet);
+    return genFile(employeeSheetWriter(emps));
   };
 }
 

@@ -25,13 +25,13 @@ import ButtonBase from "@material-ui/core/ButtonBase";
 
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import MoreVertIcon from "@material-ui/icons/MoreVert";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import PeopleIcon from "@material-ui/icons/People";
 import BarChartIcon from "@material-ui/icons/BarChart";
 import LayersIcon from "@material-ui/icons/Layers";
 import AssignmentIcon from "@material-ui/icons/Assignment";
-import MenuIcon from '@material-ui/icons/Menu';
+import MenuIcon from "@material-ui/icons/Menu";
 
 import PlantView from "./PlantView";
 import SectorView from "./SectorView";
@@ -40,6 +40,8 @@ import DepartmentView from "./DepartmentView";
 import SkillView from "./SkillView";
 import EmployeeView from "./EmployeeView";
 import JobView from "./JobView";
+import ChangeLogView from "./ChangeLogView";
+import AccessCtrlView from "./AccessCtrlView";
 import MyDialog from "src/components/commons/Dialog";
 import ExcelUploadForm from "src/components/forms/ExcelUploadForm";
 
@@ -49,6 +51,7 @@ import { selPlant, reload } from "src/slices/data";
 import { getData, getSession, getSync } from "src/selectors";
 import k from "src/kernel";
 import ExcelProcessor from "src/kernel/ExcelProcessor";
+
 
 function Copyright() {
   return (
@@ -158,6 +161,8 @@ enum DashboardView {
   Department,
   Employee,
   Job,
+  ChangeLog,
+  AccessCtrl,
 }
 
 const Dashboard: React.FC = () => {
@@ -263,6 +268,10 @@ const Dashboard: React.FC = () => {
         return user?.vers_user.employee_group === 3;
       case DashboardView.Job:
         return user?.vers_user.job_group === 3;
+      case DashboardView.ChangeLog:
+        return true;
+      case DashboardView.AccessCtrl:
+        return user?.is_superuser;
       default:
         return false;
     }
@@ -343,11 +352,25 @@ const Dashboard: React.FC = () => {
     <div>
       <ListItem
         button
+        disabled={cannotView(DashboardView.ChangeLog)}
+        selected={currView === DashboardView.ChangeLog}
+        onClick={handleListClick(DashboardView.ChangeLog)}
       >
         <ListItemIcon>
           <LayersIcon />
         </ListItemIcon>
         <ListItemText primary="Change Log" />
+      </ListItem>
+      <ListItem
+        button
+        disabled={cannotView(DashboardView.AccessCtrl)}
+        selected={currView === DashboardView.AccessCtrl}
+        onClick={handleListClick(DashboardView.AccessCtrl)}
+      >
+        <ListItemIcon>
+          <LayersIcon />
+        </ListItemIcon>
+        <ListItemText primary="Access Control" />
       </ListItem>
     </div>
   );
@@ -368,6 +391,10 @@ const Dashboard: React.FC = () => {
         return <EmployeeView />;
       case DashboardView.Job:
         return <JobView />;
+      case DashboardView.ChangeLog:
+        return <ChangeLogView />;
+      case DashboardView.AccessCtrl:
+        return <AccessCtrlView />;
       default:
         return <PlantView />;
     }
