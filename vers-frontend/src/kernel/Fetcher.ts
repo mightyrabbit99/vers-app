@@ -7,6 +7,7 @@ import {
   SkillData,
   SubsectorData,
   LogData,
+  ForecastData,
 } from "./data";
 import axios from "axios";
 /*
@@ -25,6 +26,7 @@ const deptUrl = `${url}/api/dept/`;
 const skillUrl = `${url}/api/skill/`;
 const jobUrl = `${url}/api/job/`;
 const logUrl = `${url}/log/`;
+const forecastUrl = `${url}/api/forecast`;
 
 const getCookie = (name: string) => {
   var cookieValue = null;
@@ -62,13 +64,13 @@ class Fetcher {
   };
 
   private static getConfig = () => {
-    let headers: { [s:string]: any} = {};
+    let headers: { [s: string]: any } = {};
     let csrf = getCookie("csrftoken");
     csrf && (headers["X-CSRFToken"] = csrf);
     Fetcher.token && (headers["Authorization"] = `Token ${Fetcher.token}`);
     let config = {
-      headers
-    }
+      headers,
+    };
     return config;
   };
 
@@ -124,6 +126,10 @@ class Fetcher {
     return await axios.get(logUrl, Fetcher.getConfig());
   };
 
+  static getForecasts = async (): Promise<Result<ForecastData>> => {
+    return await axios.get(forecastUrl, Fetcher.getConfig());
+  };
+
   // POST
   static postPlant = async (data: PlantData): Promise<Result<PlantData>> => {
     return await axios.post(plantUrl, data, Fetcher.getConfig());
@@ -176,6 +182,12 @@ class Fetcher {
     return await axios.post(jobUrl, data, Fetcher.getConfig());
   };
 
+  static postForecast = async (
+    data: ForecastData
+  ): Promise<Result<ForecastData>> => {
+    return await axios.post(forecastUrl, data, Fetcher.getConfig());
+  };
+
   static putPlant = async (data: PlantData): Promise<Result<PlantData>> => {
     return await axios.put(`${plantUrl}${data.id}/`, data, Fetcher.getConfig());
   };
@@ -187,7 +199,11 @@ class Fetcher {
   static putSubsec = async (
     data: SubsectorData
   ): Promise<Result<SubsectorData>> => {
-    return await axios.put(`${subsecUrl}${data.id}/`, data, Fetcher.getConfig());
+    return await axios.put(
+      `${subsecUrl}${data.id}/`,
+      data,
+      Fetcher.getConfig()
+    );
   };
 
   static putEmp = async (data: EmployeeData): Promise<Result<EmployeeData>> => {
@@ -209,8 +225,18 @@ class Fetcher {
   };
 
   static putUser = async (username: string, password: string) => {
-    return await axios.put(userUrl, { username, password }, Fetcher.getConfig());
-  }
+    return await axios.put(
+      userUrl,
+      { username, password },
+      Fetcher.getConfig()
+    );
+  };
+
+  static putForecast = async (
+    data: ForecastData
+  ): Promise<Result<ForecastData>> => {
+    return await axios.put(`${forecastUrl}${data.id}/`, data);
+  };
 
   static deleteEmp = async (
     data: EmployeeData
@@ -246,10 +272,14 @@ class Fetcher {
     return await axios.delete(`${jobUrl}${data.id}/`, Fetcher.getConfig());
   };
 
-  static deleteLog = async (
-    data: LogData
-  ): Promise<Result<LogData>> => {
+  static deleteLog = async (data: LogData): Promise<Result<LogData>> => {
     return await axios.delete(`${logUrl}${data.id}/`, Fetcher.getConfig());
+  };
+
+  static deleteForecast = async (
+    data: ForecastData
+  ): Promise<Result<ForecastData>> => {
+    return await axios.delete(`${forecastUrl}${data.id}/`, Fetcher.getConfig());
   };
 }
 

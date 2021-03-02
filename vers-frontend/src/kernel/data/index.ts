@@ -8,3 +8,4 @@ export * from "./SkillData";
 export * from "./EmpSkillData";
 export * from "./JobSkillData";
 export * from "./LogData";
+export * from "./ForecastData";

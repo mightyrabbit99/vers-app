@@ -8,6 +8,7 @@ enum ItemType {
   Department,
   EmpSkill,
   Log,
+  Forecast,
 }
 
 interface Item {
