@@ -147,6 +147,13 @@ class PlantView(viewsets.ModelViewSet):
         else:
             serializer.save()
 
+    def perform_destroy(self, instance):
+        lg = models.Log(type=models.Log.TypeChoices.DELETE,
+                        data_type=models.Log.DataChoices.PLANT,
+                        user=self.request.user)
+        lg.save()
+        return super().perform_destroy(instance)
+
 
 class SectorView(viewsets.ModelViewSet):
     txt = "sector"
@@ -168,6 +175,12 @@ class SectorView(viewsets.ModelViewSet):
         else:
             serializer.save()
 
+    def perform_destroy(self, instance):
+        lg = models.Log(type=models.Log.TypeChoices.DELETE,
+                        data_type=models.Log.DataChoices.SECTOR,
+                        user=self.request.user)
+        lg.save()
+        return super().perform_destroy(instance)
 
 class SubsectorView(viewsets.ModelViewSet):
     txt = "subsector"
@@ -284,6 +297,13 @@ class LogList(generics.ListAPIView):
     txt = "log"
     queryset = models.Log.objects.all()
     serializer_class = serializers.LogSerializer
+
+
+class ForecastView(viewsets.ModelViewSet):
+    serializer_class = serializers.ForecastSerializer
+
+    def get_queryset(self):
+        return models.Forecast.objects.all()
 
 # main page
 

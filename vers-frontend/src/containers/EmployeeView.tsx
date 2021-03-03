@@ -1,10 +1,13 @@
 import * as React from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { Grid, Paper, makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import Grid from "@material-ui/core/Grid";
+import Paper from "@material-ui/core/Paper";
 
 import EmployeeListWidget from "src/components/EmployeeListWidget";
 import EmployeeSkillWidget from "src/components/EmployeeSkillWidget";
+import EmployeeSkillFilterWidget from "src/components/EmployeeSkillFilterWidget";
 
 import { getData, getSession, getSync } from "src/selectors";
 import { delData, saveData } from "src/slices/data";
@@ -73,6 +76,11 @@ const EmployeeView: React.FunctionComponent<IEmployeeViewProps> = (props) => {
             skillLst={skills}
             onSubmit={canEdit() ? handleSubmit : undefined}
           />
+        </Paper>
+      </Grid>
+      <Grid item xs={12}>
+        <Paper className={classes.list}>
+          <EmployeeSkillFilterWidget lst={employees} skillLst={skills}/>
         </Paper>
       </Grid>
     </Grid>

@@ -2,7 +2,6 @@ import * as React from "react";
 import clsx from "clsx";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { saveAs } from "file-saver";
 
 import { makeStyles } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -42,17 +41,14 @@ import DepartmentView from "./DepartmentView";
 import SkillView from "./SkillView";
 import EmployeeView from "./EmployeeView";
 import JobView from "./JobView";
+import ForecastView from "./ForecastView";
 import ChangeLogView from "./ChangeLogView";
 import AccessCtrlView from "./AccessCtrlView";
-import MyDialog from "src/components/commons/Dialog";
-import ExcelUploadForm from "src/components/forms/ExcelUploadForm";
 
-import { submitExcel, clearFeedback } from "src/slices/sync";
+import { clearFeedback } from "src/slices/sync";
 import { logout } from "src/slices/session";
-import { selPlant, reload } from "src/slices/data";
+import { selPlant } from "src/slices/data";
 import { getData, getSession, getSync } from "src/selectors";
-import k from "src/kernel";
-import ExcelProcessor from "src/kernel/ExcelProcessor";
 
 
 function Copyright() {
@@ -167,6 +163,7 @@ enum DashboardView {
   Department,
   Employee,
   Job,
+  Forecast,
   ChangeLog,
   AccessCtrl,
 }
@@ -229,33 +226,6 @@ const Dashboard: React.FC = () => {
 
   const toPlant = () => {
     dispatch(selPlant());
-  };
-
-  const [excelFormOpen, setExcelFormOpen] = React.useState(false);
-  const handleExcelFormOpen = () => {
-    setSettingsAnchorEl(null);
-    setExcelFormOpen(true);
-  };
-  const handleExcelFormClose = () => {
-    setExcelFormOpen(false);
-  };
-
-  const handleExcelFileUpload = async (file: File) => {
-    let fileData = await ExcelProcessor.readFile(file);
-    dispatch(submitExcel(fileData));
-    handleExcelFormClose();
-  };
-
-  const handleExcelFileDownload = async () => {
-    /*
-    let s = pId ? await k.getExcel(pId) : undefined;
-    var blob = s
-      ? new Blob([s], {
-          type:
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        })
-      : undefined;
-    blob && saveAs(blob, `${plants[pId ?? 0].name}.xlsx`);*/
   };
 
   const cannotView = (i: number) => {
@@ -352,6 +322,17 @@ const Dashboard: React.FC = () => {
         </ListItemIcon>
         <ListItemText primary="Jobs" />
       </ListItem>
+      <ListItem
+        button
+        disabled={cannotView(DashboardView.Forecast)}
+        selected={currView === DashboardView.Forecast}
+        onClick={handleListClick(DashboardView.Forecast)}
+      >
+        <ListItemIcon>
+          <LayersIcon />
+        </ListItemIcon>
+        <ListItemText primary="Forecasts" />
+      </ListItem>
     </div>
   );
 
@@ -398,6 +379,8 @@ const Dashboard: React.FC = () => {
         return <EmployeeView />;
       case DashboardView.Job:
         return <JobView />;
+      case DashboardView.Forecast:
+        return <ForecastView />;
       case DashboardView.ChangeLog:
         return <ChangeLogView />;
       case DashboardView.AccessCtrl:
@@ -481,8 +464,6 @@ const Dashboard: React.FC = () => {
         onClose={handleSettingsClose}
       >
         <MenuItem onClick={handleViewProfile}>Profile</MenuItem>
-        <MenuItem onClick={handleExcelFormOpen}>Upload Excel</MenuItem>
-        <MenuItem onClick={handleExcelFileDownload}>Export Excel</MenuItem>
         <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>
       <Menu
@@ -495,28 +476,6 @@ const Dashboard: React.FC = () => {
         <MenuItem onClick={handlePageSelClose}>Dashboard</MenuItem>
         <MenuItem onClick={toPlant}>Plants</MenuItem>
       </Menu>
-      <MyDialog open={excelFormOpen} onClose={handleExcelFormClose}>
-        <div className={classes.form}>
-          <div className={classes.formTitle}>
-            <Typography
-              className={classes.title}
-              component="h2"
-              variant="h6"
-              color="primary"
-              gutterBottom
-            >
-              Upload Excel Data
-            </Typography>
-          </div>
-          <div className={classes.formContent}>
-            <ExcelUploadForm
-              feedback={feedback}
-              onSubmit={handleExcelFileUpload}
-              onCancel={handleExcelFormClose}
-            />
-          </div>
-        </div>
-      </MyDialog>
       <Backdrop className={classes.backdrop} open={loading}>
         <CircularProgress color="inherit" />
       </Backdrop>

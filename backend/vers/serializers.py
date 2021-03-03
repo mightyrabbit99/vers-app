@@ -44,20 +44,20 @@ class UserSerializer(serializers.ModelSerializer):
         return instance
 
     def validate(self, data):
-         # get the password from the data
-         password = data.get('password')
+        # get the password from the data
+        password = data.get('password')
 
-         errors = dict() 
-         try:
-             validators.validate_password(password=password, user=User)
+        errors = dict()
+        try:
+            validators.validate_password(password=password, user=User)
 
-         except exceptions.ValidationError as e:
-             errors['password'] = list(e.messages)
+        except exceptions.ValidationError as e:
+            errors['password'] = list(e.messages)
 
-         if errors:
-             raise serializers.ValidationError(errors)
+        if errors:
+            raise serializers.ValidationError(errors)
 
-         return super().validate(data)
+        return super().validate(data)
 
     class Meta:
         model = User
@@ -72,6 +72,28 @@ class PlantSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source=OWNER_USERNAME)
     sectors = serializers.PrimaryKeyRelatedField(
         many=True, read_only=True)
+
+    def get_request_user(self):
+        user = None
+        request = self.context.get("request")
+        if request and hasattr(request, "user"):
+            user = request.user
+        return user
+
+    def create(self, validated_data):
+        lg = models.Log(type=models.Log.TypeChoices.CREATE,
+                        data_type=models.Log.DataChoices.PLANT,
+                        user=self.get_request_user())
+        lg.save()
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        ans = super().update(instance, validated_data)
+        lg = models.Log(type=models.Log.TypeChoices.UPDATE,
+                        data_type=models.Log.DataChoices.PLANT,
+                        user=self.get_request_user())
+        lg.save()
+        return ans
 
     class Meta:
         model = models.Plant
@@ -255,7 +277,14 @@ class SkillSerializer(serializers.ModelSerializer):
         model = models.Skill
         fields = '__all__'
 
+
 class LogSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Log
+        fields = '__all__'
+
+
+class ForecastSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Forecast
         fields = '__all__'

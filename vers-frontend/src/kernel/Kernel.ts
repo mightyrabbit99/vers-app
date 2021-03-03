@@ -7,10 +7,12 @@ import SectorStore, { Sector } from "./Sector";
 import SkillStore, { Skill } from "./Skill";
 import { Store, Item, ItemType } from "./Store";
 import SubsectorStore, { Subsector } from "./Subsector";
+import ForecastStore, { Forecast } from "./Forecast";
 import LogStore, { Log } from "./Log";
 
 import ExcelProcessor2, {
   EmployeeObj,
+  ExcelObj,
   SectorObj,
   SkillObj,
   SubsectorObj,
@@ -40,6 +42,7 @@ class Kernel {
   skillStore: Store<Skill>;
   empStore: Store<Employee>;
   jobStore: Store<Job>;
+  forecastStore: Store<Forecast>;
   logStore: Store<Log>;
 
   constructor() {
@@ -50,6 +53,7 @@ class Kernel {
     this.skillStore = new SkillStore();
     this.empStore = new EmployeeStore();
     this.jobStore = new JobStore();
+    this.forecastStore = new ForecastStore();
     this.logStore = new LogStore();
   }
 
@@ -61,6 +65,7 @@ class Kernel {
     await this.skillStore.refresh();
     await this.empStore.refresh();
     await this.jobStore.refresh();
+    await this.forecastStore.refresh();
     await this.logStore.refresh();
   };
 
@@ -80,6 +85,8 @@ class Kernel {
         return await this.empStore.submitNew(t as Employee);
       case ItemType.Job:
         return await this.jobStore.submitNew(t as Job);
+      case ItemType.Forecast:
+        return await this.forecastStore.submitNew(t as Forecast);
       default:
         return { success: false, data: {} };
     }
@@ -101,6 +108,8 @@ class Kernel {
         return await this.empStore.submit(t as Employee);
       case ItemType.Job:
         return await this.jobStore.submit(t as Job);
+      case ItemType.Forecast:
+        return await this.forecastStore.submit(t as Forecast);
       default:
         return { success: false, data: {} };
     }
@@ -122,6 +131,8 @@ class Kernel {
         return await this.empStore.remove(t as Employee);
       case ItemType.Job:
         return await this.jobStore.remove(t as Job);
+      case ItemType.Forecast:
+        return await this.forecastStore.remove(t as Forecast);
       case ItemType.Log:
         return await this.logStore.remove(t as Log);
       default:
@@ -205,80 +216,85 @@ class Kernel {
 
   private saveSectorObjs = async (plantId: number, objs: SectorObj[]) => {
     let plant = this.plantStore.get(plantId);
-    for (let o of objs) {
-      if (o.plant !== plant.name) continue;
-      this.secStore.submitOrNew(this.secStore.getNew({ ...o, plant: plantId }));
-    }
+    const saveObj = async (o: SectorObj) => {
+      const st = this.secStore;
+      if (o.plant !== plant.name) {
+        return { success: false, data: o };
+      } else {
+        return await st.submitOrNew(st.getNew({ ...o, plant: plantId }));
+      }
+    };
+    return await Promise.all(objs.map(saveObj));
   };
 
   private saveSubsectorObjs = async (plantId: number, objs: SubsectorObj[]) => {
     let sectors = this.secStore.getLst((x) => x.plant === plantId);
     let secNames = genMap(sectors, (x) => x.name);
-    for (let o of objs) {
-      if (!(o.sector in secNames)) continue;
-      this.subsecStore.submitOrNew(
-        this.subsecStore.getNew({ ...o, sector: secNames[o.sector][0].id })
-      );
-    }
+    const saveObj = async (o: SubsectorObj) => {
+      const st = this.subsecStore;
+      if (!(o.sector in secNames)) {
+        return { success: false, data: o };
+      } else {
+        return await st.submitOrNew(
+          st.getNew({ ...o, sector: secNames[o.sector][0].id })
+        );
+      }
+    };
+    return await Promise.all(objs.map(saveObj));
   };
 
   private saveSkillObjs = async (plantId: number, objs: SkillObj[]) => {
     let sectors = this.secStore.getLst((x) => x.plant === plantId);
     let subsectors = this.subsecStore.getLst((x) => x.sector in sectors);
     let subsecNames = genMap(subsectors, (x) => x.name);
-    for (let o of objs) {
-      if (!(o.subsector in subsecNames)) continue;
-      this.skillStore.submitOrNew(
-        this.skillStore.getNew({
-          ...o,
-          subsector: subsecNames[o.subsector][0].id,
-        })
-      );
-    }
+    const saveObj = async (o: SkillObj) => {
+      const st = this.skillStore;
+      if (!(o.subsector in subsecNames)) {
+        return { success: false, data: o };
+      } else {
+        return await st.submitOrNew(
+          st.getNew({ ...o, subsector: subsecNames[o.subsector][0].id })
+        );
+      }
+    };
+    return await Promise.all(objs.map(saveObj));
   };
 
   private saveEmpObjs = async (plantId: number, objs: EmployeeObj[]) => {
     let sectors = this.secStore.getLst((x) => x.plant === plantId);
     let subsectors = this.subsecStore.getLst((x) => x.sector in sectors);
     let subsecNames = genMap(subsectors, (x) => x.name);
-    for (let o of objs) {
-      if (!(o.homeLocation in subsecNames)) continue;
-      this.empStore.submitOrNew(
-        this.empStore.getNew({
-          ...o,
-          department: undefined, // TODO
-          subsector: subsecNames[o.homeLocation][0].id,
-        })
-      );
-    }
+    const saveObj = async (o: EmployeeObj) => {
+      const st = this.empStore;
+      if (!(o.homeLocation in subsecNames)) {
+        return { success: false, data: o };
+      } else {
+        return await st.submitOrNew(
+          st.getNew({
+            ...o,
+            department: undefined, // TODO
+            subsector: subsecNames[o.homeLocation][0].id,
+          })
+        );
+      }
+    };
+    return await Promise.all(objs.map(saveObj));
   };
 
-  public submitExcel = async (plantId: number, type: ItemType, file: File) => {
+  public submitExcel = async (
+    plantId: number,
+    type: ItemType,
+    objs: ExcelObj[]
+  ) => {
     switch (type) {
       case ItemType.Sector:
-        await this.saveSectorObjs(
-          plantId,
-          await ExcelProcessor2.readSectorFile(file)
-        );
-        break;
+        return await this.saveSectorObjs(plantId, objs as SectorObj[]);
       case ItemType.Subsector:
-        await this.saveSubsectorObjs(
-          plantId,
-          await ExcelProcessor2.readSubsectorFile(file)
-        );
-        break;
+        return await this.saveSubsectorObjs(plantId, objs as SubsectorObj[]);
       case ItemType.Skill:
-        await this.saveSkillObjs(
-          plantId,
-          await ExcelProcessor2.readSkillFile(file)
-        );
-        break;
+        return await this.saveSkillObjs(plantId, objs as SkillObj[]);
       case ItemType.Employee:
-        await this.saveEmpObjs(
-          plantId,
-          await ExcelProcessor2.readEmployeeFile(file)
-        );
-        break;
+        return await this.saveEmpObjs(plantId, objs as EmployeeObj[]);
     }
   };
 

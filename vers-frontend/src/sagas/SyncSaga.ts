@@ -13,7 +13,7 @@ import {
   submitError,
   submitSuccess
 } from "src/slices/sync";
-import { CreateNewAction, EraseAction, ModifyAction } from "src/types";
+import { CreateNewAction, EraseAction, ModifyAction, SubmitExcelAction } from "src/types";
 
 
 function* fetchDatas() {
@@ -76,9 +76,10 @@ function* deleteItem({ payload }: EraseAction) {
   }
 }
 
-function* submitExcelData({ payload }: any) {
+function* submitExcelData({ payload }: SubmitExcelAction) {
   let { selectedPlantId: pId } = yield select(getData);
-  yield k.saveExcelDatas(pId, payload.sectors ?? [], payload.departments ?? []);
+  let { type, data } = payload;
+  yield k.submitExcel(pId, type, data);
   yield put(fetchData());
 }
 

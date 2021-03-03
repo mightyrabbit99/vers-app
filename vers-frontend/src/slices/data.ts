@@ -33,6 +33,7 @@ export const initialState: DataState = {
   skills: {},
   employees: {},
   jobs: {},
+  forecasts: {},
   logs: {},
   personalLogs: [],
   loading: true,
@@ -58,23 +59,27 @@ const dataSlice = createSlice({
       state.newEmployee = payload.newEmployee ?? undefined;
       state.jobs = payload.jobs ?? {};
       state.newJob = payload.newJob ?? undefined;
+      state.forecasts = payload.forecasts ?? {};
+      state.newForecast = payload.newForecast ?? undefined;
     },
     reload: (state, { payload }: PayloadAction<number | undefined>) => {
       state.loading = true;
       state.plants = {};
-      state.newPlant = undefined;
+      delete state.newPlant;
       state.sectors = {};
-      state.newSector = undefined;
+      delete state.newSector;
       state.subsectors = {};
-      state.newSubsector = undefined;
+      delete state.newSubsector;
       state.skills = {};
-      state.newSkill = undefined;
+      delete state.newSkill;
       state.departments = {};
-      state.newDepartment = undefined;
+      delete state.newDepartment;
       state.employees = {};
-      state.newEmployee = undefined;
+      delete state.newEmployee;
       state.jobs = {};
-      state.newJob = undefined;
+      delete state.newJob;
+      state.forecasts = {};
+      delete state.newForecast;
     },
     reloadSuccess: (state) => {
       state.loading = false;

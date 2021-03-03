@@ -51,6 +51,7 @@ function* reloadData({ payload: p }: ReloadDataAction) {
   newEmployee = k.empStore.getNew();
   jobs = k.jobStore.getLst();
   newJob = k.jobStore.getNew();
+  
   yield put(
     _reload({
       plants,
@@ -108,6 +109,7 @@ function* saveDataCascadeThenCalculate({ payload }: SaveDataAction) {
     yield put(modify(payload));
     yield put(_saveData(payload));
     yield put(calculate());
+    yield put(reloadSuccess());
   }
 }
 

@@ -1,8 +1,9 @@
-import { Plant, Data, Sector, Subsector, Department, Skill, Employee, Job, Log } from "src/kernel";
+import { Plant, Data, Sector, Subsector, Department, Skill, Employee, Job, Log, ItemType } from "src/kernel";
 import { UserData } from "src/kernel/data/UserData";
+import { Forecast } from "src/kernel/Forecast";
 import { delData, saveData, reload } from "src/slices/data";
 import { changeUserDetail, login } from "src/slices/session";
-import { createNew, erase, modify } from "src/slices/sync";
+import { createNew, erase, modify, submitExcel } from "src/slices/sync";
 
 export interface ReloadDataAction {
   type: typeof reload.type;
@@ -27,6 +28,14 @@ export interface ModifyAction {
 export interface SaveDataAction {
   type: typeof saveData.type;
   payload: Data;
+}
+
+export interface SubmitExcelAction {
+  type: typeof submitExcel.type;
+  payload: {
+    type: ItemType;
+    data: any;
+  }
 }
 
 export interface DeleteDataAction {
@@ -72,6 +81,8 @@ export interface DataState {
   newEmployee?: Employee;
   jobs: IdMap<Job>;
   newJob?: Job;
+  forecasts: IdMap<Forecast>;
+  newForecast?: Forecast;
 
   logs: IdMap<Log>;
   personalLogs: Log[];

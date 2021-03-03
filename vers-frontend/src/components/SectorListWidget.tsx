@@ -8,7 +8,6 @@ import SectorForm from "src/components/forms/SectorForm";
 import SectorList from "src/components/lists/SectorMainList";
 
 import ListWidget from "src/components/commons/ListWidget";
-import ExcelUploadForm from "./forms/ExcelUploadForm";
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -32,7 +31,7 @@ interface ISectorListWidgetProps {
   onSubmit: (p: Sector) => void;
   onDelete: (...ps: Sector[]) => void;
   onReset: () => void;
-  uploadExcel?: (file: File) => void;
+  uploadExcel?: () => void;
   downloadExcel?: () => void;
 }
 
@@ -49,8 +48,8 @@ const SectorListWidget: React.FunctionComponent<ISectorListWidgetProps> = (
     onSubmit,
     onDelete,
     onReset,
-    uploadExcel,
-    downloadExcel,
+    uploadExcel = () => {},
+    downloadExcel = () => {},
   } = props;
 
   const [selected, setSelected] = React.useState<number[]>([]);
@@ -89,24 +88,6 @@ const SectorListWidget: React.FunctionComponent<ISectorListWidgetProps> = (
     setFormOpen(true);
   };
 
-  const handleExcelDownloadClick = () => {
-    downloadExcel && downloadExcel();
-  };
-
-  const [excelFormOpen, setExcelFormOpen] = React.useState(false);
-  const handleExcelUploadClick = () => {
-    setExcelFormOpen(true);
-  };
-
-  const handleExcelFormClose = () => {
-    setExcelFormOpen(false);
-  };
-
-  const handleExcelFileUpload = (file: File) => {
-    uploadExcel && uploadExcel(file);
-    handleExcelFormClose();
-  };
-
   return (
     <ListWidget
       title="Sectors"
@@ -114,8 +95,8 @@ const SectorListWidget: React.FunctionComponent<ISectorListWidgetProps> = (
       disableDelete={selected.length === 0 || !edit}
       createOnClick={handleCreateOnClick}
       deleteOnClick={handleDeleteOnClick}
-      downloadOnClick={handleExcelDownloadClick}
-      uploadOnClick={handleExcelUploadClick}
+      downloadOnClick={downloadExcel}
+      uploadOnClick={uploadExcel}
     >
       <SectorList
         lst={lst}
@@ -149,28 +130,6 @@ const SectorListWidget: React.FunctionComponent<ISectorListWidgetProps> = (
                 onCancel={handleFormClose}
               />
             ) : null}
-          </div>
-        </div>
-      </MyDialog>
-      <MyDialog open={excelFormOpen} onClose={handleExcelFormClose}>
-        <div className={classes.form}>
-          <div className={classes.formTitle}>
-            <Typography
-              className={classes.title}
-              component="h2"
-              variant="h6"
-              color="primary"
-              gutterBottom
-            >
-              Upload Excel Data
-            </Typography>
-          </div>
-          <div className={classes.formContent}>
-            <ExcelUploadForm
-              feedback={feedback}
-              onSubmit={handleExcelFileUpload}
-              onCancel={handleExcelFormClose}
-            />
           </div>
         </div>
       </MyDialog>

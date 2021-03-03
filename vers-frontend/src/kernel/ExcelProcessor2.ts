@@ -1,13 +1,15 @@
 import Excel from "exceljs";
 import { ItemType } from "./Store";
 
-interface SectorObj {
+interface ExcelObj {}
+
+interface SectorObj extends ExcelObj {
   _type: ItemType.Sector;
   name: string;
   plant: string;
 }
 
-interface SubsectorObj {
+interface SubsectorObj extends ExcelObj {
   _type: ItemType.Subsector;
   name: string;
   sector: string;
@@ -16,7 +18,7 @@ interface SubsectorObj {
   efficiency: number;
 }
 
-interface SkillObj {
+interface SkillObj extends ExcelObj {
   _type: ItemType.Skill;
   name: string;
   subsector: string;
@@ -24,12 +26,12 @@ interface SkillObj {
   percentageOfSector: number;
 }
 
-interface SkillMatrixObj {
+interface SkillMatrixObj extends ExcelObj {
   skillName: string;
   level: number;
 }
 
-interface EmployeeObj {
+interface EmployeeObj extends ExcelObj {
   _type: ItemType.Employee;
   sesaId: string;
   firstName: string;
@@ -259,35 +261,35 @@ async function genFile(...sheetWriters: Array<(ws: Excel.Worksheet) => void>) {
 }
 
 class ExcelProcessor2 {
-  static readSectorFile = async (file: File): Promise<SectorObj[]> => {
-    return readFile(file, readSectorSheet);
+  static readSectorFile = async (file: File) => {
+    return await readFile(file, readSectorSheet);
   };
-  static readSubsectorFile = async (file: File): Promise<SubsectorObj[]> => {
-    return readFile(file, readSubsectorSheet);
+  static readSubsectorFile = async (file: File) => {
+    return await readFile(file, readSubsectorSheet);
   };
-  static readSkillFile = async (file: File): Promise<SkillObj[]> => {
-    return readFile(file, readSkillSheet);
+  static readSkillFile = async (file: File) => {
+    return await readFile(file, readSkillSheet);
   };
-  static readEmployeeFile = async (file: File): Promise<EmployeeObj[]> => {
-    return readFile(file, readEmployeeSheet);
+  static readEmployeeFile = async (file: File) => {
+    return await readFile(file, readEmployeeSheet);
   };
 
   static genSectorFile = async (sectors: SectorObj[]) => {
-    return genFile(sectorSheetWriter(sectors));
+    return await genFile(sectorSheetWriter(sectors));
   };
 
   static genSubsectorFile = async (subsectors: SubsectorObj[]) => {
-    return genFile(subsectorSheetWriter(subsectors));
+    return await genFile(subsectorSheetWriter(subsectors));
   };
 
   static genSkillFile = async (skills: SkillObj[]) => {
-    return genFile(skillSheetWriter(skills));
+    return await genFile(skillSheetWriter(skills));
   };
 
   static genEmployeeFile = async (emps: EmployeeObj[]) => {
-    return genFile(employeeSheetWriter(emps));
+    return await genFile(employeeSheetWriter(emps));
   };
 }
 
-export type { SectorObj, SubsectorObj, SkillObj, EmployeeObj };
+export type { ExcelObj, SectorObj, SubsectorObj, SkillObj, EmployeeObj };
 export default ExcelProcessor2;

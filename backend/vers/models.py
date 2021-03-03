@@ -218,33 +218,22 @@ class JobSkillMatrix(models.Model):
 
 
 class Log(models.Model):
-    CREATE = 1
-    EDIT = 2
-    DELETE = 3
-    TYPE_CHOICES = [
-        (CREATE, '1'),
-        (EDIT, '2'),
-        (DELETE, '3'),
-    ]
+    class TypeChoices(models.IntegerChoices):
+        CREATE = 0, 'CREATE'
+        UPDATE = 1, 'UPDATE'
+        DELETE = 2, 'DELETE'
 
-    PLANT = 1
-    SECTOR = 2
-    SUBSECTOR = 3
-    SKILL = 4
-    EMPLOYEE = 5
-    JOB = 6
-    DATA_CHOICES = [
-        (PLANT, 'Plant'),
-        (SECTOR, 'Sector'),
-        (SUBSECTOR, 'Subsector'),
-        (SKILL, 'Skill'),
-        (EMPLOYEE, 'Employee'),
-        (JOB, 'Job'),
-    ]
-    type = models.IntegerField(choices=TYPE_CHOICES)
-    data_type = models.IntegerField(choices=DATA_CHOICES)
-    user = User
-    change_id = models.IntegerField()
+    class DataChoices(models.IntegerChoices):
+        PLANT = 1, 'PLANT'
+        SECTOR = 2, 'SECTOR'
+        SUBSECTOR = 3, 'SUBSECTOR'
+        SKILL = 4, 'SKILL'
+        EMPLOYEE = 5, 'EMPLOYEE'
+        JOB = 6, 'JOB'
+
+    type = models.IntegerField(choices=TypeChoices.choices)
+    data_type = models.IntegerField(choices=DataChoices.choices)
+    user = models.ForeignKey(User)
     desc = models.CharField(max_length=100, blank=True)
 
     class Meta:
@@ -257,4 +246,4 @@ class Forecast(models.Model):
     val = models.FloatField()
 
     class Meta:
-        db_table = 'forecast'
+        db_table = 'forecasts'

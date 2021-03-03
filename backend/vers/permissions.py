@@ -44,7 +44,6 @@ groups
 class VersPermission1(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if not request.user.is_authenticated:
-            print("bbb")
             return False
         if request.user.is_superuser:
             return True
