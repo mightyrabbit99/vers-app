@@ -49,7 +49,7 @@ const SkillLevelSelectWidget: React.FunctionComponent<ISkillLevelSelectWidgetPro
   React.useEffect(() => {
     setAvail(Object.values(lst).map((x) => x.id));
     setSelected([]);
-  }, []);
+  }, [lst]);
 
   const handleSubmit = (lst: SkillLevel[]) => {
     setSelected(lst);

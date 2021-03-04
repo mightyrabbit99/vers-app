@@ -1,7 +1,6 @@
 import { SectorData } from "./data";
 import Fetcher from "./Fetcher";
 import store, { Item, ItemType } from "./Store";
-import { hashCode } from "./util";
 
 interface Sector extends Item {
   _type: ItemType.Sector;
@@ -67,7 +66,7 @@ const generator = (init?: any): Sector => ({
   ...init,
 });
 
-const hasher = (t: Sector) => `${t.id}\a${t.name}`;
+const hasher = (t: Sector) => `${t.id}\b${t.name}`;
 
 const SectorStore = store<Sector>(get, post, put, del, generator, hasher);
 

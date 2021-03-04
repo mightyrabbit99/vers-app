@@ -1,7 +1,10 @@
 import * as React from "react";
 
+import IconButton from "@material-ui/core/IconButton";
+import EditIcon from "@material-ui/icons/Edit";
+
 import { Subsector, Skill } from "src/kernel";
-import MainList from "./MainList";
+import MainList, { Col } from "./MainList";
 
 interface ISkillMainListProps {
   lst: { [id: number]: Skill };
@@ -13,7 +16,7 @@ interface ISkillMainListProps {
 
 const SkillMainList: React.FC<ISkillMainListProps> = (props) => {
   const { lst, subsectorLst, selected, selectedOnChange, onEdit } = props;
-  const cols = [
+  const cols: Col[] = [
     {
       title: "Name",
       extractor: (p: Skill) => p.name,
@@ -32,13 +35,22 @@ const SkillMainList: React.FC<ISkillMainListProps> = (props) => {
     },
   ];
 
+  if (onEdit) {
+    cols.push({
+      extractor: (p: Subsector) => (
+        <IconButton onClick={() => onEdit(p.id)}>
+          <EditIcon />
+        </IconButton>
+      ),
+    });
+  }
+
   return (
     <MainList
       lst={Object.values(lst)}
       cols={cols}
       selected={selected}
       selectedOnChange={selectedOnChange}
-      onEdit={onEdit}
     />
   );
 };

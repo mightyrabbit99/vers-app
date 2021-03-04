@@ -1,7 +1,10 @@
 import * as React from "react";
 
+import IconButton from "@material-ui/core/IconButton";
+import EditIcon from "@material-ui/icons/Edit";
+
 import { Job } from "src/kernel";
-import MainList from "./MainList";
+import MainList, { Col } from "./MainList";
 
 interface IJobMainListProps {
   lst: { [id: number]: Job };
@@ -17,12 +20,22 @@ const JobMainList: React.FC<IJobMainListProps> = (props) => {
     selectedOnChange,
     onEdit,
   } = props;
-  const cols = [
+  const cols: Col[] = [
     {
       title: "Name",
       extractor: (p: Job) => p.title,
     },
   ];
+
+  if (onEdit) {
+    cols.push({
+      extractor: (p: Job) => (
+        <IconButton onClick={() => onEdit(p.id)}>
+          <EditIcon />
+        </IconButton>
+      ),
+    });
+  }
 
   return (
     <MainList
@@ -30,7 +43,6 @@ const JobMainList: React.FC<IJobMainListProps> = (props) => {
       cols={cols}
       selected={selected}
       selectedOnChange={selectedOnChange}
-      onEdit={onEdit}
     />
   );
 };

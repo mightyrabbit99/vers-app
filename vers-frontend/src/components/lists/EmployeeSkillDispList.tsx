@@ -1,5 +1,7 @@
-import Chip from "@material-ui/core/Chip";
 import * as React from "react";
+
+import Chip from "@material-ui/core/Chip";
+
 import { Employee, Skill } from "src/kernel";
 import MainList from "./MainList";
 

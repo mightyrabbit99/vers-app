@@ -34,7 +34,6 @@ import LayersIcon from "@material-ui/icons/Layers";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import MenuIcon from "@material-ui/icons/Menu";
 
-import PlantView from "./PlantView";
 import SectorView from "./SectorView";
 import SubsectorView from "./SubsectorView";
 import DepartmentView from "./DepartmentView";
@@ -365,8 +364,6 @@ const Dashboard: React.FC = () => {
 
   const genView = () => {
     switch (currView) {
-      case DashboardView.Plant:
-        return <PlantView />;
       case DashboardView.Sector:
         return <SectorView />;
       case DashboardView.Subsector:
@@ -386,7 +383,7 @@ const Dashboard: React.FC = () => {
       case DashboardView.AccessCtrl:
         return <AccessCtrlView />;
       default:
-        return <PlantView />;
+        return <SectorView />;
     }
   };
 

@@ -34,6 +34,10 @@ const SkillLevelList: React.FunctionComponent<ISkillLevelListProps> = (
       onSubmit([...lst]);
     }
 
+    const handleDelete = () => {
+      onSubmit(lst.splice(idx, 1));
+    }
+
     return (
       <ListItem>
         <ListItemText
@@ -57,7 +61,7 @@ const SkillLevelList: React.FunctionComponent<ISkillLevelListProps> = (
           </FormControl>
         </ListItemSecondaryAction>
         <ListItemSecondaryAction>
-          <IconButton edge="end" aria-label="delete">
+          <IconButton edge="end" aria-label="delete" onClick={handleDelete}>
             <DeleteIcon />
           </IconButton>
         </ListItemSecondaryAction>

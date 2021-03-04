@@ -118,6 +118,8 @@ const SkillListWidget: React.FC<ISkillListWidgetProps> = (props) => {
       <SkillMainList
         lst={lst}
         subsectorLst={subsectorLst}
+        selected={selected}
+        selectedOnChange={setSelected}
         onEdit={edit ? handleEditOnClick : undefined}
       />
       <MyDialog open={formOpen} onClose={handleFormClose}>

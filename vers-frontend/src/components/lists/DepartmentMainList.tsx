@@ -1,7 +1,10 @@
 import * as React from "react";
 
+import IconButton from "@material-ui/core/IconButton";
+import EditIcon from "@material-ui/icons/Edit";
+
 import { Department } from "src/kernel";
-import MainList from "./MainList";
+import MainList, { Col } from "./MainList";
 
 interface IDepartmentMainListProps {
   lst: Department[];
@@ -12,12 +15,22 @@ interface IDepartmentMainListProps {
 
 const DepartmentMainList: React.FC<IDepartmentMainListProps> = (props) => {
   const { lst, selected, selectedOnChange, onEdit } = props;
-  const cols = [
+  const cols: Col[] = [
     {
       title: "Name",
       extractor: (p: Department) => p.name,
     },
   ];
+
+  if (onEdit) {
+    cols.push({
+      extractor: (p: Department) => (
+        <IconButton onClick={() => onEdit(p.id)}>
+          <EditIcon />
+        </IconButton>
+      ),
+    });
+  }
 
   return (
     <MainList
@@ -25,7 +38,6 @@ const DepartmentMainList: React.FC<IDepartmentMainListProps> = (props) => {
       cols={cols}
       selected={selected}
       selectedOnChange={selectedOnChange}
-      onEdit={onEdit}
     />
   );
 };

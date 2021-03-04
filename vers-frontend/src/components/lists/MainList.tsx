@@ -9,14 +9,13 @@ import {
   TableHead,
   TableRow,
   makeStyles,
-  IconButton,
 } from "@material-ui/core";
-import EditIcon from "@material-ui/icons/Edit";
+
 
 type Item = any;
 
 interface Col {
-  title: string;
+  title?: string;
   extractor: (item: Item) => string | React.ReactNode;
 }
 
@@ -26,7 +25,6 @@ interface IMainListProps {
   cols: Col[];
   selected?: number[];
   selectedOnChange?: (ids: number[]) => void;
-  onEdit?: (id: number) => void;
 }
 
 const useStyles = makeStyles((themes) => ({
@@ -38,7 +36,7 @@ const useStyles = makeStyles((themes) => ({
 
 const ItemMainList: React.FC<IMainListProps> = (props) => {
   const classes = useStyles();
-  const { lst, cols, selected, onEdit, selectedOnChange = (lst) => {} } = props;
+  const { lst, cols, selected, selectedOnChange = (lst) => {} } = props;
 
   const [selectedIds, setSelectedIds] = React.useState<number[]>(
     selected ?? []
@@ -76,7 +74,7 @@ const ItemMainList: React.FC<IMainListProps> = (props) => {
       <Table stickyHeader>
         <TableHead>
           <TableRow>
-            <TableCell padding="checkbox">
+            {selected ? <TableCell padding="checkbox">
               <Checkbox
                 checked={selectedIds.length === lst.length}
                 color="primary"
@@ -86,39 +84,31 @@ const ItemMainList: React.FC<IMainListProps> = (props) => {
                 disabled={lst.length === 0}
                 onChange={handleSelectAll}
               />
-            </TableCell>
-            {cols.map((x, idx) => (
-              <TableCell key={idx}>
-                <b>{x.title}</b>
-              </TableCell>
-            ))}
-            {onEdit ? <TableCell padding="checkbox"></TableCell> : null}
+            </TableCell> : null}
+            {cols.map((x, idx) => {
+              return x.title ? (
+                <TableCell key={idx}>
+                  <b>{x.title}</b>
+                </TableCell>
+              ) : (
+                <TableCell padding="checkbox" key={idx}></TableCell>
+              );
+            })}
           </TableRow>
         </TableHead>
         <TableBody>
           {lst.map((item, idx) => (
-            <TableRow
-              hover
-              key={idx}
-              selected={selectedIds.includes(item.id)}
-            >
-              <TableCell padding="checkbox">
+            <TableRow hover key={idx} selected={selectedIds.includes(item.id)}>
+              {selected ? <TableCell padding="checkbox">
                 <Checkbox
                   checked={selectedIds.includes(item.id)}
                   onChange={(event) => handleSelectOne(event, item.id)}
                   value="true"
                 />
-              </TableCell>
+              </TableCell> : null}
               {cols.map((x, idx) => (
                 <TableCell key={idx}>{x.extractor(item)}</TableCell>
               ))}
-              {onEdit ? (
-                <TableCell padding="checkbox" align="right">
-                  <IconButton onClick={() => onEdit(item.id)}>
-                    <EditIcon />
-                  </IconButton>
-                </TableCell>
-              ) : null}
             </TableRow>
           ))}
         </TableBody>
@@ -127,4 +117,5 @@ const ItemMainList: React.FC<IMainListProps> = (props) => {
   );
 };
 
+export type { Col };
 export default ItemMainList;

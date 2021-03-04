@@ -20,7 +20,7 @@ const EmployeeSkillFilter: React.FunctionComponent<IEmployeeSkillFilterProps> = 
   const [filteredLst, setFilteredLst] = React.useState<Employee[]>([]);
   React.useEffect(() => {
     setFilteredLst(Object.values(lst));
-  }, []);
+  }, [lst]);
 
   const handleFilterEmp = (skillLvlLst: SkillLevel[]) => {
     const skills = skillLvlLst.reduce((prev, curr) => {

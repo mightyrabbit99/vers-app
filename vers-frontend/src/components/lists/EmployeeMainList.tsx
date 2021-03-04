@@ -1,7 +1,10 @@
 import * as React from "react";
 
+import IconButton from "@material-ui/core/IconButton";
+import EditIcon from "@material-ui/icons/Edit";
+
 import { Subsector, Employee } from "src/kernel";
-import MainList from "./MainList";
+import MainList, { Col } from "./MainList";
 
 interface IEmployeeMainListProps {
   lst: { [id: number]: Employee };
@@ -21,7 +24,7 @@ const EmployeeMainList: React.FC<IEmployeeMainListProps> = (props) => {
     selectedOnChange,
     onEdit,
   } = props;
-  const cols = [
+  const cols: Col[] = [
     {
       title: "Name",
       extractor: (p: Employee) => getName(p),
@@ -38,13 +41,22 @@ const EmployeeMainList: React.FC<IEmployeeMainListProps> = (props) => {
     },
   ];
 
+  if (onEdit) {
+    cols.push({
+      extractor: (p: Subsector) => (
+        <IconButton onClick={() => onEdit(p.id)}>
+          <EditIcon />
+        </IconButton>
+      ),
+    });
+  }
+
   return (
     <MainList
       lst={Object.values(lst)}
       cols={cols}
       selected={selected}
       selectedOnChange={selectedOnChange}
-      onEdit={onEdit}
     />
   );
 };
