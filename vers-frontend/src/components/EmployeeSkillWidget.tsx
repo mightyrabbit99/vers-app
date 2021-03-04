@@ -10,7 +10,7 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 
 import { Employee, Skill } from "src/kernel";
-import EmpSkillList from "./lists/EmpSkillList";
+import EmpSkillList from "./lists/EmpSkillSelList";
 import SkillSimpleSelForm from "./forms/SkillSimpleSelForm";
 import MyDialog from "src/components/commons/Dialog";
 

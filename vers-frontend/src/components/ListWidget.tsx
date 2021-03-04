@@ -42,11 +42,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface IListWidgetProps {
-  title: string;
-  disableCreate: boolean;
-  disableDelete: boolean;
+  title?: string;
+  disableCreate?: boolean;
+  disableDelete?: boolean;
   createOnClick: () => void;
-  deleteOnClick: () => void;
+  deleteOnClick?: () => void;
   downloadExcel?: () => void;
   uploadExcel?: (file: File) => void;
   excelFeedback?: any;
@@ -56,9 +56,9 @@ interface IListWidgetProps {
 const ListWidget: React.FunctionComponent<IListWidgetProps> = (props) => {
   const classes = useStyles();
   const {
-    title,
-    disableCreate,
-    disableDelete,
+    title = "",
+    disableCreate = false,
+    disableDelete = false,
     deleteOnClick,
     createOnClick,
     downloadExcel,
@@ -99,9 +99,11 @@ const ListWidget: React.FunctionComponent<IListWidgetProps> = (props) => {
               <CloudDownload />
             </IconButton>
           ) : null}
-          <IconButton onClick={uploadOnClick}>
-            <CloudUpload />
-          </IconButton>
+          {uploadExcel ? (
+            <IconButton onClick={uploadOnClick}>
+              <CloudUpload />
+            </IconButton>
+          ) : null}
           <Button
             disabled={disableCreate}
             variant="contained"
@@ -110,39 +112,43 @@ const ListWidget: React.FunctionComponent<IListWidgetProps> = (props) => {
           >
             Create
           </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            disabled={disableDelete}
-            onClick={deleteOnClick}
-          >
-            Delete
-          </Button>
+          {deleteOnClick ? (
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={disableDelete}
+              onClick={deleteOnClick}
+            >
+              Delete
+            </Button>
+          ) : null}
         </div>
       </div>
       <div className={classes.content}>{children}</div>
-      <MyDialog open={excelFormOpen} onClose={handleExcelFormClose}>
-        <div className={classes.form}>
-          <div className={classes.formTitle}>
-            <Typography
-              className={classes.title}
-              component="h2"
-              variant="h6"
-              color="primary"
-              gutterBottom
-            >
-              Upload Excel Data
-            </Typography>
+      {uploadExcel ? (
+        <MyDialog open={excelFormOpen} onClose={handleExcelFormClose}>
+          <div className={classes.form}>
+            <div className={classes.formTitle}>
+              <Typography
+                className={classes.title}
+                component="h2"
+                variant="h6"
+                color="primary"
+                gutterBottom
+              >
+                Upload Excel Data
+              </Typography>
+            </div>
+            <div className={classes.formContent}>
+              <ExcelUploadForm
+                feedback={excelFeedback}
+                onSubmit={handleExcelFileUpload}
+                onCancel={handleExcelFormClose}
+              />
+            </div>
           </div>
-          <div className={classes.formContent}>
-            <ExcelUploadForm
-              feedback={excelFeedback}
-              onSubmit={handleExcelFileUpload}
-              onCancel={handleExcelFormClose}
-            />
-          </div>
-        </div>
-      </MyDialog>
+        </MyDialog>
+      ) : null}
     </React.Fragment>
   );
 };

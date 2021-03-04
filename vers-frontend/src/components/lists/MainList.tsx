@@ -17,7 +17,7 @@ type Item = any;
 
 interface Col {
   title: string;
-  extractor: (item: Item) => string;
+  extractor: (item: Item) => string | React.ReactNode;
 }
 
 interface IMainListProps {
@@ -96,25 +96,25 @@ const ItemMainList: React.FC<IMainListProps> = (props) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {lst.map((plant, idx) => (
+          {lst.map((item, idx) => (
             <TableRow
               hover
               key={idx}
-              selected={selectedIds.includes(plant.id)}
+              selected={selectedIds.includes(item.id)}
             >
               <TableCell padding="checkbox">
                 <Checkbox
-                  checked={selectedIds.includes(plant.id)}
-                  onChange={(event) => handleSelectOne(event, plant.id)}
+                  checked={selectedIds.includes(item.id)}
+                  onChange={(event) => handleSelectOne(event, item.id)}
                   value="true"
                 />
               </TableCell>
               {cols.map((x, idx) => (
-                <TableCell key={idx}>{x.extractor(plant)}</TableCell>
+                <TableCell key={idx}>{x.extractor(item)}</TableCell>
               ))}
               {onEdit ? (
                 <TableCell padding="checkbox" align="right">
-                  <IconButton onClick={() => onEdit(plant.id)}>
+                  <IconButton onClick={() => onEdit(item.id)}>
                     <EditIcon />
                   </IconButton>
                 </TableCell>

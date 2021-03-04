@@ -1,10 +1,12 @@
 import * as React from "react";
 
+import Grid from "@material-ui/core/Grid";
+
 import { Employee, Skill } from "src/kernel";
-import EmpSkillCard from "./cards/EmpSkillCard";
-import SkillLevelSearchBar, {
+import SkillLevelSelectWidget, {
   SkillLevel,
-} from "src/components/commons/SkillLevelSearchBar";
+} from "src/components/SkillLevelSelectWidget";
+import EmployeeSkillDispList from "./lists/EmployeeSkillDispList";
 
 interface IEmployeeSkillFilterProps {
   lst: { [id: number]: Employee };
@@ -22,7 +24,7 @@ const EmployeeSkillFilter: React.FunctionComponent<IEmployeeSkillFilterProps> = 
 
   const handleFilterEmp = (skillLvlLst: SkillLevel[]) => {
     const skills = skillLvlLst.reduce((prev, curr) => {
-      prev[curr.skill] = curr.level;
+      prev[curr.skill.id] = curr.level;
       return prev;
     }, {} as { [skill: number]: number });
     const ans = Object.values(lst).filter((x) =>
@@ -32,14 +34,14 @@ const EmployeeSkillFilter: React.FunctionComponent<IEmployeeSkillFilterProps> = 
   };
 
   return (
-    <React.Fragment>
-      <SkillLevelSearchBar lst={skills} onSubmit={handleFilterEmp} />
-      <div>
-        {filteredLst.map((x, idx) => (
-          <EmpSkillCard item={x} key={idx} />
-        ))}
-      </div>
-    </React.Fragment>
+    <Grid container>
+      <Grid item xs={3}>
+        <SkillLevelSelectWidget lst={skills} onSubmit={handleFilterEmp} />
+      </Grid>
+      <Grid item xs={9}>
+        <EmployeeSkillDispList lst={filteredLst} skills={skills} />
+      </Grid>
+    </Grid>
   );
 };
 
