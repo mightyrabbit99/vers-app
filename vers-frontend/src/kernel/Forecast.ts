@@ -51,5 +51,5 @@ const generator = (init?: any): Forecast => ({
 
 const ForecastStore = store<Forecast>(get, post, put, del, generator);
 
-export type { Forecast };
+export type { Forecast, ForecastData };
 export default ForecastStore;

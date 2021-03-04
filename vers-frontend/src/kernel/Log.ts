@@ -8,7 +8,7 @@ interface Log extends Item {
   type: LogType;
   user: number;
   dataType: DataType;
-  changeId: number;
+  timestamp: string;
   desc: string;
 }
 
@@ -20,7 +20,7 @@ function dataToObj(x: LogData): Log {
     type: x.type,
     user: x.user,
     dataType: x.data_type,
-    changeId: x.change_id,
+    timestamp: x.timestamp,
     desc: x.desc,
   };
 }
@@ -31,7 +31,7 @@ function objToData(x: Log): LogData {
     type: x.type,
     user: x.user,
     data_type: x.dataType,
-    change_id: x.changeId,
+    timestamp: x.timestamp,
     desc: x.desc,
   };
 }
@@ -42,11 +42,11 @@ const get = async () => {
 };
 
 const post = async (t: Log) => {
-  return { success: false, data: {} };
+  return { success: true, data: t };
 };
 
 const put = async (t: Log) => {
-  return { success: false, data: {} };
+  return { success: true, data: t };
 };
 
 const del = async (t: Log) => {
@@ -60,11 +60,11 @@ const generator = (init?: any): Log => ({
   user: -1,
   dataType: DataType.DEPARTMENT,
   changeId: -1,
+  timestamp: "",
   desc: "",
 });
 
 const LogStore = store<Log>(get, post, put, del, generator);
-
 
 export type { Log };
 export default LogStore;

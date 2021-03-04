@@ -150,22 +150,19 @@ class Employee(models.Model):
         db_table = 'employees'
 
 
+class SkillLevelChoices(models.IntegerChoices):
+    ONE = 1, 'ONE'
+    TWO = 2, 'TWO'
+    THREE = 3, 'THREE'
+    FOUR = 4, 'FOUR'
+
+
 class EmpSkillMatrix(models.Model):
-    ONE = 1
-    TWO = 2
-    THREE = 3
-    FOUR = 4
-    LEVEL_CHOICES = [
-        (ONE, '1'),
-        (TWO, '2'),
-        (THREE, '3'),
-        (FOUR, '4'),
-    ]
     employee = models.ForeignKey(
         Employee, related_name='skills', on_delete=models.CASCADE)
     skill = models.ForeignKey(
         Skill, related_name='employees', on_delete=models.CASCADE)
-    level = models.IntegerField(choices=LEVEL_CHOICES)
+    level = models.IntegerField(choices=SkillLevelChoices.choices)
     desc = models.CharField(max_length=300, blank=True)
 
     class Meta:
@@ -196,21 +193,11 @@ class Job(models.Model):
 
 
 class JobSkillMatrix(models.Model):
-    ONE = 1
-    TWO = 2
-    THREE = 3
-    FOUR = 4
-    LEVEL_CHOICES = [
-        (ONE, '1'),
-        (TWO, '2'),
-        (THREE, '3'),
-        (FOUR, '4'),
-    ]
     job = models.ForeignKey(
         Job, related_name='skills_required', on_delete=models.CASCADE)
     skill = models.ForeignKey(
         Skill, related_name='jobs', on_delete=models.CASCADE)
-    level = models.IntegerField(choices=LEVEL_CHOICES)
+    level = models.IntegerField(choices=SkillLevelChoices.choices)
     desc = models.CharField(max_length=300, blank=True)
 
     class Meta:

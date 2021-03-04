@@ -6,20 +6,47 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
+import TableFooter from "@material-ui/core/TableFooter";
+import TextField from "@material-ui/core/TextField";
 
-interface IForecastListWidgetProps {}
+import { Forecast, ForecastData } from "src/kernel";
+
+interface IForecastListWidgetProps {
+  lst: { [id: number]: Forecast };
+}
 
 const ForecastListWidget: React.FunctionComponent<IForecastListWidgetProps> = (
   props
 ) => {
+  const { lst } = props;
+
+  const genForecastRow = (x: Forecast) => {
+    const genActiveProps = (y: ForecastData) => {
+      return {
+        value: y.val,
+        onChange: (e: React.ChangeEvent<any>) => {
+          let { value } = e.target;
+          y.val = value;
+        }
+      }
+    }
+    return (
+      <TableRow>
+        {x.vals.map((y) => (
+          <TableCell>
+            <TextField
+              variant="outlined" 
+              {...genActiveProps(y)} 
+            />
+          </TableCell>
+        ))}
+      </TableRow>
+    );
+  };
+
   return (
     <React.Fragment>
-      <Typography
-        component="h2"
-        variant="h6"
-        color="primary"
-        gutterBottom
-      >
+      <Typography component="h2" variant="h6" color="primary" gutterBottom>
         Forecast
       </Typography>
       <TableContainer>
@@ -27,17 +54,30 @@ const ForecastListWidget: React.FunctionComponent<IForecastListWidgetProps> = (
           <TableHead>
             <TableRow>
               <TableCell>
-                <b>User</b>
+                <b>Month</b>
               </TableCell>
               <TableCell>
-                <b>Plant</b>
+                <b>n + 1</b>
               </TableCell>
               <TableCell>
-                <b>Sector</b>
+                <b>n + 2</b>
+              </TableCell>
+              <TableCell>
+                <b>n + 3</b>
+              </TableCell>
+              <TableCell>
+                <b>n + 4</b>
+              </TableCell>
+              <TableCell>
+                <b>n + 5</b>
+              </TableCell>
+              <TableCell>
+                <b>n + 6</b>
               </TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>{null}</TableBody>
+          <TableBody>{Object.values(lst).map(genForecastRow)}</TableBody>
+          <TableFooter></TableFooter>
         </Table>
       </TableContainer>
     </React.Fragment>

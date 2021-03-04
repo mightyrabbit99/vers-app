@@ -20,7 +20,7 @@ interface LogData extends Data {
   type: LogType;
   data_type: DataType;
   user: number;
-  change_id: number;
+  timestamp: string;
   desc: string;
 }
 

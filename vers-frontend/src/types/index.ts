@@ -65,6 +65,11 @@ export interface RootState {
 
 type IdMap<T> = { [id: number]: T};
 
+export interface MyLog {
+  desc: string;
+  vals: Log[];
+}
+
 export interface DataState {
   plants: IdMap<Plant>;
   selectedPlantId?: number;
@@ -85,7 +90,7 @@ export interface DataState {
   newForecast?: Forecast;
 
   logs: IdMap<Log>;
-  personalLogs: Log[];
+  personalLogs: MyLog[];
 
   loading: boolean;
   calculating: boolean;
