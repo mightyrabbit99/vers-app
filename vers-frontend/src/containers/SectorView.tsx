@@ -6,17 +6,14 @@ import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import Snackbar from "@material-ui/core/Snackbar";
-import Typography from "@material-ui/core/Typography";
 import Alert from "@material-ui/lab/Alert";
 
 import ExcelProcessor2 from "src/kernel/ExcelProcessor2";
-import MyDialog from "src/components/commons/Dialog";
 import SectorListWidget from "../components/SectorListWidget";
 import { getData, getSync, getSession } from "src/selectors";
 import { delData, saveData } from "src/slices/data";
 import { ItemType, Sector } from "src/kernel";
 import { clearFeedback, submitExcel } from "src/slices/sync";
-import ExcelUploadForm from "src/components/forms/ExcelUploadForm";
 
 const useStyles = makeStyles((theme) => ({
   list: {
@@ -60,18 +57,9 @@ const SectorView: React.FunctionComponent<ISectorViewProps> = (props) => {
     dispatch(clearFeedback());
   };
 
-  const [excelFormOpen, setExcelFormOpen] = React.useState(false);
   let [fbOpen, setFbOpen] = React.useState(false);
-  const handleExcelUploadClick = () => {
-    setExcelFormOpen(true);
-  };
-
-  const handleExcelFormClose = () => {
-    setExcelFormOpen(false);
-  };
 
   const handleUploadExcel = async (file: File) => {
-    handleExcelFormClose();
     try {
       let ans = await ExcelProcessor2.readSectorFile(file);
       dispatch(submitExcel({ type: ItemType.Sector, data: ans }));
@@ -110,34 +98,12 @@ const SectorView: React.FunctionComponent<ISectorViewProps> = (props) => {
               onSubmit={handleSubmit}
               onDelete={handleDelete}
               onReset={handleReset}
-              uploadExcel={handleExcelUploadClick}
+              uploadExcel={handleUploadExcel}
               downloadExcel={handleExcelDownloadClick}
             />
           </Paper>
         </Grid>
       </Grid>
-      <MyDialog open={excelFormOpen} onClose={handleExcelFormClose}>
-        <div className={classes.form}>
-          <div className={classes.formTitle}>
-            <Typography
-              className={classes.title}
-              component="h2"
-              variant="h6"
-              color="primary"
-              gutterBottom
-            >
-              Upload Excel Data
-            </Typography>
-          </div>
-          <div className={classes.formContent}>
-            <ExcelUploadForm
-              feedback={feedback}
-              onSubmit={handleUploadExcel}
-              onCancel={handleExcelFormClose}
-            />
-          </div>
-        </div>
-      </MyDialog>
       <Snackbar open={fbOpen} autoHideDuration={6000} onClose={handleFbClose}>
         <Alert onClose={handleFbClose} severity={"error"}>
           {"Upload failed"}

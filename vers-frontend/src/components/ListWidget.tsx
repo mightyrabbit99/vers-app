@@ -6,6 +6,9 @@ import IconButton from "@material-ui/core/IconButton";
 import CloudUpload from "@material-ui/icons/CloudUpload";
 import CloudDownload from "@material-ui/icons/CloudDownload";
 
+import MyDialog from "./commons/Dialog";
+import ExcelUploadForm from "./forms/ExcelUploadForm";
+
 const useStyles = makeStyles((theme) => ({
   header: {
     display: "flex",
@@ -25,6 +28,17 @@ const useStyles = makeStyles((theme) => ({
   content: {
     height: "85%",
   },
+  form: {
+    maxWidth: "60vw",
+    width: "fit-content",
+    minWidth: 300,
+  },
+  formTitle: {
+    height: "15%",
+  },
+  formContent: {
+    height: "85%",
+  },
 }));
 
 interface IListWidgetProps {
@@ -33,8 +47,9 @@ interface IListWidgetProps {
   disableDelete: boolean;
   createOnClick: () => void;
   deleteOnClick: () => void;
-  downloadOnClick: () => void;
-  uploadOnClick: () => void;
+  downloadExcel?: () => void;
+  uploadExcel?: (file: File) => void;
+  excelFeedback?: any;
   children: React.ReactNode;
 }
 
@@ -46,10 +61,25 @@ const ListWidget: React.FunctionComponent<IListWidgetProps> = (props) => {
     disableDelete,
     deleteOnClick,
     createOnClick,
-    downloadOnClick,
-    uploadOnClick,
+    downloadExcel,
+    uploadExcel,
+    excelFeedback,
     children,
   } = props;
+
+  const [excelFormOpen, setExcelFormOpen] = React.useState(false);
+  const uploadOnClick = () => {
+    setExcelFormOpen(true);
+  };
+
+  const handleExcelFormClose = () => {
+    setExcelFormOpen(false);
+  };
+
+  const handleExcelFileUpload = (file: File) => {
+    uploadExcel && uploadExcel(file);
+    handleExcelFormClose();
+  };
 
   return (
     <React.Fragment>
@@ -64,9 +94,11 @@ const ListWidget: React.FunctionComponent<IListWidgetProps> = (props) => {
           {title}
         </Typography>
         <div className={classes.ctrlButtons}>
-          <IconButton onClick={downloadOnClick}>
-            <CloudDownload />
-          </IconButton>
+          {downloadExcel ? (
+            <IconButton onClick={downloadExcel}>
+              <CloudDownload />
+            </IconButton>
+          ) : null}
           <IconButton onClick={uploadOnClick}>
             <CloudUpload />
           </IconButton>
@@ -89,6 +121,28 @@ const ListWidget: React.FunctionComponent<IListWidgetProps> = (props) => {
         </div>
       </div>
       <div className={classes.content}>{children}</div>
+      <MyDialog open={excelFormOpen} onClose={handleExcelFormClose}>
+        <div className={classes.form}>
+          <div className={classes.formTitle}>
+            <Typography
+              className={classes.title}
+              component="h2"
+              variant="h6"
+              color="primary"
+              gutterBottom
+            >
+              Upload Excel Data
+            </Typography>
+          </div>
+          <div className={classes.formContent}>
+            <ExcelUploadForm
+              feedback={excelFeedback}
+              onSubmit={handleExcelFileUpload}
+              onCancel={handleExcelFormClose}
+            />
+          </div>
+        </div>
+      </MyDialog>
     </React.Fragment>
   );
 };

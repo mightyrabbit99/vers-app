@@ -7,7 +7,7 @@ import MyDialog from "src/components/commons/Dialog";
 import SectorForm from "src/components/forms/SectorForm";
 import SectorList from "src/components/lists/SectorMainList";
 
-import ListWidget from "src/components/commons/ListWidget";
+import ListWidget from "src/components/ListWidget";
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -31,7 +31,7 @@ interface ISectorListWidgetProps {
   onSubmit: (p: Sector) => void;
   onDelete: (...ps: Sector[]) => void;
   onReset: () => void;
-  uploadExcel?: () => void;
+  uploadExcel?: (file: File) => void;
   downloadExcel?: () => void;
 }
 
@@ -48,8 +48,8 @@ const SectorListWidget: React.FunctionComponent<ISectorListWidgetProps> = (
     onSubmit,
     onDelete,
     onReset,
-    uploadExcel = () => {},
-    downloadExcel = () => {},
+    uploadExcel,
+    downloadExcel,
   } = props;
 
   const [selected, setSelected] = React.useState<number[]>([]);
@@ -87,7 +87,7 @@ const SectorListWidget: React.FunctionComponent<ISectorListWidgetProps> = (
     setFormData(newSector);
     setFormOpen(true);
   };
-
+  
   return (
     <ListWidget
       title="Sectors"
@@ -95,8 +95,8 @@ const SectorListWidget: React.FunctionComponent<ISectorListWidgetProps> = (
       disableDelete={selected.length === 0 || !edit}
       createOnClick={handleCreateOnClick}
       deleteOnClick={handleDeleteOnClick}
-      downloadOnClick={downloadExcel}
-      uploadOnClick={uploadExcel}
+      uploadExcel={uploadExcel}
+      downloadExcel={downloadExcel}
     >
       <SectorList
         lst={lst}

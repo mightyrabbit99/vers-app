@@ -6,8 +6,7 @@ import { Employee, Subsector, Department } from "src/kernel";
 import MyDialog from "src/components/commons/Dialog";
 import EmployeeForm from "src/components/forms/EmployeeForm";
 import EmployeeList from "src/components/lists/EmployeeMainList";
-import ListWidget from "./commons/ListWidget";
-import ExcelUploadForm from "./forms/ExcelUploadForm";
+import ListWidget from "./ListWidget";
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -95,24 +94,6 @@ const EmployeeListWidget: React.FunctionComponent<IEmployeeListWidgetProps> = (
     onReset();
   };
 
-  const handleExcelDownloadClick = () => {
-    downloadExcel && downloadExcel();
-  };
-
-  const [excelFormOpen, setExcelFormOpen] = React.useState(false);
-  const handleExcelUploadClick = () => {
-    setExcelFormOpen(true);
-  };
-
-  const handleExcelFormClose = () => {
-    setExcelFormOpen(false);
-  };
-
-  const handleExcelFileUpload = (file: File) => {
-    uploadExcel && uploadExcel(file);
-    handleExcelFormClose();
-  };
-
   return (
     <ListWidget
       title="Employees"
@@ -120,8 +101,8 @@ const EmployeeListWidget: React.FunctionComponent<IEmployeeListWidgetProps> = (
       disableDelete={selected.length === 0 || !edit}
       createOnClick={handleCreateOnClick}
       deleteOnClick={handleDeleteOnClick}
-      downloadOnClick={handleExcelDownloadClick}
-      uploadOnClick={handleExcelUploadClick}
+      downloadExcel={downloadExcel}
+      uploadExcel={uploadExcel}
     >
       <EmployeeList
         lst={lst}
@@ -157,28 +138,6 @@ const EmployeeListWidget: React.FunctionComponent<IEmployeeListWidgetProps> = (
                 onCancel={handleFormClose}
               />
             ) : null}
-          </div>
-        </div>
-      </MyDialog>
-      <MyDialog open={excelFormOpen} onClose={handleExcelFormClose}>
-        <div className={classes.form}>
-          <div className={classes.formTitle}>
-            <Typography
-              className={classes.title}
-              component="h2"
-              variant="h6"
-              color="primary"
-              gutterBottom
-            >
-              Upload Excel Data
-            </Typography>
-          </div>
-          <div className={classes.formContent}>
-            <ExcelUploadForm
-              feedback={feedback}
-              onSubmit={handleExcelFileUpload}
-              onCancel={handleExcelFormClose}
-            />
           </div>
         </div>
       </MyDialog>

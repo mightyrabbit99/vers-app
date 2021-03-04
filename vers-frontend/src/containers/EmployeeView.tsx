@@ -2,8 +2,10 @@ import * as React from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { makeStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
+import Grid from "@material-ui/core/Grid";
+import Snackbar from "@material-ui/core/Snackbar";
+import Alert from "@material-ui/lab/Alert";
 
 import EmployeeListWidget from "src/components/EmployeeListWidget";
 import EmployeeSkillWidget from "src/components/EmployeeSkillWidget";
@@ -11,8 +13,9 @@ import EmployeeSkillFilterWidget from "src/components/EmployeeSkillFilterWidget"
 
 import { getData, getSession, getSync } from "src/selectors";
 import { delData, saveData } from "src/slices/data";
-import { clearFeedback } from "src/slices/sync";
-import { Employee } from "src/kernel";
+import { clearFeedback, submitExcel } from "src/slices/sync";
+import { Employee, ItemType } from "src/kernel";
+import ExcelProcessor2 from "src/kernel/ExcelProcessor2";
 
 const useStyles = makeStyles((theme) => ({
   list: {
@@ -52,38 +55,73 @@ const EmployeeView: React.FunctionComponent<IEmployeeViewProps> = (props) => {
     dispatch(clearFeedback());
   };
 
+  let [fbOpen, setFbOpen] = React.useState(false);
+  const handleUploadExcel = async (file: File) => {
+    try {
+      let ans = await ExcelProcessor2.readSectorFile(file);
+      dispatch(submitExcel({ type: ItemType.Sector, data: ans }));
+    } catch (e) {
+      setFbOpen(true);
+    }
+  };
+
+  const handleFbClose = () => {
+    setFbOpen(false);
+  };
+
+  const handleExcelDownloadClick = async () => {
+    let skillObjs = Object.values(skills).map((x) => ({
+      ...x,
+      subsector: subsectors[x.subsector].name,
+    }));
+    let s = await ExcelProcessor2.genSkillFile(skillObjs);
+    var blob = new Blob([s], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    saveAs(blob, `Sectors.xlsx`);
+  };
+
   return (
-    <Grid container spacing={3}>
-      <Grid item xs={12}>
-        <Paper className={classes.list}>
-          <EmployeeListWidget
-            lst={employees}
-            subsectorLst={subsectors}
-            departmentLst={departments}
-            newEmployee={newEmployee}
-            feedback={feedback}
-            edit={canEdit()}
-            onSubmit={handleSubmit}
-            onDelete={handleDelete}
-            onReset={handleReset}
-          />
-        </Paper>
+    <React.Fragment>
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <Paper className={classes.list}>
+            <EmployeeListWidget
+              lst={employees}
+              subsectorLst={subsectors}
+              departmentLst={departments}
+              newEmployee={newEmployee}
+              feedback={feedback}
+              edit={canEdit()}
+              onSubmit={handleSubmit}
+              onDelete={handleDelete}
+              onReset={handleReset}
+              uploadExcel={handleUploadExcel}
+              downloadExcel={handleExcelDownloadClick}
+            />
+          </Paper>
+        </Grid>
+        <Grid item xs={12}>
+          <Paper className={classes.list}>
+            <EmployeeSkillWidget
+              lst={employees}
+              skillLst={skills}
+              onSubmit={canEdit() ? handleSubmit : undefined}
+            />
+          </Paper>
+        </Grid>
+        <Grid item xs={12}>
+          <Paper className={classes.list}>
+            <EmployeeSkillFilterWidget lst={employees} skillLst={skills} />
+          </Paper>
+        </Grid>
       </Grid>
-      <Grid item xs={12}>
-        <Paper className={classes.list}>
-          <EmployeeSkillWidget
-            lst={employees}
-            skillLst={skills}
-            onSubmit={canEdit() ? handleSubmit : undefined}
-          />
-        </Paper>
-      </Grid>
-      <Grid item xs={12}>
-        <Paper className={classes.list}>
-          <EmployeeSkillFilterWidget lst={employees} skillLst={skills}/>
-        </Paper>
-      </Grid>
-    </Grid>
+      <Snackbar open={fbOpen} autoHideDuration={6000} onClose={handleFbClose}>
+        <Alert onClose={handleFbClose} severity={"error"}>
+          {"Upload failed"}
+        </Alert>
+      </Snackbar>
+    </React.Fragment>
   );
 };
 
