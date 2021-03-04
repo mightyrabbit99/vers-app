@@ -6,6 +6,7 @@ import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
+import Typography from "@material-ui/core/Typography";
 
 import EmployeeListWidget from "src/components/EmployeeListWidget";
 import EmployeeSkillWidget from "src/components/EmployeeSkillWidget";
@@ -24,6 +25,13 @@ const useStyles = makeStyles((theme) => ({
     overflow: "auto",
     flexDirection: "column",
     height: "70vh",
+  },
+  header: {
+    display: "flex",
+    flexDirection: "row",
+  },
+  title: {
+    height: "15%",
   },
 }));
 
@@ -103,6 +111,17 @@ const EmployeeView: React.FunctionComponent<IEmployeeViewProps> = (props) => {
         </Grid>
         <Grid item xs={12}>
           <Paper className={classes.list}>
+            <div className={classes.header}>
+              <Typography
+                className={classes.title}
+                component="h2"
+                variant="h6"
+                color="primary"
+                gutterBottom
+              >
+                Skills Assignment
+              </Typography>
+            </div>
             <EmployeeSkillWidget
               lst={employees}
               skillLst={skills}
@@ -112,6 +131,17 @@ const EmployeeView: React.FunctionComponent<IEmployeeViewProps> = (props) => {
         </Grid>
         <Grid item xs={12}>
           <Paper className={classes.list}>
+            <div className={classes.header}>
+              <Typography
+                className={classes.title}
+                component="h2"
+                variant="h6"
+                color="primary"
+                gutterBottom
+              >
+                Skill Filter
+              </Typography>
+            </div>
             <EmployeeSkillFilterWidget lst={employees} skillLst={skills} />
           </Paper>
         </Grid>

@@ -30,6 +30,10 @@ function Form<T>(props: FormProps<T>) {
   const { lst, onSubmit } = props;
 
   const [selected, setSelected] = React.useState<Set<Item<T>>>(new Set());
+  React.useEffect(() => {
+    setSelected(new Set());
+  }, [lst]);
+
   const handleSel = (e: Item<T>) => {
     let newSelected = new Set(selected);
     if (selected.has(e)) {

@@ -35,7 +35,9 @@ const SkillLevelList: React.FunctionComponent<ISkillLevelListProps> = (
     }
 
     const handleDelete = () => {
-      onSubmit(lst.splice(idx, 1));
+      let newLst = [...lst];
+      newLst.splice(idx, 1)
+      onSubmit(newLst);
     }
 
     return (
@@ -59,8 +61,6 @@ const SkillLevelList: React.FunctionComponent<ISkillLevelListProps> = (
               <MenuItem value={4}>4</MenuItem>
             </Select>
           </FormControl>
-        </ListItemSecondaryAction>
-        <ListItemSecondaryAction>
           <IconButton edge="end" aria-label="delete" onClick={handleDelete}>
             <DeleteIcon />
           </IconButton>

@@ -15,10 +15,6 @@ import SkillSimpleSelForm from "./forms/SkillSimpleSelForm";
 import MyDialog from "src/components/commons/Dialog";
 
 const useStyles = makeStyles((theme) => ({
-  header: {
-    display: "flex",
-    flexDirection: "row",
-  },
   ctrlButtons: {
     display: "flex",
     flexDirection: "row-reverse",
@@ -27,15 +23,13 @@ const useStyles = makeStyles((theme) => ({
       margin: theme.spacing(1),
     },
   },
-  title: {
-    height: "15%",
-  },
+  title: {},
   content: {
     height: "85%",
   },
   list: {
     height: "100%",
-    overflow: 'auto',
+    overflow: "auto",
     maxHeight: 300,
   },
   form: {},
@@ -63,7 +57,7 @@ const EmployeeSkillWidget: React.FunctionComponent<IEmployeeSkillWidgetProps> = 
   const [addLstOpen, setAddLstOpen] = React.useState(false);
   const [availSkills, setAvailSkills] = React.useState<Skill[]>([]);
   const [selectedLst, setSelectedLst] = React.useState<number[]>([]);
-  
+
   React.useEffect(() => {
     if (sel === -1) return;
     let skillIds = lst[sel].skills.map((x) => x.skill);
@@ -126,17 +120,6 @@ const EmployeeSkillWidget: React.FunctionComponent<IEmployeeSkillWidgetProps> = 
 
   return (
     <React.Fragment>
-      <div className={classes.header}>
-        <Typography
-          className={classes.title}
-          component="h2"
-          variant="h6"
-          color="primary"
-          gutterBottom
-        >
-          Skills Assignment
-        </Typography>
-      </div>
       <Grid container spacing={1}>
         <Grid item xs={3}>
           <List className={classes.list} aria-label="secondary mailbox folder">

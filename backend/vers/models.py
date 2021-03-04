@@ -234,6 +234,7 @@ class Log(models.Model):
     type = models.IntegerField(choices=TypeChoices.choices)
     data_type = models.IntegerField(choices=DataChoices.choices)
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    timestamp = models.DateTimeField(auto_now=True)
     desc = models.CharField(max_length=100, blank=True)
 
     class Meta:

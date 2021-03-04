@@ -51,15 +51,27 @@ const SkillLevelSelectWidget: React.FunctionComponent<ISkillLevelSelectWidgetPro
     setSelected([]);
   }, [lst]);
 
-  const handleSubmit = (lst: SkillLevel[]) => {
-    setSelected(lst);
-    onSubmit(lst);
+  const setAvailSelected = (skillLvls: SkillLevel[]) => {
+    setSelected(skillLvls);
+    const nums = new Set(skillLvls.map((x) => x.skill.id));
+    setAvail(
+      Object.values(lst)
+        .map((x) => x.id)
+        .filter((x) => !nums.has(x))
+    );
   };
 
-  const handleAddSkill = (lst: Skill[]) => {
-    setSelected([...selected, ...lst.map((x) => ({ skill: x, level: 1 }))]);
-    const nums = new Set(lst.map((x) => x.id));
-    setAvail(avail.filter((x) => nums.has(x)));
+  const handleSubmit = (newLst: SkillLevel[]) => {
+    setAvailSelected(newLst);
+    onSubmit(newLst);
+  };
+
+  const handleAddSkill = (addLst: Skill[]) => {
+    setAddLstOpen(false);
+    handleSubmit([
+      ...selected,
+      ...addLst.map((x) => ({ skill: x, level: 1 })),
+    ]);
   };
 
   const handleAddOnClick = () => {

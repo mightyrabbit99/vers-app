@@ -35,21 +35,6 @@ const ForecastListWidget: React.FunctionComponent<IForecastListWidgetProps> = (
               <TableCell>
                 <b>Sector</b>
               </TableCell>
-              <TableCell>
-                <b>Subsector</b>
-              </TableCell>
-              <TableCell>
-                <b>Department</b>
-              </TableCell>
-              <TableCell>
-                <b>Employee</b>
-              </TableCell>
-              <TableCell>
-                <b>Skill</b>
-              </TableCell>
-              <TableCell>
-                <b>Job</b>
-              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>{null}</TableBody>

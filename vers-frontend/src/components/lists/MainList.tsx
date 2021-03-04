@@ -11,7 +11,6 @@ import {
   makeStyles,
 } from "@material-ui/core";
 
-
 type Item = any;
 
 interface Col {
@@ -74,17 +73,19 @@ const ItemMainList: React.FC<IMainListProps> = (props) => {
       <Table stickyHeader>
         <TableHead>
           <TableRow>
-            {selected ? <TableCell padding="checkbox">
-              <Checkbox
-                checked={selectedIds.length === lst.length}
-                color="primary"
-                indeterminate={
-                  selectedIds.length > 0 && selectedIds.length < lst.length
-                }
-                disabled={lst.length === 0}
-                onChange={handleSelectAll}
-              />
-            </TableCell> : null}
+            {selected ? (
+              <TableCell padding="checkbox">
+                <Checkbox
+                  checked={selectedIds.length === lst.length}
+                  color="primary"
+                  indeterminate={
+                    selectedIds.length > 0 && selectedIds.length < lst.length
+                  }
+                  disabled={lst.length === 0}
+                  onChange={handleSelectAll}
+                />
+              </TableCell>
+            ) : null}
             {cols.map((x, idx) => {
               return x.title ? (
                 <TableCell key={idx}>
@@ -99,16 +100,27 @@ const ItemMainList: React.FC<IMainListProps> = (props) => {
         <TableBody>
           {lst.map((item, idx) => (
             <TableRow hover key={idx} selected={selectedIds.includes(item.id)}>
-              {selected ? <TableCell padding="checkbox">
-                <Checkbox
-                  checked={selectedIds.includes(item.id)}
-                  onChange={(event) => handleSelectOne(event, item.id)}
-                  value="true"
-                />
-              </TableCell> : null}
-              {cols.map((x, idx) => (
-                <TableCell key={idx}>{x.extractor(item)}</TableCell>
-              ))}
+              {selected ? (
+                <TableCell padding="checkbox">
+                  <Checkbox
+                    checked={selectedIds.includes(item.id)}
+                    onChange={(event) => handleSelectOne(event, item.id)}
+                    value="true"
+                  />
+                </TableCell>
+              ) : null}
+              {cols.map((x, idx) => {
+                return x.title ? (
+                  <TableCell key={idx}>{x.extractor(item)}</TableCell>
+                ) : (
+                  <TableCell
+                    padding="checkbox"
+                    align={idx === cols.length - 1 ? "right" : "left"}
+                  >
+                    {x.extractor(item)}
+                  </TableCell>
+                );
+              })}
             </TableRow>
           ))}
         </TableBody>
