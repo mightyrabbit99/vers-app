@@ -9,37 +9,43 @@ import TableBody from "@material-ui/core/TableBody";
 import TableFooter from "@material-ui/core/TableFooter";
 import TextField from "@material-ui/core/TextField";
 
-import { Forecast, ForecastData } from "src/kernel";
+import { Forecast } from "src/kernel";
 
 interface IForecastListWidgetProps {
   lst: { [id: number]: Forecast };
+  onSubmit: (f: Forecast) => void;
 }
 
 const ForecastListWidget: React.FunctionComponent<IForecastListWidgetProps> = (
   props
 ) => {
-  const { lst } = props;
+  const { lst, onSubmit } = props;
 
-  const genForecastRow = (x: Forecast) => {
-    const genActiveProps = (y: ForecastData) => {
-      return {
-        value: y.val,
-        onChange: (e: React.ChangeEvent<any>) => {
-          let { value } = e.target;
-          y.val = value;
-        }
-      }
-    }
+  const genTableRow = (f: Forecast) => {
+    const handleForecastChg = (idx: number) => (e: React.ChangeEvent<any>) => {
+      let { value } = e.target;
+      let newForecasts = [...f.forecasts];
+      newForecasts[idx] = { ...newForecasts[idx], val: parseFloat(value) };
+      onSubmit({ ...f, forecasts: newForecasts });
+    };
+    
     return (
       <TableRow>
-        {x.vals.map((y) => (
-          <TableCell>
-            <TextField
-              variant="outlined" 
-              {...genActiveProps(y)} 
-            />
-          </TableCell>
-        ))}
+        <TableCell>{f.on}</TableCell>
+        {[1, 2, 3, 4, 5, 6].map((n) => {
+          let ffIdx = f.forecasts.findIndex((y) => y.n === n);
+          if (ffIdx === -1) return <TableCell></TableCell>;
+          let y = f.forecasts[ffIdx];
+          return (
+            <TableCell>
+              <TextField
+                value={y.val}
+                onBlur={handleForecastChg(ffIdx)}
+                type="number"
+              />
+            </TableCell>
+          );
+        })}
       </TableRow>
     );
   };
@@ -76,7 +82,7 @@ const ForecastListWidget: React.FunctionComponent<IForecastListWidgetProps> = (
               </TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>{Object.values(lst).map(genForecastRow)}</TableBody>
+          <TableBody>{Object.values(lst).map(genTableRow)}</TableBody>
           <TableFooter></TableFooter>
         </Table>
       </TableContainer>

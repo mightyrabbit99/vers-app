@@ -1,12 +1,11 @@
-import { ForecastData } from "./data";
+import { ForecastData, FData } from "./data";
 import store, { Item, ItemType } from "./Store";
 import Fetcher from "./Fetcher";
 
 interface Forecast extends Item {
   _type: ItemType.Forecast;
   on: string;
-  n: number;
-  val: number;
+  forecasts: FData[];
 }
 
 function dataToObj(x: ForecastData): Forecast {
@@ -57,8 +56,7 @@ const generator = (init?: any): Forecast => ({
   id: -1,
   _type: ItemType.Forecast,
   on: "",
-  n: 0,
-  val: 0.0,
+  forecasts: [],
 });
 
 const ForecastStore = store<Forecast>(get, post, put, del, generator);

@@ -1,5 +1,9 @@
 import { Data } from "./Data";
-import { JobSkillData } from "./JobSkillData";
+
+interface JobSkillData extends Data {
+  skill: number;
+  level: number;
+}
 
 interface JobData extends Data {
   title: string;
@@ -12,17 +16,4 @@ interface JobData extends Data {
   subsector: number;
 }
 
-const empty: JobData = {
-  id: -1,
-  title: "",
-  ppl_amt_required: 0,
-  salary_amount: 0,
-  from_date: "",
-  to_date: "",
-  skills_required: [],
-  emp_assigned: [],
-  subsector: -1,
-};
-
-export type { JobData };
-export { empty as emptyJobData };
+export type { JobData, JobSkillData };

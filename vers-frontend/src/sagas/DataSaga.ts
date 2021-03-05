@@ -100,6 +100,7 @@ function* delDataCascadeThenCalculate({ payload }: DeleteDataAction): any {
   yield put(_saveData(finalMods));
   yield put(_delData(finalDels));
   yield put(calculate());
+  yield put(reloadSuccess());
 }
 
 function* saveDataCascadeThenCalculate({ payload }: SaveDataAction) {

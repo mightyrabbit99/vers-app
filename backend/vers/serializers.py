@@ -1,3 +1,4 @@
+from typing import Set
 from rest_framework import serializers
 from . import models
 from django.contrib.auth.models import User
@@ -104,6 +105,13 @@ class SectorSerializer(serializers.ModelSerializer):
     subsectors = serializers.PrimaryKeyRelatedField(
         many=True, read_only=True)
 
+    def get_request_user(self):
+        user = None
+        request = self.context.get("request")
+        if request and hasattr(request, "user"):
+            user = request.user
+        return user
+
     def create(self, validated_data):
         lg = models.Log(type=models.Log.TypeChoices.CREATE,
                         data_type=models.Log.DataChoices.SECTOR,
@@ -132,6 +140,13 @@ class SubsectorSerializer(serializers.ModelSerializer):
     jobs = serializers.PrimaryKeyRelatedField(
         many=True, read_only=True)
 
+    def get_request_user(self):
+        user = None
+        request = self.context.get("request")
+        if request and hasattr(request, "user"):
+            user = request.user
+        return user
+
     def create(self, validated_data):
         lg = models.Log(type=models.Log.TypeChoices.CREATE,
                         data_type=models.Log.DataChoices.SUBSECTOR,
@@ -156,6 +171,13 @@ class DepartmentSerializer(serializers.ModelSerializer):
     employees = serializers.PrimaryKeyRelatedField(
         many=True, read_only=True)
 
+    def get_request_user(self):
+        user = None
+        request = self.context.get("request")
+        if request and hasattr(request, "user"):
+            user = request.user
+        return user
+
     def create(self, validated_data):
         lg = models.Log(type=models.Log.TypeChoices.CREATE,
                         data_type=models.Log.DataChoices.DEPARTMENT,
@@ -178,7 +200,7 @@ class DepartmentSerializer(serializers.ModelSerializer):
 class EmpSkillMatrixSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.EmpSkillMatrix
-        fields = '__all__'
+        fields = ['skill', 'level', 'desc']
 
 
 class UserSerializer2(serializers.ModelSerializer):
@@ -221,6 +243,8 @@ class EmployeeSerializer(serializers.ModelSerializer):
         user_data = validated_data.pop('user')
         user_data.pop('vers_user')
         user_data.pop('is_superuser')
+
+        # creating users
         vers_user = models.VersUser()  # user empty for now
         user = User(
             username=validated_data['sesa_id'],
@@ -233,9 +257,16 @@ class EmployeeSerializer(serializers.ModelSerializer):
         emp = models.Employee(user=user, **validated_data)
         user.save()  # must save user first
         vers_user.save()
-        emp.save()
-        models.EmpSkillMatrix.objects.bulk_create(skills_data)
 
+        # save employee
+        emp.save()
+
+        # save skills
+        for s in skills_data:
+            new_emp_skill = models.EmpSkillMatrix(employee=emp, **s)
+            new_emp_skill.save()
+
+        # log
         lg = models.Log(type=models.Log.TypeChoices.CREATE,
                         data_type=models.Log.DataChoices.EMPLOYEE,
                         user=self.get_request_user())
@@ -251,7 +282,8 @@ class EmployeeSerializer(serializers.ModelSerializer):
         for s in origin_skills:
             s.delete()
         for s in skills_data:
-            new_emp_skill = models.EmpSkillMatrix(**s)
+            new_emp_skill = models.EmpSkillMatrix(
+                employee=instance, **s)
             new_emp_skill.save()
 
         if user_data:
@@ -285,7 +317,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
 class JobSkillMatrixSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.JobSkillMatrix
-        fields = '__all__'
+        fields = ['skill', 'level', 'desc']
 
 
 class JobSerializer(serializers.ModelSerializer):
@@ -303,7 +335,9 @@ class JobSerializer(serializers.ModelSerializer):
         skills_data = validated_data.pop('skills_required')
         job = models.Job(**validated_data)
         job.save()
-        models.JobSkillMatrix.objects.bulk_create(skills_data)
+        for s in skills_data:
+            job_skill = models.JobSkillMatrix(job=job, **s)
+            job_skill.save()
 
         lg = models.Log(type=models.Log.TypeChoices.CREATE,
                         data_type=models.Log.DataChoices.JOB,
@@ -313,15 +347,14 @@ class JobSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         skills_data = validated_data.pop('skills_required')
-        employees_data = validated_data.pop('emp_assigned')
-
         origin_skills = instance.skills_required.all()
         for s in origin_skills:
             s.delete()
         for s in skills_data:
-            new_job_skill = models.JobSkillMatrix(**s)
+            new_job_skill = models.JobSkillMatrix(
+                job=instance, **s)
             new_job_skill.save()
-
+        
         for (key, value) in validated_data.items():
             setattr(instance, key, value)
         instance.save()
@@ -352,6 +385,15 @@ class LogSerializer(serializers.ModelSerializer):
 
 
 class ForecastSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Forecast
+        fields = ['n', 'val']
+
+
+class ForecastPackSerializer(serializers.ModelSerializer):
+    on = serializers.DateTimeField()
+    forecasts = ForecastSerializer(many=True)
+
     def get_request_user(self):
         user = None
         request = self.context.get("request")
@@ -360,13 +402,46 @@ class ForecastSerializer(serializers.ModelSerializer):
         return user
 
     def create(self, validated_data):
+        forecasts_data = validated_data.pop("forecasts")
+        new_fc = models.ForecastPack(**validated_data)
+        new_fc.save()
+
+        processed_n: Set = set()
+        for s in forecasts_data:
+            if s.n in processed_n: continue
+            processed_n.add(s.n)
+            new_f = models.Forecast(pack=new_fc, **s)
+            new_f.save()
+
         lg = models.Log(type=models.Log.TypeChoices.CREATE,
                         data_type=models.Log.DataChoices.FORECAST,
                         user=self.get_request_user())
         lg.save()
-        return super().create(validated_data)
+        return new_fc
 
     def update(self, instance, validated_data):
+        forecasts_data = validated_data.pop("forecasts")
+        origin_forecasts = instance.forecasts.all()
+        n_map = {}
+        for s in origin_forecasts:
+            n_map[s.n] = s
+
+        processed_n: Set = set()
+        for s in forecasts_data:
+            if s.n in processed_n: continue
+            processed_n.add(s.n)
+            if s.n in n_map:
+                orig = n_map[s.n]
+                orig.val = s.val
+                orig.save()
+                n_map.pop(s.n)    
+            else:
+                new_f = models.Forecast(pack=instance, **s)
+                new_f.save()
+
+        for n in n_map:
+            n_map[n].delete()
+
         lg = models.Log(type=models.Log.TypeChoices.UPDATE,
                         data_type=models.Log.DataChoices.FORECAST,
                         user=self.get_request_user())
@@ -374,16 +449,5 @@ class ForecastSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
     class Meta:
-        model = models.Forecast
+        model = models.ForecastPack
         fields = '__all__'
-
-
-class ForecasePackSerializer(serializers.Serializer):
-    on = serializers.DateTimeField()
-    forecasts = ForecastSerializer(many=True)
-
-    def create(self, validated_data):
-        return super().create(validated_data)
-
-    def update(self, instance, validated_data):
-        return super().update(instance, validated_data)

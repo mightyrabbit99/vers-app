@@ -1,9 +1,14 @@
 import { Data } from "./Data";
 
-interface ForecastData extends Data {
+interface FData extends Data {
   on: string;
   n: number;
   val: number;
 }
 
-export type { ForecastData };
+interface ForecastData extends Data {
+  on: string;
+  forecasts: FData[];
+}
+
+export type { FData, ForecastData };

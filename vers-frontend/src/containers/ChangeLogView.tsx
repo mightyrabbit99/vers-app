@@ -10,20 +10,19 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 
-import { Log } from "src/kernel";
-import { MyLog } from "src/types";
+import { Log, MyLog } from "src/kernel";
 import { getData } from "src/selectors";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     width: "100%",
   },
-  heading: {
-    fontSize: theme.typography.pxToRem(15),
-    fontWeight: theme.typography.fontWeightRegular,
-  },
-  paper: {
-    height: "80vh",
+  widget: {
+    padding: theme.spacing(2),
+    display: "flex",
+    overflow: "auto",
+    flexDirection: "column",
+    height: "70vh",
   },
   title: {
     height: "15%",
@@ -31,6 +30,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   content: {
     height: "85%",
     overflowY: "scroll",
+  },
+  heading: {
+    fontSize: theme.typography.pxToRem(15),
+    fontWeight: theme.typography.fontWeightRegular,
   },
 }));
 
@@ -72,7 +75,7 @@ const ChangeLogView: React.FunctionComponent<IChangeLogViewProps> = (props) => {
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
-        <Paper className={classes.paper}>
+        <Paper className={classes.widget}>
           <Typography component="h2" variant="h6" color="primary" gutterBottom>
             My Changes
           </Typography>
@@ -82,7 +85,7 @@ const ChangeLogView: React.FunctionComponent<IChangeLogViewProps> = (props) => {
         </Paper>
       </Grid>
       <Grid item xs={12}>
-        <Paper className={classes.paper}>
+        <Paper className={classes.widget}>
           <Typography component="h2" variant="h6" color="primary" gutterBottom>
             All Changes
           </Typography>

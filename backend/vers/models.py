@@ -175,7 +175,7 @@ class Job(models.Model):
         Subsector, related_name="jobs", null=True, on_delete=models.SET_NULL)
     ppl_amt_required = models.IntegerField()
     salary_amount = models.IntegerField(default=0)
-    emp_assigned = models.ManyToManyField(Employee, blank=True)
+    emp_assigned = models.ManyToManyField(Employee, blank=True, related_name="jobs")
     from_date = models.DateField()
     to_date = models.DateField()
     owner = models.ForeignKey(
@@ -230,10 +230,19 @@ class Log(models.Model):
         db_table = 'logs'
 
 
+class ForecastPack(models.Model):
+    on = models.DateField(unique=True)
+
+    class Meta:
+        db_table = 'forecast_packs'
+
+
 class Forecast(models.Model):
-    on = models.DateField()
+    pack = models.ForeignKey(
+        ForecastPack, related_name="forecasts", on_delete=models.CASCADE)
     n = models.IntegerField()
     val = models.FloatField()
 
     class Meta:
         db_table = 'forecasts'
+        unique_together = (('n', 'pack',),)

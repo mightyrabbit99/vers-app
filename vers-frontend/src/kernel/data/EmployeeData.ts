@@ -1,6 +1,11 @@
 import { Data } from "./Data";
-import { EmpSkillData } from "./EmpSkillData";
 import { UserData } from "./UserData";
+
+interface EmpSkillData extends Data {
+  skill: number;
+  level: number;
+  desc: string;
+}
 
 interface EmployeeData extends Data {
   sesa_id: string;
@@ -18,4 +23,4 @@ interface EmployeeData extends Data {
   profile_pic?: string | File;
 }
 
-export type { EmployeeData };
+export type { EmployeeData, EmpSkillData };
