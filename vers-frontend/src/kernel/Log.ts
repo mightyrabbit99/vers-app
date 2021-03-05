@@ -50,7 +50,8 @@ const put = async (t: Log) => {
 };
 
 const del = async (t: Log) => {
-  await Fetcher.deleteLog(objToData(t));
+  let res = await Fetcher.deleteLog(objToData(t));
+  return { success: res.status === 204, data: {} };
 };
 
 const generator = (init?: any): Log => ({

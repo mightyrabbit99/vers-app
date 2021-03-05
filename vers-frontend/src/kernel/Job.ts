@@ -68,7 +68,8 @@ const put = async (t: Job) => {
 };
 
 const del = async (t: Job) => {
-  await Fetcher.deleteJob(objToData(t));
+  let res = await Fetcher.deleteJob(objToData(t));
+  return { success: res.status === 204, data: {} };
 };
 
 const generator = (init?: any): Job => ({

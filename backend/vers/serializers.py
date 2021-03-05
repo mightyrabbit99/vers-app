@@ -88,12 +88,11 @@ class PlantSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
     def update(self, instance, validated_data):
-        ans = super().update(instance, validated_data)
         lg = models.Log(type=models.Log.TypeChoices.UPDATE,
                         data_type=models.Log.DataChoices.PLANT,
                         user=self.get_request_user())
         lg.save()
-        return ans
+        return super().update(instance, validated_data)
 
     class Meta:
         model = models.Plant
@@ -104,6 +103,20 @@ class SectorSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source=OWNER_USERNAME)
     subsectors = serializers.PrimaryKeyRelatedField(
         many=True, read_only=True)
+
+    def create(self, validated_data):
+        lg = models.Log(type=models.Log.TypeChoices.CREATE,
+                        data_type=models.Log.DataChoices.SECTOR,
+                        user=self.get_request_user())
+        lg.save()
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        lg = models.Log(type=models.Log.TypeChoices.UPDATE,
+                        data_type=models.Log.DataChoices.SECTOR,
+                        user=self.get_request_user())
+        lg.save()
+        return super().update(instance, validated_data)
 
     class Meta:
         model = models.Sector
@@ -119,6 +132,20 @@ class SubsectorSerializer(serializers.ModelSerializer):
     jobs = serializers.PrimaryKeyRelatedField(
         many=True, read_only=True)
 
+    def create(self, validated_data):
+        lg = models.Log(type=models.Log.TypeChoices.CREATE,
+                        data_type=models.Log.DataChoices.SUBSECTOR,
+                        user=self.get_request_user())
+        lg.save()
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        lg = models.Log(type=models.Log.TypeChoices.UPDATE,
+                        data_type=models.Log.DataChoices.SUBSECTOR,
+                        user=self.get_request_user())
+        lg.save()
+        return super().update(instance, validated_data)
+
     class Meta:
         model = models.Subsector
         fields = '__all__'
@@ -128,6 +155,20 @@ class DepartmentSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source=OWNER_USERNAME)
     employees = serializers.PrimaryKeyRelatedField(
         many=True, read_only=True)
+
+    def create(self, validated_data):
+        lg = models.Log(type=models.Log.TypeChoices.CREATE,
+                        data_type=models.Log.DataChoices.DEPARTMENT,
+                        user=self.get_request_user())
+        lg.save()
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        lg = models.Log(type=models.Log.TypeChoices.UPDATE,
+                        data_type=models.Log.DataChoices.DEPARTMENT,
+                        user=self.get_request_user())
+        lg.save()
+        return super().update(instance, validated_data)
 
     class Meta:
         model = models.Department
@@ -194,6 +235,11 @@ class EmployeeSerializer(serializers.ModelSerializer):
         vers_user.save()
         emp.save()
         models.EmpSkillMatrix.objects.bulk_create(skills_data)
+
+        lg = models.Log(type=models.Log.TypeChoices.CREATE,
+                        data_type=models.Log.DataChoices.EMPLOYEE,
+                        user=self.get_request_user())
+        lg.save()
         return emp
 
     def update(self, instance, validated_data):
@@ -224,6 +270,11 @@ class EmployeeSerializer(serializers.ModelSerializer):
         for (key, value) in validated_data.items():
             setattr(instance, key, value)
         instance.save()
+
+        lg = models.Log(type=models.Log.TypeChoices.UPDATE,
+                        data_type=models.Log.DataChoices.EMPLOYEE,
+                        user=self.get_request_user())
+        lg.save()
         return instance
 
     class Meta:
@@ -241,11 +292,23 @@ class JobSerializer(serializers.ModelSerializer):
     skills_required = JobSkillMatrixSerializer(many=True)
     owner = serializers.ReadOnlyField(source=OWNER_USERNAME)
 
+    def get_request_user(self):
+        user = None
+        request = self.context.get("request")
+        if request and hasattr(request, "user"):
+            user = request.user
+        return user
+
     def create(self, validated_data):
         skills_data = validated_data.pop('skills_required')
         job = models.Job(**validated_data)
         job.save()
         models.JobSkillMatrix.objects.bulk_create(skills_data)
+
+        lg = models.Log(type=models.Log.TypeChoices.CREATE,
+                        data_type=models.Log.DataChoices.JOB,
+                        user=self.get_request_user())
+        lg.save()
         return job
 
     def update(self, instance, validated_data):
@@ -262,6 +325,10 @@ class JobSerializer(serializers.ModelSerializer):
         for (key, value) in validated_data.items():
             setattr(instance, key, value)
         instance.save()
+        lg = models.Log(type=models.Log.TypeChoices.UPDATE,
+                        data_type=models.Log.DataChoices.JOB,
+                        user=self.get_request_user())
+        lg.save()
         return instance
 
     class Meta:
@@ -285,6 +352,38 @@ class LogSerializer(serializers.ModelSerializer):
 
 
 class ForecastSerializer(serializers.ModelSerializer):
+    def get_request_user(self):
+        user = None
+        request = self.context.get("request")
+        if request and hasattr(request, "user"):
+            user = request.user
+        return user
+
+    def create(self, validated_data):
+        lg = models.Log(type=models.Log.TypeChoices.CREATE,
+                        data_type=models.Log.DataChoices.FORECAST,
+                        user=self.get_request_user())
+        lg.save()
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        lg = models.Log(type=models.Log.TypeChoices.UPDATE,
+                        data_type=models.Log.DataChoices.FORECAST,
+                        user=self.get_request_user())
+        lg.save()
+        return super().update(instance, validated_data)
+
     class Meta:
         model = models.Forecast
         fields = '__all__'
+
+
+class ForecasePackSerializer(serializers.Serializer):
+    on = serializers.DateTimeField()
+    forecasts = ForecastSerializer(many=True)
+
+    def create(self, validated_data):
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        return super().update(instance, validated_data)

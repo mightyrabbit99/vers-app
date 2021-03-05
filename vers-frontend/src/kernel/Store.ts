@@ -30,14 +30,14 @@ interface Store<T extends Item> {
   submit: (t: T) => Promise<Result>;
   submitNew: (t: T) => Promise<Result>;
   submitOrNew: (t: T) => Promise<Result>;
-  remove: (t: T) => Promise<void>;
+  remove: (t: T) => Promise<Result>;
 }
 
 function store<T extends Item>(
   get: () => Promise<T[]>,
   post: (t: T) => Promise<Result>,
   put: (t: T) => Promise<Result>,
-  del: (t: T) => Promise<void>,
+  del: (t: T) => Promise<Result>,
   generator: (init?: any) => T,
   hasher?: (t: T) => string
 ) {
@@ -115,7 +115,7 @@ function store<T extends Item>(
 
     remove = async (t: T) => {
       this.erase(t);
-      await del(t);
+      return await del(t);
     };
   };
 }

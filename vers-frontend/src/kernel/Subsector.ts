@@ -69,7 +69,8 @@ const put = async (t: Subsector) => {
 };
 
 const del = async (t: Subsector) => {
-  await Fetcher.deleteSubsec(objToData(t));
+  let res = await Fetcher.deleteSubsec(objToData(t));
+  return { success: res.status === 204, data: {} };
 };
 
 const generator = (init?: any): Subsector => ({

@@ -59,7 +59,8 @@ const put = async (t: Department) => {
 };
 
 const del = async (t: Department) => {
-  await Fetcher.deleteDept(objToData(t));
+  let res = await Fetcher.deleteDept(objToData(t));
+  return { success: res.status === 204, data: {} };
 };
 
 const hasher = (t: Department) => t.name;

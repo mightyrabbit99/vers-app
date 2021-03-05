@@ -8,6 +8,7 @@ import AccordionDetails from "@material-ui/core/AccordionDetails";
 import Typography from "@material-ui/core/Typography";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Grid from "@material-ui/core/Grid";
+import Paper from "@material-ui/core/Paper";
 
 import { Log } from "src/kernel";
 import { MyLog } from "src/types";
@@ -20,6 +21,16 @@ const useStyles = makeStyles((theme: Theme) => ({
   heading: {
     fontSize: theme.typography.pxToRem(15),
     fontWeight: theme.typography.fontWeightRegular,
+  },
+  paper: {
+    height: "80vh",
+  },
+  title: {
+    height: "15%",
+  },
+  content: {
+    height: "85%",
+    overflowY: "scroll",
   },
 }));
 
@@ -61,12 +72,24 @@ const ChangeLogView: React.FunctionComponent<IChangeLogViewProps> = (props) => {
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
-        <Typography>My Changes</Typography>
-        <div>{personalLogs.map(genMyLogCard)}</div>
+        <Paper className={classes.paper}>
+          <Typography component="h2" variant="h6" color="primary" gutterBottom>
+            My Changes
+          </Typography>
+          <div className={classes.content}>
+            {personalLogs.map(genMyLogCard)}
+          </div>
+        </Paper>
       </Grid>
       <Grid item xs={12}>
-        <Typography>All Changes</Typography>
-        <div>{Object.values(logs).map(genLogCard)}</div>
+        <Paper className={classes.paper}>
+          <Typography component="h2" variant="h6" color="primary" gutterBottom>
+            All Changes
+          </Typography>
+          <div className={classes.content}>
+            {Object.values(logs).map(genLogCard)}
+          </div>
+        </Paper>
       </Grid>
     </Grid>
   );

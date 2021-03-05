@@ -34,6 +34,17 @@ function genMap<T>(
   }, {} as { [name: string]: T[] });
 }
 
+interface SubmitResult {
+  success: boolean;
+  data: any;
+}
+
+export interface MyLog {
+  desc: string;
+  time: number;
+  vals: SubmitResult[];
+}
+
 class Kernel {
   plantStore: Store<Plant>;
   secStore: Store<Sector>;
@@ -44,6 +55,7 @@ class Kernel {
   jobStore: Store<Job>;
   forecastStore: Store<Forecast>;
   logStore: Store<Log>;
+  personalLogs: MyLog[];
 
   constructor() {
     this.plantStore = new PlantStore();
@@ -55,6 +67,7 @@ class Kernel {
     this.jobStore = new JobStore();
     this.forecastStore = new ForecastStore();
     this.logStore = new LogStore();
+    this.personalLogs = [];
   }
 
   public refresh = async () => {
@@ -69,7 +82,7 @@ class Kernel {
     await this.logStore.refresh();
   };
 
-  public saveNew = async (t: Item) => {
+  private _saveNew = async (t: Item) => {
     switch (t._type) {
       case ItemType.Plant:
         return await this.plantStore.submitNew(t as Plant);
@@ -92,7 +105,14 @@ class Kernel {
     }
   };
 
-  public save = async (t: Item) => {
+  public saveNew = async (t: Item) => {
+    let newMyLog: MyLog = { desc: "Create", time: Date.now(), vals: [] };
+    newMyLog.vals.push(await this._saveNew(t));
+    this.personalLogs.push(newMyLog);
+    return newMyLog.vals[0];
+  };
+
+  private _save = async (t: Item) => {
     switch (t._type) {
       case ItemType.Plant:
         return await this.plantStore.submit(t as Plant);
@@ -115,7 +135,14 @@ class Kernel {
     }
   };
 
-  public del = async (t: Item) => {
+  public save = async (t: Item) => {
+    let newMyLog: MyLog = { desc: "Save", time: Date.now(), vals: [] };
+    newMyLog.vals.push(await this._save(t));
+    this.personalLogs.push(newMyLog);
+    return newMyLog.vals[0];
+  };
+
+  private _del = async (t: Item) => {
     switch (t._type) {
       case ItemType.Plant:
         return await this.plantStore.remove(t as Plant);
@@ -138,6 +165,13 @@ class Kernel {
       default:
         return { success: false, data: {} };
     }
+  };
+
+  public del = async (t: Item) => {
+    let newMyLog: MyLog = { desc: "Delete", time: Date.now(), vals: [] };
+    newMyLog.vals.push(await this._del(t));
+    this.personalLogs.push(newMyLog);
+    return newMyLog.vals[0];
   };
 
   public calcChanges = (payload: Data) => {
@@ -219,7 +253,7 @@ class Kernel {
     const saveObj = async (o: SectorObj) => {
       const st = this.secStore;
       if (o.plant !== plant.name) {
-        return { success: false, data: o };
+        return { success: false, data: { plant: ["Plant does not exist"] } };
       } else {
         return await st.submitOrNew(st.getNew({ ...o, plant: plantId }));
       }
@@ -233,7 +267,7 @@ class Kernel {
     const saveObj = async (o: SubsectorObj) => {
       const st = this.subsecStore;
       if (!(o.sector in secNames)) {
-        return { success: false, data: o };
+        return { success: false, data: { sector: ["Sector does not exist"] } };
       } else {
         return await st.submitOrNew(
           st.getNew({ ...o, sector: secNames[o.sector][0].id })
@@ -250,7 +284,10 @@ class Kernel {
     const saveObj = async (o: SkillObj) => {
       const st = this.skillStore;
       if (!(o.subsector in subsecNames)) {
-        return { success: false, data: o };
+        return {
+          success: false,
+          data: { subsector: ["Subsector does not exist"] },
+        };
       } else {
         return await st.submitOrNew(
           st.getNew({ ...o, subsector: subsecNames[o.subsector][0].id })
@@ -267,7 +304,10 @@ class Kernel {
     const saveObj = async (o: EmployeeObj) => {
       const st = this.empStore;
       if (!(o.homeLocation in subsecNames)) {
-        return { success: false, data: o };
+        return {
+          success: false,
+          data: { subsector: ["Subsector does not exist"] },
+        };
       } else {
         return await st.submitOrNew(
           st.getNew({
@@ -281,7 +321,7 @@ class Kernel {
     return await Promise.all(objs.map(saveObj));
   };
 
-  public submitExcel = async (
+  private _submitExcel = async (
     plantId: number,
     type: ItemType,
     objs: ExcelObj[]
@@ -296,6 +336,17 @@ class Kernel {
       case ItemType.Employee:
         return await this.saveEmpObjs(plantId, objs as EmployeeObj[]);
     }
+  };
+
+  public submitExcel = async (
+    plantId: number,
+    type: ItemType,
+    objs: ExcelObj[]
+  ) => {
+    let newMyLog: MyLog = { desc: "Excel Submit", time: Date.now(), vals: [] };
+    newMyLog.vals = (await this._submitExcel(plantId, type, objs)) ?? [];
+    this.personalLogs.push(newMyLog);
+    return newMyLog.vals;
   };
 
   private genSectorExcel = async (items: Sector[]) => {

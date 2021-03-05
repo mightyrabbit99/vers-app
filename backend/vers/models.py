@@ -215,8 +215,10 @@ class Log(models.Model):
         SECTOR = 2, 'SECTOR'
         SUBSECTOR = 3, 'SUBSECTOR'
         SKILL = 4, 'SKILL'
-        EMPLOYEE = 5, 'EMPLOYEE'
-        JOB = 6, 'JOB'
+        DEPARTMENT = 5, 'DEPARTMENT'
+        EMPLOYEE = 6, 'EMPLOYEE'
+        JOB = 7, 'JOB'
+        FORECAST = 8, 'FORECAST'
 
     type = models.IntegerField(choices=TypeChoices.choices)
     data_type = models.IntegerField(choices=DataChoices.choices)

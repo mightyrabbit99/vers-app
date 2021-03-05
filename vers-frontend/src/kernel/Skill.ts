@@ -75,7 +75,8 @@ const put = async (t: Skill) => {
 };
 
 const del = async (t: Skill) => {
-  await Fetcher.deleteSkill(objToData(t));
+  let res = await Fetcher.deleteSkill(objToData(t));
+  return { success: res.status === 204, data: {} };
 };
 
 const hasher = (t: Skill) => t.name;

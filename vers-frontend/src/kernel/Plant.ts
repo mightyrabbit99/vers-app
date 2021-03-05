@@ -59,7 +59,8 @@ const put = async (t: Plant) => {
 };
 
 const del = async (t: Plant) => {
-  await Fetcher.deletePlant(objToData(t));
+  let res = await Fetcher.deletePlant(objToData(t));
+  return { success: res.status === 204, data: {} };
 };
 
 const PlantStore = store<Plant>(get, post, put, del, generator);

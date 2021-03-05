@@ -5,48 +5,60 @@ import Fetcher from "./Fetcher";
 interface Forecast extends Item {
   _type: ItemType.Forecast;
   on: string;
-  vals: ForecastData[];
+  n: number;
+  val: number;
 }
 
-let c = 1;
+function dataToObj(x: ForecastData): Forecast {
+  return {
+    ...x,
+    id: x.id ?? -1,
+    _type: ItemType.Forecast,
+  };
+}
+
+function objToData(x: Forecast): ForecastData {
+  return {
+    ...x,
+  };
+}
 
 const get = async () => {
-  c = 1;
   let res = await Fetcher.getForecasts();
-  let arranged = res.data.reduce((prev, curr) => {
-    if (!prev[curr.on])
-      prev[curr.on] = {
-        _type: ItemType.Forecast,
-        id: c++,
-        on: curr.on,
-        vals: [],
-      };
-    prev[curr.on].vals.push(curr);
-    return prev;
-  }, {} as { [on: string]: Forecast });
-  return Object.values(arranged);
+  return res.data.map(dataToObj);
 };
 
 const post = async (t: Forecast) => {
-  for (let v of t.vals) await Fetcher.postForecast(v);
-  t.id = c++;
-  return { success: true, data: t };
+  let res;
+  try {
+    res = await Fetcher.postForecast(objToData(t));
+  } catch (error) {
+    res = error.response;
+  }
+  return { success: res.status === 201, data: dataToObj(res.data) };
 };
 
 const put = async (t: Forecast) => {
-  for (let v of t.vals) await Fetcher.putForecast(v);
-  return { success: true, data: t };
+  let res;
+  try {
+    res = await Fetcher.putForecast(objToData(t));
+  } catch (error) {
+    res = error.response;
+  }
+  return { success: res.status === 200, data: dataToObj(res.data) };
 };
 
 const del = async (t: Forecast) => {
-  for (let v of t.vals) await Fetcher.deleteForecast(v);
+  let res = await Fetcher.deleteForecast(objToData(t));
+  return { success: res.status === 204, data: {} };
 };
 
 const generator = (init?: any): Forecast => ({
   id: -1,
   _type: ItemType.Forecast,
   on: "",
-  vals: [],
+  n: 0,
+  val: 0.0,
 });
 
 const ForecastStore = store<Forecast>(get, post, put, del, generator);

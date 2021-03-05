@@ -1,4 +1,16 @@
-import { Plant, Data, Sector, Subsector, Department, Skill, Employee, Job, Log, ItemType } from "src/kernel";
+import {
+  Plant,
+  Data,
+  Sector,
+  Subsector,
+  Department,
+  Skill,
+  Employee,
+  Job,
+  Log,
+  MyLog,
+  ItemType,
+} from "src/kernel";
 import { UserData } from "src/kernel/data/UserData";
 import { Forecast } from "src/kernel/Forecast";
 import { delData, saveData, reload } from "src/slices/data";
@@ -35,7 +47,7 @@ export interface SubmitExcelAction {
   payload: {
     type: ItemType;
     data: any;
-  }
+  };
 }
 
 export interface DeleteDataAction {
@@ -63,12 +75,7 @@ export interface RootState {
   sessionState: SessionState;
 }
 
-type IdMap<T> = { [id: number]: T};
-
-export interface MyLog {
-  desc: string;
-  vals: Log[];
-}
+type IdMap<T> = { [id: number]: T };
 
 export interface DataState {
   plants: IdMap<Plant>;
@@ -103,9 +110,7 @@ export interface SyncState {
   error?: any;
 }
 
-export interface SettingsState {
-
-}
+export interface SettingsState {}
 
 export interface SessionState {
   syncing: boolean;

@@ -54,7 +54,8 @@ const put = async (t: Sector) => {
 };
 
 const del = async (t: Sector) => {
-  await Fetcher.deleteSec(objToData(t));
+  let res = await Fetcher.deleteSec(objToData(t));
+  return { success: res.status === 204, data: {} };
 };
 
 const generator = (init?: any): Sector => ({
