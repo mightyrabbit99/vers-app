@@ -34,7 +34,12 @@ const SkillForm: React.FunctionComponent<ISkillFormProps> = (props) => {
   return (
     <Grid container spacing={1}>
       <Grid item xs={12}>
-        <SkillFormFields data={newData} choices={choices} feedback={feedback} />
+        <SkillFormFields
+          data={newData}
+          choices={choices}
+          feedback={feedback}
+          onChange={onChange}
+        />
       </Grid>
       <Grid item xs={12}>
         <div>

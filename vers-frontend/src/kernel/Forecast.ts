@@ -56,7 +56,11 @@ const generator = (init?: any): Forecast => ({
   id: -1,
   _type: ItemType.Forecast,
   on: "",
-  forecasts: [],
+  forecasts: [1, 2, 3, 4, 5, 6].map((x) => ({
+    id: -1,
+    n: x,
+    val: 0.0,
+  })),
 });
 
 const ForecastStore = store<Forecast>(get, post, put, del, generator);

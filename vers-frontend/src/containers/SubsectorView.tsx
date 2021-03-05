@@ -51,7 +51,7 @@ const SectorView: React.FunctionComponent<ISectorViewProps> = (props) => {
   const handleUploadExcel = async (file: File) => {
     try {
       let ans = await ExcelProcessor2.readSectorFile(file);
-      dispatch(submitExcel({ type: ItemType.Sector, data: ans }));
+      dispatch(submitExcel({ type: ItemType.Subsector, data: ans }));
     } catch (e) {
       setFbOpen(true);
     }
@@ -70,7 +70,7 @@ const SectorView: React.FunctionComponent<ISectorViewProps> = (props) => {
     var blob = new Blob([s], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
-    saveAs(blob, `Sectors.xlsx`);
+    saveAs(blob, `Subsectors.xlsx`);
   };
 
   return (

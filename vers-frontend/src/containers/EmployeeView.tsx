@@ -67,7 +67,7 @@ const EmployeeView: React.FunctionComponent<IEmployeeViewProps> = (props) => {
   const handleUploadExcel = async (file: File) => {
     try {
       let ans = await ExcelProcessor2.readSectorFile(file);
-      dispatch(submitExcel({ type: ItemType.Sector, data: ans }));
+      dispatch(submitExcel({ type: ItemType.Employee, data: ans }));
     } catch (e) {
       setFbOpen(true);
     }
@@ -86,7 +86,7 @@ const EmployeeView: React.FunctionComponent<IEmployeeViewProps> = (props) => {
     var blob = new Blob([s], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
-    saveAs(blob, `Sectors.xlsx`);
+    saveAs(blob, `Employees.xlsx`);
   };
 
   return (

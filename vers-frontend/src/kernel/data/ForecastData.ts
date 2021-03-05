@@ -1,7 +1,6 @@
 import { Data } from "./Data";
 
 interface FData extends Data {
-  on: string;
   n: number;
   val: number;
 }

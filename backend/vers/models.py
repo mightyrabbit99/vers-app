@@ -246,3 +246,4 @@ class Forecast(models.Model):
     class Meta:
         db_table = 'forecasts'
         unique_together = (('n', 'pack',),)
+        ordering = 'n'

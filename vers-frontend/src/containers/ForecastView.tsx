@@ -5,7 +5,8 @@ import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import ForecastListWidget from "src/components/ForecastListWidget";
 import { getData } from "src/selectors";
-import { saveData } from "src/slices/data";
+import { delData, saveData } from "src/slices/data";
+import { clearFeedback } from "src/slices/sync";
 import { Forecast } from "src/kernel";
 
 const useStyles = makeStyles((theme) => ({
@@ -29,11 +30,23 @@ const ForecastView: React.FunctionComponent<IForecastViewProps> = (props) => {
     dispatch(saveData(f));
   };
 
+  const handleForecastDelete = (...f: Forecast[]) => {
+    dispatch(delData(f));
+  };
+  const handleReset = () => {
+    dispatch(clearFeedback());
+  };
+
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
         <Paper className={classes.widget}>
-          <ForecastListWidget lst={forecasts} onSubmit={handleForecastSubmit} />
+          <ForecastListWidget
+            lst={forecasts}
+            onSubmit={handleForecastSubmit}
+            onDelete={handleForecastDelete}
+            onReset={handleReset}
+          />
         </Paper>
       </Grid>
     </Grid>

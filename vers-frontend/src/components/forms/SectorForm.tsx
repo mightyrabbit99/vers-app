@@ -18,10 +18,12 @@ const SectorForm: React.FunctionComponent<ISectorFormProps> = (props) => {
   const newData = { ...data };
   const choices: SectorFormChoices = {
     plant: {
-      choices: [{name: plantLst[data.plant]?.name, value: plantLst[data.plant]?.id}],/*plants.map((x) => ({
+      choices: [
+        { name: plantLst[data.plant]?.name, value: plantLst[data.plant]?.id },
+      ] /*plants.map((x) => ({
         name: x.name,
         value: x.id,
-      })),*/
+      })),*/,
       init: 0,
     },
   };
@@ -37,6 +39,7 @@ const SectorForm: React.FunctionComponent<ISectorFormProps> = (props) => {
           data={newData}
           choices={choices}
           feedback={feedback}
+          onChange={onChange}
         />
       </Grid>
       <Grid item xs={12}>

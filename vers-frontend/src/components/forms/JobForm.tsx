@@ -38,6 +38,7 @@ const JobForm: React.FunctionComponent<IJobFormProps> = (props) => {
           data={newData}
           choices={choices}
           feedback={feedback}
+          onChange={onChange}
         />
       </Grid>
       <Grid item xs={12}>

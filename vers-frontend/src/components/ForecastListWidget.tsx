@@ -1,92 +1,136 @@
 import * as React from "react";
+
+import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import TableContainer from "@material-ui/core/TableContainer";
-import Table from "@material-ui/core/Table";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import TableCell from "@material-ui/core/TableCell";
-import TableBody from "@material-ui/core/TableBody";
-import TableFooter from "@material-ui/core/TableFooter";
-import TextField from "@material-ui/core/TextField";
 
 import { Forecast } from "src/kernel";
+import ForecastMainList from "./lists/ForecastMainList";
+import ListWidget from "./ListWidget";
+import MyDialog from "src/components/commons/Dialog";
+import ForecastForm from "src/components/forms/ForecastForm";
+
+const useStyles = makeStyles((theme) => ({
+  title: {
+    height: "15%",
+  },
+  form: {
+    maxWidth: "60vw",
+    width: "fit-content",
+    minWidth: 300,
+  },
+  formTitle: {
+    height: "15%",
+  },
+  formContent: {
+    height: "85%",
+  },
+}));
 
 interface IForecastListWidgetProps {
   lst: { [id: number]: Forecast };
+  newForecast?: Forecast;
+  edit?: boolean;
+  feedback?: any;
   onSubmit: (f: Forecast) => void;
+  onDelete: (...f: Forecast[]) => void;
+  onReset: () => void;
+  uploadExcel?: (file: File) => void;
+  downloadExcel?: () => void;
 }
 
 const ForecastListWidget: React.FunctionComponent<IForecastListWidgetProps> = (
   props
 ) => {
-  const { lst, onSubmit } = props;
+  const classes = useStyles();
+  const {
+    lst,
+    newForecast,
+    edit = true,
+    feedback,
+    onSubmit,
+    onDelete,
+    onReset,
+    uploadExcel,
+    downloadExcel,
+  } = props;
 
-  const genTableRow = (f: Forecast) => {
-    const handleForecastChg = (idx: number) => (e: React.ChangeEvent<any>) => {
-      let { value } = e.target;
-      let newForecasts = [...f.forecasts];
-      newForecasts[idx] = { ...newForecasts[idx], val: parseFloat(value) };
-      onSubmit({ ...f, forecasts: newForecasts });
-    };
-    
-    return (
-      <TableRow>
-        <TableCell>{f.on}</TableCell>
-        {[1, 2, 3, 4, 5, 6].map((n) => {
-          let ffIdx = f.forecasts.findIndex((y) => y.n === n);
-          if (ffIdx === -1) return <TableCell></TableCell>;
-          let y = f.forecasts[ffIdx];
-          return (
-            <TableCell>
-              <TextField
-                value={y.val}
-                onBlur={handleForecastChg(ffIdx)}
-                type="number"
-              />
-            </TableCell>
-          );
-        })}
-      </TableRow>
-    );
+  const [selected, setSelected] = React.useState<number[]>([]);
+  React.useEffect(() => {
+    setSelected([]);
+  }, []);
+
+  const handleDeleteOnClick = () => {
+    onDelete(...selected.map((x) => lst[x]));
+    setSelected([]);
+  };
+
+  const [formOpen, setFormOpen] = React.useState(false);
+  const [formData, setFormData] = React.useState(newForecast);
+  React.useEffect(() => {
+    setFormData(newForecast);
+  }, [newForecast]);
+  React.useEffect(() => {
+    setFormOpen(!!feedback);
+  }, [feedback]);
+
+  const handleSubmit = (data: Forecast) => {
+    onSubmit(data);
+    setFormOpen(false);
+  };
+  const handleEditOnClick = (id: number) => {
+    setFormData(lst[id]);
+    setFormOpen(true);
+  };
+
+  const handleCreateOnClick = () => {
+    setFormData(newForecast);
+    setFormOpen(true);
+  };
+
+  const handleFormClose = () => {
+    setFormOpen(false);
+    onReset();
   };
 
   return (
-    <React.Fragment>
-      <Typography component="h2" variant="h6" color="primary" gutterBottom>
-        Forecast
-      </Typography>
-      <TableContainer>
-        <Table stickyHeader>
-          <TableHead>
-            <TableRow>
-              <TableCell>
-                <b>Month</b>
-              </TableCell>
-              <TableCell>
-                <b>n + 1</b>
-              </TableCell>
-              <TableCell>
-                <b>n + 2</b>
-              </TableCell>
-              <TableCell>
-                <b>n + 3</b>
-              </TableCell>
-              <TableCell>
-                <b>n + 4</b>
-              </TableCell>
-              <TableCell>
-                <b>n + 5</b>
-              </TableCell>
-              <TableCell>
-                <b>n + 6</b>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>{Object.values(lst).map(genTableRow)}</TableBody>
-          <TableFooter></TableFooter>
-        </Table>
-      </TableContainer>
-    </React.Fragment>
+    <ListWidget
+      title="Forecasts"
+      disableCreate={!edit}
+      disableDelete={selected.length === 0 || !edit}
+      createOnClick={handleCreateOnClick}
+      deleteOnClick={handleDeleteOnClick}
+      downloadExcel={downloadExcel}
+      uploadExcel={uploadExcel}
+    >
+      <ForecastMainList lst={lst} onSubmit={handleSubmit} />
+      <MyDialog open={formOpen} onClose={handleFormClose}>
+        <div className={classes.form}>
+          <div className={classes.formTitle}>
+            <Typography
+              className={classes.title}
+              component="h2"
+              variant="h6"
+              color="primary"
+              gutterBottom
+            >
+              {formData && formData.id === -1
+                ? "Create New Forecast"
+                : "Edit Forecast"}
+            </Typography>
+          </div>
+          <div className={classes.formContent}>
+            {formData ? (
+              <ForecastForm
+                data={formData}
+                feedback={feedback}
+                onSubmit={handleSubmit}
+                onCancel={handleFormClose}
+              />
+            ) : null}
+          </div>
+        </div>
+      </MyDialog>
+    </ListWidget>
   );
 };
 

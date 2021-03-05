@@ -40,6 +40,7 @@ const SubsectorForm: React.FunctionComponent<ISubsectorFormProps> = (props) => {
           data={newData}
           choices={choices}
           feedback={feedback}
+          onChange={onChange}
         />
       </Grid>
       <Grid item xs={12}>

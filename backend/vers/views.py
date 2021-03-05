@@ -300,10 +300,10 @@ class LogList(generics.ListAPIView):
 
 
 class ForecastView(viewsets.ModelViewSet):
-    serializer_class = serializers.ForecastSerializer
+    serializer_class = serializers.ForecastPackSerializer
 
     def get_queryset(self):
-        return models.Forecast.objects.all()
+        return models.ForecastPack.objects.all()
 
 # main page
 

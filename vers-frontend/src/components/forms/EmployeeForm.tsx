@@ -63,6 +63,7 @@ const EmployeeForm: React.FunctionComponent<IEmployeeFormProps> = (props) => {
           data={newData}
           choices={choices}
           feedback={feedback}
+          onChange={onChange}
         />
       </Grid>
       <Grid item xs={12}>

@@ -12,7 +12,9 @@ interface IDepartmentFormProps {
   onCancel?: () => void;
 }
 
-const DepartmentForm: React.FunctionComponent<IDepartmentFormProps> = (props) => {
+const DepartmentForm: React.FunctionComponent<IDepartmentFormProps> = (
+  props
+) => {
   const { data, feedback, onSubmit, onChange, onCancel } = props;
   const newData = { ...data };
 
@@ -24,7 +26,11 @@ const DepartmentForm: React.FunctionComponent<IDepartmentFormProps> = (props) =>
     <React.Fragment>
       <Grid container spacing={1}>
         <Grid item xs={12}>
-          <DepartmentFormFields data={newData} feedback={feedback} />
+          <DepartmentFormFields
+            data={newData}
+            feedback={feedback}
+            onChange={onChange}
+          />
         </Grid>
         <Grid item xs={12}>
           <div>
