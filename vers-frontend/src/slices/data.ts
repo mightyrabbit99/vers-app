@@ -61,6 +61,8 @@ const dataSlice = createSlice({
       state.newJob = payload.newJob ?? undefined;
       state.forecasts = payload.forecasts ?? {};
       state.newForecast = payload.newForecast ?? undefined;
+      state.logs = payload.logs ?? {};
+      state.personalLogs = payload.personalLogs ?? [];
     },
     reload: (state, { payload }: PayloadAction<number | undefined>) => {
       state.loading = true;
@@ -80,6 +82,8 @@ const dataSlice = createSlice({
       delete state.newJob;
       state.forecasts = {};
       delete state.newForecast;
+      state.logs = {};
+      state.personalLogs = [];
     },
     reloadSuccess: (state) => {
       state.loading = false;

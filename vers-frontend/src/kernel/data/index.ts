@@ -5,7 +5,5 @@ export * from "./DepartmentData";
 export * from "./EmployeeData";
 export * from "./JobData";
 export * from "./SkillData";
-export * from "./EmpSkillData";
-export * from "./JobSkillData";
 export * from "./LogData";
 export * from "./ForecastData";

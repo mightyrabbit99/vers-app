@@ -127,7 +127,7 @@ class Employee(models.Model):
     subsector = models.ForeignKey(
         Subsector, related_name='employees', on_delete=models.SET_NULL, null=True)
     department = models.ForeignKey(
-        Department, related_name='employees', on_delete=models.CASCADE, null=True)
+        Department, related_name='employees', on_delete=models.SET_NULL, null=True)
     report_to = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
 
     birth_date = models.DateField(null=True)
@@ -175,7 +175,8 @@ class Job(models.Model):
         Subsector, related_name="jobs", null=True, on_delete=models.SET_NULL)
     ppl_amt_required = models.IntegerField()
     salary_amount = models.IntegerField(default=0)
-    emp_assigned = models.ManyToManyField(Employee, blank=True, related_name="jobs")
+    emp_assigned = models.ManyToManyField(
+        Employee, blank=True, related_name="jobs")
     from_date = models.DateField()
     to_date = models.DateField()
     owner = models.ForeignKey(
@@ -246,4 +247,4 @@ class Forecast(models.Model):
     class Meta:
         db_table = 'forecasts'
         unique_together = (('n', 'pack',),)
-        ordering = 'n'
+        ordering = ('n',)

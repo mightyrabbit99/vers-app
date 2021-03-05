@@ -23,14 +23,17 @@ function* reloadData({ payload: p }: ReloadDataAction) {
     skills,
     departments: { [id: number]: Department },
     employees,
-    jobs;
+    jobs,
+    forecasts,
+    logs;
   let newPlant,
     newSector,
     newSubsector,
     newSkill,
     newDepartment,
     newEmployee,
-    newJob;
+    newJob,
+    newForecast;
   plants = k.plantStore.getLst();
   newPlant = k.plantStore.getNew();
 
@@ -51,6 +54,10 @@ function* reloadData({ payload: p }: ReloadDataAction) {
   newEmployee = k.empStore.getNew();
   jobs = k.jobStore.getLst();
   newJob = k.jobStore.getNew();
+  forecasts = k.forecastStore.getLst();
+  newForecast = k.forecastStore.getNew();
+  logs = k.logStore.getLst();
+  let personalLogs = k.personalLogs;
   
   yield put(
     _reload({
@@ -68,6 +75,10 @@ function* reloadData({ payload: p }: ReloadDataAction) {
       newEmployee,
       jobs,
       newJob,
+      forecasts,
+      newForecast,
+      logs,
+      personalLogs,
     })
   );
   yield put(calculate());

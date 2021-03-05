@@ -24,7 +24,7 @@ interface IForecastViewProps {}
 const ForecastView: React.FunctionComponent<IForecastViewProps> = (props) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const { forecasts } = useSelector(getData);
+  const { forecasts, newForecast } = useSelector(getData);
 
   const handleForecastSubmit = (f: Forecast) => {
     dispatch(saveData(f));
@@ -43,6 +43,7 @@ const ForecastView: React.FunctionComponent<IForecastViewProps> = (props) => {
         <Paper className={classes.widget}>
           <ForecastListWidget
             lst={forecasts}
+            newForecast={newForecast}
             onSubmit={handleForecastSubmit}
             onDelete={handleForecastDelete}
             onReset={handleReset}

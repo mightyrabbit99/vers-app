@@ -27,12 +27,12 @@ const ForecastForm: React.FunctionComponent<IForecastFormProps> = (props) => {
     }
 
     onChange
-      ? onChange({ ...state, [name]: `${value}-01` })
-      : setState({ ...state, [name]: `${value}-01` });
+      ? onChange({ ...state, [name]: value })
+      : setState({ ...state, [name]: value });
   };
 
   const handleSubmit = () => {
-    onSubmit({ ...state, on: `${state.on}-01` });
+    onSubmit(state);
   };
 
   return (
@@ -43,9 +43,9 @@ const ForecastForm: React.FunctionComponent<IForecastFormProps> = (props) => {
           label="Date"
           variant="standard"
           name="on"
-          value={state.on}
+          value={state.on.substr(0, 7)}
           onChange={handleChange}
-          error={feedback.on}
+          error={feedback?.on}
           type="month"
         />
       </Grid>
