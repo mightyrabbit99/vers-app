@@ -9,7 +9,7 @@ interface Log extends Item {
   user: number;
   dataType: DataType;
   timestamp: string;
-  desc: string;
+  desc: any;
 }
 
 function dataToObj(x: LogData): Log {
@@ -62,10 +62,11 @@ const generator = (init?: any): Log => ({
   dataType: DataType.DEPARTMENT,
   changeId: -1,
   timestamp: "",
-  desc: "",
+  desc: {},
 });
 
 const LogStore = store<Log>(get, post, put, del, generator);
 
 export type { Log };
+export { LogType, DataType };
 export default LogStore;

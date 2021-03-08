@@ -235,7 +235,7 @@ class Fetcher {
   static putForecast = async (
     data: ForecastData
   ): Promise<Result<ForecastData>> => {
-    return await axios.put(`${forecastUrl}${data.id}/`, data);
+    return await axios.put(`${forecastUrl}${data.id}/`, data, Fetcher.getConfig());
   };
 
   static deleteEmp = async (

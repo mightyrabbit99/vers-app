@@ -47,7 +47,7 @@ import AccessCtrlView from "./AccessCtrlView";
 import { clearFeedback } from "src/slices/sync";
 import { logout } from "src/slices/session";
 import { selPlant } from "src/slices/data";
-import { getData, getSession, getSync } from "src/selectors";
+import { getData, getSession } from "src/selectors";
 
 
 function Copyright() {
@@ -172,7 +172,6 @@ const Dashboard: React.FC = () => {
   const history = useHistory();
   const { selectedPlantId: pId, plants, loading } = useSelector(getData);
   const { user } = useSelector(getSession);
-  const { feedback } = useSelector(getSync);
 
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);

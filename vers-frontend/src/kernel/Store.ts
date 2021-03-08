@@ -95,7 +95,7 @@ function store<T extends Item>(
     submit = async (t: T) => {
       try {
         let ans = await put(t);
-        if (ans.success) Object.assign(this.store[t.id], t);
+        if (ans.success) await this.refresh();
         return ans;
       } catch (error) {
         return { success: false, data: error };

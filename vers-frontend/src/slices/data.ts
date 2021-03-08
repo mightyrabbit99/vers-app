@@ -64,7 +64,7 @@ const dataSlice = createSlice({
       state.logs = payload.logs ?? {};
       state.personalLogs = payload.personalLogs ?? [];
     },
-    reload: (state, { payload }: PayloadAction<number | undefined>) => {
+    reload: (state) => {
       state.loading = true;
       state.plants = {};
       delete state.newPlant;

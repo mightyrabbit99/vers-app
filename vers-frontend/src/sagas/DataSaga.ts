@@ -1,4 +1,4 @@
-import { all, put, takeLatest } from "redux-saga/effects";
+import { all, put, select, takeLatest } from "redux-saga/effects";
 
 import {
   reload,
@@ -7,16 +7,15 @@ import {
   calculate,
   calculateSuccess,
   saveData,
-  _saveData,
   delData,
-  _delData,
   selPlant,
 } from "src/slices/data";
 import { createNew, modify, erase } from "src/slices/sync";
 import { SaveDataAction, DeleteDataAction, ReloadDataAction } from "src/types";
 import k, { Department, Sector, Subsector } from "src/kernel";
+import { getData } from "src/selectors";
 
-function* reloadData({ payload: p }: ReloadDataAction) {
+function* reloadData() {
   let plants,
     sectors: { [id: number]: Sector },
     subsectors: { [id: number]: Subsector },
@@ -34,9 +33,10 @@ function* reloadData({ payload: p }: ReloadDataAction) {
     newEmployee,
     newJob,
     newForecast;
+
+  let { selectedPlantId: p } = yield select(getData);
   plants = k.plantStore.getLst();
   newPlant = k.plantStore.getNew();
-
   p && !(p in plants) && (p = undefined);
   !p && (p = (Object.values(plants).length > 0 ? Object.values(plants)[0].id : undefined));
   p ? localStorage.setItem("lastPlant", `${p}`) : localStorage.removeItem("lastPlant");
@@ -86,7 +86,7 @@ function* reloadData({ payload: p }: ReloadDataAction) {
 }
 
 function* selectPlant({ payload: p }: ReloadDataAction) {
-  yield p && put(reload(p));
+  yield p && put(reload());
 }
 
 function* calculateDatas() {
@@ -108,10 +108,6 @@ function* delDataCascadeThenCalculate({ payload }: DeleteDataAction): any {
   }
   yield put(modify(finalMods));
   yield put(erase(finalDels));
-  yield put(_saveData(finalMods));
-  yield put(_delData(finalDels));
-  yield put(calculate());
-  yield put(reloadSuccess());
 }
 
 function* saveDataCascadeThenCalculate({ payload }: SaveDataAction) {
@@ -119,10 +115,7 @@ function* saveDataCascadeThenCalculate({ payload }: SaveDataAction) {
     yield put(createNew(payload));
   } else {
     yield put(modify(payload));
-    yield put(_saveData(payload));
-    yield put(calculate());
   }
-  yield put(reloadSuccess());
 }
 
 function* dataSaga() {

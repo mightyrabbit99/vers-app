@@ -1,17 +1,16 @@
-from django.http import HttpRequest, HttpResponseRedirect, JsonResponse
+from django.http import HttpRequest, HttpResponseRedirect
 from django.views.generic import ListView
 from django.views import View
 from django.urls import reverse
 from django.shortcuts import render, get_object_or_404
-from django.http.response import HttpResponse
-from rest_framework import status, viewsets, generics, parsers
-from rest_framework.decorators import api_view
+from rest_framework import status, viewsets, generics
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 import django.middleware.csrf as csrf
 
 from . import models
 from . import serializers
+from . import logger as lg
 from . import permissions as my_perms
 from rest_framework import permissions
 
@@ -73,6 +72,8 @@ def get_objects(view):
         return models.Department.objects
     elif view == "job":
         return models.Job.objects
+    elif view == "forecast":
+        return models.ForecastPack.objects
 
 
 def get_group(view, user):
@@ -90,10 +91,13 @@ def get_group(view, user):
         return user.vers_user.department_group
     elif view == "job":
         return user.vers_user.job_group
+    elif view == "forecast":
+        return user.vers_user.forecast
 
 
 NONE = 3
 USER = 2
+OWNER = 1
 
 
 def perform_get_queryset(view, user):
@@ -127,6 +131,14 @@ def has_create_permission(view, user):
     return True
 
 
+def has_update_permission(view, user):
+    return has_create_permission(view, user)
+
+
+def has_delete_permission(view, user):
+    return has_create_permission(view, user)
+
+
 class PlantView(viewsets.ModelViewSet):
     txt = "plant"
     serializer_class = serializers.PlantSerializer
@@ -147,18 +159,29 @@ class PlantView(viewsets.ModelViewSet):
         else:
             serializer.save()
 
+    def update(self, request, *args, **kwargs):
+        if has_update_permission(self.txt, self.request.user):
+            return super().update(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def destroy(self, request, *args, **kwargs):
+        if has_delete_permission(self.txt, self.request.user):
+            return super().destroy(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
     def perform_destroy(self, instance):
-        lg = models.Log(type=models.Log.TypeChoices.DELETE,
-                        data_type=models.Log.DataChoices.PLANT,
-                        user=self.request.user)
-        lg.save()
+        lg.log_delete(
+            data_type=lg.PLANT,
+            user=self.request.user, origin=instance).save()
         return super().perform_destroy(instance)
 
 
 class SectorView(viewsets.ModelViewSet):
     txt = "sector"
     serializer_class = serializers.SectorSerializer
-    queryset = models.Sector.objects.all()
+    permission_classes = [my_perms.VersPermission1]
 
     def get_queryset(self):
         return perform_get_queryset(self.txt, self.request.user)
@@ -175,17 +198,29 @@ class SectorView(viewsets.ModelViewSet):
         else:
             serializer.save()
 
+    def update(self, request, *args, **kwargs):
+        if has_update_permission(self.txt, self.request.user):
+            return super().update(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def destroy(self, request, *args, **kwargs):
+        if has_delete_permission(self.txt, self.request.user):
+            return super().destroy(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
     def perform_destroy(self, instance):
-        lg = models.Log(type=models.Log.TypeChoices.DELETE,
-                        data_type=models.Log.DataChoices.SECTOR,
-                        user=self.request.user)
-        lg.save()
+        lg.log_delete(
+            data_type=lg.SECTOR,
+            user=self.request.user, origin=instance).save()
         return super().perform_destroy(instance)
+
 
 class SubsectorView(viewsets.ModelViewSet):
     txt = "subsector"
     serializer_class = serializers.SubsectorSerializer
-    queryset = models.Subsector.objects.all()
+    permission_classes = [my_perms.VersPermission1]
 
     def get_queryset(self):
         return perform_get_queryset(self.txt, self.request.user)
@@ -201,12 +236,30 @@ class SubsectorView(viewsets.ModelViewSet):
             serializer.save(owner=self.request.user)
         else:
             serializer.save()
+
+    def update(self, request, *args, **kwargs):
+        if has_update_permission(self.txt, self.request.user):
+            return super().update(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def destroy(self, request, *args, **kwargs):
+        if has_delete_permission(self.txt, self.request.user):
+            return super().destroy(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def perform_destroy(self, instance):
+        lg.log_delete(
+            data_type=lg.SUBSECTOR,
+            user=self.request.user, origin=instance).save()
+        return super().perform_destroy(instance)
 
 
 class SkillView(viewsets.ModelViewSet):
     txt = "skill"
     serializer_class = serializers.SkillSerializer
-    queryset = models.Skill.objects.all()
+    permission_classes = [my_perms.VersPermission1]
 
     def get_queryset(self):
         return perform_get_queryset(self.txt, self.request.user)
@@ -222,6 +275,24 @@ class SkillView(viewsets.ModelViewSet):
             serializer.save(owner=self.request.user)
         else:
             serializer.save()
+
+    def update(self, request, *args, **kwargs):
+        if has_update_permission(self.txt, self.request.user):
+            return super().update(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def destroy(self, request, *args, **kwargs):
+        if has_delete_permission(self.txt, self.request.user):
+            return super().destroy(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def perform_destroy(self, instance):
+        lg.log_delete(
+            data_type=lg.SKILL,
+            user=self.request.user, origin=instance).save()
+        return super().perform_destroy(instance)
 
 
 class DepartmentView(viewsets.ModelViewSet):
@@ -244,11 +315,29 @@ class DepartmentView(viewsets.ModelViewSet):
         else:
             serializer.save()
 
+    def update(self, request, *args, **kwargs):
+        if has_update_permission(self.txt, self.request.user):
+            return super().update(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def destroy(self, request, *args, **kwargs):
+        if has_delete_permission(self.txt, self.request.user):
+            return super().destroy(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def perform_destroy(self, instance):
+        lg.log_delete(
+            data_type=lg.DEPARTMENT,
+            user=self.request.user, origin=instance).save()
+        return super().perform_destroy(instance)
+
 
 class EmployeeView(viewsets.ModelViewSet):
     txt = "employee"
     serializer_class = serializers.EmployeeSerializer
-    queryset = models.Employee.objects.all()
+    permission_classes = [my_perms.VersPermission1]
 
     def get_queryset(self):
         return perform_get_queryset(self.txt, self.request.user)
@@ -265,17 +354,31 @@ class EmployeeView(viewsets.ModelViewSet):
         else:
             serializer.save()
 
+    def update(self, request, *args, **kwargs):
+        if has_update_permission(self.txt, self.request.user):
+            return super().update(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
     def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        user = instance.user
-        if user:
-            user.delete()
-        return super().destroy(self, request, *args, **kwargs)
+        if has_delete_permission(self.txt, self.request.user):
+            return super().destroy(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def perform_destroy(self, instance):
+        lg.log_delete(
+            data_type=lg.EMPLOYEE,
+            user=self.request.user, origin=instance).save()
+        if instance.user:
+            instance.user.delete()
+        return super().perform_destroy(instance)
 
 
 class JobView(viewsets.ModelViewSet):
     txt = "job"
     serializer_class = serializers.JobSerializer
+    permission_classes = [my_perms.VersPermission1]
 
     def get_queryset(self):
         return perform_get_queryset(self.txt, self.request.user)
@@ -291,6 +394,24 @@ class JobView(viewsets.ModelViewSet):
             serializer.save(owner=self.request.user)
         else:
             serializer.save()
+
+    def update(self, request, *args, **kwargs):
+        if has_update_permission(self.txt, self.request.user):
+            return super().update(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def destroy(self, request, *args, **kwargs):
+        if has_delete_permission(self.txt, self.request.user):
+            return super().destroy(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def perform_destroy(self, instance):
+        lg.log_delete(
+            data_type=lg.JOB,
+            user=self.request.user, origin=instance).save()
+        return super().perform_destroy(instance)
 
 
 class LogList(generics.ListAPIView):
@@ -300,10 +421,42 @@ class LogList(generics.ListAPIView):
 
 
 class ForecastView(viewsets.ModelViewSet):
+    txt = "forecast"
     serializer_class = serializers.ForecastPackSerializer
+    permission_classes = [my_perms.VersPermission1]
 
     def get_queryset(self):
-        return models.ForecastPack.objects.all()
+        return perform_get_queryset(self.txt, self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        if has_create_permission(self.txt, self.request.user):
+            return super().create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def perform_create(self, serializer):
+        if self.request.user.is_authenticated:
+            serializer.save(owner=self.request.user)
+        else:
+            serializer.save()
+
+    def update(self, request, *args, **kwargs):
+        if has_update_permission(self.txt, self.request.user):
+            return super().update(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def destroy(self, request, *args, **kwargs):
+        if has_delete_permission(self.txt, self.request.user):
+            return super().destroy(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def perform_destroy(self, instance):
+        lg.log_delete(
+            data_type=lg.FORECAST,
+            user=self.request.user, origin=instance).save()
+        return super().perform_destroy(instance)
 
 # main page
 

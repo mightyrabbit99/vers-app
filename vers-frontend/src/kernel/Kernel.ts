@@ -82,96 +82,131 @@ class Kernel {
     await this.logStore.refresh();
   };
 
+  private _log = (desc: string, ...data: any) => {
+    this.personalLogs = [
+      ...this.personalLogs,
+      { desc, time: Date.now(), vals: data },
+    ];
+  };
+
   private _saveNew = async (t: Item) => {
+    let ans;
     switch (t._type) {
       case ItemType.Plant:
-        return await this.plantStore.submitNew(t as Plant);
+        ans = await this.plantStore.submitNew(t as Plant);
+        break;
       case ItemType.Sector:
-        return await this.secStore.submitNew(t as Sector);
+        ans = await this.secStore.submitNew(t as Sector);
+        break;
       case ItemType.Subsector:
-        return await this.subsecStore.submitNew(t as Subsector);
+        ans = await this.subsecStore.submitNew(t as Subsector);
+        break;
       case ItemType.Skill:
-        return await this.skillStore.submitNew(t as Skill);
+        ans = await this.skillStore.submitNew(t as Skill);
+        break;
       case ItemType.Department:
-        return await this.deptStore.submitNew(t as Department);
+        ans = await this.deptStore.submitNew(t as Department);
+        break;
       case ItemType.Employee:
-        return await this.empStore.submitNew(t as Employee);
+        ans = await this.empStore.submitNew(t as Employee);
+        break;
       case ItemType.Job:
-        return await this.jobStore.submitNew(t as Job);
+        ans = await this.jobStore.submitNew(t as Job);
+        break;
       case ItemType.Forecast:
-        return await this.forecastStore.submitNew(t as Forecast);
+        ans = await this.forecastStore.submitNew(t as Forecast);
+        break;
       default:
         return { success: false, data: {} };
     }
+
+    return ans;
   };
 
   public saveNew = async (t: Item) => {
-    let newMyLog: MyLog = { desc: "Create", time: Date.now(), vals: [] };
-    newMyLog.vals.push(await this._saveNew(t));
-    this.personalLogs.push(newMyLog);
-    return newMyLog.vals[0];
+    let a = await this._saveNew(t);
+    this._log("Create", a);
+    return a;
   };
 
   private _save = async (t: Item) => {
+    let ans;
     switch (t._type) {
       case ItemType.Plant:
-        return await this.plantStore.submit(t as Plant);
+        ans = await this.plantStore.submit(t as Plant);
+        break;
       case ItemType.Sector:
-        return await this.secStore.submit(t as Sector);
+        ans = await this.secStore.submit(t as Sector);
+        break;
       case ItemType.Subsector:
-        return await this.subsecStore.submit(t as Subsector);
+        ans = await this.subsecStore.submit(t as Subsector);
+        break;
       case ItemType.Skill:
-        return await this.skillStore.submit(t as Skill);
+        ans = await this.skillStore.submit(t as Skill);
+        break;
       case ItemType.Department:
-        return await this.deptStore.submit(t as Department);
+        ans = await this.deptStore.submit(t as Department);
+        break;
       case ItemType.Employee:
         return await this.empStore.submit(t as Employee);
       case ItemType.Job:
-        return await this.jobStore.submit(t as Job);
+        ans = await this.jobStore.submit(t as Job);
+        break;
       case ItemType.Forecast:
-        return await this.forecastStore.submit(t as Forecast);
+        ans = await this.forecastStore.submit(t as Forecast);
+        break;
       default:
         return { success: false, data: {} };
     }
+    return ans;
   };
 
   public save = async (t: Item) => {
-    let newMyLog: MyLog = { desc: "Save", time: Date.now(), vals: [] };
-    newMyLog.vals.push(await this._save(t));
-    this.personalLogs.push(newMyLog);
-    return newMyLog.vals[0];
+    let a = await this._save(t);
+    this._log("Save", a);
+    return a;
   };
 
   private _del = async (t: Item) => {
+    let ans;
     switch (t._type) {
       case ItemType.Plant:
-        return await this.plantStore.remove(t as Plant);
+        ans = await this.plantStore.remove(t as Plant);
+        break;
       case ItemType.Sector:
-        return await this.secStore.remove(t as Sector);
+        ans = await this.secStore.remove(t as Sector);
+        break;
       case ItemType.Subsector:
-        return await this.subsecStore.remove(t as Subsector);
+        ans = await this.subsecStore.remove(t as Subsector);
+        break;
       case ItemType.Skill:
-        return await this.skillStore.remove(t as Skill);
+        ans = await this.skillStore.remove(t as Skill);
+        break;
       case ItemType.Department:
-        return await this.deptStore.remove(t as Department);
+        ans = await this.deptStore.remove(t as Department);
+        break;
       case ItemType.Employee:
-        return await this.empStore.remove(t as Employee);
+        ans = await this.empStore.remove(t as Employee);
+        break;
       case ItemType.Job:
-        return await this.jobStore.remove(t as Job);
+        ans = await this.jobStore.remove(t as Job);
+        break;
       case ItemType.Forecast:
-        return await this.forecastStore.remove(t as Forecast);
+        ans = await this.forecastStore.remove(t as Forecast);
+        break;
       case ItemType.Log:
-        return await this.logStore.remove(t as Log);
+        ans = await this.logStore.remove(t as Log);
+        break;
       default:
         return { success: false, data: {} };
     }
+    return ans;
   };
 
   public del = async (t: Item) => {
-    let newMyLog: MyLog = { desc: "Delete", time: Date.now(), vals: [] };
-    newMyLog.vals.push(await this._del(t));
-    this.personalLogs.push(newMyLog);
-    return newMyLog.vals[0];
+    let a = await this._del(t);
+    this._log("Delete", a);
+    return a;
   };
 
   public calcChanges = (payload: Data) => {
@@ -343,10 +378,9 @@ class Kernel {
     type: ItemType,
     objs: ExcelObj[]
   ) => {
-    let newMyLog: MyLog = { desc: "Excel Submit", time: Date.now(), vals: [] };
-    newMyLog.vals = (await this._submitExcel(plantId, type, objs)) ?? [];
-    this.personalLogs.push(newMyLog);
-    return newMyLog.vals;
+    let resLst = (await this._submitExcel(plantId, type, objs)) ?? [];
+    this._log("Submit", resLst);
+    return resLst;
   };
 
   private genSectorExcel = async (items: Sector[]) => {

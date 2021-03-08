@@ -115,6 +115,7 @@ const ItemMainList: React.FC<IMainListProps> = (props) => {
                 ) : (
                   <TableCell
                     padding="checkbox"
+                    key={idx}
                     align={idx === cols.length - 1 ? "right" : "left"}
                   >
                     {x.extractor(item)}

@@ -2,7 +2,7 @@ import { Data } from "./Data";
 
 enum LogType {
   CREATE,
-  EDIT,
+  UPDATE,
   DELETE,
 }
 
@@ -10,10 +10,11 @@ enum DataType {
   PLANT,
   SECTOR,
   SUBSECTOR,
+  SKILL,
   DEPARTMENT,
   EMPLOYEE,
-  SKILL,
   JOB,
+  FORECAST,
 }
 
 interface LogData extends Data {
@@ -21,7 +22,7 @@ interface LogData extends Data {
   data_type: DataType;
   user: number;
   timestamp: string;
-  desc: string;
+  desc: any;
 }
 
 export type { LogData };

@@ -10,7 +10,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 
-import { Log, MyLog } from "src/kernel";
+import { Log, MyLog, LogType, DataType } from "src/kernel";
 import { getData } from "src/selectors";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -36,6 +36,36 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontWeight: theme.typography.fontWeightRegular,
   },
 }));
+
+const genDescStr = (log: Log) => {
+  const genActionStr = (x: LogType) => {
+    switch (x) {
+      case LogType.CREATE:
+        return "Created";
+      case LogType.UPDATE:
+        return "Updated";
+      case LogType.DELETE:
+        return "Deleted";
+      default:
+        return "";
+    }
+  }
+  const genDataTypeStr = (x: DataType) => {
+    switch (x) {
+      case DataType.DEPARTMENT:
+        return "Department";
+      case DataType.EMPLOYEE:
+        return "Employee";
+      case DataType.PLANT:
+        return "Plant";
+      case DataType.SECTOR:
+        return "Sector";
+      case DataType.SUBSECTOR:
+        return "Subsector";
+    }
+  }
+  return `${genActionStr(log.type)} ${genDataTypeStr(log.dataType)}`;
+}
 
 interface IChangeLogViewProps {}
 
@@ -66,7 +96,7 @@ const ChangeLogView: React.FunctionComponent<IChangeLogViewProps> = (props) => {
           id="panel1a-header"
           expandIcon={<ExpandMoreIcon />}
         >
-          <Typography className={classes.heading}>{log.desc}</Typography>
+          <Typography className={classes.heading}>{genDescStr(log)}</Typography>
         </AccordionSummary>
       </Accordion>
     );

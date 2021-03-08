@@ -1,5 +1,4 @@
 import * as React from "react";
-import _ from "lodash";
 import Grid from "@material-ui/core/Grid";
 
 import { Employee, Skill } from "src/kernel";

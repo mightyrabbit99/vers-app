@@ -39,6 +39,9 @@ class VersUser(models.Model):
     skill_group = models.IntegerField(
         choices=PERMISSION_GROUP_CHOICES, default=3)
 
+    forecast_group = models.IntegerField(
+        choices=PERMISSION_GROUP_CHOICES, default=3)
+
     class Meta:
         db_table = "vers_users"
 
@@ -212,20 +215,20 @@ class Log(models.Model):
         DELETE = 2, 'DELETE'
 
     class DataChoices(models.IntegerChoices):
-        PLANT = 1, 'PLANT'
-        SECTOR = 2, 'SECTOR'
-        SUBSECTOR = 3, 'SUBSECTOR'
-        SKILL = 4, 'SKILL'
-        DEPARTMENT = 5, 'DEPARTMENT'
-        EMPLOYEE = 6, 'EMPLOYEE'
-        JOB = 7, 'JOB'
-        FORECAST = 8, 'FORECAST'
+        PLANT = 0, 'PLANT'
+        SECTOR = 1, 'SECTOR'
+        SUBSECTOR = 2, 'SUBSECTOR'
+        SKILL = 3, 'SKILL'
+        DEPARTMENT = 4, 'DEPARTMENT'
+        EMPLOYEE = 5, 'EMPLOYEE'
+        JOB = 6, 'JOB'
+        FORECAST = 7, 'FORECAST'
 
     type = models.IntegerField(choices=TypeChoices.choices)
     data_type = models.IntegerField(choices=DataChoices.choices)
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     timestamp = models.DateTimeField(auto_now=True)
-    desc = models.CharField(max_length=100, blank=True)
+    desc = models.JSONField(null=True)
 
     class Meta:
         db_table = 'logs'
@@ -233,6 +236,8 @@ class Log(models.Model):
 
 class ForecastPack(models.Model):
     on = models.DateField(unique=True)
+    owner = models.ForeignKey(
+        User, related_name='forecasts', on_delete=models.SET_NULL, null=True)
 
     class Meta:
         db_table = 'forecast_packs'

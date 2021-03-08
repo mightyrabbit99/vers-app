@@ -77,10 +77,6 @@ const ForecastListWidget: React.FunctionComponent<IForecastListWidgetProps> = (
     onSubmit(data);
     setFormOpen(false);
   };
-  const handleEditOnClick = (id: number) => {
-    setFormData(lst[id]);
-    setFormOpen(true);
-  };
 
   const handleCreateOnClick = () => {
     setFormData(newForecast);
@@ -102,7 +98,12 @@ const ForecastListWidget: React.FunctionComponent<IForecastListWidgetProps> = (
       downloadExcel={downloadExcel}
       uploadExcel={uploadExcel}
     >
-      <ForecastMainList lst={lst} onSubmit={handleSubmit} />
+      <ForecastMainList
+        lst={lst}
+        onSubmit={handleSubmit}
+        selected={selected}
+        selectedOnChange={setSelected}
+      />
       <MyDialog open={formOpen} onClose={handleFormClose}>
         <div className={classes.form}>
           <div className={classes.formTitle}>
