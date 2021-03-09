@@ -32,14 +32,12 @@ interface IEmpSkillListProps {
 const EmpSkillList: React.FunctionComponent<IEmpSkillListProps> = (props) => {
   const classes = useStyles();
   const { item, skillLst, selected = [], onSubmit, selectedOnChange } = props;
-  const [empSkills, setEmpSkills] = React.useState<EmpSkillData[]>([]);
+  const empSkills = item.skills;
+
   const [selectedIds, setSelectedIds] = React.useState<number[]>([]);
   React.useEffect(() => {
     setSelectedIds(selected ?? []);
   }, [selected]);
-  React.useEffect(() => {
-    setEmpSkills(item.skills.map((x) => Object.assign({}, x)));
-  }, [item]);
 
   const handleSelectAll = (e: React.ChangeEvent<any>) => {
     let newSelectedIds: number[];
@@ -72,7 +70,6 @@ const EmpSkillList: React.FunctionComponent<IEmpSkillListProps> = (props) => {
       const { value } = e.target;
       const newSkills = [...item.skills];
       newSkills[idx] = { ...newSkills[idx], level: value };
-      setEmpSkills(newSkills);
       const newEmp: Employee = {
         ...item,
         skills: newSkills,

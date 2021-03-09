@@ -38,7 +38,7 @@ const EmployeeSkillFilter: React.FunctionComponent<IEmployeeSkillFilterProps> = 
 
   const [skills, setSkills] = React.useState<{ [id: number]: Skill }>();
   React.useEffect(() => {
-    !skills && setSkills(skillLst);
+    setSkills((skills) => skills ?? skillLst);
   }, [skillLst]);
 
   return (

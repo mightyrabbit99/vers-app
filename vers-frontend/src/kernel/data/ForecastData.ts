@@ -1,6 +1,6 @@
 import { Data } from "./Data";
 
-interface FData extends Data {
+interface FData {
   n: number;
   val: number;
 }

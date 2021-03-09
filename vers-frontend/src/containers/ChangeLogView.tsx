@@ -2,6 +2,9 @@ import * as React from "react";
 import { useSelector } from "react-redux";
 
 import { Theme, makeStyles } from "@material-ui/core/styles";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
@@ -49,7 +52,7 @@ const genDescStr = (log: Log) => {
       default:
         return "";
     }
-  }
+  };
   const genDataTypeStr = (x: DataType) => {
     switch (x) {
       case DataType.DEPARTMENT:
@@ -62,16 +65,40 @@ const genDescStr = (log: Log) => {
         return "Sector";
       case DataType.SUBSECTOR:
         return "Subsector";
+      case DataType.JOB:
+        return "Job";
+      case DataType.FORECAST:
+        return "Forecast";
+      case DataType.SKILL:
+        return "Skill";
+      default:
+        return "";
     }
-  }
+  };
   return `${genActionStr(log.type)} ${genDataTypeStr(log.dataType)}`;
-}
+};
 
 interface IChangeLogViewProps {}
 
 const ChangeLogView: React.FunctionComponent<IChangeLogViewProps> = (props) => {
   const classes = useStyles();
   const { logs, personalLogs } = useSelector(getData);
+
+  const genSuccessDetail = (data: any) => {
+    return "";
+  };
+
+  const genFailDetail = (data: any) => {
+    return (
+      <React.Fragment>
+        {Object.values(data)
+          .flatMap((x) => x)
+          .map((x, idx) => (
+            <Typography key={idx}>{`${x}`}</Typography>
+          ))}
+      </React.Fragment>
+    );
+  };
 
   const genMyLogCard = (log: MyLog) => {
     return (
@@ -82,23 +109,34 @@ const ChangeLogView: React.FunctionComponent<IChangeLogViewProps> = (props) => {
           expandIcon={<ExpandMoreIcon />}
         >
           <Typography className={classes.heading}>{log.desc}</Typography>
-          <AccordionDetails></AccordionDetails>
         </AccordionSummary>
+        <AccordionDetails>
+            <List>
+              {log.vals.map((x, idx) => {
+                return (
+                  <ListItem key={idx}>
+                    <ListItemText
+                      primary={x.success ? "Success" : "Failed"}
+                      secondary={
+                        x.success
+                          ? genSuccessDetail(x.data)
+                          : genFailDetail(x.data)
+                      }
+                    />
+                  </ListItem>
+                );
+              })}
+            </List>
+          </AccordionDetails>
       </Accordion>
     );
   };
 
   const genLogCard = (log: Log) => {
     return (
-      <Accordion>
-        <AccordionSummary
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-          expandIcon={<ExpandMoreIcon />}
-        >
-          <Typography className={classes.heading}>{genDescStr(log)}</Typography>
-        </AccordionSummary>
-      </Accordion>
+      <ListItem>
+        <Typography className={classes.heading}>{genDescStr(log)}</Typography>
+      </ListItem>
     );
   };
 
@@ -119,9 +157,9 @@ const ChangeLogView: React.FunctionComponent<IChangeLogViewProps> = (props) => {
           <Typography component="h2" variant="h6" color="primary" gutterBottom>
             All Changes
           </Typography>
-          <div className={classes.content}>
+          <List className={classes.content}>
             {Object.values(logs).map(genLogCard)}
-          </div>
+          </List>
         </Paper>
       </Grid>
     </Grid>

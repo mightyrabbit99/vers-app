@@ -193,6 +193,7 @@ const dummyEmpDatas: EmployeeData[] = [
         employee_group: 1,
         job_group: 1,
         skill_group: 1,
+        forecast_group: 1,
       }
     }
   },

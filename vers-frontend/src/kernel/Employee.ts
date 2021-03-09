@@ -1,5 +1,5 @@
 import { EmployeeData, EmpSkillData } from "./data";
-import { UserData } from "./data/UserData";
+import { UserData, AccessLevel } from "./data/UserData";
 import Fetcher from "./Fetcher";
 import store, { Item, ItemType } from "./Store";
 
@@ -108,13 +108,13 @@ const generator = (init?: any): Employee => ({
     is_active: false,
     ...init?.user,
     vers_user: {
-      plant_group: 1,
-      sector_group: 1,
-      subsector_group: 1,
-      department_group: 1,
-      employee_group: 1,
-      job_group: 1,
-      skill_group: 1,
+      plant_group: AccessLevel.NONE,
+      sector_group: AccessLevel.NONE,
+      subsector_group: AccessLevel.NONE,
+      department_group: AccessLevel.NONE,
+      employee_group: AccessLevel.NONE,
+      job_group: AccessLevel.NONE,
+      skill_group: AccessLevel.NONE,
       ...init?.user?.vers_user,
     }
   }
@@ -125,4 +125,5 @@ const hasher = (t: Employee) => t.sesaId.trim().toLowerCase();
 const EmployeeStore = store<Employee>(get, post, put, del, generator, hasher);
 
 export type { Employee, EmpSkillData };
+export { AccessLevel };
 export default EmployeeStore;

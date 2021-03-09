@@ -6,35 +6,53 @@ import ReplayIcon from "@material-ui/icons/Replay";
 import { Forecast } from "src/kernel";
 import MainList, { Col } from "./MainList";
 
+type FL = { [id: number]: Forecast };
+
 interface IForecastMainListProps {
-  lst: { [id: number]: Forecast };
+  lst: FL;
   onSubmit: (f: Forecast) => void;
   selected?: number[];
   selectedOnChange?: (ids: number[]) => void;
 }
+
+interface IForecastMainListState {
+  stateLst: FL;
+  chgLst: number[];
+}
+
+const initState: IForecastMainListState = {
+  stateLst: {},
+  chgLst: [],
+};
 
 const ForecastMainList: React.FunctionComponent<IForecastMainListProps> = (
   props
 ) => {
   const { lst, onSubmit, selected, selectedOnChange } = props;
 
-  const [stateLst, setStateLst] = React.useState(lst);
-  const [noChgLst, setNoChgLst] = React.useState<{ [id: number]: boolean }>({});
-  React.useEffect(() => {
-    setStateLst({
-      ...stateLst,
-      ...Object.fromEntries(
-        Object.entries(lst).filter(([x, y]) =>
-          y.id in noChgLst ? noChgLst[y.id] : true
-        )
-      ),
+  const [state, setState] = React.useState<IForecastMainListState>(initState);
+  const { chgLst, stateLst } = state;
+  const setChgLst = (lst: number[]) =>
+    setState({
+      ...state,
+      chgLst: lst,
     });
-    setNoChgLst(
-      Object.fromEntries(
-        Object.values(lst).map((x) => [x.id, noChgLst[x.id] ?? true])
-      )
-    );
-  }, [lst]);
+  const setStateLst = (lst: FL) =>
+    setState({
+      ...state,
+      stateLst: lst,
+    });
+
+  React.useEffect(
+    () =>
+      setState((state) => ({
+        chgLst: state.chgLst.filter((x) => x in lst),
+        stateLst: Object.fromEntries(
+          Object.entries(lst).filter(([x, y]) => !state.chgLst.includes(y.id))
+        ),
+      })),
+    [lst]
+  );
 
   const handleForecastRealChg = (n: number, p: Forecast) => (
     e: React.ChangeEvent<any>
@@ -43,7 +61,7 @@ const ForecastMainList: React.FunctionComponent<IForecastMainListProps> = (
     let i = p.forecasts.findIndex((x) => x.n === n);
     let newForecasts = [...p.forecasts];
     if (i === -1) {
-      newForecasts.push({ id: -1, n, val: value });
+      newForecasts.push({ n, val: value });
     } else {
       newForecasts[i] = {
         ...newForecasts[i],
@@ -51,7 +69,16 @@ const ForecastMainList: React.FunctionComponent<IForecastMainListProps> = (
         val: value === "" ? 0.0 : parseFloat(value),
       };
     }
-    setStateLst({ ...stateLst, [p.id]: { ...p, forecasts: newForecasts } });
+    setState({
+      stateLst: {
+        ...stateLst,
+        [p.id]: {
+          ...p,
+          forecasts: newForecasts,
+        },
+      },
+      chgLst: chgLst.includes(p.id) ? chgLst : [...chgLst, p.id],
+    });
   };
 
   const handleForecastChg = (n: number, p: Forecast) => (
@@ -61,7 +88,7 @@ const ForecastMainList: React.FunctionComponent<IForecastMainListProps> = (
     let i = p.forecasts.findIndex((x) => x.n === n);
     let newForecasts = [...p.forecasts];
     if (i === -1) {
-      newForecasts.push({ id: -1, n, val: value });
+      newForecasts.push({ n, val: value });
     } else {
       newForecasts[i] = {
         ...newForecasts[i],
@@ -69,24 +96,32 @@ const ForecastMainList: React.FunctionComponent<IForecastMainListProps> = (
         val: value,
       };
     }
-    setStateLst({ ...stateLst, [p.id]: { ...p, forecasts: newForecasts } });
-    setNoChgLst({ ...noChgLst, [p.id]: false });
+    setState({
+      stateLst: {
+        ...stateLst,
+        [p.id]: {
+          ...p,
+          forecasts: newForecasts,
+        },
+      },
+      chgLst: chgLst.includes(p.id) ? chgLst : [...chgLst, p.id],
+    });
   };
 
   const handleForecastSubmit = (p: Forecast) => () => {
-    setNoChgLst({ ...noChgLst, [p.id]: true });
+    setChgLst(chgLst.filter((x) => x !== p.id));
     onSubmit(p);
   };
 
   const handleForecastReset = (p: Forecast) => () => {
+    setChgLst(chgLst.filter((x) => x !== p.id));
     setStateLst({ ...stateLst, [p.id]: lst[p.id] });
-    setNoChgLst({ ...noChgLst, [p.id]: true });
   };
 
   const getForecastVal = (n: number, p: Forecast) => {
     let i = p.forecasts.findIndex((x) => x.n === n);
     return i === -1 ? "" : p.forecasts[i].val;
-  }
+  };
 
   const cols: Col[] = [
     {
@@ -165,7 +200,7 @@ const ForecastMainList: React.FunctionComponent<IForecastMainListProps> = (
     {
       extractor: (p: Forecast) => (
         <IconButton
-          disabled={noChgLst[p.id]}
+          disabled={!chgLst.includes(p.id)}
           onClick={handleForecastReset(p)}
           color="primary"
         >
@@ -176,7 +211,7 @@ const ForecastMainList: React.FunctionComponent<IForecastMainListProps> = (
     {
       extractor: (p: Forecast) => (
         <IconButton
-          disabled={noChgLst[p.id]}
+          disabled={!chgLst.includes(p.id)}
           onClick={handleForecastSubmit(p)}
           color="primary"
         >

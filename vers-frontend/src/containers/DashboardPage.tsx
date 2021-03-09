@@ -48,6 +48,7 @@ import { clearFeedback } from "src/slices/sync";
 import { logout } from "src/slices/session";
 import { selPlant } from "src/slices/data";
 import { getData, getSession } from "src/selectors";
+import { AccessLevel } from "src/kernel";
 
 
 function Copyright() {
@@ -230,19 +231,19 @@ const Dashboard: React.FC = () => {
     if (user?.is_superuser) return false;
     switch (i) {
       case DashboardView.Plant:
-        return user?.vers_user.plant_group === 3;
+        return user?.vers_user.plant_group === AccessLevel.NONE;
       case DashboardView.Sector:
-        return user?.vers_user.sector_group === 3;
+        return user?.vers_user.sector_group === AccessLevel.NONE;
       case DashboardView.Subsector:
-        return user?.vers_user.subsector_group === 3;
+        return user?.vers_user.subsector_group === AccessLevel.NONE;
       case DashboardView.Skill:
-        return user?.vers_user.skill_group === 3;
+        return user?.vers_user.skill_group === AccessLevel.NONE;
       case DashboardView.Department:
-        return user?.vers_user.department_group === 3;
+        return user?.vers_user.department_group === AccessLevel.NONE;
       case DashboardView.Employee:
-        return user?.vers_user.employee_group === 3;
+        return user?.vers_user.employee_group === AccessLevel.NONE;
       case DashboardView.Job:
-        return user?.vers_user.job_group === 3;
+        return user?.vers_user.job_group === AccessLevel.NONE;
       case DashboardView.ChangeLog:
         return true;
       case DashboardView.AccessCtrl:

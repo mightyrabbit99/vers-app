@@ -11,7 +11,7 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import Checkbox from "@material-ui/core/Checkbox";
 
-import { Employee } from "src/kernel";
+import { AccessLevel, Employee } from "src/kernel";
 
 
 interface IEmployeeAccessCtrlListProps {
@@ -64,9 +64,9 @@ const EmployeeAccessCtrlList: React.FC<IEmployeeAccessCtrlListProps> = (
             onChange={handleChange}
             disabled={!onSubmit || emp.user.is_superuser}
           >
-            <MenuItem value={1}>Owner</MenuItem>
-            <MenuItem value={2}>User</MenuItem>
-            <MenuItem value={3}>None</MenuItem>
+            <MenuItem value={AccessLevel.NONE}>None</MenuItem>
+            <MenuItem value={AccessLevel.EDIT}>Edit</MenuItem>
+            <MenuItem value={AccessLevel.VIEW}>View</MenuItem>
           </Select>
         </FormControl>
       );

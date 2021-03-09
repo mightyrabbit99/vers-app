@@ -53,6 +53,9 @@ const EmployeeSkillWidget: React.FunctionComponent<IEmployeeSkillWidgetProps> = 
   const classes = useStyles();
   const { lst, skillLst, onSubmit } = props;
   const [sel, setSel] = React.useState<Employee>();
+  React.useEffect(() => {
+    setSel(sel => sel && sel.id in lst ? lst[sel.id] : undefined);
+  }, [lst]);
 
   const [addLstOpen, setAddLstOpen] = React.useState(false);
   const [availSkills, setAvailSkills] = React.useState<Skill[]>([]);
@@ -65,7 +68,7 @@ const EmployeeSkillWidget: React.FunctionComponent<IEmployeeSkillWidgetProps> = 
       .filter(([k, v]) => !skillIds.includes(v.id))
       .map((x) => x[1]);
     setAvailSkills(newAvailSkills);
-  }, [sel, lst, skillLst]);
+  }, [sel, skillLst]);
 
   const handleListItemClick = (event: React.ChangeEvent<any>, i: number) => {
     setSel(lst[i]);
