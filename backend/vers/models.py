@@ -9,38 +9,37 @@ def up_path(path):
 
 
 class VersUser(models.Model):
-    PERMISSION_GROUP_CHOICES = [
-        (1, 'owner'),
-        (2, 'user'),
-        (3, 'none'),
-    ]
-    # TODO
+    class PermissionGroupChoices(models.IntegerChoices):
+        EDIT = 0, 'OWNER'
+        VIEW = 1, 'VIEW'
+        NONE = 2, 'NONE'
+
     user = models.OneToOneField(
         User, related_name='vers_user', on_delete=models.CASCADE)
 
     # able to create,  delete, edit plant/sector/subsectors
     plant_group = models.IntegerField(
-        choices=PERMISSION_GROUP_CHOICES, default=3)
+        choices=PermissionGroupChoices.choices, default=PermissionGroupChoices.NONE)
     sector_group = models.IntegerField(
-        choices=PERMISSION_GROUP_CHOICES, default=3)
+        choices=PermissionGroupChoices.choices, default=PermissionGroupChoices.NONE)
     subsector_group = models.IntegerField(
-        choices=PERMISSION_GROUP_CHOICES, default=3)
+        choices=PermissionGroupChoices.choices, default=PermissionGroupChoices.NONE)
     department_group = models.IntegerField(
-        choices=PERMISSION_GROUP_CHOICES, default=3)
+        choices=PermissionGroupChoices.choices, default=PermissionGroupChoices.NONE)
     # able to create, delete, edit employees. assign skills to employees
     employee_group = models.IntegerField(
-        choices=PERMISSION_GROUP_CHOICES, default=3)
+        choices=PermissionGroupChoices.choices, default=PermissionGroupChoices.NONE)
 
     # able to create, delete, edit jobs. assign skills to jobs
     job_group = models.IntegerField(
-        choices=PERMISSION_GROUP_CHOICES, default=3)
+        choices=PermissionGroupChoices.choices, default=PermissionGroupChoices.NONE)
 
     # able to create, delete, edit skills. assign skills to employee / jobs
     skill_group = models.IntegerField(
-        choices=PERMISSION_GROUP_CHOICES, default=3)
+        choices=PermissionGroupChoices.choices, default=PermissionGroupChoices.NONE)
 
     forecast_group = models.IntegerField(
-        choices=PERMISSION_GROUP_CHOICES, default=3)
+        choices=PermissionGroupChoices.choices, default=PermissionGroupChoices.NONE)
 
     class Meta:
         db_table = "vers_users"
