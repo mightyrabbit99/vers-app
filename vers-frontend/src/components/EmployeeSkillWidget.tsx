@@ -52,15 +52,15 @@ const EmployeeSkillWidget: React.FunctionComponent<IEmployeeSkillWidgetProps> = 
 ) => {
   const classes = useStyles();
   const { lst, skillLst, onSubmit } = props;
-  const [sel, setSel] = React.useState<number>(-1);
+  const [sel, setSel] = React.useState<Employee>();
 
   const [addLstOpen, setAddLstOpen] = React.useState(false);
   const [availSkills, setAvailSkills] = React.useState<Skill[]>([]);
   const [selectedLst, setSelectedLst] = React.useState<number[]>([]);
 
   React.useEffect(() => {
-    if (sel === -1) return;
-    let skillIds = lst[sel].skills.map((x) => x.skill);
+    if (!sel) return;
+    let skillIds = sel.skills.map((x) => x.skill);
     let newAvailSkills = Object.entries(skillLst)
       .filter(([k, v]) => !skillIds.includes(v.id))
       .map((x) => x[1]);
@@ -68,7 +68,7 @@ const EmployeeSkillWidget: React.FunctionComponent<IEmployeeSkillWidgetProps> = 
   }, [sel, lst, skillLst]);
 
   const handleListItemClick = (event: React.ChangeEvent<any>, i: number) => {
-    setSel(i);
+    setSel(lst[i]);
     setSelectedLst([]);
   };
 
@@ -77,8 +77,8 @@ const EmployeeSkillWidget: React.FunctionComponent<IEmployeeSkillWidgetProps> = 
     setAddLstOpen(true);
   };
   const handleDeleteOnClick = () => {
-    if (sel === -1) return;
-    let emp = lst[sel];
+    if (!sel) return;
+    let emp = sel;
     let newEmp = {
       ...emp,
       skills: emp.skills.filter((x) => !selectedLst.includes(x.id)),
@@ -88,8 +88,8 @@ const EmployeeSkillWidget: React.FunctionComponent<IEmployeeSkillWidgetProps> = 
   };
 
   const handleAddSkill = (newSkills: Skill[]) => {
-    if (sel === -1) return;
-    let emp = lst[sel];
+    if (!sel) return;
+    let emp = sel;
     let newEmp = {
       ...emp,
       skills: [
@@ -110,7 +110,7 @@ const EmployeeSkillWidget: React.FunctionComponent<IEmployeeSkillWidgetProps> = 
   const genListItem = (e: Employee, idx: number) => (
     <ListItem
       button
-      selected={sel === e.id}
+      selected={sel && sel.id === e.id}
       onClick={(event) => handleListItemClick(event, e.id)}
       key={idx}
     >
@@ -134,7 +134,7 @@ const EmployeeSkillWidget: React.FunctionComponent<IEmployeeSkillWidgetProps> = 
             <Button
               variant="contained"
               color="primary"
-              disabled={sel === -1 || availSkills.length === 0 || !onSubmit}
+              disabled={!sel|| availSkills.length === 0 || !onSubmit}
               onClick={handleAddOnClick}
             >
               Add
@@ -142,16 +142,16 @@ const EmployeeSkillWidget: React.FunctionComponent<IEmployeeSkillWidgetProps> = 
             <Button
               variant="contained"
               color="primary"
-              disabled={sel === -1 || selectedLst.length === 0 || !onSubmit}
+              disabled={!sel || selectedLst.length === 0 || !onSubmit}
               onClick={handleDeleteOnClick}
             >
               Delete
             </Button>
           </div>
           <div>
-            {sel !== -1 ? (
+            {sel ? (
               <EmpSkillList
-                item={lst[sel]}
+                item={sel}
                 skillLst={skillLst}
                 onSubmit={onSubmit}
                 selected={selectedLst}

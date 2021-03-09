@@ -79,7 +79,7 @@ const del = async (t: Skill) => {
   return { success: res.status === 204, data: {} };
 };
 
-const hasher = (t: Skill) => t.name;
+const hasher = (t: Skill) => t.name.trim().toLowerCase();
 
 const SkillStore = store<Skill>(get, post, put, del, generator, hasher);
 

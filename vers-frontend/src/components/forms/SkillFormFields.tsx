@@ -52,6 +52,13 @@ const SkillFF: React.FunctionComponent<ISkillFFProps> = (props) => {
     onChange ? onChange(data) : setState({ ...state, [name]: value });
   };
 
+  const getDataProp = (name: string) => {
+    if (name === "subsector") {
+      return choices[name].init === -1 ? "" : choices[name].init;
+    }
+    return state[name];
+  };
+
   const handleChange = (e: React.ChangeEvent<any>) => {
     let { name, value } = e.target;
 
@@ -81,7 +88,7 @@ const SkillFF: React.FunctionComponent<ISkillFFProps> = (props) => {
 
   const genActiveProps = (name: string) => ({
     name,
-    value: state[name],
+    value: getDataProp(name),
     onChange: handleChange,
     error: getFeedback(name) !== "",
     helperText: getFeedback(name),

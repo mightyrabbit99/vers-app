@@ -32,11 +32,14 @@ interface IEmpSkillListProps {
 const EmpSkillList: React.FunctionComponent<IEmpSkillListProps> = (props) => {
   const classes = useStyles();
   const { item, skillLst, selected = [], onSubmit, selectedOnChange } = props;
-  const empSkills = item.skills.map((x) => Object.assign({}, x));
-  const [selectedIds, setSelectedIds] = React.useState<number[]>(selected);
+  const [empSkills, setEmpSkills] = React.useState<EmpSkillData[]>([]);
+  const [selectedIds, setSelectedIds] = React.useState<number[]>([]);
   React.useEffect(() => {
-    setSelectedIds(selected);
+    setSelectedIds(selected ?? []);
   }, [selected]);
+  React.useEffect(() => {
+    setEmpSkills(item.skills.map((x) => Object.assign({}, x)));
+  }, [item]);
 
   const handleSelectAll = (e: React.ChangeEvent<any>) => {
     let newSelectedIds: number[];
@@ -69,6 +72,7 @@ const EmpSkillList: React.FunctionComponent<IEmpSkillListProps> = (props) => {
       const { value } = e.target;
       const newSkills = [...item.skills];
       newSkills[idx] = { ...newSkills[idx], level: value };
+      setEmpSkills(newSkills);
       const newEmp: Employee = {
         ...item,
         skills: newSkills,
@@ -76,6 +80,7 @@ const EmpSkillList: React.FunctionComponent<IEmpSkillListProps> = (props) => {
       onSubmit && onSubmit(newEmp);
     };
 
+    if (!skillLst[x.skill]) return null;
     return (
       <TableRow key={idx}>
         <TableCell padding="checkbox">
@@ -128,7 +133,7 @@ const EmpSkillList: React.FunctionComponent<IEmpSkillListProps> = (props) => {
             <TableCell>Level</TableCell>
           </TableRow>
         </TableHead>
-        <TableBody>{item.skills.map(genSkillTableRow)}</TableBody>
+        <TableBody>{empSkills.map(genSkillTableRow)}</TableBody>
       </Table>
     </TableContainer>
   );

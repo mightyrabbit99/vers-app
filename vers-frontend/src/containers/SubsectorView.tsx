@@ -50,7 +50,7 @@ const SectorView: React.FunctionComponent<ISectorViewProps> = (props) => {
   let [fbOpen, setFbOpen] = React.useState(false);
   const handleUploadExcel = async (file: File) => {
     try {
-      let ans = await ExcelProcessor2.readSectorFile(file);
+      let ans = await ExcelProcessor2.readSubsectorFile(file);
       dispatch(submitExcel({ type: ItemType.Subsector, data: ans }));
     } catch (e) {
       setFbOpen(true);

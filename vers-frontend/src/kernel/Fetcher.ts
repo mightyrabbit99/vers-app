@@ -185,6 +185,7 @@ class Fetcher {
   static postForecast = async (
     data: ForecastData
   ): Promise<Result<ForecastData>> => {
+    console.log(data);
     return await axios.post(forecastUrl, data, Fetcher.getConfig());
   };
 

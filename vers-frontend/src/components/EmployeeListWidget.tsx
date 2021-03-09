@@ -103,6 +103,7 @@ const EmployeeListWidget: React.FunctionComponent<IEmployeeListWidgetProps> = (
       deleteOnClick={handleDeleteOnClick}
       downloadExcel={downloadExcel}
       uploadExcel={uploadExcel}
+      excelTemplateUrl={process.env.REACT_APP_EXCEL_EMPLOYEE_TEMPLATE_URL}
     >
       <EmployeeList
         lst={lst}

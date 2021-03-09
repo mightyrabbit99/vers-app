@@ -97,6 +97,7 @@ const SectorListWidget: React.FunctionComponent<ISectorListWidgetProps> = (
       deleteOnClick={handleDeleteOnClick}
       uploadExcel={uploadExcel}
       downloadExcel={downloadExcel}
+      excelTemplateUrl={process.env.REACT_APP_EXCEL_SECTOR_TEMPLATE_URL}
     >
       <SectorList
         lst={lst}

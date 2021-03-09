@@ -47,6 +47,9 @@ const ForecastForm: React.FunctionComponent<IForecastFormProps> = (props) => {
           onChange={handleChange}
           error={feedback?.on}
           type="month"
+          InputLabelProps={{
+            shrink: true,
+          }}
         />
       </Grid>
       <Grid item xs={12}>

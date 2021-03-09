@@ -113,6 +113,15 @@ const EmployeeFF: React.FunctionComponent<IEmployeeFFProps> = (props) => {
     onChange: handleChange,
   });
 
+  const genProps = (name: string) => ({
+    ...genActiveProps(name),
+    helperText: getFeedback(name),
+    error: getFeedback(name) !== "",
+    InputLabelProps: {
+      shrink: getDataProp(name) !== "",
+    },
+  })
+
   return (
     <form className={classes.root} noValidate autoComplete="off">
       <Grid container spacing={3}>
@@ -123,11 +132,7 @@ const EmployeeFF: React.FunctionComponent<IEmployeeFFProps> = (props) => {
             fullWidth
             autoComplete="id"
             variant="standard"
-            {...genActiveProps("sesaId")}
-            error={getFeedback("sesaId") !== ""}
-            InputLabelProps={{
-              shrink: !!state.sesaId,
-            }}
+            {...genProps("sesaId")}
           />
         </Grid>
         <Grid item xs={8}>
@@ -157,11 +162,7 @@ const EmployeeFF: React.FunctionComponent<IEmployeeFFProps> = (props) => {
             fullWidth
             autoComplete="given-name"
             variant="standard"
-            {...genActiveProps("firstName")}
-            error={getFeedback("firstName") !== ""}
-            InputLabelProps={{
-              shrink: state.firstName !== "",
-            }}
+            {...genProps("firstName")}
           />
         </Grid>
         <Grid item xs={6}>
@@ -171,11 +172,7 @@ const EmployeeFF: React.FunctionComponent<IEmployeeFFProps> = (props) => {
             fullWidth
             autoComplete="family-name"
             variant="standard"
-            {...genActiveProps("lastName")}
-            error={getFeedback("lastName") !== ""}
-            InputLabelProps={{
-              shrink: state.lastName !== "",
-            }}
+            {...genProps("lastName")}
           />
         </Grid>
 
@@ -205,9 +202,7 @@ const EmployeeFF: React.FunctionComponent<IEmployeeFFProps> = (props) => {
           <TextField
             label="Birthday"
             type="date"
-            {...genActiveProps("birthDate")}
-            error={getFeedback("birthDate") !== ""}
-            helperText={getFeedback("birthDate")}
+            {...genProps("birthDate")}
             InputLabelProps={{
               shrink: true,
             }}
@@ -217,9 +212,7 @@ const EmployeeFF: React.FunctionComponent<IEmployeeFFProps> = (props) => {
           <TextField
             label="Hire date"
             type="date"
-            {...genActiveProps("hireDate")}
-            error={getFeedback("hireDate") !== ""}
-            helperText={getFeedback("hireDate")}
+            {...genProps("hireDate")}
             InputLabelProps={{
               shrink: true,
             }}

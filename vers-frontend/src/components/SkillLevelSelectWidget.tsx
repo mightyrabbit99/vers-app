@@ -44,21 +44,17 @@ const SkillLevelSelectWidget: React.FunctionComponent<ISkillLevelSelectWidgetPro
   const { lst, onSubmit } = props;
 
   const [addLstOpen, setAddLstOpen] = React.useState(false);
-  const [avail, setAvail] = React.useState<number[]>([]);
+  const [avail, setAvail] = React.useState<Skill[]>([]);
   const [selected, setSelected] = React.useState<SkillLevel[]>([]);
   React.useEffect(() => {
-    setAvail(Object.values(lst).map((x) => x.id));
+    setAvail(Object.values(lst));
     setSelected([]);
   }, [lst]);
 
   const setAvailSelected = (skillLvls: SkillLevel[]) => {
     setSelected(skillLvls);
     const nums = new Set(skillLvls.map((x) => x.skill.id));
-    setAvail(
-      Object.values(lst)
-        .map((x) => x.id)
-        .filter((x) => !nums.has(x))
-    );
+    setAvail(Object.values(lst).filter((x) => !nums.has(x.id)));
   };
 
   const handleSubmit = (newLst: SkillLevel[]) => {
@@ -68,10 +64,7 @@ const SkillLevelSelectWidget: React.FunctionComponent<ISkillLevelSelectWidgetPro
 
   const handleAddSkill = (addLst: Skill[]) => {
     setAddLstOpen(false);
-    handleSubmit([
-      ...selected,
-      ...addLst.map((x) => ({ skill: x, level: 1 })),
-    ]);
+    handleSubmit([...selected, ...addLst.map((x) => ({ skill: x, level: 1 }))]);
   };
 
   const handleAddOnClick = () => {
@@ -105,10 +98,7 @@ const SkillLevelSelectWidget: React.FunctionComponent<ISkillLevelSelectWidgetPro
             </Typography>
           </div>
           <div className={classes.formContent}>
-            <SkillSimpleSelForm
-              lst={avail.map((x) => lst[x])}
-              onSubmit={handleAddSkill}
-            />
+            <SkillSimpleSelForm lst={avail} onSubmit={handleAddSkill} />
           </div>
         </div>
       </MyDialog>

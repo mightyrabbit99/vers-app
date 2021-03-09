@@ -9,12 +9,13 @@ interface IExcelUploadFormProps {
   feedback?: any;
   onSubmit: (p: File) => void;
   onCancel?: () => void;
+  templateUrl?: string;
 }
 
 const ExcelUploadForm: React.FunctionComponent<IExcelUploadFormProps> = (
   props
 ) => {
-  const { feedback, onSubmit, onCancel } = props;
+  const { feedback, onSubmit, onCancel, templateUrl } = props;
   const [f, setF] = React.useState<File>();
   const handleFileUpload = (e: React.ChangeEvent<any>) => {
     const { files } = e.target;
@@ -25,13 +26,15 @@ const ExcelUploadForm: React.FunctionComponent<IExcelUploadFormProps> = (
   };
   return (
     <Grid container spacing={1}>
-      <Typography variant="body2" color="textSecondary" align="center">
-        {"Click "}
-        <Link color="inherit" href={process.env.REACT_APP_EXCEL_TEMPLATE_URL}>
-          here
-        </Link>
-        {" for template"}
-      </Typography>
+      {templateUrl ? (
+        <Typography variant="body2" color="textSecondary" align="center">
+          {"Click "}
+          <Link color="inherit" href={templateUrl}>
+            here
+          </Link>
+          {" for template"}
+        </Typography>
+      ) : null}
       {feedback ? (
         <Grid item xs={12}>
           {feedback["non-field-errors"]?.map((x: any) => (

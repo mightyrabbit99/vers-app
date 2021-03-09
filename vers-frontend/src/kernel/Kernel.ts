@@ -379,7 +379,7 @@ class Kernel {
     objs: ExcelObj[]
   ) => {
     let resLst = (await this._submitExcel(plantId, type, objs)) ?? [];
-    this._log("Submit", resLst);
+    this._log("Submit Excel", resLst);
     return resLst;
   };
 

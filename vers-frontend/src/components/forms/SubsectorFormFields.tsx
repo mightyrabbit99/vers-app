@@ -56,8 +56,8 @@ const SubsectorFF: React.FunctionComponent<ISubsectorFFProps> = (props) => {
     }
 
     data[name] = value;
-    setFeedback({...feedback, [name]: undefined});
-    onChange ? onChange(data) : setState({...state, [name]: value});
+    setFeedback({ ...feedback, [name]: undefined });
+    onChange ? onChange(data) : setState({ ...state, [name]: value });
   };
 
   const getFeedback = (name: string) => {
@@ -76,14 +76,17 @@ const SubsectorFF: React.FunctionComponent<ISubsectorFFProps> = (props) => {
     let num = parseInt(value, 10);
     value = isNaN(num) ? 0 : num;
     data[name] = value;
-    onChange ? onChange(data) : setState({...state, [name]: value});
+    onChange ? onChange(data) : setState({ ...state, [name]: value });
   };
 
   const genProps = (name: string) => ({
     name,
     value: getDataProp(name),
     onChange: handleChange,
-  })
+    InputLabelProps: {
+      shrink: getDataProp(name) !== "",
+    },
+  });
 
   const genActiveProps = (name: string) => ({
     ...genProps(name),
@@ -102,10 +105,7 @@ const SubsectorFF: React.FunctionComponent<ISubsectorFFProps> = (props) => {
           />
           <FormControl className={classes.formControl}>
             <InputLabel id="demo-simple-select-label">Sector</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              {...genProps("sector")}
-            >
+            <Select labelId="demo-simple-select-label" {...genProps("sector")}>
               {choices["sector"].choices.map((x, idx) => (
                 <MenuItem key={idx} value={idx}>
                   {x.name}
@@ -115,11 +115,7 @@ const SubsectorFF: React.FunctionComponent<ISubsectorFFProps> = (props) => {
           </FormControl>
         </Grid>
         <Grid item xs={12}>
-          <TextField
-            fullWidth
-            label="Unit"
-            {...genActiveProps("unit")}
-          />
+          <TextField fullWidth label="Unit" {...genActiveProps("unit")} />
         </Grid>
         <Grid item xs={12}>
           <TextField

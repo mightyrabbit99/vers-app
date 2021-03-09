@@ -45,7 +45,7 @@ const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
   let ans: EmployeeObj[] = [];
 
   function checkRow(row: Excel.Row) {
-    if ([1, 2, 3, 4, 5].some((x) => row.getCell(x).text.length === 0))
+    if ([1, 2, 3, 4, 5].some((x) => row.getCell(x).text.trim().length === 0))
       return false;
     return true;
   }
@@ -67,7 +67,7 @@ const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
       3,
       4,
       5,
-    ].map((x) => row.getCell(x).text);
+    ].map((x) => row.getCell(x).text.trim());
     if (sesaId === "") return;
 
     if (!sets[homeLocation]) {

@@ -50,6 +50,7 @@ interface IListWidgetProps {
   downloadExcel?: () => void;
   uploadExcel?: (file: File) => void;
   excelFeedback?: any;
+  excelTemplateUrl?: string;
   children: React.ReactNode;
 }
 
@@ -64,6 +65,7 @@ const ListWidget: React.FunctionComponent<IListWidgetProps> = (props) => {
     downloadExcel,
     uploadExcel,
     excelFeedback,
+    excelTemplateUrl,
     children,
   } = props;
 
@@ -144,6 +146,7 @@ const ListWidget: React.FunctionComponent<IListWidgetProps> = (props) => {
                 feedback={excelFeedback}
                 onSubmit={handleExcelFileUpload}
                 onCancel={handleExcelFormClose}
+                templateUrl={excelTemplateUrl}
               />
             </div>
           </div>

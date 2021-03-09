@@ -114,6 +114,7 @@ const SkillListWidget: React.FC<ISkillListWidgetProps> = (props) => {
       deleteOnClick={handleDeleteOnClick}
       downloadExcel={downloadExcel}
       uploadExcel={uploadExcel}
+      excelTemplateUrl={process.env.REACT_APP_EXCEL_SKILL_TEMPLATE_URL}
     >
       <SkillMainList
         lst={lst}

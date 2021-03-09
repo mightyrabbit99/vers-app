@@ -15,7 +15,7 @@ interface IEmployeeSkillFilterProps {
 const EmployeeSkillFilter: React.FunctionComponent<IEmployeeSkillFilterProps> = (
   props
 ) => {
-  let { lst, skillLst: skills } = props;
+  let { lst, skillLst } = props;
   const [skillLvlLst, setSkillLvlLst] = React.useState<SkillLevel[]>([]);
   const [filteredLst, setFilteredLst] = React.useState<Employee[]>([]);
 
@@ -34,15 +34,20 @@ const EmployeeSkillFilter: React.FunctionComponent<IEmployeeSkillFilterProps> = 
 
   React.useEffect(() => {
     setSkillLvlLst([]);
-  }, [skills]);
+  }, []);
+
+  const [skills, setSkills] = React.useState<{ [id: number]: Skill }>();
+  React.useEffect(() => {
+    !skills && setSkills(skillLst);
+  }, [skillLst]);
 
   return (
     <Grid container>
       <Grid item xs={3}>
-        <SkillLevelSelectWidget lst={skills} onSubmit={setSkillLvlLst} />
+        <SkillLevelSelectWidget lst={skills ?? {}} onSubmit={setSkillLvlLst} />
       </Grid>
       <Grid item xs={9}>
-        <EmployeeSkillDispList lst={filteredLst} skills={skills} />
+        <EmployeeSkillDispList lst={filteredLst} skills={skillLst} />
       </Grid>
     </Grid>
   );

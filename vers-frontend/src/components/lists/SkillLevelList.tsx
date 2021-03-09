@@ -41,7 +41,7 @@ const SkillLevelList: React.FunctionComponent<ISkillLevelListProps> = (
     }
 
     return (
-      <ListItem>
+      <ListItem key={idx}>
         <ListItemText
           primary={s.skill.name}
         />

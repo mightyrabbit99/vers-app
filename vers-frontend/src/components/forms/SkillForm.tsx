@@ -23,7 +23,7 @@ const SkillForm: React.FunctionComponent<ISkillFormProps> = (props) => {
         name: x.name,
         value: x.id,
       })),
-      init: subsectors.findIndex((x) => x.id === data.sector),
+      init: subsectors.findIndex((x) => x.id === data.subsector),
     },
   };
 

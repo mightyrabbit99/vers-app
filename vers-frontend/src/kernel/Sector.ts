@@ -67,7 +67,7 @@ const generator = (init?: any): Sector => ({
   ...init,
 });
 
-const hasher = (t: Sector) => `${t.id}\b${t.name}`;
+const hasher = (t: Sector) => t.name.trim().toLowerCase();
 
 const SectorStore = store<Sector>(get, post, put, del, generator, hasher);
 

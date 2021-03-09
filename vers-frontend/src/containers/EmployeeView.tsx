@@ -66,7 +66,7 @@ const EmployeeView: React.FunctionComponent<IEmployeeViewProps> = (props) => {
   let [fbOpen, setFbOpen] = React.useState(false);
   const handleUploadExcel = async (file: File) => {
     try {
-      let ans = await ExcelProcessor2.readSectorFile(file);
+      let ans = await ExcelProcessor2.readEmployeeFile(file);
       dispatch(submitExcel({ type: ItemType.Employee, data: ans }));
     } catch (e) {
       setFbOpen(true);

@@ -41,10 +41,10 @@ function* postItemThenSave({ payload }: CreateNewAction) {
     } else {
       yield put(submitSuccess(feedback.data));
     }
-    yield put(reload());
   } catch (error) {
     yield put(submitError(error.message));
   }
+  yield put(reload());
 }
 
 function* putItem({ payload }: ModifyAction) {
@@ -56,10 +56,10 @@ function* putItem({ payload }: ModifyAction) {
       yield k.save(p);
     }
     yield put(submitSuccess(undefined));
-    yield put(reload());
   } catch (error) {
     yield put(submitError(error.message));
   }
+  yield put(reload());
 }
 
 function* deleteItem({ payload }: EraseAction) {
@@ -71,10 +71,10 @@ function* deleteItem({ payload }: EraseAction) {
       yield k.del(p);
     }
     yield put(submitSuccess(undefined));
-    yield put(reload());
   } catch (error) {
     yield put(submitError(error.message));
   }
+  yield put(reload());
 }
 
 function* submitExcelData({ payload }: SubmitExcelAction) {

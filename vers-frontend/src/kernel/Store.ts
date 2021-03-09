@@ -84,9 +84,7 @@ function store<T extends Item>(
 
     submitNew = async (t: T) => {
       try {
-        let ans = await post(t);
-        if (ans.success) await this.refresh();
-        return ans;
+        return await post(t);
       } catch (error) {
         return { success: false, data: error };
       }
@@ -94,9 +92,7 @@ function store<T extends Item>(
 
     submit = async (t: T) => {
       try {
-        let ans = await put(t);
-        if (ans.success) await this.refresh();
-        return ans;
+        return await put(t);
       } catch (error) {
         return { success: false, data: error };
       }

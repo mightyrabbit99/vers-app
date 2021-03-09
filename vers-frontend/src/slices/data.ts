@@ -66,24 +66,6 @@ const dataSlice = createSlice({
     },
     reload: (state) => {
       state.loading = true;
-      state.plants = {};
-      delete state.newPlant;
-      state.sectors = {};
-      delete state.newSector;
-      state.subsectors = {};
-      delete state.newSubsector;
-      state.skills = {};
-      delete state.newSkill;
-      state.departments = {};
-      delete state.newDepartment;
-      state.employees = {};
-      delete state.newEmployee;
-      state.jobs = {};
-      delete state.newJob;
-      state.forecasts = {};
-      delete state.newForecast;
-      state.logs = {};
-      state.personalLogs = [];
     },
     reloadSuccess: (state) => {
       state.loading = false;

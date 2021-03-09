@@ -50,7 +50,7 @@ const SkillView: React.FunctionComponent<ISkillViewProps> = (props) => {
   let [fbOpen, setFbOpen] = React.useState(false);
   const handleUploadExcel = async (file: File) => {
     try {
-      let ans = await ExcelProcessor2.readSectorFile(file);
+      let ans = await ExcelProcessor2.readSkillFile(file);
       dispatch(submitExcel({ type: ItemType.Skill, data: ans }));
     } catch (e) {
       setFbOpen(true);

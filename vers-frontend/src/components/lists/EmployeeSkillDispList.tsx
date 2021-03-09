@@ -24,8 +24,8 @@ const EmpSkillDispList: React.FunctionComponent<IEmpSkillDispListProps> = (
     {
       title: "Skills",
       extractor: (p: Employee) =>
-        p.skills.map((x) => (
-          <Chip label={`${skills[x.skill].name} (${x.level})`} />
+        p.skills.map((x, idx) => (
+          <Chip key={idx} label={`${skills[x.skill].name} (${x.level})`} />
         )),
     },
   ];

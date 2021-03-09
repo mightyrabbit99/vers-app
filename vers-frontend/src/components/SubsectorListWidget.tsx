@@ -101,6 +101,7 @@ const SubsectorListWidget: React.FunctionComponent<ISubsectorListWidgetProps> = 
       deleteOnClick={handleDeleteOnClick}
       downloadExcel={downloadExcel}
       uploadExcel={uploadExcel}
+      excelTemplateUrl={process.env.REACT_APP_EXCEL_SUBSECTOR_TEMPLATE_URL}
     >
       <SubsectorList
         lst={lst}

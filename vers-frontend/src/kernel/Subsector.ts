@@ -86,7 +86,7 @@ const generator = (init?: any): Subsector => ({
   ...init,
 });
 
-const hasher = (t: Subsector) => t.name;
+const hasher = (t: Subsector) => t.name.trim().toLowerCase();
 
 const SubsectorStore = store<Subsector>(get, post, put, del, generator, hasher);
 
