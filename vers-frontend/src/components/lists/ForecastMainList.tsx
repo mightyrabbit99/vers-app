@@ -37,11 +37,6 @@ const ForecastMainList: React.FunctionComponent<IForecastMainListProps> = (
       ...state,
       chgLst: lst,
     });
-  const setStateLst = (lst: FL) =>
-    setState({
-      ...state,
-      stateLst: lst,
-    });
 
   React.useEffect(
     () =>
@@ -109,19 +104,25 @@ const ForecastMainList: React.FunctionComponent<IForecastMainListProps> = (
   };
 
   const handleForecastSubmit = (p: Forecast) => () => {
-    setChgLst(chgLst.filter((x) => x !== p.id));
+    setChgLst([...chgLst.filter((x) => x !== p.id)]);
     onSubmit(p);
   };
 
   const handleForecastReset = (p: Forecast) => () => {
-    setChgLst(chgLst.filter((x) => x !== p.id));
-    setStateLst({ ...stateLst, [p.id]: lst[p.id] });
+    setState({
+      chgLst: [...chgLst.filter((x) => x !== p.id)],
+      stateLst: { ...stateLst, [p.id]: lst[p.id] },
+    });
   };
 
   const getForecastVal = (n: number, p: Forecast) => {
     let i = p.forecasts.findIndex((x) => x.n === n);
     return i === -1 ? "" : p.forecasts[i].val;
   };
+
+  const ctrlDisabled = (p: Forecast) => {
+    return !chgLst.includes(p.id);
+  }
 
   const cols: Col[] = [
     {
@@ -200,7 +201,7 @@ const ForecastMainList: React.FunctionComponent<IForecastMainListProps> = (
     {
       extractor: (p: Forecast) => (
         <IconButton
-          disabled={!chgLst.includes(p.id)}
+          disabled={ctrlDisabled(p)}
           onClick={handleForecastReset(p)}
           color="primary"
         >
@@ -211,7 +212,7 @@ const ForecastMainList: React.FunctionComponent<IForecastMainListProps> = (
     {
       extractor: (p: Forecast) => (
         <IconButton
-          disabled={!chgLst.includes(p.id)}
+          disabled={ctrlDisabled(p)}
           onClick={handleForecastSubmit(p)}
           color="primary"
         >

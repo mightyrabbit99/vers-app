@@ -100,9 +100,9 @@ const ChangeLogView: React.FunctionComponent<IChangeLogViewProps> = (props) => {
     );
   };
 
-  const genMyLogCard = (log: MyLog) => {
+  const genMyLogCard = (log: MyLog, idx: number) => {
     return (
-      <Accordion>
+      <Accordion key={idx}>
         <AccordionSummary
           aria-controls="panel1a-content"
           id="panel1a-header"
@@ -132,9 +132,9 @@ const ChangeLogView: React.FunctionComponent<IChangeLogViewProps> = (props) => {
     );
   };
 
-  const genLogCard = (log: Log) => {
+  const genLogCard = (log: Log, idx: number) => {
     return (
-      <ListItem>
+      <ListItem key={idx}>
         <Typography className={classes.heading}>{genDescStr(log)}</Typography>
       </ListItem>
     );
