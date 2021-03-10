@@ -90,37 +90,26 @@ class Kernel {
   };
 
   private _saveNew = async (t: Item) => {
-    let ans;
     switch (t._type) {
       case ItemType.Plant:
-        ans = await this.plantStore.submitNew(t as Plant);
-        break;
+        return await this.plantStore.submitNew(t as Plant);
       case ItemType.Sector:
-        ans = await this.secStore.submitNew(t as Sector);
-        break;
+        return await this.secStore.submitNew(t as Sector);
       case ItemType.Subsector:
-        ans = await this.subsecStore.submitNew(t as Subsector);
-        break;
+        return await this.subsecStore.submitNew(t as Subsector);
       case ItemType.Skill:
-        ans = await this.skillStore.submitNew(t as Skill);
-        break;
+        return await this.skillStore.submitNew(t as Skill);
       case ItemType.Department:
-        ans = await this.deptStore.submitNew(t as Department);
-        break;
+        return await this.deptStore.submitNew(t as Department);
       case ItemType.Employee:
-        ans = await this.empStore.submitNew(t as Employee);
-        break;
+        return await this.empStore.submitNew(t as Employee);
       case ItemType.Job:
-        ans = await this.jobStore.submitNew(t as Job);
-        break;
+        return await this.jobStore.submitNew(t as Job);
       case ItemType.Forecast:
-        ans = await this.forecastStore.submitNew(t as Forecast);
-        break;
+        return await this.forecastStore.submitNew(t as Forecast);
       default:
         return { success: false, data: {} };
     }
-
-    return ans;
   };
 
   public saveNew = async (t: Item) => {
@@ -130,35 +119,26 @@ class Kernel {
   };
 
   private _save = async (t: Item) => {
-    let ans;
     switch (t._type) {
       case ItemType.Plant:
-        ans = await this.plantStore.submit(t as Plant);
-        break;
+        return await this.plantStore.submit(t as Plant);
       case ItemType.Sector:
-        ans = await this.secStore.submit(t as Sector);
-        break;
+        return await this.secStore.submit(t as Sector);
       case ItemType.Subsector:
-        ans = await this.subsecStore.submit(t as Subsector);
-        break;
+        return await this.subsecStore.submit(t as Subsector);
       case ItemType.Skill:
-        ans = await this.skillStore.submit(t as Skill);
-        break;
+        return await this.skillStore.submit(t as Skill);
       case ItemType.Department:
-        ans = await this.deptStore.submit(t as Department);
-        break;
+        return await this.deptStore.submit(t as Department);
       case ItemType.Employee:
         return await this.empStore.submit(t as Employee);
       case ItemType.Job:
-        ans = await this.jobStore.submit(t as Job);
-        break;
+        return await this.jobStore.submit(t as Job);
       case ItemType.Forecast:
-        ans = await this.forecastStore.submit(t as Forecast);
-        break;
+        return await this.forecastStore.submit(t as Forecast);
       default:
         return { success: false, data: {} };
     }
-    return ans;
   };
 
   public save = async (t: Item) => {
@@ -168,39 +148,28 @@ class Kernel {
   };
 
   private _del = async (t: Item) => {
-    let ans;
     switch (t._type) {
       case ItemType.Plant:
-        ans = await this.plantStore.remove(t as Plant);
-        break;
+        return await this.plantStore.remove(t as Plant);
       case ItemType.Sector:
-        ans = await this.secStore.remove(t as Sector);
-        break;
+        return await this.secStore.remove(t as Sector);
       case ItemType.Subsector:
-        ans = await this.subsecStore.remove(t as Subsector);
-        break;
+        return await this.subsecStore.remove(t as Subsector);
       case ItemType.Skill:
-        ans = await this.skillStore.remove(t as Skill);
-        break;
+        return await this.skillStore.remove(t as Skill);
       case ItemType.Department:
-        ans = await this.deptStore.remove(t as Department);
-        break;
+        return await this.deptStore.remove(t as Department);
       case ItemType.Employee:
-        ans = await this.empStore.remove(t as Employee);
-        break;
+        return await this.empStore.remove(t as Employee);
       case ItemType.Job:
-        ans = await this.jobStore.remove(t as Job);
-        break;
+        return await this.jobStore.remove(t as Job);
       case ItemType.Forecast:
-        ans = await this.forecastStore.remove(t as Forecast);
-        break;
+        return await this.forecastStore.remove(t as Forecast);
       case ItemType.Log:
-        ans = await this.logStore.remove(t as Log);
-        break;
+        return await this.logStore.remove(t as Log);
       default:
         return { success: false, data: {} };
     }
-    return ans;
   };
 
   public del = async (t: Item) => {

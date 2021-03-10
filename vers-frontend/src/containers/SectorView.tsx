@@ -73,8 +73,9 @@ const SectorView: React.FunctionComponent<ISectorViewProps> = (props) => {
   };
 
   const handleExcelDownloadClick = async () => {
-    let sectorObjs = Object.values(sectors).map((x) => ({
+    let sectorObjs = Object.values(sectors).map((x, idx) => ({
       ...x,
+      line: idx,
       plant: plants[x.plant].name,
     }));
     let s = await ExcelProcessor2.genSectorFile(sectorObjs);

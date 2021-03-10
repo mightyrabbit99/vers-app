@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { saveAs } from "file-saver";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
@@ -62,8 +63,9 @@ const SectorView: React.FunctionComponent<ISectorViewProps> = (props) => {
   };
 
   const handleExcelDownloadClick = async () => {
-    let subsectorObjs = Object.values(subsectors).map((x) => ({
+    let subsectorObjs = Object.values(subsectors).map((x, idx) => ({
       ...x,
+      line: idx,
       sector: sectors[x.sector].name,
     }));
     let s = await ExcelProcessor2.genSubsectorFile(subsectorObjs);

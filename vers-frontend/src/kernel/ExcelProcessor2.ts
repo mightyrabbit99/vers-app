@@ -54,7 +54,7 @@ const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
   function getSkillNames(row: Excel.Row) {
     let ans: { [i: number]: string } = [];
     for (let i = 6; row.getCell(i).value !== null; i++) {
-      ans[i] = row.getCell(i).text;
+      ans[i] = row.getCell(i).text.trim();
     }
     return ans;
   }
@@ -186,14 +186,26 @@ const employeeSheetWriter = (emps: EmployeeObj[]) => (ws: Excel.Worksheet) => {
     return prev;
   }, new Set());
   ws.columns = [
-    { header: "Name", key: "name", width: 20 },
-    { header: "Subsector", key: "subsector" },
-    { header: "Priority", key: "priority" },
-    { header: "% of Sector", key: "percentageOfSector" },
+    { header: "Sesa Id", key: "sesaId" },
+    { header: "First Name", key: "firstName" },
+    { header: "Last Name", key: "lastName" },
+    { header: "Home Location", key: "homeLocation" },
     ...[...skillSet].map((x) => ({ header: x, key: x })),
   ] as Excel.Column[];
 
-  ws.addRows(emps);
+  const genEmpCol = (emp: EmployeeObj) => {
+    let { skills, ...rest } = emp;
+    let sk = skills.reduce((prev, curr) => {
+      prev[curr.skillName] = curr.level;
+      return prev;
+    }, {} as { [name: string]: number });
+    return {
+      ...rest,
+      ...sk
+    };
+  };
+  
+  ws.addRows(emps.map(genEmpCol));
 };
 
 const skillSheetWriter = (skills: SkillObj[]) => (ws: Excel.Worksheet) => {

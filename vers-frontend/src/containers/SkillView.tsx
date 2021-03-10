@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { saveAs } from "file-saver";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
@@ -62,8 +63,9 @@ const SkillView: React.FunctionComponent<ISkillViewProps> = (props) => {
   };
 
   const handleExcelDownloadClick = async () => {
-    let skillObjs = Object.values(skills).map((x) => ({
+    let skillObjs = Object.values(skills).map((x, idx) => ({
       ...x,
+      line: idx,
       subsector: subsectors[x.subsector].name,
     }));
     let s = await ExcelProcessor2.genSkillFile(skillObjs);

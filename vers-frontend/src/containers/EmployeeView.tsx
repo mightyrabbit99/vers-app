@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { saveAs } from "file-saver";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
@@ -78,11 +79,17 @@ const EmployeeView: React.FunctionComponent<IEmployeeViewProps> = (props) => {
   };
 
   const handleExcelDownloadClick = async () => {
-    let skillObjs = Object.values(skills).map((x) => ({
+    let empObjs = Object.values(employees).map((x, idx) => ({
       ...x,
-      subsector: subsectors[x.subsector].name,
+      line: idx,
+      homeLocation: subsectors[x.subsector].name,
+      department: departments[x.department].name,
+      skills: x.skills.map((y) => ({
+        skillName: skills[y.skill].name,
+        level: y.level,
+      })),
     }));
-    let s = await ExcelProcessor2.genSkillFile(skillObjs);
+    let s = await ExcelProcessor2.genEmployeeFile(empObjs);
     var blob = new Blob([s], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
