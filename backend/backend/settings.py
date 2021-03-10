@@ -150,3 +150,9 @@ CORS_ALLOW_METHODS = [
 CORS_ALLOW_HEADERS = [
     '*'
 ]
+
+# Celery
+# Celery Configuration Options
+CELERY_TIMEZONE = "Singapore"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60

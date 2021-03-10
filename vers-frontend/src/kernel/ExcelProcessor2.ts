@@ -1,7 +1,9 @@
 import Excel from "exceljs";
 import { ItemType } from "./Store";
 
-interface ExcelObj {}
+interface ExcelObj {
+  line: number;
+}
 
 interface SectorObj extends ExcelObj {
   _type: ItemType.Sector;
@@ -26,7 +28,7 @@ interface SkillObj extends ExcelObj {
   percentageOfSector: number;
 }
 
-interface SkillMatrixObj extends ExcelObj {
+interface SkillMatrixObj {
   skillName: string;
   level: number;
 }
@@ -79,6 +81,7 @@ const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
     s.add(sesaId);
     ans.push({
       _type: ItemType.Employee,
+      line: rowIndex,
       sesaId,
       firstName,
       lastName,
@@ -111,6 +114,7 @@ const readSkillSheet = (ws: Excel.Worksheet): SkillObj[] => {
 
       ans.push({
         _type: ItemType.Skill,
+        line: rowIndex,
         name,
         subsector,
         priority: parseInt(priority, 10),
@@ -140,6 +144,7 @@ const readSubsectorSheet = (ws: Excel.Worksheet): SubsectorObj[] => {
 
       ans.push({
         _type: ItemType.Subsector,
+        line: rowIndex,
         name,
         sector,
         unit,
@@ -167,6 +172,7 @@ const readSectorSheet = (ws: Excel.Worksheet): SectorObj[] => {
 
     ans.push({
       _type: ItemType.Sector,
+      line: rowIndex,
       name,
       plant,
     });

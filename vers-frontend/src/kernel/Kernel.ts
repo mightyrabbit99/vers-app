@@ -288,7 +288,10 @@ class Kernel {
     const saveObj = async (o: SectorObj) => {
       const st = this.secStore;
       if (o.plant !== plant.name) {
-        return { success: false, data: { plant: ["Plant does not exist"] } };
+        return {
+          success: false,
+          data: { plant: [`Line ${o.line}: Plant ${o.plant} does not exist`] },
+        };
       } else {
         return await st.submitOrNew(st.getNew({ ...o, plant: plantId }));
       }
@@ -302,7 +305,12 @@ class Kernel {
     const saveObj = async (o: SubsectorObj) => {
       const st = this.subsecStore;
       if (!(o.sector in secNames)) {
-        return { success: false, data: { sector: ["Sector does not exist"] } };
+        return {
+          success: false,
+          data: {
+            sector: [`Line ${o.line}: Sector ${o.sector} does not exist`],
+          },
+        };
       } else {
         return await st.submitOrNew(
           st.getNew({ ...o, sector: secNames[o.sector][0].id })
@@ -321,7 +329,11 @@ class Kernel {
       if (!(o.subsector in subsecNames)) {
         return {
           success: false,
-          data: { subsector: ["Subsector does not exist"] },
+          data: {
+            subsector: [
+              `Line ${o.line}: Subsector ${o.subsector} does not exist`,
+            ],
+          },
         };
       } else {
         return await st.submitOrNew(
@@ -341,7 +353,11 @@ class Kernel {
       if (!(o.homeLocation in subsecNames)) {
         return {
           success: false,
-          data: { subsector: ["Subsector does not exist"] },
+          data: {
+            subsector: [
+              `Line ${o.line}: Home Location (Subsector) ${o.homeLocation} does not exist`,
+            ],
+          },
         };
       } else {
         return await st.submitOrNew(
@@ -379,22 +395,23 @@ class Kernel {
     objs: ExcelObj[]
   ) => {
     let resLst = (await this._submitExcel(plantId, type, objs)) ?? [];
-    this._log("Submit Excel", ...resLst);
+    this._log(`Submit Excel file for ${type}`, ...resLst);
     return resLst;
   };
 
   private genSectorExcel = async (items: Sector[]) => {
     const plants = this.plantStore.getLst();
     return await ExcelProcessor2.genSectorFile(
-      items.map((x) => ({ ...x, plant: plants[x.plant].name }))
+      items.map((x, idx) => ({ ...x, line: idx, plant: plants[x.plant].name }))
     );
   };
 
   private genSubsectorExcel = async (items: Subsector[]) => {
     const sectors = this.secStore.getLst();
     return await ExcelProcessor2.genSubsectorFile(
-      items.map((x) => ({
+      items.map((x, idx) => ({
         ...x,
+        line: idx,
         sector: sectors[x.sector].name,
       }))
     );
@@ -403,8 +420,9 @@ class Kernel {
   private genSkillExcel = async (items: Skill[]) => {
     const subsectors = this.subsecStore.getLst();
     return await ExcelProcessor2.genSkillFile(
-      items.map((x) => ({
+      items.map((x, idx) => ({
         ...x,
+        line: idx,
         subsector: subsectors[x.subsector].name,
       }))
     );
@@ -414,8 +432,9 @@ class Kernel {
     const subsectors = this.subsecStore.getLst();
     const skills = this.skillStore.getLst();
     return await ExcelProcessor2.genEmployeeFile(
-      items.map((x) => ({
+      items.map((x, idx) => ({
         ...x,
+        line: idx,
         homeLocation: subsectors[x.subsector].name,
         skills: x.skills.map((y) => ({
           skillName: skills[y.skill].name,

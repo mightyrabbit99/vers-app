@@ -1,14 +1,14 @@
 enum ItemType {
-  Plant,
-  Sector,
-  Subsector,
-  Job,
-  Employee,
-  Skill,
-  Department,
-  EmpSkill,
-  Log,
-  Forecast,
+  Plant = "Plant",
+  Sector = "Sector",
+  Subsector = "Subsector",
+  Job = "Job",
+  Employee = "Employee",
+  Skill = "Skill",
+  Department = "Department",
+  EmpSkill = "EmpSkill",
+  Log = "Log",
+  Forecast = "Forecast",
 }
 
 interface Item {
