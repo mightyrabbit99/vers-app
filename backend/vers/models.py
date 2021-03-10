@@ -252,3 +252,13 @@ class Forecast(models.Model):
         db_table = 'forecasts'
         unique_together = (('n', 'pack',),)
         ordering = ('n',)
+
+class CalEvent:
+    title = models.CharField(max_length=100)
+    start = models.DateField()
+    end = models.DateField()
+    event_type = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = 'cal_events'
+        ordering = ('start',)

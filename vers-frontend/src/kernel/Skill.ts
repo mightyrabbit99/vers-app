@@ -61,7 +61,7 @@ const post = async (t: Skill) => {
   } catch (error) {
     res = error.response;
   }
-  return { success: res.status === 201, data: dataToObj(res.data) };
+  return { success: res.status === 201, statusText: res.statusText, data: dataToObj(res.data) };
 };
 
 const put = async (t: Skill) => {
@@ -71,12 +71,12 @@ const put = async (t: Skill) => {
   } catch (error) {
     res = error.response;
   }
-  return { success: res.status === 200, data: dataToObj(res.data) };
+  return { success: res.status === 200, statusText: res.statusText, data: dataToObj(res.data) };
 };
 
 const del = async (t: Skill) => {
   let res = await Fetcher.deleteSkill(objToData(t));
-  return { success: res.status === 204, data: {} };
+  return { success: res.status === 204, statusText: res.statusText, data: {} };
 };
 
 const hasher = (t: Skill) => t.name.trim().toLowerCase();

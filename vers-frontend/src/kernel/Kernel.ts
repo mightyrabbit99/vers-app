@@ -9,6 +9,7 @@ import { Store, Item, ItemType } from "./Store";
 import SubsectorStore, { Subsector } from "./Subsector";
 import ForecastStore, { Forecast } from "./Forecast";
 import LogStore, { Log } from "./Log";
+import CalEventStore, { CalEvent } from "./CalEvent";
 
 import ExcelProcessor2, {
   EmployeeObj,
@@ -17,6 +18,7 @@ import ExcelProcessor2, {
   SkillObj,
   SubsectorObj,
 } from "./ExcelProcessor2";
+
 
 type Data = Plant | Sector | Subsector | Department | Skill | Employee | Job;
 
@@ -55,6 +57,7 @@ class Kernel {
   jobStore: Store<Job>;
   forecastStore: Store<Forecast>;
   logStore: Store<Log>;
+  calEventStore: Store<CalEvent>;
   personalLogs: MyLog[];
 
   constructor() {
@@ -67,6 +70,7 @@ class Kernel {
     this.jobStore = new JobStore();
     this.forecastStore = new ForecastStore();
     this.logStore = new LogStore();
+    this.calEventStore = new CalEventStore();
     this.personalLogs = [];
   }
 
@@ -80,6 +84,7 @@ class Kernel {
     await this.jobStore.refresh();
     await this.forecastStore.refresh();
     await this.logStore.refresh();
+    await this.calEventStore.refresh();
   };
 
   private _log = (desc: string, ...data: any) => {
@@ -107,6 +112,8 @@ class Kernel {
         return await this.jobStore.submitNew(t as Job);
       case ItemType.Forecast:
         return await this.forecastStore.submitNew(t as Forecast);
+      case ItemType.CalEvent:
+        return await this.calEventStore.submitNew(t as CalEvent);
       default:
         return { success: false, data: {} };
     }
@@ -136,6 +143,8 @@ class Kernel {
         return await this.jobStore.submit(t as Job);
       case ItemType.Forecast:
         return await this.forecastStore.submit(t as Forecast);
+      case ItemType.CalEvent:
+        return await this.calEventStore.submit(t as CalEvent);
       default:
         return { success: false, data: {} };
     }
@@ -167,6 +176,8 @@ class Kernel {
         return await this.forecastStore.remove(t as Forecast);
       case ItemType.Log:
         return await this.logStore.remove(t as Log);
+      case ItemType.CalEvent:
+        return await this.calEventStore.remove(t as CalEvent);
       default:
         return { success: false, data: {} };
     }

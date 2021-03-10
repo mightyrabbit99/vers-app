@@ -458,6 +458,12 @@ class ForecastView(viewsets.ModelViewSet):
             user=self.request.user, origin=instance).save()
         return super().perform_destroy(instance)
 
+class CalEventView(viewsets.ModelViewSet):
+    serializer_class = serializers.CalEventSerializer
+
+    def get_queryset(self):
+        return models.CalEvent.objects.all()
+
 # main page
 
 

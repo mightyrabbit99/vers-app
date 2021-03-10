@@ -42,6 +42,13 @@ interface EmployeeObj extends ExcelObj {
   skills: SkillMatrixObj[];
 }
 
+interface CalEventObj extends ExcelObj {
+  _type: ItemType.CalEvent;
+  name: string;
+  date: string;
+  eventType: string;
+}
+
 const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
   let sets: { [homeLocation: string]: Set<string> } = {};
   let ans: EmployeeObj[] = [];
@@ -98,7 +105,6 @@ const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
 };
 
 const readSkillSheet = (ws: Excel.Worksheet): SkillObj[] => {
-  let sets: { [subsector: string]: Set<string> } = {};
   let ans: SkillObj[] = [];
   let name, subsector, priority, percentageOfSector;
   ws.eachRow((row, rowIndex) => {
@@ -107,10 +113,6 @@ const readSkillSheet = (ws: Excel.Worksheet): SkillObj[] => {
       [name, subsector, priority, percentageOfSector] = [1, 2, 3, 4].map((x) =>
         row.getCell(x).text.trim()
       );
-
-      if (sets[subsector] && sets[subsector].has(name)) return;
-      !sets[subsector] && (sets[subsector] = new Set());
-      sets[subsector].add(name);
 
       ans.push({
         _type: ItemType.Skill,
@@ -128,7 +130,6 @@ const readSkillSheet = (ws: Excel.Worksheet): SkillObj[] => {
 };
 
 const readSubsectorSheet = (ws: Excel.Worksheet): SubsectorObj[] => {
-  let sets: { [sector: string]: Set<string> } = {};
   let ans: SubsectorObj[] = [];
   let name, sector, unit, cycleTime, efficiency;
   ws.eachRow((row, rowIndex) => {
@@ -137,10 +138,6 @@ const readSubsectorSheet = (ws: Excel.Worksheet): SubsectorObj[] => {
       [name, sector, unit, cycleTime, efficiency] = [1, 2, 3, 4, 5].map((x) =>
         row.getCell(x).text.trim()
       );
-
-      if (sets[sector] && sets[sector].has(name)) return;
-      !sets[sector] && (sets[sector] = new Set());
-      sets[sector].add(name);
 
       ans.push({
         _type: ItemType.Subsector,
@@ -159,22 +156,35 @@ const readSubsectorSheet = (ws: Excel.Worksheet): SubsectorObj[] => {
 };
 
 const readSectorSheet = (ws: Excel.Worksheet): SectorObj[] => {
-  let sets: { [plant: string]: Set<string> } = {};
   let ans: SectorObj[] = [];
   let name, plant;
   ws.eachRow((row, rowIndex) => {
     if (rowIndex === 1) return;
     [name, plant] = [1, 2].map((x) => row.getCell(x).text.trim());
 
-    if (sets[plant] && sets[plant].has(name)) return;
-    !sets[plant] && (sets[plant] = new Set());
-    sets[plant].add(name);
-
     ans.push({
       _type: ItemType.Sector,
       line: rowIndex,
       name,
       plant,
+    });
+  });
+  return ans;
+};
+
+const readCalEventSheet = (ws: Excel.Worksheet): CalEventObj[] => {
+  let ans: CalEventObj[] = [];
+  let name, date, eventType;
+  ws.eachRow((row, rowIndex) => {
+    if (rowIndex === 1) return;
+    [date, name, eventType] = [1, 2, 3].map((x) => row.getCell(x).text.trim());
+
+    ans.push({
+      _type: ItemType.CalEvent,
+      line: rowIndex,
+      name,
+      date,
+      eventType,
     });
   });
   return ans;
@@ -204,7 +214,7 @@ const employeeSheetWriter = (emps: EmployeeObj[]) => (ws: Excel.Worksheet) => {
       ...sk
     };
   };
-  
+
   ws.addRows(emps.map(genEmpCol));
 };
 
@@ -241,6 +251,16 @@ const sectorSheetWriter = (sectors: SectorObj[]) => (ws: Excel.Worksheet) => {
 
   ws.addRows(sectors);
 };
+
+const calEventSheetWriter = (calEvents: CalEventObj[]) => (ws: Excel.Worksheet) => {
+  ws.columns = [
+    { header: "Date", key: "date" },
+    { header: "Event", key: "name" },
+    { header: "Event Type", key: "eventType" },
+  ] as Excel.Column[];
+
+  ws.addRows(calEvents);
+}
 
 function readFile<T>(f: File, read: (ws: Excel.Worksheet) => T): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -291,6 +311,9 @@ class ExcelProcessor2 {
   static readEmployeeFile = async (file: File) => {
     return await readFile(file, readEmployeeSheet);
   };
+  static readCalEventFile = async (file: File) => {
+    return await readFile(file, readCalEventSheet);
+  }
 
   static genSectorFile = async (sectors: SectorObj[]) => {
     return await genFile(sectorSheetWriter(sectors));
@@ -307,6 +330,10 @@ class ExcelProcessor2 {
   static genEmployeeFile = async (emps: EmployeeObj[]) => {
     return await genFile(employeeSheetWriter(emps));
   };
+
+  static genCalEventFile = async (calEvents: CalEventObj[]) => {
+    return await genFile(calEventSheetWriter(calEvents));
+  }
 }
 
 export type { ExcelObj, SectorObj, SubsectorObj, SkillObj, EmployeeObj };

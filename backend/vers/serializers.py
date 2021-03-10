@@ -448,3 +448,8 @@ class ForecastPackSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.ForecastPack
         fields = '__all__'
+
+class CalEventSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.CalEvent
+        fields = '__all__'

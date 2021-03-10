@@ -43,6 +43,7 @@ import JobView from "./JobView";
 import ForecastView from "./ForecastView";
 import ChangeLogView from "./ChangeLogView";
 import AccessCtrlView from "./AccessCtrlView";
+import CalendarView from "./CalendarView";
 
 import { clearFeedback } from "src/slices/sync";
 import { logout } from "src/slices/session";
@@ -166,6 +167,7 @@ enum DashboardView {
   Forecast,
   ChangeLog,
   AccessCtrl,
+  Calendar,
 }
 
 const Dashboard: React.FC = () => {
@@ -244,10 +246,11 @@ const Dashboard: React.FC = () => {
         return user?.vers_user.employee_group === AccessLevel.NONE;
       case DashboardView.Job:
         return user?.vers_user.job_group === AccessLevel.NONE;
-      case DashboardView.ChangeLog:
-        return true;
       case DashboardView.AccessCtrl:
         return user?.is_superuser;
+      case DashboardView.ChangeLog:
+      case DashboardView.Calendar:
+        return true;
       default:
         return false;
     }
@@ -359,6 +362,17 @@ const Dashboard: React.FC = () => {
         </ListItemIcon>
         <ListItemText primary="Access Control" />
       </ListItem>
+      <ListItem
+        button
+        disabled={cannotView(DashboardView.Calendar)}
+        selected={currView === DashboardView.Calendar}
+        onClick={handleListClick(DashboardView.Calendar)}
+      >
+        <ListItemIcon>
+          <LayersIcon />
+        </ListItemIcon>
+        <ListItemText primary="Calendar" />
+      </ListItem>
     </div>
   );
 
@@ -382,6 +396,8 @@ const Dashboard: React.FC = () => {
         return <ChangeLogView />;
       case DashboardView.AccessCtrl:
         return <AccessCtrlView />;
+      case DashboardView.Calendar:
+        return <CalendarView />;
       default:
         return <SectorView />;
     }

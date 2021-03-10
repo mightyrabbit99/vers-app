@@ -8,13 +8,15 @@ import {
   SubsectorData,
   LogData,
   ForecastData,
+  CalEventData,
 } from "./data";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 /*
 import FakeServer from "./FakeServer";
 const axios = new FakeServer();
 */
-type Result<T> = { status: number, data: T[] };
+
+type Result<T> = AxiosResponse<T>;
 const url = process.env.REACT_APP_API_URL; // `http://${window.location.host}`
 const userUrl = `${url}/user_modify/`;
 const apiTokenAuth = `${url}/api-token-auth/`;
@@ -27,6 +29,7 @@ const skillUrl = `${url}/api/skill/`;
 const jobUrl = `${url}/api/job/`;
 const logUrl = `${url}/log/`;
 const forecastUrl = `${url}/api/forecast/`;
+const calEventUrl = `${url}/api/cal_event/`;
 
 const getCookie = (name: string) => {
   var cookieValue = null;
@@ -94,41 +97,45 @@ class Fetcher {
     return await axios.get(userUrl, Fetcher.getConfig());
   };
 
-  static getPlants = async (): Promise<Result<PlantData>> => {
+  static getPlants = async (): Promise<Result<PlantData[]>> => {
     return await axios.get(plantUrl, Fetcher.getConfig());
   };
 
-  static getSecs = async (): Promise<Result<SectorData>> => {
+  static getSecs = async (): Promise<Result<SectorData[]>> => {
     return await axios.get(secUrl, Fetcher.getConfig());
   };
 
-  static getSubsecs = async (): Promise<Result<SubsectorData>> => {
+  static getSubsecs = async (): Promise<Result<SubsectorData[]>> => {
     return await axios.get(subsecUrl, Fetcher.getConfig());
   };
 
-  static getEmps = async (): Promise<Result<EmployeeData>> => {
+  static getEmps = async (): Promise<Result<EmployeeData[]>> => {
     return await axios.get(empUrl, Fetcher.getConfig());
   };
 
-  static getDepts = async (): Promise<Result<DepartmentData>> => {
+  static getDepts = async (): Promise<Result<DepartmentData[]>> => {
     return await axios.get(deptUrl, Fetcher.getConfig());
   };
 
-  static getSkills = async (): Promise<Result<SkillData>> => {
+  static getSkills = async (): Promise<Result<SkillData[]>> => {
     return await axios.get(skillUrl, Fetcher.getConfig());
   };
 
-  static getJobs = async (): Promise<Result<JobData>> => {
+  static getJobs = async (): Promise<Result<JobData[]>> => {
     return await axios.get(jobUrl, Fetcher.getConfig());
   };
 
-  static getLogs = async (): Promise<Result<LogData>> => {
+  static getLogs = async (): Promise<Result<LogData[]>> => {
     return await axios.get(logUrl, Fetcher.getConfig());
   };
 
-  static getForecasts = async (): Promise<Result<ForecastData>> => {
+  static getForecasts = async (): Promise<Result<ForecastData[]>> => {
     return await axios.get(forecastUrl, Fetcher.getConfig());
   };
+
+  static getCalEvents = async (): Promise<Result<CalEventData[]>> => {
+    return await axios.get(calEventUrl, Fetcher.getConfig());
+  }
 
   // POST
   static postPlant = async (data: PlantData): Promise<Result<PlantData>> => {
@@ -185,8 +192,11 @@ class Fetcher {
   static postForecast = async (
     data: ForecastData
   ): Promise<Result<ForecastData>> => {
-    console.log(data);
     return await axios.post(forecastUrl, data, Fetcher.getConfig());
+  };
+
+  static postCalEvent = async (data: CalEventData): Promise<Result<CalEventData>> => {
+    return await axios.post(calEventUrl, data, Fetcher.getConfig());
   };
 
   static putPlant = async (data: PlantData): Promise<Result<PlantData>> => {
@@ -239,6 +249,10 @@ class Fetcher {
     return await axios.put(`${forecastUrl}${data.id}/`, data, Fetcher.getConfig());
   };
 
+  static putCalEvent = async (data: CalEventData): Promise<Result<CalEventData>> => {
+    return await axios.put(`${calEventUrl}${data.id}/`, data, Fetcher.getConfig());
+  };
+
   static deleteEmp = async (
     data: EmployeeData
   ): Promise<Result<EmployeeData>> => {
@@ -281,6 +295,10 @@ class Fetcher {
     data: ForecastData
   ): Promise<Result<ForecastData>> => {
     return await axios.delete(`${forecastUrl}${data.id}/`, Fetcher.getConfig());
+  };
+
+  static deleteCalEvent = async (data: CalEventData): Promise<Result<CalEventData>> => {
+    return await axios.delete(`${calEventUrl}${data.id}/`, Fetcher.getConfig());
   };
 }
 

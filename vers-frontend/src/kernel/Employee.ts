@@ -68,7 +68,7 @@ const post = async (t: Employee) => {
   } catch (error) {
     res = error.response;
   }
-  return { success: res.status === 201, data: dataToObj(res.data) };
+  return { success: res.status === 201, statusText: res.statusText, data: dataToObj(res.data) };
 };
 
 const put = async (t: Employee) => {
@@ -78,12 +78,12 @@ const put = async (t: Employee) => {
   } catch (error) {
     res = error.response;
   }
-  return { success: res.status === 200, data: dataToObj(res.data) };
+  return { success: res.status === 200, statusText: res.statusText, data: dataToObj(res.data) };
 };
 
 const del = async (t: Employee) => {
   let res = await Fetcher.deleteEmp(objToData(t));
-  return { success: res.status === 204, data: {} };
+  return { success: res.status === 204, statusText: res.statusText, data: {} };
 };
 
 const generator = (init?: any): Employee => ({

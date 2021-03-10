@@ -10,7 +10,7 @@ interface Department extends Item {
 
 function dataToObj(x: DepartmentData): Department {
   return {
-    id: x.id ?? -1,
+    id: x.id,
     _type: ItemType.Department,
     name: x.name,
     employees: x.employees,
@@ -45,7 +45,7 @@ const post = async (t: Department) => {
   } catch (error) {
     res = error.response;
   }
-  return { success: res.status === 201, data: dataToObj(res.data) };
+  return { success: res.status === 201, statusText: res.statusText, data: dataToObj(res.data) };
 };
 
 const put = async (t: Department) => {
@@ -55,12 +55,12 @@ const put = async (t: Department) => {
   } catch (error) {
     res = error.response;
   }
-  return { success: res.status === 200, data: dataToObj(res.data) };
+  return { success: res.status === 200, statusText: res.statusText, data: dataToObj(res.data) };
 };
 
 const del = async (t: Department) => {
   let res = await Fetcher.deleteDept(objToData(t));
-  return { success: res.status === 204, data: {} };
+  return { success: res.status === 204, statusText: res.statusText, data: {} };
 };
 
 const hasher = (t: Department) => t.name;

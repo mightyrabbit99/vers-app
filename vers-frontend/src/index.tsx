@@ -1,26 +1,27 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import { Provider } from 'react-redux'
-import createSagaMiddleware from 'redux-saga'
-import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
+import { Provider } from "react-redux";
+import createSagaMiddleware from "redux-saga";
+import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
 
 import "./index.css";
+import "react-big-calendar/lib/css/react-big-calendar.css";
 import reportWebVitals from "./reportWebVitals";
 import { Router } from "react-router-dom";
 
 import App from "./containers/App";
 import history from "./utils/history";
-import rootSaga from 'src/sagas'
-import rootReducer from 'src/slices'
+import rootSaga from "src/sagas";
+import rootReducer from "src/slices";
 
-const sagaMiddleware = createSagaMiddleware()
+const sagaMiddleware = createSagaMiddleware();
 const store = configureStore({
   reducer: rootReducer,
   middleware: [sagaMiddleware, ...getDefaultMiddleware({ thunk: false })],
-  devTools: process.env.NODE_ENV !== 'production',
-})
+  devTools: process.env.NODE_ENV !== "production",
+});
 
-sagaMiddleware.run(rootSaga)
+sagaMiddleware.run(rootSaga);
 
 ReactDOM.render(
   <Provider store={store}>

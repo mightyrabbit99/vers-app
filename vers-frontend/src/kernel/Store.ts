@@ -9,6 +9,7 @@ enum ItemType {
   EmpSkill = "EmpSkill",
   Log = "Log",
   Forecast = "Forecast",
+  CalEvent = "CalEvent,"
 }
 
 interface Item {

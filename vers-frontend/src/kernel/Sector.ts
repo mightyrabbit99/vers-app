@@ -40,7 +40,7 @@ const post = async (t: Sector) => {
   } catch (error) {
     res = error.response;
   }
-  return { success: res.status === 201, data: dataToObj(res.data) };
+  return { success: res.status === 201, statusText: res.statusText, data: dataToObj(res.data) };
 };
 
 const put = async (t: Sector) => {
@@ -50,12 +50,12 @@ const put = async (t: Sector) => {
   } catch (error) {
     res = error.response;
   }
-  return { success: res.status === 200, data: dataToObj(res.data) };
+  return { success: res.status === 200, statusText: res.statusText, data: dataToObj(res.data) };
 };
 
 const del = async (t: Sector) => {
   let res = await Fetcher.deleteSec(objToData(t));
-  return { success: res.status === 204, data: {} };
+  return { success: res.status === 204, statusText: res.statusText, data: {} };
 };
 
 const generator = (init?: any): Sector => ({

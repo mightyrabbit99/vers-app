@@ -45,7 +45,7 @@ const post = async (t: Plant) => {
   } catch (error) {
     res = error.response;
   }
-  return { success: res.status === 201, data: dataToObj(res.data) };
+  return { success: res.status === 201, statusText: res.statusText, data: dataToObj(res.data) };
 };
 
 const put = async (t: Plant) => {
@@ -55,12 +55,12 @@ const put = async (t: Plant) => {
   } catch (error) {
     res = error.response;
   }
-  return { success: res.status === 200, data: dataToObj(res.data) };
+  return { success: res.status === 200, statusText: res.statusText, data: dataToObj(res.data) };
 };
 
 const del = async (t: Plant) => {
   let res = await Fetcher.deletePlant(objToData(t));
-  return { success: res.status === 204, data: {} };
+  return { success: res.status === 204, statusText: res.statusText, data: {} };
 };
 
 const PlantStore = store<Plant>(get, post, put, del, generator);
