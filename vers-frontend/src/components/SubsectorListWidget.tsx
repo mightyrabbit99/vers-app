@@ -65,9 +65,9 @@ const SubsectorListWidget: React.FunctionComponent<ISubsectorListWidgetProps> = 
   };
 
   const [formOpen, setFormOpen] = React.useState(false);
-  const [formData, setFormData] = React.useState(newSubsector);
+  const [formData, setFormData] = React.useState<Subsector>();
   React.useEffect(() => {
-    setFormData(newSubsector);
+    setFormData(formData => formData ?? newSubsector);
   }, [newSubsector]);
   React.useEffect(() => {
     setFormOpen(!!feedback);

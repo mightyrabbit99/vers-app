@@ -253,7 +253,7 @@ class Forecast(models.Model):
         unique_together = (('n', 'pack',),)
         ordering = ('n',)
 
-class CalEvent:
+class CalEvent(models.Model):
     title = models.CharField(max_length=100)
     start = models.DateField()
     end = models.DateField()

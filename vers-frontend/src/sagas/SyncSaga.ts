@@ -11,10 +11,14 @@ import {
   fetchDataSuccess,
   submitExcel,
   submitError,
-  submitSuccess
+  submitSuccess,
 } from "src/slices/sync";
-import { CreateNewAction, EraseAction, ModifyAction, SubmitExcelAction } from "src/types";
-
+import {
+  CreateNewAction,
+  EraseAction,
+  ModifyAction,
+  SubmitExcelAction,
+} from "src/types";
 
 function* fetchDatas() {
   try {
@@ -52,10 +56,12 @@ function* putItem({ payload }: ModifyAction) {
     payload = [payload];
   }
   try {
+    let res: Result = { success: true, data: {} };
     for (let p of payload) {
-      yield k.save(p);
+      res = yield k.save(p);
+      if (!res.success) break;
     }
-    yield put(submitSuccess(undefined));
+    yield put(submitSuccess(res.success ? undefined : res.data));
     yield put(fetchData());
   } catch (error) {
     yield put(submitError(error.message));

@@ -59,9 +59,9 @@ const JobListWidget: React.FunctionComponent<IJobListWidgetProps> = (props) => {
   };
 
   const [formOpen, setFormOpen] = React.useState(false);
-  const [formData, setFormData] = React.useState(newJob);
+  const [formData, setFormData] = React.useState<Job>();
   React.useEffect(() => {
-    setFormData(newJob);
+    setFormData(formData => formData ?? newJob);
   }, [newJob]);
   React.useEffect(() => {
     setFormOpen(!!feedback);

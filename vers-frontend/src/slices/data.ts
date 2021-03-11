@@ -101,12 +101,8 @@ const dataSlice = createSlice({
         }
       }
     },
-    saveData: (state, { payload }: PayloadAction<Item | Item[]>) => {
-      state.loading = true;
-    },
-    delData: (state, { payload }: PayloadAction<Item | Item[]>) => {
-      state.loading = true;
-    },
+    saveData: (state, { payload }: PayloadAction<Item | Item[]>) => {},
+    delData: (state, { payload }: PayloadAction<Item | Item[]>) => {},
     _delData: (state, { payload }: PayloadAction<Item | Item[]>) => {
       if (!(payload instanceof Array)) {
         payload = [payload];
@@ -131,9 +127,10 @@ const dataSlice = createSlice({
     selPlant: (state, { payload }: PayloadAction<number | undefined>) => {
       state.selectedPlantId = payload;
     },
-    downloadExcel: (state, { payload }: PayloadAction<{ type: ItemType, items?: Item[] }>) => {
-
-    },
+    downloadExcel: (
+      state,
+      { payload }: PayloadAction<{ type: ItemType; items?: Item[] }>
+    ) => {},
   },
 });
 

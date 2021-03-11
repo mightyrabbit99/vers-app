@@ -452,12 +452,13 @@ class ForecastPackSerializer(serializers.ModelSerializer):
 
 
 class CalEventSerializer(serializers.ModelSerializer):
+    start = serializers.DateField()
+    end = serializers.DateField()
+
     def validate(self, attrs):
-        start = attrs.get('start')
-        end = attrs.get('end')
-        start_dto = datetime.datetime.strptime(start, '%Y-%m-%d')
-        end_dto = datetime.datetime.strptime(end, '%Y-%m-%d')
-        if start_dto > end_dto:
+        start: datetime.date = attrs.get('start')
+        end : datetime.date = attrs.get('end')
+        if start> end:
             errors = {'start': 'cannot be after end',
                       'end': 'cannot be before start'}
             raise serializers.ValidationError(errors)

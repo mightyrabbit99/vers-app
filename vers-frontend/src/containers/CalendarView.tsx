@@ -7,17 +7,34 @@ import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
+import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
+import CloudDownload from "@material-ui/icons/CloudDownload";
+import CloudUpload from "@material-ui/icons/CloudUpload";
 
 import CalEventForm from "src/components/forms/CalEventForm";
 import MyDialog from "src/components/commons/Dialog";
 
 import { getData, getSync } from "src/selectors";
 import { downloadExcel, saveData } from "src/slices/data";
-import { submitExcel } from "src/slices/sync";
+import { clearFeedback, submitExcel } from "src/slices/sync";
 import { CalEvent, ItemType } from "src/kernel";
 import ExcelProcessor2 from "src/kernel/ExcelProcessor2";
+import ExcelUploadForm from "src/components/forms/ExcelUploadForm";
 
 const useStyles = makeStyles((theme) => ({
+  ctrlButtons: {
+    display: "flex",
+    flexDirection: "row",
+    height: "20%",
+    width: "100%",
+  },
+  button: {
+    marginLeft: "auto",
+  },
+  content: {
+    height: "80%",
+  },
   form: {},
   formTitle: {},
   formContent: {},
@@ -27,25 +44,17 @@ const localizer = momentLocalizer(moment);
 
 interface ICalendarViewProps {}
 
-const myEventsList: Event[] = [
-  {
-    title: "test",
-    start: new Date(),
-    end: new Date(),
-    allDay: true,
-  },
-];
-
 const CalendarView: React.FC<ICalendarViewProps> = () => {
+  const excelTemplateUrl = process.env.REACT_APP_EXCEL_CAL_EVENT_TEMPLATE_URL;
   const classes = useStyles();
   const dispatch = useDispatch();
-  const { newCalEvent } = useSelector(getData);
+  const { calEvents, newCalEvent } = useSelector(getData);
   const { feedback } = useSelector(getSync);
 
   const [formOpen, setFormOpen] = React.useState(false);
-  const [formData, setFormData] = React.useState(newCalEvent);
+  const [formData, setFormData] = React.useState<CalEvent>();
   React.useEffect(() => {
-    setFormData(newCalEvent);
+    setFormData(formData => formData ?? newCalEvent);
   }, [newCalEvent]);
   React.useEffect(() => {
     setFormOpen(!!feedback);
@@ -56,10 +65,27 @@ const CalendarView: React.FC<ICalendarViewProps> = () => {
     setFormOpen(false);
   };
 
+  const handleFormClose = () => {
+    setFormOpen(false);
+    dispatch(clearFeedback());
+  };
 
   let [fbOpen, setFbOpen] = React.useState(false);
 
-  const handleUploadExcel = async (file: File) => {
+  const handleFbClose = () => {
+    setFbOpen(false);
+  };
+
+  const handleExcelUploadClick = () => {};
+
+  const handleExcelDownloadClick = async () => {
+    dispatch(downloadExcel({ type: ItemType.CalEvent }));
+  };
+
+  const [excelFormOpen, setExcelFormOpen] = React.useState(false);
+
+  const handleExcelFileUpload = async (file: File) => {
+    setExcelFormOpen(false);
     try {
       let ans = await ExcelProcessor2.readCalEventFile(file);
       dispatch(submitExcel({ type: ItemType.CalEvent, data: ans }));
@@ -68,26 +94,62 @@ const CalendarView: React.FC<ICalendarViewProps> = () => {
     }
   };
 
-  const handleFbClose = () => {
-    setFbOpen(false);
+  const handleExcelFormClose = () => {
+    setExcelFormOpen(false);
+    dispatch(clearFeedback());
   };
 
-  const handleExcelDownloadClick = async () => {
-    dispatch(downloadExcel({ type: ItemType.CalEvent }));
-  };
+  const handleSelectEvent = (e: Event) => {
+    setFormData(e.resource);
+    setFormOpen(true);
+  }
+
+  const handleCreateNewOnClick = () => {
+    setFormData(newCalEvent);
+    setFormOpen(true);
+  }
+
+  const myEventsList: Event[] = Object.values(calEvents).map((x) => ({
+    title: x.title,
+    start: new Date(x.start),
+    end: new Date(x.end),
+    allDay: true,
+    resource: x,
+  }));
 
   return (
     <React.Fragment>
       <div>
-        <Calendar
-          localizer={localizer}
-          events={myEventsList}
-          startAccessor="start"
-          endAccessor="end"
-          style={{ height: 500 }}
-        />
+        <div className={classes.ctrlButtons}>
+          <IconButton
+            onClick={handleExcelDownloadClick}
+            className={classes.button}
+          >
+            <CloudDownload />
+          </IconButton>
+          <IconButton onClick={handleExcelUploadClick}>
+            <CloudUpload />
+          </IconButton>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleCreateNewOnClick}
+          >
+            Add
+          </Button>
+        </div>
+        <div className={classes.content}>
+          <Calendar
+            localizer={localizer}
+            events={myEventsList}
+            startAccessor="start"
+            endAccessor="end"
+            style={{ height: 500 }}
+            onSelectEvent={handleSelectEvent}
+          />
+        </div>
       </div>
-      <MyDialog open={formOpen} onClose={() => setFormOpen(false)}>
+      <MyDialog open={formOpen} onClose={handleFormClose}>
         <div className={classes.form}>
           <div className={classes.formTitle}>
             <Typography
@@ -96,7 +158,9 @@ const CalendarView: React.FC<ICalendarViewProps> = () => {
               color="primary"
               gutterBottom
             >
-              Add New Event
+              {formData && formData.id === -1
+                ? "Add New Event"
+                : "Edit Event"}
             </Typography>
           </div>
           <div className={classes.formContent}>
@@ -107,6 +171,28 @@ const CalendarView: React.FC<ICalendarViewProps> = () => {
                 onSubmit={handleSubmit}
               />
             ) : null}
+          </div>
+        </div>
+      </MyDialog>
+      <MyDialog open={excelFormOpen} onClose={handleExcelFormClose}>
+        <div className={classes.form}>
+          <div className={classes.formTitle}>
+            <Typography
+              component="h2"
+              variant="h6"
+              color="primary"
+              gutterBottom
+            >
+              Upload Excel Data
+            </Typography>
+          </div>
+          <div className={classes.formContent}>
+            <ExcelUploadForm
+              feedback={feedback}
+              onSubmit={handleExcelFileUpload}
+              onCancel={handleExcelFormClose}
+              templateUrl={excelTemplateUrl}
+            />
           </div>
         </div>
       </MyDialog>

@@ -33,10 +33,11 @@ const syncSlice = createSlice({
     },
     createNew: (state, { payload }: PayloadAction<Data>) => {
       state.syncing = true;
-      state.feedback = undefined;
+      delete state.feedback;
     },
     modify: (state, { payload }: PayloadAction<Data | Data[]>) => {
       state.syncing = true;
+      delete state.feedback;
     },
     erase: (state, { payload }: PayloadAction<Data | Data[]>) => {
       state.syncing = true;

@@ -13,6 +13,12 @@ const CalEventForm: React.FunctionComponent<ICalEventFormProps> = (props) => {
   const { data, feedback: fb, onChange } = props;
   const [state, setState] = React.useState(data);
   const [feedback, setFeedback] = React.useState(fb ?? {});
+  React.useEffect(() => {
+    setState(data);
+  }, [data]);
+  React.useEffect(() => {
+    setFeedback(fb ?? {});
+  }, [fb]);
 
   const handleChange = (e: React.ChangeEvent<any>) => {
     const { name, value } = e.target;
@@ -40,6 +46,13 @@ const CalEventForm: React.FunctionComponent<ICalEventFormProps> = (props) => {
           label="Title"
           variant="outlined"
           {...genActiveProps("title")}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <TextField
+          label="Event Type"
+          variant="outlined"
+          {...genActiveProps("eventType")}
         />
       </Grid>
       <Grid item xs={12}>

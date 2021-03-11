@@ -65,9 +65,9 @@ const ForecastListWidget: React.FunctionComponent<IForecastListWidgetProps> = (
   };
 
   const [formOpen, setFormOpen] = React.useState(false);
-  const [formData, setFormData] = React.useState(newForecast);
+  const [formData, setFormData] = React.useState<Forecast>();
   React.useEffect(() => {
-    setFormData(newForecast);
+    setFormData(formData => formData ?? newForecast);
   }, [newForecast]);
   React.useEffect(() => {
     setFormOpen(!!feedback);

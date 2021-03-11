@@ -59,9 +59,9 @@ const DepartmentListWidget: React.FunctionComponent<IDepartmentListWidgetProps> 
   };
 
   const [formOpen, setFormOpen] = React.useState(false);
-  const [formData, setFormData] = React.useState(newDepartment);
+  const [formData, setFormData] = React.useState<Department>();
   React.useEffect(() => {
-    setFormData(newDepartment);
+    setFormData(formData => formData ?? newDepartment);
   }, [newDepartment]);
 
   const handleSubmit = (data: Department) => {

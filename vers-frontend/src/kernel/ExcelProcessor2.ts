@@ -45,7 +45,8 @@ interface EmployeeObj extends ExcelObj {
 interface CalEventObj extends ExcelObj {
   _type: ItemType.CalEvent;
   name: string;
-  date: string;
+  start: string;
+  end: string;
   eventType: string;
 }
 
@@ -174,16 +175,17 @@ const readSectorSheet = (ws: Excel.Worksheet): SectorObj[] => {
 
 const readCalEventSheet = (ws: Excel.Worksheet): CalEventObj[] => {
   let ans: CalEventObj[] = [];
-  let name, date, eventType;
+  let name, start, end, eventType;
   ws.eachRow((row, rowIndex) => {
     if (rowIndex === 1) return;
-    [date, name, eventType] = [1, 2, 3].map((x) => row.getCell(x).text.trim());
+    [start, end, name, eventType] = [1, 2, 3, 4].map((x) => row.getCell(x).text.trim());
 
     ans.push({
       _type: ItemType.CalEvent,
       line: rowIndex,
       name,
-      date,
+      start,
+      end,
       eventType,
     });
   });
@@ -254,7 +256,8 @@ const sectorSheetWriter = (sectors: SectorObj[]) => (ws: Excel.Worksheet) => {
 
 const calEventSheetWriter = (calEvents: CalEventObj[]) => (ws: Excel.Worksheet) => {
   ws.columns = [
-    { header: "Date", key: "date" },
+    { header: "Start Date", key: "start" },
+    { header: "End Date", key: "end" },
     { header: "Event", key: "name" },
     { header: "Event Type", key: "eventType" },
   ] as Excel.Column[];

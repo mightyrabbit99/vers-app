@@ -24,7 +24,7 @@ function dataToObj(x: CalEventData): CalEvent {
 function objToData(x: CalEvent): CalEventData {
   return {
     id: x.id,
-    title: x.tilte,
+    title: x.title,
     start: x.start,
     end: x.end,
     event_type: x.eventType,

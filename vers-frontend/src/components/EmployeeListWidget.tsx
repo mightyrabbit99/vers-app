@@ -67,9 +67,9 @@ const EmployeeListWidget: React.FunctionComponent<IEmployeeListWidgetProps> = (
   };
 
   const [formOpen, setFormOpen] = React.useState(false);
-  const [formData, setFormData] = React.useState(newEmployee);
+  const [formData, setFormData] = React.useState<Employee>();
   React.useEffect(() => {
-    setFormData(newEmployee);
+    setFormData(formData => formData ?? newEmployee);
   }, [newEmployee]);
   React.useEffect(() => {
     setFormOpen(!!feedback);

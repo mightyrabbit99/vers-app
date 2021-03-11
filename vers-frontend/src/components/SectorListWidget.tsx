@@ -62,9 +62,9 @@ const SectorListWidget: React.FunctionComponent<ISectorListWidgetProps> = (
   };
 
   const [formOpen, setFormOpen] = React.useState(false);
-  const [formData, setFormData] = React.useState(newSector);
+  const [formData, setFormData] = React.useState<Sector>();
   React.useEffect(() => {
-    setFormData(newSector);
+    setFormData(formData => formData ?? newSector);
   }, [newSector]);
   React.useEffect(() => {
     setFormOpen(!!feedback);

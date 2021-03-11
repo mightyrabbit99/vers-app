@@ -19,40 +19,6 @@ import ExcelProcessor2, {
   SubsectorObj,
 } from "./ExcelProcessor2";
 
-const sectorToObj = (sector: Sector, getPlant: (id: number) => string) => ({
-  ...sector,
-  line: sector.id,
-  plant: getPlant(sector.plant),
-});
-
-const subsectorToObj = (x: Subsector, getSector: (id: number) => string) => ({
-  ...x,
-  line: x.id,
-  sector: getSector(x.sector),
-});
-
-const skillToObj = (x: Skill, getSubsector: (id: number) => string) => ({
-  ...x,
-  line: x.id,
-  subsector: getSubsector(x.subsector),
-});
-
-const employeeToObj = (
-  x: Employee,
-  getSubsector: (id: number) => string,
-  getDepartment: (id: number) => string,
-  getSkill: (id: number) => string
-) => ({
-  ...x,
-  line: x.id,
-  homeLocation: getSubsector(x.subsector),
-  department: getDepartment(x.department),
-  skills: x.skills.map((y) => ({
-    skillName: getSkill(y.skill),
-    level: y.level,
-  })),
-});
-
 type Data = Plant | Sector | Subsector | Department | Skill | Employee | Job;
 
 function genMap<T>(
@@ -457,6 +423,19 @@ class Kernel {
     );
   };
 
+  private genCalEventExcel = async (items: CalEvent[]) => {
+    return await ExcelProcessor2.genCalEventFile(
+      items.map((x, idx) => ({
+        _type: x._type,
+        line: idx,
+        name: x.title,
+        start: x.start,
+        end: x.end,
+        eventType: x.eventType,
+      }))
+    );
+  };
+
   public getExcel = async (type: ItemType, items?: Item[]) => {
     if (!items) {
       switch (type) {
@@ -472,6 +451,9 @@ class Kernel {
         case ItemType.Employee:
           items = Object.values(this.empStore.getLst());
           break;
+        case ItemType.CalEvent:
+          items = Object.values(this.calEventStore.getLst());
+          break;
         default:
           items = [];
       }
@@ -485,6 +467,8 @@ class Kernel {
         return await this.genSkillExcel(items as Skill[]);
       case ItemType.Employee:
         return await this.genEmployeeExcel(items as Employee[]);
+      case ItemType.CalEvent:
+        return await this.genCalEventExcel(items as CalEvent[]);
     }
   };
 }

@@ -79,9 +79,9 @@ const SkillListWidget: React.FC<ISkillListWidgetProps> = (props) => {
   };
 
   const [formOpen, setFormOpen] = React.useState(false);
-  const [formData, setFormData] = React.useState(newSkill);
+  const [formData, setFormData] = React.useState<Skill>();
   React.useEffect(() => {
-    setFormData(newSkill);
+    setFormData(formData => formData ?? newSkill);
   }, [newSkill]);
   React.useEffect(() => {
     setFormOpen(!!feedback);
