@@ -20,6 +20,10 @@ function selLst(type: ItemType, state: DataState): { [id: number]: Item } {
       return state.employees;
     case ItemType.Job:
       return state.jobs;
+    case ItemType.Forecast:
+      return state.forecasts;
+    case ItemType.CalEvent:
+      return state.calEvents;
     default:
       return {};
   }
@@ -35,6 +39,7 @@ export const initialState: DataState = {
   jobs: {},
   forecasts: {},
   logs: {},
+  calEvents: {},
   personalLogs: [],
   loading: true,
   calculating: false,
@@ -61,6 +66,8 @@ const dataSlice = createSlice({
       state.newJob = payload.newJob ?? undefined;
       state.forecasts = payload.forecasts ?? {};
       state.newForecast = payload.newForecast ?? undefined;
+      state.calEvents = payload.calEvents ?? {};
+      state.newCalEvent = payload.newCalEvent ?? undefined;
       state.logs = payload.logs ?? {};
       state.personalLogs = payload.personalLogs ?? [];
     },
@@ -124,6 +131,9 @@ const dataSlice = createSlice({
     selPlant: (state, { payload }: PayloadAction<number | undefined>) => {
       state.selectedPlantId = payload;
     },
+    downloadExcel: (state, { payload }: PayloadAction<{ type: ItemType, items?: Item[] }>) => {
+
+    },
   },
 });
 
@@ -140,6 +150,7 @@ export const {
   _delData,
   saveItemProp,
   selPlant,
+  downloadExcel,
 } = dataSlice.actions;
 
 export default dataSlice.reducer;

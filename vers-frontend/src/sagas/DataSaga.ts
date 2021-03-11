@@ -1,4 +1,5 @@
 import { all, put, select, takeLatest } from "redux-saga/effects";
+import { saveAs } from "file-saver";
 
 import {
   reload,
@@ -9,9 +10,10 @@ import {
   saveData,
   delData,
   selPlant,
+  downloadExcel,
 } from "src/slices/data";
 import { createNew, modify, erase } from "src/slices/sync";
-import { SaveDataAction, DeleteDataAction, ReloadDataAction } from "src/types";
+import { SaveDataAction, DeleteDataAction, ReloadDataAction, DownloadExcelAction } from "src/types";
 import k, { Department, Sector, Subsector } from "src/kernel";
 import { getData } from "src/selectors";
 
@@ -24,6 +26,7 @@ function* reloadData() {
     employees,
     jobs,
     forecasts,
+    calEvents,
     logs;
   let newPlant,
     newSector,
@@ -32,7 +35,8 @@ function* reloadData() {
     newDepartment,
     newEmployee,
     newJob,
-    newForecast;
+    newForecast,
+    newCalEvent;
 
   let { selectedPlantId: p } = yield select(getData);
   plants = k.plantStore.getLst();
@@ -56,6 +60,8 @@ function* reloadData() {
   newJob = k.jobStore.getNew();
   forecasts = k.forecastStore.getLst();
   newForecast = k.forecastStore.getNew();
+  calEvents = k.calEventStore.getLst();
+  newCalEvent = k.calEventStore.getNew();
   logs = k.logStore.getLst();
   let personalLogs = k.personalLogs;
   
@@ -77,6 +83,8 @@ function* reloadData() {
       newJob,
       forecasts,
       newForecast,
+      calEvents,
+      newCalEvent,
       logs,
       personalLogs,
     })
@@ -118,6 +126,15 @@ function* saveDataCascadeThenCalculate({ payload }: SaveDataAction) {
   }
 }
 
+function* downExcel({ payload }: DownloadExcelAction) {
+  let { type, items } = payload;
+  let s: Buffer = yield k.getExcel(type, items);
+  var blob = new Blob([s], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
+  saveAs(blob, `${type}.xlsx`);
+}
+
 function* dataSaga() {
   yield all([
     takeLatest(reload.type, reloadData),
@@ -125,6 +142,7 @@ function* dataSaga() {
     takeLatest(calculate.type, calculateDatas),
     takeLatest(saveData.type, saveDataCascadeThenCalculate),
     takeLatest(delData.type, delDataCascadeThenCalculate),
+    takeLatest(downloadExcel.type, downExcel),
   ]);
 }
 

@@ -1,6 +1,5 @@
 import * as React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { saveAs } from "file-saver";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
@@ -14,7 +13,7 @@ import EmployeeSkillWidget from "src/components/EmployeeSkillWidget";
 import EmployeeSkillFilterWidget from "src/components/EmployeeSkillFilterWidget";
 
 import { getData, getSession, getSync } from "src/selectors";
-import { delData, saveData } from "src/slices/data";
+import { delData, downloadExcel, saveData } from "src/slices/data";
 import { clearFeedback, submitExcel } from "src/slices/sync";
 import { Employee, ItemType } from "src/kernel";
 import ExcelProcessor2 from "src/kernel/ExcelProcessor2";
@@ -79,21 +78,7 @@ const EmployeeView: React.FunctionComponent<IEmployeeViewProps> = (props) => {
   };
 
   const handleExcelDownloadClick = async () => {
-    let empObjs = Object.values(employees).map((x, idx) => ({
-      ...x,
-      line: idx,
-      homeLocation: subsectors[x.subsector].name,
-      department: departments[x.department].name,
-      skills: x.skills.map((y) => ({
-        skillName: skills[y.skill].name,
-        level: y.level,
-      })),
-    }));
-    let s = await ExcelProcessor2.genEmployeeFile(empObjs);
-    var blob = new Blob([s], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
-    saveAs(blob, `Employees.xlsx`);
+    dispatch(downloadExcel({ type: ItemType.Employee }));
   };
 
   return (

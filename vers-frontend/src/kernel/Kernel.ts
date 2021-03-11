@@ -19,6 +19,39 @@ import ExcelProcessor2, {
   SubsectorObj,
 } from "./ExcelProcessor2";
 
+const sectorToObj = (sector: Sector, getPlant: (id: number) => string) => ({
+  ...sector,
+  line: sector.id,
+  plant: getPlant(sector.plant),
+});
+
+const subsectorToObj = (x: Subsector, getSector: (id: number) => string) => ({
+  ...x,
+  line: x.id,
+  sector: getSector(x.sector),
+});
+
+const skillToObj = (x: Skill, getSubsector: (id: number) => string) => ({
+  ...x,
+  line: x.id,
+  subsector: getSubsector(x.subsector),
+});
+
+const employeeToObj = (
+  x: Employee,
+  getSubsector: (id: number) => string,
+  getDepartment: (id: number) => string,
+  getSkill: (id: number) => string
+) => ({
+  ...x,
+  line: x.id,
+  homeLocation: getSubsector(x.subsector),
+  department: getDepartment(x.department),
+  skills: x.skills.map((y) => ({
+    skillName: getSkill(y.skill),
+    level: y.level,
+  })),
+});
 
 type Data = Plant | Sector | Subsector | Department | Skill | Employee | Job;
 
@@ -424,7 +457,25 @@ class Kernel {
     );
   };
 
-  public getExcel = async (type: ItemType, items: Item[]) => {
+  public getExcel = async (type: ItemType, items?: Item[]) => {
+    if (!items) {
+      switch (type) {
+        case ItemType.Sector:
+          items = Object.values(this.secStore.getLst());
+          break;
+        case ItemType.Subsector:
+          items = Object.values(this.subsecStore.getLst());
+          break;
+        case ItemType.Skill:
+          items = Object.values(this.skillStore.getLst());
+          break;
+        case ItemType.Employee:
+          items = Object.values(this.empStore.getLst());
+          break;
+        default:
+          items = [];
+      }
+    }
     switch (type) {
       case ItemType.Sector:
         return await this.genSectorExcel(items as Sector[]);

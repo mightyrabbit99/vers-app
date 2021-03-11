@@ -10,6 +10,8 @@ import {
   Log,
   MyLog,
   ItemType,
+  CalEvent,
+  Item,
 } from "src/kernel";
 import { UserData } from "src/kernel/data/UserData";
 import { Forecast } from "src/kernel/Forecast";
@@ -40,6 +42,11 @@ export interface ModifyAction {
 export interface SaveDataAction {
   type: typeof saveData.type;
   payload: Data;
+}
+
+export interface DownloadExcelAction {
+  type: typeof saveData.type;
+  payload: { type: ItemType, items?: Item[] };
 }
 
 export interface SubmitExcelAction {
@@ -95,7 +102,8 @@ export interface DataState {
   newJob?: Job;
   forecasts: IdMap<Forecast>;
   newForecast?: Forecast;
-
+  calEvents: IdMap<CalEvent>;
+  newCalEvent?: CalEvent;
   logs: IdMap<Log>;
   personalLogs: MyLog[];
 

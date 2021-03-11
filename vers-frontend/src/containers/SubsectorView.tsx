@@ -1,6 +1,5 @@
 import * as React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { saveAs } from "file-saver";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
@@ -10,7 +9,7 @@ import Alert from "@material-ui/lab/Alert";
 
 import SubsectorListWidget from "../components/SubsectorListWidget";
 import { getData, getSync, getSession } from "src/selectors";
-import { delData, saveData } from "src/slices/data";
+import { delData, downloadExcel, saveData } from "src/slices/data";
 import { Subsector, ItemType } from "src/kernel";
 import { clearFeedback, submitExcel } from "src/slices/sync";
 import ExcelProcessor2 from "src/kernel/ExcelProcessor2";
@@ -63,16 +62,7 @@ const SectorView: React.FunctionComponent<ISectorViewProps> = (props) => {
   };
 
   const handleExcelDownloadClick = async () => {
-    let subsectorObjs = Object.values(subsectors).map((x, idx) => ({
-      ...x,
-      line: idx,
-      sector: sectors[x.sector].name,
-    }));
-    let s = await ExcelProcessor2.genSubsectorFile(subsectorObjs);
-    var blob = new Blob([s], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
-    saveAs(blob, `Subsectors.xlsx`);
+    dispatch(downloadExcel({ type: ItemType.Subsector }));
   };
 
   return (

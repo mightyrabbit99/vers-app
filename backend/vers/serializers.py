@@ -1,6 +1,6 @@
 from typing import Set
 from rest_framework import serializers
-import json
+import datetime
 
 from django.contrib.auth.models import User
 from django.core import exceptions
@@ -87,14 +87,14 @@ class PlantSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         lg.log_create(
-               data_type=lg.PLANT,
-               user=self.get_request_user(), data=validated_data).save()
+            data_type=lg.PLANT,
+            user=self.get_request_user(), data=validated_data).save()
         return super().create(validated_data)
 
     def update(self, instance, validated_data):
         lg.log_update(
-               data_type=lg.PLANT,
-               user=self.get_request_user(), data=validated_data, origin=instance).save()
+            data_type=lg.PLANT,
+            user=self.get_request_user(), data=validated_data, origin=instance).save()
         return super().update(instance, validated_data)
 
     class Meta:
@@ -116,14 +116,14 @@ class SectorSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         lg.log_create(
-               data_type=lg.SECTOR,
-               user=self.get_request_user(), data=validated_data).save()
+            data_type=lg.SECTOR,
+            user=self.get_request_user(), data=validated_data).save()
         return super().create(validated_data)
 
     def update(self, instance, validated_data):
         lg.log_update(
-               data_type=lg.SECTOR,
-               user=self.get_request_user(), data=validated_data, origin=instance).save()
+            data_type=lg.SECTOR,
+            user=self.get_request_user(), data=validated_data, origin=instance).save()
         return super().update(instance, validated_data)
 
     class Meta:
@@ -149,14 +149,14 @@ class SubsectorSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         lg.log_create(
-               data_type=lg.SUBSECTOR,
-               user=self.get_request_user(), data=validated_data).save()
+            data_type=lg.SUBSECTOR,
+            user=self.get_request_user(), data=validated_data).save()
         return super().create(validated_data)
 
     def update(self, instance, validated_data):
         lg.log_update(
-               data_type=lg.SUBSECTOR,
-               user=self.get_request_user(), data=validated_data, origin=instance).save()
+            data_type=lg.SUBSECTOR,
+            user=self.get_request_user(), data=validated_data, origin=instance).save()
         return super().update(instance, validated_data)
 
     class Meta:
@@ -178,14 +178,14 @@ class DepartmentSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         lg.log_create(
-               data_type=lg.DEPARTMENT,
-               user=self.get_request_user(), data=validated_data).save()
+            data_type=lg.DEPARTMENT,
+            user=self.get_request_user(), data=validated_data).save()
         return super().create(validated_data)
 
     def update(self, instance, validated_data):
         lg.log_update(
-               data_type=lg.DEPARTMENT,
-               user=self.get_request_user(), data=validated_data, origin=instance).save()
+            data_type=lg.DEPARTMENT,
+            user=self.get_request_user(), data=validated_data, origin=instance).save()
         return super().update(instance, validated_data)
 
     class Meta:
@@ -235,8 +235,8 @@ class EmployeeSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         g = lg.log_create(
-               data_type=lg.EMPLOYEE,
-               user=self.get_request_user(), data=validated_data)
+            data_type=lg.EMPLOYEE,
+            user=self.get_request_user(), data=validated_data)
         validated_data['sesa_id'] = validated_data['sesa_id'].upper()
         skills_data = validated_data.pop('skills')
         user_data = validated_data.pop('user')
@@ -271,8 +271,8 @@ class EmployeeSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         # log
         g = lg.log_update(
-               data_type=lg.EMPLOYEE,
-               user=self.get_request_user(), data=validated_data, origin=instance)
+            data_type=lg.EMPLOYEE,
+            user=self.get_request_user(), data=validated_data, origin=instance)
         validated_data['sesa_id'] = validated_data['sesa_id'].upper()
         skills_data = validated_data.pop('skills')
         user_data = validated_data.pop('user')
@@ -329,8 +329,8 @@ class JobSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         g = lg.log_create(
-               data_type=lg.JOB,
-               user=self.get_request_user(), data=validated_data)
+            data_type=lg.JOB,
+            user=self.get_request_user(), data=validated_data)
         skills_data = validated_data.pop('skills_required')
         job = models.Job(**validated_data)
         job.save()
@@ -343,8 +343,8 @@ class JobSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         g = lg.log_update(
-               data_type=lg.JOB,
-               user=self.get_request_user(), data=validated_data, origin=instance)
+            data_type=lg.JOB,
+            user=self.get_request_user(), data=validated_data, origin=instance)
         skills_data = validated_data.pop('skills_required')
         origin_skills = instance.skills_required.all()
         for s in origin_skills:
@@ -373,6 +373,7 @@ class SkillSerializer(serializers.ModelSerializer):
         model = models.Skill
         fields = '__all__'
 
+
 class LogSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Log
@@ -398,8 +399,8 @@ class ForecastPackSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         g = lg.log_create(
-               data_type=lg.FORECAST,
-               user=self.get_request_user(), data=validated_data)
+            data_type=lg.FORECAST,
+            user=self.get_request_user(), data=validated_data)
         forecasts_data = validated_data.pop("forecasts")
         new_fc = models.ForecastPack(**validated_data)
         new_fc.save()
@@ -417,8 +418,8 @@ class ForecastPackSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         g = lg.log_update(
-               data_type=lg.FORECAST,
-               user=self.get_request_user(), data=validated_data, origin=instance)
+            data_type=lg.FORECAST,
+            user=self.get_request_user(), data=validated_data, origin=instance)
         forecasts_data = validated_data.pop("forecasts")
         origin_forecasts = instance.forecasts.all()
         n_map = {}
@@ -449,7 +450,20 @@ class ForecastPackSerializer(serializers.ModelSerializer):
         model = models.ForecastPack
         fields = '__all__'
 
+
 class CalEventSerializer(serializers.ModelSerializer):
+    def validate(self, attrs):
+        start = attrs.get('start')
+        end = attrs.get('end')
+        start_dto = datetime.datetime.strptime(start, '%Y-%m-%d')
+        end_dto = datetime.datetime.strptime(end, '%Y-%m-%d')
+        if start_dto > end_dto:
+            errors = {'start': 'cannot be after end',
+                      'end': 'cannot be before start'}
+            raise serializers.ValidationError(errors)
+
+        return super().validate(attrs)
+
     class Meta:
         model = models.CalEvent
         fields = '__all__'

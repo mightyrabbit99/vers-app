@@ -314,6 +314,22 @@ class ExcelProcessor2 {
   static readCalEventFile = async (file: File) => {
     return await readFile(file, readCalEventSheet);
   }
+  static readFile = async (type: ItemType, file: File) => {
+    switch (type) {
+      case ItemType.Sector:
+        return await ExcelProcessor2.readSectorFile(file);
+      case ItemType.Subsector:
+        return await ExcelProcessor2.readSubsectorFile(file);
+      case ItemType.Skill:
+        return await ExcelProcessor2.readSkillFile(file);
+      case ItemType.Employee:
+        return await ExcelProcessor2.readEmployeeFile(file);
+      case ItemType.CalEvent:
+        return await ExcelProcessor2.readCalEventFile(file);
+      default:
+        return null;
+    }
+  }
 
   static genSectorFile = async (sectors: SectorObj[]) => {
     return await genFile(sectorSheetWriter(sectors));
@@ -333,6 +349,23 @@ class ExcelProcessor2 {
 
   static genCalEventFile = async (calEvents: CalEventObj[]) => {
     return await genFile(calEventSheetWriter(calEvents));
+  }
+
+  static genFile = async (type: ItemType, objs: ExcelObj[]) => {
+    switch (type) {
+      case ItemType.Sector:
+        return await ExcelProcessor2.genSectorFile(objs as SectorObj[]);
+      case ItemType.Subsector:
+        return await ExcelProcessor2.genSubsectorFile(objs as SubsectorObj[]);
+      case ItemType.Skill:
+        return await ExcelProcessor2.genSkillFile(objs as SkillObj[]);
+      case ItemType.Employee:
+        return await ExcelProcessor2.genEmployeeFile(objs as EmployeeObj[]);
+      case ItemType.CalEvent:
+        return await ExcelProcessor2.genCalEventFile(objs as CalEventObj[]);
+      default:
+        return null;
+    }
   }
 }
 

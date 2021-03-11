@@ -29,6 +29,7 @@ router.register(r'skill', views.SkillView, 'skill')
 router.register(r'emp', views.EmployeeView, 'employee')
 router.register(r'job', views.JobView, 'job')
 router.register(r'forecast', views.ForecastView, 'forecast')
+router.register(r'cal_event', views.CalEventView, 'events')
 
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),  

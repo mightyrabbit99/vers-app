@@ -1,6 +1,5 @@
 import * as React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { saveAs } from "file-saver";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
@@ -11,7 +10,7 @@ import Alert from "@material-ui/lab/Alert";
 import ExcelProcessor2 from "src/kernel/ExcelProcessor2";
 import SectorListWidget from "../components/SectorListWidget";
 import { getData, getSync, getSession } from "src/selectors";
-import { delData, saveData } from "src/slices/data";
+import { delData, downloadExcel, saveData } from "src/slices/data";
 import { ItemType, Sector } from "src/kernel";
 import { clearFeedback, submitExcel } from "src/slices/sync";
 
@@ -73,16 +72,7 @@ const SectorView: React.FunctionComponent<ISectorViewProps> = (props) => {
   };
 
   const handleExcelDownloadClick = async () => {
-    let sectorObjs = Object.values(sectors).map((x, idx) => ({
-      ...x,
-      line: idx,
-      plant: plants[x.plant].name,
-    }));
-    let s = await ExcelProcessor2.genSectorFile(sectorObjs);
-    var blob = new Blob([s], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
-    saveAs(blob, `Sectors.xlsx`);
+    dispatch(downloadExcel({ type: ItemType.Sector }));
   };
 
   return (
@@ -107,7 +97,7 @@ const SectorView: React.FunctionComponent<ISectorViewProps> = (props) => {
       </Grid>
       <Snackbar open={fbOpen} autoHideDuration={6000} onClose={handleFbClose}>
         <Alert onClose={handleFbClose} severity={"error"}>
-          {"Upload failed"}
+          {"Upload failed: Make sure you use the correct format"}
         </Alert>
       </Snackbar>
     </React.Fragment>
