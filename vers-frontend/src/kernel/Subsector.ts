@@ -53,6 +53,7 @@ const post = async (t: Subsector) => {
   try {
     res = await Fetcher.postSubsec(objToData(t));
   } catch (error) {
+    if (!error.response) throw error;
     res = error.response;
   }
   return { success: res.status === 201, statusText: res.statusText, data: dataToObj(res.data) };
@@ -63,6 +64,7 @@ const put = async (t: Subsector) => {
   try {
     res = await Fetcher.putSubsec(objToData(t));
   } catch (error) {
+    if (!error.response) throw error;
     res = error.response;
   }
   return { success: res.status === 200, statusText: res.statusText, data: dataToObj(res.data) };

@@ -59,6 +59,7 @@ const post = async (t: Skill) => {
   try {
     res = await Fetcher.postSkill(objToData(t));
   } catch (error) {
+    if (!error.response) throw error;
     res = error.response;
   }
   return { success: res.status === 201, statusText: res.statusText, data: dataToObj(res.data) };
@@ -69,6 +70,7 @@ const put = async (t: Skill) => {
   try {
     res = await Fetcher.putSkill(objToData(t));
   } catch (error) {
+    if (!error.response) throw error;
     res = error.response;
   }
   return { success: res.status === 200, statusText: res.statusText, data: dataToObj(res.data) };

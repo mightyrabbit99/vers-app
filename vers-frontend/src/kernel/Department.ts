@@ -43,6 +43,7 @@ const post = async (t: Department) => {
   try {
     res = await Fetcher.postDept(objToData(t));
   } catch (error) {
+    if (!error.response) throw error;
     res = error.response;
   }
   return { success: res.status === 201, statusText: res.statusText, data: dataToObj(res.data) };
@@ -53,6 +54,7 @@ const put = async (t: Department) => {
   try {
     res = await Fetcher.putDept(objToData(t));
   } catch (error) {
+    if (!error.response) throw error;
     res = error.response;
   }
   return { success: res.status === 200, statusText: res.statusText, data: dataToObj(res.data) };

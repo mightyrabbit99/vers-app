@@ -51,6 +51,7 @@ const post = async (t: CalEvent) => {
   try {
     res = await Fetcher.postCalEvent(objToData(t));
   } catch (error) {
+    if (!error.response) throw error;
     res = error.response;
   }
   return { success: res.status === 201, statusText: res.statusText, data: dataToObj(res.data) };
@@ -61,6 +62,7 @@ const put = async (t: CalEvent) => {
   try {
     res = await Fetcher.putCalEvent(objToData(t));
   } catch (error) {
+    if (!error.response) throw error;
     res = error.response;
   }
   return { success: res.status === 200, statusText: res.statusText, data: dataToObj(res.data) };

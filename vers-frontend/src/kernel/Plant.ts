@@ -43,6 +43,7 @@ const post = async (t: Plant) => {
   try {
     res = await Fetcher.postPlant(objToData(t));
   } catch (error) {
+    if (!error.response) throw error;
     res = error.response;
   }
   return { success: res.status === 201, statusText: res.statusText, data: dataToObj(res.data) };
@@ -53,6 +54,7 @@ const put = async (t: Plant) => {
   try {
     res = await Fetcher.putPlant(objToData(t));
   } catch (error) {
+    if (!error.response) throw error;
     res = error.response;
   }
   return { success: res.status === 200, statusText: res.statusText, data: dataToObj(res.data) };

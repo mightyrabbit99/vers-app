@@ -38,6 +38,7 @@ const post = async (t: Sector) => {
   try {
     res = await Fetcher.postSec(objToData(t));
   } catch (error) {
+    if (!error.response) throw error;
     res = error.response;
   }
   return { success: res.status === 201, statusText: res.statusText, data: dataToObj(res.data) };
@@ -48,6 +49,7 @@ const put = async (t: Sector) => {
   try {
     res = await Fetcher.putSec(objToData(t));
   } catch (error) {
+    if (!error.response) throw error;
     res = error.response;
   }
   return { success: res.status === 200, statusText: res.statusText, data: dataToObj(res.data) };

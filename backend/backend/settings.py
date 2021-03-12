@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'vers',
+    'django_celery_results',
 ]
 
 MIDDLEWARE = [
@@ -151,8 +152,26 @@ CORS_ALLOW_HEADERS = [
     '*'
 ]
 
-# Celery
-# Celery Configuration Options
-CELERY_TIMEZONE = "Singapore"
-CELERY_TASK_TRACK_STARTED = True
-CELERY_TASK_TIME_LIMIT = 30 * 60
+# Celery settings
+
+CELERY_BROKER_URL = 'amqp://guest:guest@localhost'
+
+#: Only add pickle to this list if your broker is secured
+#: from unwanted access (see userguide/security.html)
+CELERY_ACCEPT_CONTENT = ['json']
+
+# CELERY_RESULT_BACKEND = 'db+sqlite:///results.sqlite'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_TASK_SERIALIZER = 'json'
+
+# predefined beat schedule
+CELERY_BEAT_SCHEDULE = {
+    'add-every-30-seconds': {
+        'task': 'vers.tasks.write_excel',
+        'schedule': 10.0,
+        'args': ()
+    },
+}
+
+CELERY_TIMEZONE = 'UTC'
+

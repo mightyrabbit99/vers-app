@@ -66,6 +66,7 @@ const post = async (t: Employee) => {
   try {
     res = await Fetcher.postEmp(objToData(t));
   } catch (error) {
+    if (!error.response) throw error;
     res = error.response;
   }
   return { success: res.status === 201, statusText: res.statusText, data: dataToObj(res.data) };
@@ -76,6 +77,7 @@ const put = async (t: Employee) => {
   try {
     res = await Fetcher.putEmp(objToData(t));
   } catch (error) {
+    if (!error.response) throw error;
     res = error.response;
   }
   return { success: res.status === 200, statusText: res.statusText, data: dataToObj(res.data) };

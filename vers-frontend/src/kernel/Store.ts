@@ -9,7 +9,7 @@ enum ItemType {
   EmpSkill = "EmpSkill",
   Log = "Log",
   Forecast = "Forecast",
-  CalEvent = "CalEvent,"
+  CalEvent = "CalEvent",
 }
 
 interface Item {
@@ -83,21 +83,9 @@ function store<T extends Item>(
       return generator(init);
     };
 
-    submitNew = async (t: T) => {
-      try {
-        return await post(t);
-      } catch (error) {
-        return { success: false, data: error };
-      }
-    };
+    submitNew = post;
 
-    submit = async (t: T) => {
-      try {
-        return await put(t);
-      } catch (error) {
-        return { success: false, data: error };
-      }
-    };
+    submit = put;
 
     submitOrNew = async (t: T) => {
       if (hasher) {
