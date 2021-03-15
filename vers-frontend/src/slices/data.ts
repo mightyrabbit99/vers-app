@@ -127,6 +127,9 @@ const dataSlice = createSlice({
     selPlant: (state, { payload }: PayloadAction<number | undefined>) => {
       state.selectedPlantId = payload;
     },
+    clearMyLog: (state) => {
+      state.personalLogs = [];
+    },
     downloadExcel: (
       state,
       { payload }: PayloadAction<{ type: ItemType; items?: Item[] }>
@@ -148,6 +151,7 @@ export const {
   saveItemProp,
   selPlant,
   downloadExcel,
+  clearMyLog,
 } = dataSlice.actions;
 
 export default dataSlice.reducer;

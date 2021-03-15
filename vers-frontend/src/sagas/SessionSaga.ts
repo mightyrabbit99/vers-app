@@ -33,7 +33,7 @@ function* init() {
   }
 }
 
-function* logoutThenUpdatePermission() {
+function logoutThenUpdatePermission() {
   k.logout();
 }
 

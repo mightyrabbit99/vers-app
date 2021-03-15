@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import { Theme, makeStyles } from "@material-ui/core/styles";
 import List from "@material-ui/core/List";
@@ -9,12 +9,15 @@ import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import Typography from "@material-ui/core/Typography";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import IconButton from "@material-ui/core/IconButton";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import DeleteIcon from '@material-ui/icons/Delete';
 
 import { Log, MyLog, LogType, DataType } from "src/kernel";
 import { getData } from "src/selectors";
+import { clearMyLog } from "src/slices/data";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -29,6 +32,13 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   title: {
     height: "15%",
+  },
+  topBar: {
+    display: "flex",
+    flexDirection: "row",
+  },
+  rightItem: {
+    marginLeft: "auto",
   },
   content: {
     height: "85%",
@@ -86,17 +96,22 @@ const myGetIden = (data: any) => {
 }
 
 const ChangeLogView: React.FunctionComponent = () => {
+  const dispatch = useDispatch();
   const classes = useStyles();
   const { logs, personalLogs } = useSelector(getData);
 
   const genDetail = (x: any) => {
     let iden = myGetIden(x.data);
-    return `${x.success ? "Success" : "Failed"}: ${x.data._type} \"${iden}\" ${x.statusText}`;
+    return `${x.success ? "Success" : "Failed"}: ${x.data._type} "${iden}" ${x.statusText}`;
   };
 
   const genFailDetail = (x: any) => {
     let err_lst = Object.entries(x).filter(x => (x[0] !== "_type") && (x[1] instanceof Array)) as [string, string[]][];
     return err_lst.map(x => x[1].map(y => `${x[0]}: ${y}`)).reduce((prev, curr) => `${prev}\n${curr}`, "");
+  }
+
+  const handleDeleteMyLog = () => {
+    dispatch(clearMyLog());
   }
 
   const genMyLogCard = (log: MyLog, idx: number) => {
@@ -139,9 +154,14 @@ const ChangeLogView: React.FunctionComponent = () => {
     <Grid container spacing={3}>
       <Grid item xs={12}>
         <Paper className={classes.widget}>
-          <Typography component="h2" variant="h6" color="primary" gutterBottom>
-            My Changes
-          </Typography>
+          <div className={classes.topBar}>
+            <Typography component="h2" variant="h6" color="primary" gutterBottom>
+              My Changes
+            </Typography>
+            <IconButton className={classes.rightItem} onClick={handleDeleteMyLog}>
+              <DeleteIcon />
+            </IconButton>
+          </div>
           <div className={classes.content}>
             {personalLogs.map(genMyLogCard)}
           </div>

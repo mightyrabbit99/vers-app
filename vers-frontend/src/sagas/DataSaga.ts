@@ -11,6 +11,7 @@ import {
   delData,
   selPlant,
   downloadExcel,
+  clearMyLog,
 } from "src/slices/data";
 import { createNew, modify, erase } from "src/slices/sync";
 import { SaveDataAction, DeleteDataAction, ReloadDataAction, DownloadExcelAction } from "src/types";
@@ -135,6 +136,10 @@ function* downExcel({ payload }: DownloadExcelAction) {
   saveAs(blob, `${type}.xlsx`);
 }
 
+function delPersonalLogs() {
+  k.clearLog();
+}
+
 function* dataSaga() {
   yield all([
     takeLatest(reload.type, reloadData),
@@ -143,6 +148,7 @@ function* dataSaga() {
     takeLatest(saveData.type, saveDataCascadeThenCalculate),
     takeLatest(delData.type, delDataCascadeThenCalculate),
     takeLatest(downloadExcel.type, downExcel),
+    takeLatest(clearMyLog.type, delPersonalLogs),
   ]);
 }
 
