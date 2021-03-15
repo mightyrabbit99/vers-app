@@ -17,11 +17,16 @@ import { UserData } from "src/kernel/data/UserData";
 import { Forecast } from "src/kernel/Forecast";
 import { delData, saveData, reload } from "src/slices/data";
 import { changeUserDetail, login } from "src/slices/session";
-import { createNew, erase, modify, submitExcel } from "src/slices/sync";
+import { createNew, erase, fetchData, modify, submitExcel } from "src/slices/sync";
+
+export interface FetchDataAction {
+  type: typeof fetchData.type;
+  payload?: ItemType | ItemType[];
+}
 
 export interface ReloadDataAction {
   type: typeof reload.type;
-  payload: number | undefined;
+  payload?: number;
 }
 
 export interface EraseAction {

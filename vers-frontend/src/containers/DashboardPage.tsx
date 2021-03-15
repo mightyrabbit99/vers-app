@@ -45,12 +45,11 @@ import ChangeLogView from "./ChangeLogView";
 import AccessCtrlView from "./AccessCtrlView";
 import CalendarView from "./CalendarView";
 
-import { clearFeedback } from "src/slices/sync";
+import { clearFeedback, fetchData } from "src/slices/sync";
 import { logout } from "src/slices/session";
 import { selPlant } from "src/slices/data";
 import { getData, getSession } from "src/selectors";
-import { AccessLevel } from "src/kernel";
-
+import { AccessLevel, ItemType } from "src/kernel";
 
 function Copyright() {
   return (
@@ -152,7 +151,7 @@ const useStyles = makeStyles((theme) => ({
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
-    color: '#fff',
+    color: "#fff",
   },
 }));
 
@@ -168,6 +167,31 @@ enum DashboardView {
   ChangeLog,
   AccessCtrl,
   Calendar,
+}
+
+function getItemType(i: DashboardView) {
+  switch (i) {
+    case DashboardView.Plant:
+      return ItemType.Plant;
+    case DashboardView.Sector:
+      return ItemType.Sector;
+    case DashboardView.Subsector:
+      return ItemType.Subsector;
+    case DashboardView.Skill:
+      return ItemType.Skill;
+    case DashboardView.Department:
+      return ItemType.Department;
+    case DashboardView.Employee:
+      return ItemType.Employee;
+    case DashboardView.Job:
+      return ItemType.Job;
+    case DashboardView.Forecast:
+      return ItemType.Forecast;
+    case DashboardView.Calendar:
+      return ItemType.CalEvent;
+    case DashboardView.ChangeLog:
+      return ItemType.Log;
+  }
 }
 
 const Dashboard: React.FC = () => {
@@ -199,8 +223,10 @@ const Dashboard: React.FC = () => {
     setMainAnchorEl(e.currentTarget);
   };
 
-  const handleListClick = (i: number) => () => {
+  const handleListClick = (i: DashboardView) => () => {
+    if (currView === i) return;
     localStorage.setItem("lastDashboardView", `${i}`);
+    dispatch(fetchData(getItemType(i)));
     setCurrView(i);
   };
 
@@ -229,7 +255,7 @@ const Dashboard: React.FC = () => {
     dispatch(selPlant());
   };
 
-  const cannotView = (i: number) => {
+  const cannotView = (i: DashboardView) => {
     if (user?.is_superuser) return false;
     switch (i) {
       case DashboardView.Plant:

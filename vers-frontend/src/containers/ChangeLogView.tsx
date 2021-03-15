@@ -81,15 +81,17 @@ const genDescStr = (log: Log) => {
   return `${genActionStr(log.type)} ${genDataTypeStr(log.dataType)}`;
 };
 
-interface IChangeLogViewProps {}
+const myGetIden = (data: any) => {
+  return data.name ?? data.title ?? data.on ?? (data.firstName && data.lastName) ? `${data.firstName}, ${data.lastName}` : "";
+}
 
-const ChangeLogView: React.FunctionComponent<IChangeLogViewProps> = (props) => {
+const ChangeLogView: React.FunctionComponent = () => {
   const classes = useStyles();
   const { logs, personalLogs } = useSelector(getData);
 
   const genDetail = (x: any) => {
-    let nm = x.data.name ?? x.data.title ?? x.data.on ?? "";
-    return `${x.success ? "Success" : "Failed"}: ${x.data._type} \"${nm}\" ${x.statusText}`;
+    let iden = myGetIden(x.data);
+    return `${x.success ? "Success" : "Failed"}: ${x.data._type} \"${iden}\" ${x.statusText}`;
   };
 
   const genFailDetail = (x: any) => {

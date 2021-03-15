@@ -51,11 +51,11 @@ const getMyLog = (): MyLog[] => {
   } catch (e) {
     return [];
   }
-}
+};
 
 const setMyLog = (lst: MyLog[]) => {
   localStorage.setItem("MyLog", JSON.stringify(lst));
-}
+};
 
 class Kernel {
   plantStore: Store<Plant>;
@@ -84,17 +84,37 @@ class Kernel {
     this.personalLogs = getMyLog();
   }
 
-  public refresh = async () => {
-    await this.plantStore.refresh();
-    await this.secStore.refresh();
-    await this.subsecStore.refresh();
-    await this.deptStore.refresh();
-    await this.skillStore.refresh();
-    await this.empStore.refresh();
-    await this.jobStore.refresh();
-    await this.forecastStore.refresh();
-    await this.logStore.refresh();
-    await this.calEventStore.refresh();
+  private getStore = (t: ItemType) => {
+    switch (t) {
+      case ItemType.Plant:
+        return this.plantStore;
+      case ItemType.Sector:
+        return this.secStore;
+      case ItemType.Subsector:
+        return this.subsecStore;
+      case ItemType.Department:
+        return this.deptStore;
+      case ItemType.Skill:
+        return this.skillStore;
+      case ItemType.Employee:
+        return this.empStore;
+      case ItemType.Job:
+        return this.jobStore;
+      case ItemType.Forecast:
+        return this.forecastStore;
+      case ItemType.CalEvent:
+        return this.calEventStore;
+      case ItemType.Log:
+        return this.logStore;
+    }
+  };
+
+  public refresh = async (lst?: ItemType | ItemType[]) => {
+    if (!lst) lst = Object.values(ItemType);
+    if (!(lst instanceof Array)) {
+      lst = [lst];
+    }
+    await Promise.all(lst.map((x) => this.getStore(x)?.refresh()));
   };
 
   private _log = (desc: string, ...data: SubmitResult[]) => {
@@ -279,7 +299,10 @@ class Kernel {
     return { success: res.status === 200, data: res.data };
   };
 
-  private saveSectorObjs = async (plantId: number, objs: SectorObj[]): Promise<SubmitResult[]> => {
+  private saveSectorObjs = async (
+    plantId: number,
+    objs: SectorObj[]
+  ): Promise<SubmitResult[]> => {
     let plant = this.plantStore.get(plantId);
     const saveObj = async (o: SectorObj) => {
       const st = this.secStore;
@@ -296,7 +319,10 @@ class Kernel {
     return await Promise.all(objs.map(saveObj));
   };
 
-  private saveSubsectorObjs = async (plantId: number, objs: SubsectorObj[]): Promise<SubmitResult[]> => {
+  private saveSubsectorObjs = async (
+    plantId: number,
+    objs: SubsectorObj[]
+  ): Promise<SubmitResult[]> => {
     let sectors = this.secStore.getLst((x) => x.plant === plantId);
     let secNames = genMap(sectors, (x) => x.name);
     const saveObj = async (o: SubsectorObj) => {
@@ -318,7 +344,10 @@ class Kernel {
     return await Promise.all(objs.map(saveObj));
   };
 
-  private saveSkillObjs = async (plantId: number, objs: SkillObj[]): Promise<SubmitResult[]> => {
+  private saveSkillObjs = async (
+    plantId: number,
+    objs: SkillObj[]
+  ): Promise<SubmitResult[]> => {
     let sectors = this.secStore.getLst((x) => x.plant === plantId);
     let subsectors = this.subsecStore.getLst((x) => x.sector in sectors);
     let subsecNames = genMap(subsectors, (x) => x.name);
@@ -343,7 +372,10 @@ class Kernel {
     return await Promise.all(objs.map(saveObj));
   };
 
-  private saveEmpObjs = async (plantId: number, objs: EmployeeObj[]): Promise<SubmitResult[]> => {
+  private saveEmpObjs = async (
+    plantId: number,
+    objs: EmployeeObj[]
+  ): Promise<SubmitResult[]> => {
     let sectors = this.secStore.getLst((x) => x.plant === plantId);
     let subsectors = this.subsecStore.getLst((x) => x.sector in sectors);
     let subsecNames = genMap(subsectors, (x) => x.name);
@@ -376,7 +408,7 @@ class Kernel {
     plantId: number,
     type: ItemType,
     objs: ExcelObj[]
-  ): Promise<SubmitResult[] | undefined>=> {
+  ): Promise<SubmitResult[] | undefined> => {
     switch (type) {
       case ItemType.Sector:
         return await this.saveSectorObjs(plantId, objs as SectorObj[]);

@@ -129,9 +129,7 @@ const EmployeeSkillWidget: React.FunctionComponent<IEmployeeSkillWidgetProps> = 
             {Object.values(lst).map(genListItem)}
           </List>
         </Grid>
-        <Grid item xs={1}>
-          <Divider orientation="vertical" flexItem />
-        </Grid>
+        <Divider orientation="vertical" flexItem />
         <Grid item xs={8}>
           <div className={classes.ctrlButtons}>
             <Button

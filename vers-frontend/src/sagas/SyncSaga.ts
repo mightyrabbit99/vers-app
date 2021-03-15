@@ -1,7 +1,7 @@
 import { all, put, select, takeLatest } from "redux-saga/effects";
 import k, { Result } from "src/kernel";
 import { getData } from "src/selectors";
-import { reload, selPlant } from "src/slices/data";
+import { reload, selPlant, _delData, _saveData } from "src/slices/data";
 import {
   createNew,
   erase,
@@ -14,15 +14,16 @@ import {
   submitSuccess,
 } from "src/slices/sync";
 import {
+  FetchDataAction,
   CreateNewAction,
   EraseAction,
   ModifyAction,
   SubmitExcelAction,
 } from "src/types";
 
-function* fetchDatas() {
+function* fetchDatas({ payload }: FetchDataAction) {
   try {
-    yield k.refresh();
+    yield k.refresh(payload);
   } catch (error) {
     yield put(fetchDataError(error.message));
     return;
@@ -42,7 +43,7 @@ function* postItemThenSave({ payload }: CreateNewAction) {
     const feedback: Result = yield k.saveNew(payload);
     if (feedback.success) {
       yield put(submitSuccess(undefined));
-      yield put(fetchData());
+      yield put(_saveData(payload));
     } else {
       yield put(submitSuccess(feedback.data));
     }
@@ -62,7 +63,7 @@ function* putItem({ payload }: ModifyAction) {
       if (!res.success) break;
     }
     yield put(submitSuccess(res.success ? undefined : res.data));
-    yield put(fetchData());
+    yield put(_saveData(payload));
   } catch (error) {
     yield put(submitError(error.message));
   }
@@ -77,7 +78,7 @@ function* deleteItem({ payload }: EraseAction) {
       yield k.del(p);
     }
     yield put(submitSuccess(undefined));
-    yield put(fetchData());
+    yield put(_delData(payload));
   } catch (error) {
     yield put(submitError(error.message));
   }

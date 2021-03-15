@@ -10,7 +10,7 @@ const syncSlice = createSlice({
   name: "sync",
   initialState,
   reducers: {
-    fetchData: (state) => {
+    fetchData: (state, { payload }: PayloadAction<undefined | ItemType | ItemType[]>) => {
       state.syncing = true;
     },
     fetchDataSuccess: (state) => {

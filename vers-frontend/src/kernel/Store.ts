@@ -84,9 +84,15 @@ function store<T extends Item>(
       return generator(init);
     };
 
-    submitNew = post;
+    submitNew = async (t: T) => {
+      this.add(t);
+      return await post(t);
+    }
 
-    submit = put;
+    submit = async (t: T) => {
+      this.add(t);
+      return await put(t);
+    }
 
     submitOrNew = async (t: T) => {
       if (hasher) {
