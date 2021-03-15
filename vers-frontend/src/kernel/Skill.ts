@@ -83,7 +83,7 @@ const del = async (t: Skill) => {
 
 const hasher = (t: Skill) => t.name.trim().toLowerCase();
 
-const SkillStore = store<Skill>(get, post, put, del, generator, hasher);
+const SkillStore = store<Skill>(get, post, put, del, generator, dataToObj, hasher);
 
 export type { Skill };
 export default SkillStore;

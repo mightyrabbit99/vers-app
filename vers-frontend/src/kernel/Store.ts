@@ -1,3 +1,9 @@
+enum SocketMessage {
+  CREATE_NEW = 1,
+  EDIT = 2,
+  DELETE = 3,
+}
+
 enum ItemType {
   Plant = "Plant",
   Sector = "Sector",
@@ -33,6 +39,7 @@ interface Store<T extends Item> {
   submitNew: (t: T) => Promise<Result>;
   submitOrNew: (t: T) => Promise<Result>;
   remove: (t: T) => Promise<Result>;
+  trigger: () => any;
 }
 
 function store<T extends Item>(
@@ -41,11 +48,32 @@ function store<T extends Item>(
   put: (t: T) => Promise<Result>,
   del: (t: T) => Promise<Result>,
   generator: (init?: any) => T,
+  dataToObj: (data: any) => T,
   hasher?: (t: T) => string
 ) {
   return class implements Store<T> {
     private store: { [id: number]: T } = {};
     private hStore: { [k: string]: T } = {};
+    private socket: WebSocket | undefined = undefined;
+
+    constructor(socket?: WebSocket) {
+      this.socket = socket;
+      if (socket) {
+        socket.onmessage = (e: MessageEvent<any>) => {
+          const data = JSON.parse(e.data);
+          switch (data.type) {
+            case SocketMessage.CREATE_NEW:
+            case SocketMessage.EDIT:
+              data.content.forEach((x: any) => this.add(dataToObj(x)));
+              break;
+            case SocketMessage.DELETE:
+              data.content.forEach((x: any) => this.erase(dataToObj(x)));
+              break;
+          }
+          this.trigger();
+        };
+      }
+    }
 
     static generator = generator;
 
@@ -87,12 +115,12 @@ function store<T extends Item>(
     submitNew = async (t: T) => {
       this.add(t);
       return await post(t);
-    }
+    };
 
     submit = async (t: T) => {
       this.add(t);
       return await put(t);
-    }
+    };
 
     submitOrNew = async (t: T) => {
       if (hasher) {
@@ -109,6 +137,8 @@ function store<T extends Item>(
       this.erase(t);
       return await del(t);
     };
+
+    trigger = () => {};
   };
 }
 

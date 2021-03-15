@@ -124,7 +124,7 @@ const generator = (init?: any): Employee => ({
 
 const hasher = (t: Employee) => t.sesaId.trim().toLowerCase();
 
-const EmployeeStore = store<Employee>(get, post, put, del, generator, hasher);
+const EmployeeStore = store<Employee>(get, post, put, del, generator, dataToObj, hasher);
 
 export type { Employee, EmpSkillData };
 export { AccessLevel };

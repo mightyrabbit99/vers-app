@@ -88,7 +88,7 @@ const generator = (init?: any): Job => ({
   ...init,
 });
 
-const JobStore = store<Job>(get, post, put, del, generator);
+const JobStore = store<Job>(get, post, put, del, generator, dataToObj);
 
 export type { Job, JobSkillData };
 export default JobStore;

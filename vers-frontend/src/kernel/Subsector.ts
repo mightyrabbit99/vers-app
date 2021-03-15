@@ -90,7 +90,7 @@ const generator = (init?: any): Subsector => ({
 
 const hasher = (t: Subsector) => t.name.trim().toLowerCase();
 
-const SubsectorStore = store<Subsector>(get, post, put, del, generator, hasher);
+const SubsectorStore = store<Subsector>(get, post, put, del, generator, dataToObj, hasher);
 
 export type { Subsector };
 export default SubsectorStore;

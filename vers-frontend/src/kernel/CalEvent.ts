@@ -75,7 +75,7 @@ const del = async (t: CalEvent) => {
 
 const hasher = (t: CalEvent) => t.name;
 
-const CalEventStore = store<CalEvent>(get, post, put, del, generator, hasher);
+const CalEventStore = store<CalEvent>(get, post, put, del, generator, dataToObj, hasher);
 
 export type { CalEvent };
 export default CalEventStore;

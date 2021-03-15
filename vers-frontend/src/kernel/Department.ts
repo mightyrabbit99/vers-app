@@ -67,7 +67,7 @@ const del = async (t: Department) => {
 
 const hasher = (t: Department) => t.name;
 
-const DepartmentStore = store<Department>(get, post, put, del, generator, hasher);
+const DepartmentStore = store<Department>(get, post, put, del, generator, dataToObj, hasher);
 
 export type { Department };
 export default DepartmentStore;

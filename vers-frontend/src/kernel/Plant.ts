@@ -65,7 +65,7 @@ const del = async (t: Plant) => {
   return { success: res.status === 204, statusText: res.statusText, data: {} };
 };
 
-const PlantStore = store<Plant>(get, post, put, del, generator);
+const PlantStore = store<Plant>(get, post, put, del, generator, dataToObj);
 
 export type { Plant };
 export default PlantStore;

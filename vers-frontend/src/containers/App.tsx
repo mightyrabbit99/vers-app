@@ -3,14 +3,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { green, purple } from "@material-ui/core/colors";
+
 import SigninPage from "./SignInPage";
 import DashboardPage from "./DashboardPage";
-import { getData, getSession } from "src/selectors";
-import { initLogin } from "src/slices/session";
 import SpinningBall from "./SpinningBall";
 import ProfilePage from "./ProfilePage";
 import UserEditPage from "./UserEditPage";
 import PlantPage from "./PlantPage";
+
+import { getData, getSession } from "src/selectors";
+import { reload } from "src/slices/data";
+import { initLogin } from "src/slices/session";
+import k from "src/kernel";
 
 interface IAppProps {}
 
@@ -39,6 +43,10 @@ const App: React.FC<IAppProps> = () => {
   const dispatch = useDispatch();
   const { authenticated: auth, syncing } = useSelector(getSession);
   const { selectedPlantId: pId } = useSelector(getData);
+
+  k.plantStore.trigger = () => {
+    dispatch(reload());
+  };
 
   React.useEffect(() => {
     dispatch(initLogin());

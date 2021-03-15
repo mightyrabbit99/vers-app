@@ -67,7 +67,7 @@ const generator = (init?: any): Forecast => ({
   })),
 });
 
-const ForecastStore = store<Forecast>(get, post, put, del, generator);
+const ForecastStore = store<Forecast>(get, post, put, del, generator, dataToObj);
 
 export type { Forecast, ForecastData };
 export default ForecastStore;

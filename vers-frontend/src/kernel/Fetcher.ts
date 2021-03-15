@@ -17,19 +17,18 @@ const axios = new FakeServer();
 */
 
 export type Result<T> = AxiosResponse<T>;
-const url = process.env.REACT_APP_API_URL; // `http://${window.location.host}`
-const userUrl = `${url}/user_modify/`;
-const apiTokenAuth = `${url}/api-token-auth/`;
-const plantUrl = `${url}/api/plant/`;
-const secUrl = `${url}/api/sec/`;
-const subsecUrl = `${url}/api/subsec/`;
-const empUrl = `${url}/api/emp/`;
-const deptUrl = `${url}/api/dept/`;
-const skillUrl = `${url}/api/skill/`;
-const jobUrl = `${url}/api/job/`;
-const logUrl = `${url}/log/`;
-const forecastUrl = `${url}/api/forecast/`;
-const calEventUrl = `${url}/api/cal_event/`;
+const userUrl = process.env.REACT_APP_REST_USER_MODIFY_URL ?? "";
+const apiTokenAuth = process.env.REACT_APP_REST_TOKEN_AUTH_URL ?? "";
+const plantUrl = process.env.REACT_APP_REST_API_PLANT_URL ?? "";
+const secUrl = process.env.REACT_APP_REST_API_SECTOR_URL ?? "";
+const subsecUrl = process.env.REACT_APP_REST_API_SUBSECTOR_URL ?? "";
+const empUrl = process.env.REACT_APP_REST_API_EMP_URL ?? "";
+const deptUrl = process.env.REACT_APP_REST_API_DEPT_URL ?? "";
+const skillUrl = process.env.REACT_APP_REST_API_SKILL_URL ?? "";
+const jobUrl = process.env.REACT_APP_REST_API_JOB_URL ?? "";
+const logUrl = process.env.REACT_APP_REST_API_LOG_URL ?? "";
+const forecastUrl = process.env.REACT_APP_REST_API_FORECAST_URL ?? "";
+const calEventUrl = process.env.REACT_APP_REST_API_CAL_EVENT_URL ?? "";
 
 const getCookie = (name: string) => {
   var cookieValue = null;
@@ -135,7 +134,7 @@ class Fetcher {
 
   static getCalEvents = async (): Promise<Result<CalEventData[]>> => {
     return await axios.get(calEventUrl, Fetcher.getConfig());
-  }
+  };
 
   // POST
   static postPlant = async (data: PlantData): Promise<Result<PlantData>> => {
@@ -195,7 +194,9 @@ class Fetcher {
     return await axios.post(forecastUrl, data, Fetcher.getConfig());
   };
 
-  static postCalEvent = async (data: CalEventData): Promise<Result<CalEventData>> => {
+  static postCalEvent = async (
+    data: CalEventData
+  ): Promise<Result<CalEventData>> => {
     return await axios.post(calEventUrl, data, Fetcher.getConfig());
   };
 
@@ -246,11 +247,21 @@ class Fetcher {
   static putForecast = async (
     data: ForecastData
   ): Promise<Result<ForecastData>> => {
-    return await axios.put(`${forecastUrl}${data.id}/`, data, Fetcher.getConfig());
+    return await axios.put(
+      `${forecastUrl}${data.id}/`,
+      data,
+      Fetcher.getConfig()
+    );
   };
 
-  static putCalEvent = async (data: CalEventData): Promise<Result<CalEventData>> => {
-    return await axios.put(`${calEventUrl}${data.id}/`, data, Fetcher.getConfig());
+  static putCalEvent = async (
+    data: CalEventData
+  ): Promise<Result<CalEventData>> => {
+    return await axios.put(
+      `${calEventUrl}${data.id}/`,
+      data,
+      Fetcher.getConfig()
+    );
   };
 
   static deleteEmp = async (
@@ -297,7 +308,9 @@ class Fetcher {
     return await axios.delete(`${forecastUrl}${data.id}/`, Fetcher.getConfig());
   };
 
-  static deleteCalEvent = async (data: CalEventData): Promise<Result<CalEventData>> => {
+  static deleteCalEvent = async (
+    data: CalEventData
+  ): Promise<Result<CalEventData>> => {
     return await axios.delete(`${calEventUrl}${data.id}/`, Fetcher.getConfig());
   };
 }

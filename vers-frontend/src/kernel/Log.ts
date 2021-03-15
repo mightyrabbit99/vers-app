@@ -72,7 +72,7 @@ const generator = (init?: any): Log => ({
   desc: {},
 });
 
-const LogStore = store<Log>(get, post, put, del, generator);
+const LogStore = store<Log>(get, post, put, del, generator, dataToObj);
 
 export type { Log };
 export { LogType, DataType };

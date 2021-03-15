@@ -18,6 +18,7 @@ import ExcelProcessor2, {
   SkillObj,
   SubsectorObj,
 } from "./ExcelProcessor2";
+import SocketConn from "./SocketConn";
 
 type Data = Plant | Sector | Subsector | Department | Skill | Employee | Job;
 
@@ -71,7 +72,7 @@ class Kernel {
   personalLogs: MyLog[];
 
   constructor() {
-    this.plantStore = new PlantStore();
+    this.plantStore = new PlantStore(SocketConn.getPlantSoc());
     this.secStore = new SectorStore();
     this.subsecStore = new SubsectorStore();
     this.deptStore = new DepartmentStore();
