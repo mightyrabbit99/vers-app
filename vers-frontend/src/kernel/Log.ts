@@ -9,7 +9,10 @@ interface Log extends Item {
   user: number;
   dataType: DataType;
   timestamp: string;
-  desc: any;
+  desc: {
+    original?: any;
+    data?: any;
+  };
 }
 
 function dataToObj(x: LogData): Log {
@@ -42,16 +45,20 @@ const get = async () => {
 };
 
 const post = async (t: Log) => {
-  return { success: true, data: t };
+  return { success: true, statusText: "Create", data: t };
 };
 
 const put = async (t: Log) => {
-  return { success: true, data: t };
+  return { success: true, statusText: "res.statusText", data: t };
 };
 
 const del = async (t: Log) => {
   let res = await Fetcher.deleteLog(objToData(t));
-  return { success: res.status === 204, data: {} };
+  return {
+    success: res.status === 204,
+    statusText: "",
+    data: {},
+  };
 };
 
 const generator = (init?: any): Log => ({

@@ -16,7 +16,7 @@ import FakeServer from "./FakeServer";
 const axios = new FakeServer();
 */
 
-type Result<T> = AxiosResponse<T>;
+export type Result<T> = AxiosResponse<T>;
 const url = process.env.REACT_APP_API_URL; // `http://${window.location.host}`
 const userUrl = `${url}/user_modify/`;
 const apiTokenAuth = `${url}/api-token-auth/`;

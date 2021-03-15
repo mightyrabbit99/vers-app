@@ -369,6 +369,27 @@ class SkillSerializer(serializers.ModelSerializer):
     jobs = JobSkillMatrixSerializer(many=True, read_only=True)
     employees = EmpSkillMatrixSerializer(many=True, read_only=True)
 
+    def get_request_user(self):
+        user = None
+        request = self.context.get("request")
+        if request and hasattr(request, "user"):
+            user = request.user
+        return user
+
+    def create(self, validated_data):
+        g = lg.log_create(
+            data_type=lg.SKILL,
+            user=self.get_request_user(), data=validated_data)
+        g.save()
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        g = lg.log_update(
+            data_type=lg.SKILL,
+            user=self.get_request_user(), data=validated_data, origin=instance)
+        g.save()
+        return super().update(instance, validated_data)
+
     class Meta:
         model = models.Skill
         fields = '__all__'
@@ -457,8 +478,8 @@ class CalEventSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         start: datetime.date = attrs.get('start')
-        end : datetime.date = attrs.get('end')
-        if start> end:
+        end: datetime.date = attrs.get('end')
+        if start > end:
             errors = {'start': 'cannot be after end',
                       'end': 'cannot be before start'}
             raise serializers.ValidationError(errors)

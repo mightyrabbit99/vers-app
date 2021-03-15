@@ -38,6 +38,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontSize: theme.typography.pxToRem(15),
     fontWeight: theme.typography.fontWeightRegular,
   },
+  myLogItem: {
+    width: "99%",
+  },
 }));
 
 const genDescStr = (log: Log) => {
@@ -84,25 +87,19 @@ const ChangeLogView: React.FunctionComponent<IChangeLogViewProps> = (props) => {
   const classes = useStyles();
   const { logs, personalLogs } = useSelector(getData);
 
-  const genSuccessDetail = (data: any) => {
-    return "";
+  const genDetail = (x: any) => {
+    let nm = x.data.name ?? x.data.title ?? x.data.on ?? "";
+    return `${x.success ? "Success" : "Failed"}: ${x.data._type} \"${nm}\" ${x.statusText}`;
   };
 
-  const genFailDetail = (data: any) => {
-    return (
-      <React.Fragment>
-        {Object.values(data)
-          .flatMap((x) => x)
-          .map((x, idx) => (
-            <Typography key={idx}>{`${x}`}</Typography>
-          ))}
-      </React.Fragment>
-    );
-  };
+  const genFailDetail = (x: any) => {
+    let err_lst = Object.entries(x).filter(x => (x[0] !== "_type") && (x[1] instanceof Array)) as [string, string[]][];
+    return err_lst.map(x => x[1].map(y => `${x[0]}: ${y}`)).reduce((prev, curr) => `${prev}\n${curr}`, "");
+  }
 
   const genMyLogCard = (log: MyLog, idx: number) => {
     return (
-      <Accordion key={idx}>
+      <Accordion key={idx} className={classes.myLogItem}>
         <AccordionSummary
           aria-controls="panel1a-content"
           id="panel1a-header"
@@ -111,23 +108,19 @@ const ChangeLogView: React.FunctionComponent<IChangeLogViewProps> = (props) => {
           <Typography className={classes.heading}>{log.desc}</Typography>
         </AccordionSummary>
         <AccordionDetails>
-            <List>
-              {log.vals.map((x, idx) => {
-                return (
-                  <ListItem key={idx}>
-                    <ListItemText
-                      primary={x.success ? "Success" : "Failed"}
-                      secondary={
-                        x.success
-                          ? genSuccessDetail(x.data)
-                          : genFailDetail(x.data)
-                      }
-                    />
-                  </ListItem>
-                );
-              })}
-            </List>
-          </AccordionDetails>
+          <List>
+            {log.vals.map((x, idx) => {
+              return (
+                <ListItem key={idx}>
+                  <ListItemText
+                    primary={genDetail(x)}
+                    secondary={x.success ? undefined : genFailDetail(x)}
+                  />
+                </ListItem>
+              );
+            })}
+          </List>
+        </AccordionDetails>
       </Accordion>
     );
   };

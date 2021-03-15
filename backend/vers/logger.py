@@ -1,4 +1,5 @@
 from .models import Log
+import json
 
 CREATE = Log.TypeChoices.CREATE
 UPDATE = Log.TypeChoices.UPDATE
@@ -14,24 +15,25 @@ JOB = Log.DataChoices.JOB
 FORECAST = Log.DataChoices.FORECAST
 
 
-def gen_log_data(data_type, origin):
-    return {
-        'pk': origin.pk
-    }
+def gen_log_data(origin, data_type = None, namespace = None):
+    origin = dict(map(lambda x: ['%s_%s' % (namespace, x[0]), x[1]], origin.items()))
+    return json.loads(json.dumps(origin, indent=4, sort_keys=True, default=str))
 
-def log(type, data_type, user, *args, **kwargs):
+
+def log(type, data_type, user, desc, *args, **kwargs):
     lg = Log(type=type,
              data_type=data_type,
-             user=user, desc=kwargs)
+             user=user, desc={**desc, **kwargs})
     return lg
 
+
 def log_create(data_type, user, data, *args, **kwargs):
-    return log(CREATE, data_type=data_type, user=user, *args, **kwargs)
+    return log(CREATE, data_type=data_type, user=user, desc={'data': data}, *args, **kwargs)
+
 
 def log_update(data_type, user, data, origin, *args, **kwargs):
-    orig = gen_log_data(data_type, origin)
-    return log(UPDATE, data_type=data_type, user=user, *args, **orig, **kwargs)
+    return log(UPDATE, data_type=data_type, user=user, desc={'original': origin, 'data': data}, *args, **kwargs)
+
 
 def log_delete(data_type, user, origin, *args, **kwargs):
-    orig = gen_log_data(data_type, origin)
-    return log(DELETE, data_type=data_type, user=user, *args, **orig, **kwargs)
+    return log(DELETE, data_type=data_type, user=user, desc={'original': origin}, *args, **kwargs)

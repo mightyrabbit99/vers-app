@@ -22,7 +22,10 @@ interface LogData extends Data {
   data_type: DataType;
   user: number;
   timestamp: string;
-  desc: any;
+  desc: {
+    original?: any;
+    data?: any;
+  }
 }
 
 export type { LogData };

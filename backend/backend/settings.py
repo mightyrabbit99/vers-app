@@ -166,9 +166,9 @@ CELERY_TASK_SERIALIZER = 'json'
 
 # predefined beat schedule
 CELERY_BEAT_SCHEDULE = {
-    'add-every-30-seconds': {
+    'write_to_excel': {
         'task': 'vers.tasks.write_excel',
-        'schedule': 10.0,
+        'schedule': 3600.0,
         'args': ()
     },
 }

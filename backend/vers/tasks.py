@@ -145,3 +145,6 @@ def write_excel():
     df7.to_excel(writer, sheet_name='Forecasts', index=False)
 
     writer.save()
+
+# init run
+write_excel()

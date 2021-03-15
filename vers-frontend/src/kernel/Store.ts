@@ -20,6 +20,7 @@ interface Item {
 
 interface Result {
   success: boolean;
+  statusText: string;
   data: any;
 }
 

@@ -56,7 +56,7 @@ function* putItem({ payload }: ModifyAction) {
     payload = [payload];
   }
   try {
-    let res: Result = { success: true, data: {} };
+    let res: Result = { success: true, statusText: "", data: {} };
     for (let p of payload) {
       res = yield k.save(p);
       if (!res.success) break;
