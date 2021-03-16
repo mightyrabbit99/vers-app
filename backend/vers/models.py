@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+import enum
 
 user_upload_folder = 'files/'
 
@@ -7,13 +8,24 @@ user_upload_folder = 'files/'
 def up_path(path):
     return user_upload_folder + path
 
+class DataType(models.IntegerChoices):
+    PLANT = 0, 'PLANT'
+    SECTOR = 1, 'SECTOR'
+    SUBSECTOR = 2, 'SUBSECTOR'
+    SKILL = 3, 'SKILL'
+    DEPARTMENT = 4, 'DEPARTMENT'
+    EMPLOYEE = 5, 'EMPLOYEE'
+    JOB = 6, 'JOB'
+    FORECAST = 7, 'FORECAST'
+    CAL_EVENT = 8, 'CAL EVENT'
+    LOG = 9, 'LOG'
+
+class PermissionGroupChoices(models.IntegerChoices):
+    EDIT = 0, 'OWNER'
+    VIEW = 1, 'VIEW'
+    NONE = 2, 'NONE'
 
 class VersUser(models.Model):
-    class PermissionGroupChoices(models.IntegerChoices):
-        EDIT = 0, 'OWNER'
-        VIEW = 1, 'VIEW'
-        NONE = 2, 'NONE'
-
     user = models.OneToOneField(
         User, related_name='vers_user', on_delete=models.CASCADE)
 
@@ -206,25 +218,14 @@ class JobSkillMatrix(models.Model):
     class Meta:
         db_table = 'job_skills'
 
+class TypeChoices(models.IntegerChoices):
+    CREATE = 0, 'CREATE'
+    UPDATE = 1, 'UPDATE'
+    DELETE = 2, 'DELETE'
 
 class Log(models.Model):
-    class TypeChoices(models.IntegerChoices):
-        CREATE = 0, 'CREATE'
-        UPDATE = 1, 'UPDATE'
-        DELETE = 2, 'DELETE'
-
-    class DataChoices(models.IntegerChoices):
-        PLANT = 0, 'PLANT'
-        SECTOR = 1, 'SECTOR'
-        SUBSECTOR = 2, 'SUBSECTOR'
-        SKILL = 3, 'SKILL'
-        DEPARTMENT = 4, 'DEPARTMENT'
-        EMPLOYEE = 5, 'EMPLOYEE'
-        JOB = 6, 'JOB'
-        FORECAST = 7, 'FORECAST'
-
     type = models.IntegerField(choices=TypeChoices.choices)
-    data_type = models.IntegerField(choices=DataChoices.choices)
+    data_type = models.IntegerField(choices=DataType.choices)
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     timestamp = models.DateTimeField(auto_now=True)
     desc = models.JSONField(null=True)

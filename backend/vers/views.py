@@ -138,6 +138,21 @@ def has_update_permission(view, user):
 def has_delete_permission(view, user):
     return has_create_permission(view, user)
 
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
+def notify_consumer(typ, data_type, data):
+    channel_layer = get_channel_layer()
+    event = {
+        "type": "update_store",  
+        "payload": {
+            "data_type": data_type, 
+            "action": typ,
+            "content": data
+        }
+    }
+    async_to_sync(channel_layer.group_send)(
+        "main", event)
 
 class PlantView(viewsets.ModelViewSet):
     txt = "plant"
@@ -175,6 +190,7 @@ class PlantView(viewsets.ModelViewSet):
         lg.log_delete(
             data_type=lg.PLANT,
             user=self.request.user, origin=instance).save()
+        notify_consumer(lg.DELETE, lg.PLANT, instance)
         return super().perform_destroy(instance)
 
 
@@ -214,6 +230,7 @@ class SectorView(viewsets.ModelViewSet):
         lg.log_delete(
             data_type=lg.SECTOR,
             user=self.request.user, origin=instance).save()
+        notify_consumer(lg.DELETE, lg.SECTOR, instance)
         return super().perform_destroy(instance)
 
 
@@ -253,6 +270,7 @@ class SubsectorView(viewsets.ModelViewSet):
         lg.log_delete(
             data_type=lg.SUBSECTOR,
             user=self.request.user, origin=instance).save()
+        notify_consumer(lg.DELETE, lg.SUBSECTOR, instance)
         return super().perform_destroy(instance)
 
 
@@ -292,6 +310,7 @@ class SkillView(viewsets.ModelViewSet):
         lg.log_delete(
             data_type=lg.SKILL,
             user=self.request.user, origin=instance).save()
+        notify_consumer(lg.DELETE, lg.SKILL, instance)
         return super().perform_destroy(instance)
 
 
@@ -331,6 +350,7 @@ class DepartmentView(viewsets.ModelViewSet):
         lg.log_delete(
             data_type=lg.DEPARTMENT,
             user=self.request.user, origin=instance).save()
+        notify_consumer(lg.DELETE, lg.DEPARTMENT, instance)
         return super().perform_destroy(instance)
 
 
@@ -372,6 +392,7 @@ class EmployeeView(viewsets.ModelViewSet):
             user=self.request.user, origin=instance).save()
         if instance.user:
             instance.user.delete()
+        notify_consumer(lg.DELETE, lg.EMPLOYEE, instance)
         return super().perform_destroy(instance)
 
 
@@ -411,6 +432,7 @@ class JobView(viewsets.ModelViewSet):
         lg.log_delete(
             data_type=lg.JOB,
             user=self.request.user, origin=instance).save()
+        notify_consumer(lg.DELETE, lg.JOB, instance)
         return super().perform_destroy(instance)
 
 
@@ -456,6 +478,7 @@ class ForecastView(viewsets.ModelViewSet):
         lg.log_delete(
             data_type=lg.FORECAST,
             user=self.request.user, origin=instance).save()
+        notify_consumer(lg.DELETE, lg.FORECAST, instance)
         return super().perform_destroy(instance)
 
 class CalEventView(viewsets.ModelViewSet):

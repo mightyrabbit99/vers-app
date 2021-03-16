@@ -1,23 +1,26 @@
-from .models import Log
+from .models import Log, DataType, TypeChoices
 import json
 
-CREATE = Log.TypeChoices.CREATE
-UPDATE = Log.TypeChoices.UPDATE
-DELETE = Log.TypeChoices.DELETE
+CREATE = TypeChoices.CREATE
+UPDATE = TypeChoices.UPDATE
+DELETE = TypeChoices.DELETE
 
-PLANT = Log.DataChoices.PLANT
-SECTOR = Log.DataChoices.SECTOR
-SUBSECTOR = Log.DataChoices.SUBSECTOR
-SKILL = Log.DataChoices.SKILL
-DEPARTMENT = Log.DataChoices.DEPARTMENT
-EMPLOYEE = Log.DataChoices.EMPLOYEE
-JOB = Log.DataChoices.JOB
-FORECAST = Log.DataChoices.FORECAST
+PLANT = DataType.PLANT
+SECTOR = DataType.SECTOR
+SUBSECTOR = DataType.SUBSECTOR
+SKILL = DataType.SKILL 
+EMPLOYEE = DataType.EMPLOYEE
+DEPARTMENT = DataType.DEPARTMENT
+JOB = DataType.JOB
+FORECAST = DataType.FORECAST
+CAL_EVENT = DataType.CAL_EVENT
+LOG = DataType.LOG
 
 
-def gen_log_data(origin, data_type = None, namespace = None):
+def gen_log_data(origin, data_type=None, namespace=None):
     if type(origin) != dict:
         origin = origin.__dict__
+
     def wrap_name(x):
         return '%s_%s' % (namespace, x) if namespace else x
     origin = dict(map(lambda x: [wrap_name(x), origin[x]], origin))
@@ -26,7 +29,7 @@ def gen_log_data(origin, data_type = None, namespace = None):
 
 def log(type, data_type, user, desc, *args, **kwargs):
     lg = Log(type=type,
-             data_type=data_type,
+             data_type=data_type.value,
              user=user, desc={**desc, **kwargs})
     return lg
 

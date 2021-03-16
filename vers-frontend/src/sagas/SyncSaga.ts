@@ -1,7 +1,7 @@
 import { all, put, select, takeLatest } from "redux-saga/effects";
 import k, { Result } from "src/kernel";
 import { getData } from "src/selectors";
-import { reload, selPlant, _delData, _saveData } from "src/slices/data";
+import { reload, selPlant } from "src/slices/data";
 import {
   createNew,
   erase,
@@ -43,7 +43,7 @@ function* postItemThenSave({ payload }: CreateNewAction) {
     const feedback: Result = yield k.saveNew(payload);
     if (feedback.success) {
       yield put(submitSuccess(undefined));
-      yield put(_saveData(payload));
+      //yield put(_saveData(payload));
     } else {
       yield put(submitSuccess(feedback.data));
     }
@@ -60,10 +60,14 @@ function* putItem({ payload }: ModifyAction) {
     let res: Result = { success: true, statusText: "", data: {} };
     for (let p of payload) {
       res = yield k.save(p);
-      if (!res.success) break;
+      if (!res.success) {
+        yield k.refresh();
+        yield put(reload());
+        break;
+      }
     }
     yield put(submitSuccess(res.success ? undefined : res.data));
-    yield put(_saveData(payload));
+    
   } catch (error) {
     yield put(submitError(error.message));
   }
@@ -77,8 +81,9 @@ function* deleteItem({ payload }: EraseAction) {
     for (let p of payload) {
       yield k.del(p);
     }
+    yield k.refresh();
+    yield put(reload());
     yield put(submitSuccess(undefined));
-    yield put(_delData(payload));
   } catch (error) {
     yield put(submitError(error.message));
   }

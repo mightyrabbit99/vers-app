@@ -44,7 +44,7 @@ const App: React.FC<IAppProps> = () => {
   const { authenticated: auth, syncing } = useSelector(getSession);
   const { selectedPlantId: pId } = useSelector(getData);
 
-  k.plantStore.trigger = () => {
+  k.trigger = () => {
     dispatch(reload());
   };
 

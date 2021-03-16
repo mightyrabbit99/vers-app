@@ -1,3 +1,4 @@
+export * from "./Data";
 export * from "./PlantData";
 export * from "./SectorData";
 export * from "./SubsectorData";

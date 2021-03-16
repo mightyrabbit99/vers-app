@@ -72,11 +72,30 @@ class UserSerializer(serializers.ModelSerializer):
 
 OWNER_USERNAME = 'owner.username'
 
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
+def notify_consumer(typ, data_type, data):
+    channel_layer = get_channel_layer()
+    event = {
+        "type": "update_store",  
+        "payload": {
+            "data_type": data_type, 
+            "action": typ,
+            "content": data
+        }
+    }
+    async_to_sync(channel_layer.group_send)(
+        "main", event)
+
 
 class PlantSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source=OWNER_USERNAME)
     sectors = serializers.PrimaryKeyRelatedField(
         many=True, read_only=True)
+
+    def notify(self, typ, res):
+        notify_consumer(typ, lg.PLANT, PlantSerializer(res).data)
 
     def get_request_user(self):
         user = None
@@ -89,13 +108,17 @@ class PlantSerializer(serializers.ModelSerializer):
         lg.log_create(
             data_type=lg.PLANT,
             user=self.get_request_user(), data=validated_data).save()
-        return super().create(validated_data)
+        res = super().create(validated_data)
+        self.notify(lg.CREATE, res)
+        return res
 
     def update(self, instance, validated_data):
         lg.log_update(
             data_type=lg.PLANT,
             user=self.get_request_user(), data=validated_data, origin=instance).save()
-        return super().update(instance, validated_data)
+        res = super().update(instance, validated_data)
+        self.notify(lg.UPDATE, res)
+        return res
 
     class Meta:
         model = models.Plant
@@ -107,6 +130,9 @@ class SectorSerializer(serializers.ModelSerializer):
     subsectors = serializers.PrimaryKeyRelatedField(
         many=True, read_only=True)
 
+    def notify(self, typ, res):
+        notify_consumer(typ, lg.SECTOR, SectorSerializer(res).data)
+
     def get_request_user(self):
         user = None
         request = self.context.get("request")
@@ -118,13 +144,17 @@ class SectorSerializer(serializers.ModelSerializer):
         lg.log_create(
             data_type=lg.SECTOR,
             user=self.get_request_user(), data=validated_data).save()
-        return super().create(validated_data)
+        res = super().create(validated_data)
+        self.notify(lg.CREATE, res)
+        return res
 
     def update(self, instance, validated_data):
         lg.log_update(
             data_type=lg.SECTOR,
             user=self.get_request_user(), data=validated_data, origin=instance).save()
-        return super().update(instance, validated_data)
+        res = super().update(instance, validated_data)
+        self.notify(lg.UPDATE, res)
+        return res
 
     class Meta:
         model = models.Sector
@@ -139,6 +169,9 @@ class SubsectorSerializer(serializers.ModelSerializer):
         many=True, read_only=True)
     jobs = serializers.PrimaryKeyRelatedField(
         many=True, read_only=True)
+    
+    def notify(self, typ, res):
+        notify_consumer(typ, lg.SUBSECTOR, SubsectorSerializer(res).data)
 
     def get_request_user(self):
         user = None
@@ -151,13 +184,17 @@ class SubsectorSerializer(serializers.ModelSerializer):
         lg.log_create(
             data_type=lg.SUBSECTOR,
             user=self.get_request_user(), data=validated_data).save()
-        return super().create(validated_data)
+        res = super().create(validated_data)
+        self.notify(lg.CREATE, res)
+        return res
 
     def update(self, instance, validated_data):
         lg.log_update(
             data_type=lg.SUBSECTOR,
             user=self.get_request_user(), data=validated_data, origin=instance).save()
-        return super().update(instance, validated_data)
+        res = super().update(instance, validated_data)
+        self.notify(lg.UPDATE, res)
+        return res
 
     class Meta:
         model = models.Subsector
@@ -169,6 +206,9 @@ class DepartmentSerializer(serializers.ModelSerializer):
     employees = serializers.PrimaryKeyRelatedField(
         many=True, read_only=True)
 
+    def notify(self, typ, res):
+        notify_consumer(typ, lg.DEPARTMENT, DepartmentSerializer(res).data)
+
     def get_request_user(self):
         user = None
         request = self.context.get("request")
@@ -180,13 +220,17 @@ class DepartmentSerializer(serializers.ModelSerializer):
         lg.log_create(
             data_type=lg.DEPARTMENT,
             user=self.get_request_user(), data=validated_data).save()
-        return super().create(validated_data)
+        res = super().create(validated_data)
+        self.notify(lg.CREATE, res)
+        return res
 
     def update(self, instance, validated_data):
         lg.log_update(
             data_type=lg.DEPARTMENT,
             user=self.get_request_user(), data=validated_data, origin=instance).save()
-        return super().update(instance, validated_data)
+        res = super().update(instance, validated_data)
+        self.notify(lg.UPDATE, res)
+        return res
 
     class Meta:
         model = models.Department
@@ -225,6 +269,9 @@ class EmployeeSerializer(serializers.ModelSerializer):
     user = UserSerializer2()
     owner = serializers.ReadOnlyField(source=OWNER_USERNAME)
     sesa_id = serializers.CharField(validators=[sesa_id_val])
+
+    def notify(self, typ, res):
+        notify_consumer(typ, lg.EMPLOYEE, EmployeeSerializer(res).data)
 
     def get_request_user(self):
         user = None
@@ -266,6 +313,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
             new_emp_skill.save()
 
         g.save()
+        self.notify(lg.CREATE, emp)
         return emp
 
     def update(self, instance, validated_data):
@@ -303,6 +351,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
         instance.save()
 
         g.save()
+        self.notify(lg.UPDATE, instance)
         return instance
 
     class Meta:
@@ -319,6 +368,9 @@ class JobSkillMatrixSerializer(serializers.ModelSerializer):
 class JobSerializer(serializers.ModelSerializer):
     skills_required = JobSkillMatrixSerializer(many=True)
     owner = serializers.ReadOnlyField(source=OWNER_USERNAME)
+
+    def notify(self, typ, res):
+        notify_consumer(typ, lg.JOB, JobSerializer(res).data)
 
     def get_request_user(self):
         user = None
@@ -339,6 +391,7 @@ class JobSerializer(serializers.ModelSerializer):
             job_skill.save()
 
         g.save()
+        self.notify(lg.CREATE, job)
         return job
 
     def update(self, instance, validated_data):
@@ -358,6 +411,7 @@ class JobSerializer(serializers.ModelSerializer):
             setattr(instance, key, value)
         instance.save()
         g.save()
+        self.notify(lg.UPDATE, instance)
         return instance
 
     class Meta:
@@ -368,6 +422,9 @@ class JobSerializer(serializers.ModelSerializer):
 class SkillSerializer(serializers.ModelSerializer):
     jobs = JobSkillMatrixSerializer(many=True, read_only=True)
     employees = EmpSkillMatrixSerializer(many=True, read_only=True)
+
+    def notify(self, typ, res):
+        notify_consumer(typ, lg.SKILL, SkillSerializer(res).data)
 
     def get_request_user(self):
         user = None
@@ -381,14 +438,18 @@ class SkillSerializer(serializers.ModelSerializer):
             data_type=lg.SKILL,
             user=self.get_request_user(), data=validated_data)
         g.save()
-        return super().create(validated_data)
+        res = super().create(validated_data)
+        self.notify(lg.CREATE, res)
+        return res
 
     def update(self, instance, validated_data):
         g = lg.log_update(
             data_type=lg.SKILL,
             user=self.get_request_user(), data=validated_data, origin=instance)
         g.save()
-        return super().update(instance, validated_data)
+        res = super().update(instance, validated_data)
+        self.notify(lg.UPDATE, res)
+        return res
 
     class Meta:
         model = models.Skill
@@ -410,6 +471,9 @@ class ForecastSerializer(serializers.ModelSerializer):
 class ForecastPackSerializer(serializers.ModelSerializer):
     on = serializers.DateField()
     forecasts = ForecastSerializer(many=True)
+
+    def notify(self, typ, res):
+        notify_consumer(typ, lg.FORECAST, ForecastSerializer(res).data)
 
     def get_request_user(self):
         user = None
@@ -435,6 +499,7 @@ class ForecastPackSerializer(serializers.ModelSerializer):
             new_f.save()
 
         g.save()
+        self.notify(lg.CREATE, new_fc)
         return new_fc
 
     def update(self, instance, validated_data):
@@ -465,7 +530,9 @@ class ForecastPackSerializer(serializers.ModelSerializer):
             n_map[n].delete()
 
         g.save()
-        return super().update(instance, validated_data)
+        res = super().update(instance, validated_data)
+        self.notify(lg.UPDATE, res)
+        return res
 
     class Meta:
         model = models.ForecastPack
@@ -475,6 +542,9 @@ class ForecastPackSerializer(serializers.ModelSerializer):
 class CalEventSerializer(serializers.ModelSerializer):
     start = serializers.DateField()
     end = serializers.DateField()
+    
+    def notify(self, typ, res):
+        notify_consumer(typ, lg.CAL_EVENT, CalEventSerializer(res).data)
 
     def validate(self, attrs):
         start: datetime.date = attrs.get('start')

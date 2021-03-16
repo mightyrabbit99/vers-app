@@ -1,9 +1,3 @@
-enum SocketMessage {
-  CREATE_NEW = 1,
-  EDIT = 2,
-  DELETE = 3,
-}
-
 enum ItemType {
   Plant = "Plant",
   Sector = "Sector",
@@ -31,15 +25,21 @@ interface Result {
 }
 
 interface Store<T extends Item> {
+  // retrieval
   refresh: () => Promise<void>;
   get: (id: number) => T;
   getLst: (filterer?: (t: T) => boolean) => { [id: number]: T };
   getNew: (init?: any) => T;
+
+  // local storage
+  addData: (d: any) => void;
+  eraseData: (d: any) => void;
+
+  // server
   submit: (t: T) => Promise<Result>;
   submitNew: (t: T) => Promise<Result>;
   submitOrNew: (t: T) => Promise<Result>;
   remove: (t: T) => Promise<Result>;
-  trigger: () => any;
 }
 
 function store<T extends Item>(
@@ -54,26 +54,6 @@ function store<T extends Item>(
   return class implements Store<T> {
     private store: { [id: number]: T } = {};
     private hStore: { [k: string]: T } = {};
-    private socket: WebSocket | undefined = undefined;
-
-    constructor(socket?: WebSocket) {
-      this.socket = socket;
-      if (socket) {
-        socket.onmessage = (e: MessageEvent<any>) => {
-          const data = JSON.parse(e.data);
-          switch (data.type) {
-            case SocketMessage.CREATE_NEW:
-            case SocketMessage.EDIT:
-              data.content.forEach((x: any) => this.add(dataToObj(x)));
-              break;
-            case SocketMessage.DELETE:
-              data.content.forEach((x: any) => this.erase(dataToObj(x)));
-              break;
-          }
-          this.trigger();
-        };
-      }
-    }
 
     static generator = generator;
 
@@ -98,6 +78,15 @@ function store<T extends Item>(
       hasher && delete this.hStore[hasher(t)];
     };
 
+    addData = (d: any) => {
+      this.add(dataToObj(d));
+    }
+
+    eraseData = (d: any) => {
+      this.erase(dataToObj(d));
+    }
+
+
     get = (id: number) => this.store[id];
 
     getLst = (filterer?: (t: T) => boolean): { [id: number]: T } => {
@@ -113,12 +102,10 @@ function store<T extends Item>(
     };
 
     submitNew = async (t: T) => {
-      this.add(t);
       return await post(t);
     };
 
     submit = async (t: T) => {
-      this.add(t);
       return await put(t);
     };
 
@@ -134,11 +121,8 @@ function store<T extends Item>(
     };
 
     remove = async (t: T) => {
-      this.erase(t);
       return await del(t);
     };
-
-    trigger = () => {};
   };
 }
 

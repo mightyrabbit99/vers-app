@@ -106,17 +106,7 @@ function* delDataCascadeThenCalculate({ payload }: DeleteDataAction): any {
   if (!(payload instanceof Array)) {
     payload = [payload];
   }
-  let mods,
-    dels,
-    finalMods = [],
-    finalDels = [];
-  for (let p of payload) {
-    [mods, dels] = yield k.calcChanges(p);
-    finalMods.push(...mods);
-    finalDels.push(...dels);
-  }
-  yield put(modify(finalMods));
-  yield put(erase(finalDels));
+  yield put(erase(payload));
 }
 
 function* saveDataCascadeThenCalculate({ payload }: SaveDataAction) {

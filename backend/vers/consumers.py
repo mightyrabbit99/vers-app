@@ -2,8 +2,8 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 
-class PlantConsumer(AsyncWebsocketConsumer):
-    room_group_name = 'plants'
+class MainConsumer(AsyncWebsocketConsumer):
+    room_group_name = 'main'
 
     async def connect(self):
         # Join room group
@@ -25,12 +25,15 @@ class PlantConsumer(AsyncWebsocketConsumer):
     ### event handlers ###
 
     # Receive message from room group
-    async def update_plant(self, event):
-        typ = event['type']
-        content = event['content']
+    async def update_store(self, event):
+        payload = event['payload']
+        typ = payload['data_type']
+        action = payload['action']
+        content = payload['content']
 
         # Send message to WebSocket
         await self.send(text_data=json.dumps({
-            'type': typ,
-            'content': content
-        }))
+            'action': action,
+            'data_type': typ,
+            'content': content,
+        }, default=str))

@@ -1,6 +1,5 @@
 import {
   Plant,
-  Data,
   Sector,
   Subsector,
   Department,
@@ -31,22 +30,22 @@ export interface ReloadDataAction {
 
 export interface EraseAction {
   type: typeof erase.type;
-  payload: Data | Data[];
+  payload: Item | Item[];
 }
 
 export interface CreateNewAction {
   type: typeof createNew.type;
-  payload: Data;
+  payload: Item;
 }
 
 export interface ModifyAction {
   type: typeof modify.type;
-  payload: Data | Data[];
+  payload: Item | Item[];
 }
 
 export interface SaveDataAction {
   type: typeof saveData.type;
-  payload: Data;
+  payload: Item;
 }
 
 export interface DownloadExcelAction {
@@ -64,7 +63,7 @@ export interface SubmitExcelAction {
 
 export interface DeleteDataAction {
   type: typeof delData.type;
-  payload: Data | Data[];
+  payload: Item | Item[];
 }
 
 export interface LoginAction {

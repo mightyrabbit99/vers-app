@@ -8,7 +8,7 @@ import SkillStore, { Skill } from "./Skill";
 import { Store, Item, ItemType, Result as SubmitResult } from "./Store";
 import SubsectorStore, { Subsector } from "./Subsector";
 import ForecastStore, { Forecast } from "./Forecast";
-import LogStore, { Log } from "./Log";
+import LogStore, { DataType, Log } from "./Log";
 import CalEventStore, { CalEvent } from "./CalEvent";
 
 import ExcelProcessor2, {
@@ -18,9 +18,12 @@ import ExcelProcessor2, {
   SkillObj,
   SubsectorObj,
 } from "./ExcelProcessor2";
-import SocketConn from "./SocketConn";
 
-type Data = Plant | Sector | Subsector | Department | Skill | Employee | Job;
+enum DataAction {
+  CREATE_NEW = 0,
+  EDIT = 1,
+  DELETE = 2,
+}
 
 function genMap<T>(
   lst: { [id: number]: T },
@@ -71,8 +74,8 @@ class Kernel {
   calEventStore: Store<CalEvent>;
   personalLogs: MyLog[];
 
-  constructor() {
-    this.plantStore = new PlantStore(SocketConn.getPlantSoc());
+  constructor(soc?: WebSocket) {
+    this.plantStore = new PlantStore();
     this.secStore = new SectorStore();
     this.subsecStore = new SubsectorStore();
     this.deptStore = new DepartmentStore();
@@ -83,9 +86,35 @@ class Kernel {
     this.logStore = new LogStore();
     this.calEventStore = new CalEventStore();
     this.personalLogs = getMyLog();
+    if (soc) this.registerSocket(soc);
   }
 
-  private getStore = (t: ItemType) => {
+  private getStore = (t: DataType) => {
+    switch (t) {
+      case DataType.PLANT:
+        return this.plantStore;
+      case DataType.SECTOR:
+        return this.secStore;
+      case DataType.SUBSECTOR:
+        return this.subsecStore;
+      case DataType.DEPARTMENT:
+        return this.deptStore;
+      case DataType.SKILL:
+        return this.skillStore;
+      case DataType.EMPLOYEE:
+        return this.empStore;
+      case DataType.JOB:
+        return this.jobStore;
+      case DataType.FORECAST:
+        return this.forecastStore;
+      case DataType.CALEVENT:
+        return this.calEventStore;
+      case DataType.LOG:
+        return this.logStore;
+    }
+  };
+
+  private getStore2 = (t: ItemType) => {
     switch (t) {
       case ItemType.Plant:
         return this.plantStore;
@@ -110,12 +139,35 @@ class Kernel {
     }
   };
 
+  private localSave = (type: DataType, data: any) => {
+    return this.getStore(type)?.addData(data);
+  };
+
+  private localDel = (type: DataType, data: any) => {
+    return this.getStore(type)?.eraseData(data);
+  };
+
+  public trigger = () => {};
+
+  public registerSocket = (soc: WebSocket) => {
+    soc.onmessage = (e: MessageEvent<any>) => {
+      const payload = JSON.parse(e.data);
+      switch (payload.action) {
+        case DataAction.CREATE_NEW:
+        case DataAction.EDIT:
+          this.localSave(payload.data_type, payload.content);
+          this.trigger();
+          break;
+      }
+    };
+  };
+
   public refresh = async (lst?: ItemType | ItemType[]) => {
     if (!lst) lst = Object.values(ItemType);
     if (!(lst instanceof Array)) {
       lst = [lst];
     }
-    await Promise.all(lst.map((x) => this.getStore(x)?.refresh()));
+    await Promise.all(lst.map((x) => this.getStore2(x)?.refresh()));
   };
 
   private _log = (desc: string, ...data: SubmitResult[]) => {
@@ -220,21 +272,15 @@ class Kernel {
     }
   };
 
-  public del = async (t: Item): Promise<SubmitResult> => {
-    let a = await this._del(t);
-    this._log("Delete", a);
-    return a;
-  };
-
-  public calcChanges = (payload: Data) => {
-    let mods: Data[] = [],
-      dels: Data[] = [];
+  public calcChanges = (payload: Item) => {
+    let mods: Item[] = [],
+      dels: Item[] = [];
     let sectors = this.secStore.getLst();
     let subsectors = this.subsecStore.getLst();
     let employees = this.empStore.getLst();
     let skills = this.skillStore.getLst();
     let jobs = this.jobStore.getLst();
-    function cascadeDel(p: Data) {
+    function cascadeDel(p: Item) {
       dels.push(p);
       switch (p._type) {
         case ItemType.Plant:
@@ -263,6 +309,14 @@ class Kernel {
     mods.reverse();
     dels.reverse();
     return [mods, dels];
+  };
+
+  public del = async (t: Item) => {
+    let [mods, dels] = this.calcChanges(t);
+    let ress: SubmitResult[] = [];
+    ress.concat(await Promise.all(mods.map(this._save)));
+    ress.concat(await Promise.all(dels.map(this._del)));
+    this._log("Delete", ...ress);
   };
 
   public login = async (
@@ -527,6 +581,16 @@ class Kernel {
   };
 }
 
-const k = new Kernel();
-export type { Item, Data, Kernel };
+function getSoc() {
+  const soc_url = process.env.REACT_APP_SOC_URL;
+  if (!soc_url) return;
+  try {
+    return new WebSocket(soc_url);
+  } catch (e) {
+    return;
+  }
+}
+
+const k = new Kernel(getSoc());
+export type { Item, Kernel };
 export default k;

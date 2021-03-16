@@ -1,20 +1,9 @@
-import { Data } from "./Data";
+import { Data, DataType } from "./Data";
 
 enum LogType {
   CREATE,
   UPDATE,
   DELETE,
-}
-
-enum DataType {
-  PLANT,
-  SECTOR,
-  SUBSECTOR,
-  SKILL,
-  DEPARTMENT,
-  EMPLOYEE,
-  JOB,
-  FORECAST,
 }
 
 interface LogData extends Data {
@@ -29,4 +18,4 @@ interface LogData extends Data {
 }
 
 export type { LogData };
-export { LogType, DataType };
+export { LogType };
