@@ -1,6 +1,6 @@
 import DepartmentStore, { Department } from "./Department";
 import EmployeeStore, { Employee } from "./Employee";
-import Fetcher from "./Fetcher";
+import Fetcher, { getSoc } from "./Fetcher";
 import JobStore, { Job } from "./Job";
 import PlantStore, { Plant } from "./Plant";
 import SectorStore, { Sector } from "./Sector";
@@ -579,16 +579,6 @@ class Kernel {
         return await this.genCalEventExcel(items as CalEvent[]);
     }
   };
-}
-
-function getSoc() {
-  const soc_url = process.env.REACT_APP_SOC_URL;
-  if (!soc_url) return;
-  try {
-    return new WebSocket(soc_url);
-  } catch (e) {
-    return;
-  }
 }
 
 const k = new Kernel(getSoc());

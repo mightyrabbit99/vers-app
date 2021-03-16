@@ -17,18 +17,19 @@ const axios = new FakeServer();
 */
 
 export type Result<T> = AxiosResponse<T>;
-const userUrl = process.env.REACT_APP_REST_USER_MODIFY_URL ?? "";
-const apiTokenAuth = process.env.REACT_APP_REST_TOKEN_AUTH_URL ?? "";
-const plantUrl = process.env.REACT_APP_REST_API_PLANT_URL ?? "";
-const secUrl = process.env.REACT_APP_REST_API_SECTOR_URL ?? "";
-const subsecUrl = process.env.REACT_APP_REST_API_SUBSECTOR_URL ?? "";
-const empUrl = process.env.REACT_APP_REST_API_EMP_URL ?? "";
-const deptUrl = process.env.REACT_APP_REST_API_DEPT_URL ?? "";
-const skillUrl = process.env.REACT_APP_REST_API_SKILL_URL ?? "";
-const jobUrl = process.env.REACT_APP_REST_API_JOB_URL ?? "";
-const logUrl = process.env.REACT_APP_REST_API_LOG_URL ?? "";
-const forecastUrl = process.env.REACT_APP_REST_API_FORECAST_URL ?? "";
-const calEventUrl = process.env.REACT_APP_REST_API_CAL_EVENT_URL ?? "";
+const host = process.env.REACT_APP_REST_API_URL;
+const userUrl = `${host}${process.env.REACT_APP_REST_USER_MODIFY_PATH}`;
+const apiTokenAuth = `${host}${process.env.REACT_APP_REST_TOKEN_AUTH_PATH}`;
+const plantUrl = `${host}${process.env.REACT_APP_REST_API_PLANT_PATH}`;
+const secUrl = `${host}${process.env.REACT_APP_REST_API_SECTOR_PATH}`;
+const subsecUrl = `${host}${process.env.REACT_APP_REST_API_SUBSECTOR_PATH}`;
+const empUrl = `${host}${process.env.REACT_APP_REST_API_EMP_PATH}`;
+const deptUrl = `${host}${process.env.REACT_APP_REST_API_DEPT_PATH}`;
+const skillUrl = `${host}${process.env.REACT_APP_REST_API_SKILL_PATH}`;
+const jobUrl = `${host}${process.env.REACT_APP_REST_API_JOB_PATH}`;
+const logUrl = `${host}${process.env.REACT_APP_REST_API_LOG_PATH}`;
+const forecastUrl = `${host}${process.env.REACT_APP_REST_API_FORECAST_PATH}`;
+const calEventUrl = `${host}${process.env.REACT_APP_REST_API_CAL_EVENT_PATH}`;
 
 const getCookie = (name: string) => {
   var cookieValue = null;
@@ -45,6 +46,17 @@ const getCookie = (name: string) => {
   }
   return cookieValue;
 };
+
+export function getSoc() {
+  if (!process.env.REACT_APP_SOC_URL || !process.env.REACT_APP_SOC_MAIN_PATH)
+    return;
+  const socUrl = `${process.env.REACT_APP_SOC_URL}${process.env.REACT_APP_SOC_MAIN_PATH}`;
+  try {
+    return new WebSocket(socUrl);
+  } catch (e) {
+    return;
+  }
+}
 
 class Fetcher {
   private static token: string | null = localStorage.getItem("Token");
