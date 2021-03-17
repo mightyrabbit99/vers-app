@@ -215,7 +215,10 @@ class Kernel {
   public saveNew = async (t: Item) => {
     let a = await this._saveNew(t);
     this._log("Create", a);
-    if (!this.soc) this.refresh();
+    if (!this.soc) {
+      this.refresh();
+      this.trigger();
+    }
     return a;
   };
 
@@ -247,7 +250,10 @@ class Kernel {
   public save = async (t: Item): Promise<SubmitResult> => {
     let a = await this._save(t);
     this._log("Save", a);
-    if (!this.soc) this.refresh();
+    if (!this.soc) {
+      this.refresh();
+      this.trigger();
+    }
     return a;
   };
 
@@ -323,7 +329,10 @@ class Kernel {
     ress.concat(await Promise.all(mods.map(this._save)));
     ress.concat(await Promise.all(dels.map(this._del)));
     this._log("Delete", ...ress);
-    if (!this.soc) this.refresh();
+    if (!this.soc) {
+      this.refresh();
+      this.trigger();
+    }
   };
 
   public login = async (
