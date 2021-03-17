@@ -32,6 +32,8 @@ interface Store<T extends Item> {
   getNew: (init?: any) => T;
 
   // local storage
+  add: (t: any) => void;
+  erase: (t: any) => void;
   addData: (d: any) => void;
   eraseData: (d: any) => void;
 
@@ -68,12 +70,12 @@ function store<T extends Item>(
       this.hStore = {};
     };
 
-    private add = (t: T) => {
+    add = (t: T) => {
       this.store[t.id] = t;
       hasher && (this.hStore[hasher(t)] = t);
     };
 
-    private erase = (t: T) => {
+    erase = (t: T) => {
       delete this.store[t.id];
       hasher && delete this.hStore[hasher(t)];
     };

@@ -45,7 +45,7 @@ import ChangeLogView from "./ChangeLogView";
 import AccessCtrlView from "./AccessCtrlView";
 import CalendarView from "./CalendarView";
 
-import { clearFeedback, fetchData } from "src/slices/sync";
+import { clearFeedback } from "src/slices/sync";
 import { logout } from "src/slices/session";
 import { selPlant } from "src/slices/data";
 import { getData, getSession } from "src/selectors";
@@ -226,7 +226,6 @@ const Dashboard: React.FC = () => {
   const handleListClick = (i: DashboardView) => () => {
     if (currView === i) return;
     localStorage.setItem("lastDashboardView", `${i}`);
-    dispatch(fetchData(getItemType(i)));
     setCurrView(i);
   };
 

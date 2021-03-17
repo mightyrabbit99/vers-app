@@ -1,6 +1,6 @@
 import DepartmentStore, { Department } from "./Department";
 import EmployeeStore, { Employee } from "./Employee";
-import Fetcher, { getSoc } from "./Fetcher";
+import Fetcher from "./Fetcher";
 import JobStore, { Job } from "./Job";
 import PlantStore, { Plant } from "./Plant";
 import SectorStore, { Sector } from "./Sector";
@@ -62,6 +62,7 @@ const setMyLog = (lst: MyLog[]) => {
 };
 
 class Kernel {
+  soc: WebSocket | undefined;
   plantStore: Store<Plant>;
   secStore: Store<Sector>;
   subsecStore: Store<Subsector>;
@@ -86,7 +87,6 @@ class Kernel {
     this.logStore = new LogStore();
     this.calEventStore = new CalEventStore();
     this.personalLogs = getMyLog();
-    if (soc) this.registerSocket(soc);
   }
 
   private getStore = (t: DataType) => {
@@ -139,26 +139,30 @@ class Kernel {
     }
   };
 
-  private localSave = (type: DataType, data: any) => {
-    return this.getStore(type)?.addData(data);
-  };
-
-  private localDel = (type: DataType, data: any) => {
-    return this.getStore(type)?.eraseData(data);
-  };
-
   public trigger = () => {};
 
-  public registerSocket = (soc: WebSocket) => {
-    soc.onmessage = (e: MessageEvent<any>) => {
+  public registerSocket = (soc?: WebSocket) => {
+    let socket = soc ?? Fetcher.getSoc();
+    if (
+      !socket ||
+      socket.readyState !== WebSocket.CONNECTING ||
+      socket.readyState !== WebSocket.OPEN
+    )
+      return;
+    if (this.soc) this.soc.close();
+    this.soc = socket;
+    this.soc.onmessage = (e: MessageEvent<any>) => {
       const payload = JSON.parse(e.data);
       switch (payload.action) {
         case DataAction.CREATE_NEW:
         case DataAction.EDIT:
-          this.localSave(payload.data_type, payload.content);
+          this.getStore(payload.data_type)?.addData(payload.content);
           this.trigger();
           break;
       }
+    };
+    this.soc.onclose = (e: CloseEvent) => {
+      this.soc = undefined;
     };
   };
 
@@ -211,6 +215,7 @@ class Kernel {
   public saveNew = async (t: Item) => {
     let a = await this._saveNew(t);
     this._log("Create", a);
+    if (!this.soc) this.refresh();
     return a;
   };
 
@@ -242,6 +247,7 @@ class Kernel {
   public save = async (t: Item): Promise<SubmitResult> => {
     let a = await this._save(t);
     this._log("Save", a);
+    if (!this.soc) this.refresh();
     return a;
   };
 
@@ -317,6 +323,7 @@ class Kernel {
     ress.concat(await Promise.all(mods.map(this._save)));
     ress.concat(await Promise.all(dels.map(this._del)));
     this._log("Delete", ...ress);
+    if (!this.soc) this.refresh();
   };
 
   public login = async (
@@ -338,6 +345,7 @@ class Kernel {
   public getUser = async () => {
     try {
       let res = await Fetcher.getUser();
+      this.registerSocket();
       return { success: true, data: res.data };
     } catch (e) {
       return { success: false };
@@ -581,6 +589,6 @@ class Kernel {
   };
 }
 
-const k = new Kernel(getSoc());
+const k = new Kernel();
 export type { Item, Kernel };
 export default k;

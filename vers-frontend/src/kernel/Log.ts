@@ -41,6 +41,7 @@ function objToData(x: Log): LogData {
 
 const get = async () => {
   let res = await Fetcher.getLogs();
+  if (res.headers['content-type'] !== "application/json") return [];
   return res.data.map(dataToObj);
 };
 

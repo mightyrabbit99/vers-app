@@ -5,7 +5,16 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 class MainConsumer(AsyncWebsocketConsumer):
     room_group_name = 'main'
 
+    def is_auth(self):
+        try:
+            return self.scope['user'].is_authenticated
+        except Exception:
+            return False
+
     async def connect(self):
+        if not self.is_auth():
+            await self.close()
+            return
         # Join room group
         await self.channel_layer.group_add(
             self.room_group_name,

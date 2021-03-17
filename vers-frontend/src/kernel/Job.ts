@@ -44,6 +44,7 @@ function objToData(x: Job): JobData {
 
 const get = async () => {
   let res = await Fetcher.getJobs();
+  if (res.headers['content-type'] !== "application/json") return [];
   return res.data.map(dataToObj);
 };
 

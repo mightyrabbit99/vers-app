@@ -51,6 +51,7 @@ const generator = (init?: any): Skill => ({
 
 const get = async () => {
   let res = await Fetcher.getSkills();
+  if (res.headers['content-type'] !== "application/json") return [];
   return res.data.map(dataToObj);
 };
 
