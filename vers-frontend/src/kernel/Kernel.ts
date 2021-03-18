@@ -75,7 +75,7 @@ class Kernel {
   calEventStore: Store<CalEvent>;
   personalLogs: MyLog[];
 
-  constructor(soc?: WebSocket) {
+  constructor() {
     this.plantStore = new PlantStore();
     this.secStore = new SectorStore();
     this.subsecStore = new SubsectorStore();
@@ -143,12 +143,7 @@ class Kernel {
 
   public registerSocket = (soc?: WebSocket) => {
     let socket = soc ?? Fetcher.getSoc();
-    if (
-      !socket ||
-      socket.readyState !== WebSocket.CONNECTING ||
-      socket.readyState !== WebSocket.OPEN
-    )
-      return;
+    if (!socket) return;
     if (this.soc) this.soc.close();
     this.soc = socket;
     this.soc.onmessage = (e: MessageEvent<any>) => {
@@ -349,7 +344,11 @@ class Kernel {
     }
   };
 
-  public logout = Fetcher.logout;
+  public logout = () => {
+    Fetcher.logout();
+    if (this.soc) this.soc.close();
+  };
+
   public isLoggedIn = Fetcher.isLoggedIn;
   public getUser = async () => {
     try {
@@ -500,6 +499,10 @@ class Kernel {
   ) => {
     let resLst = (await this._submitExcel(plantId, type, objs)) ?? [];
     this._log(`Submit Excel file for ${type}`, ...resLst);
+    if (!this.soc) {
+      this.refresh();
+      this.trigger();
+    }
     return resLst;
   };
 

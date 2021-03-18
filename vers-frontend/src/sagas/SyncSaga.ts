@@ -93,7 +93,6 @@ function* submitExcelData({ payload }: SubmitExcelAction) {
   let { selectedPlantId: pId } = yield select(getData);
   let { type, data } = payload;
   yield k.submitExcel(pId, type, data);
-  yield put(fetchData());
 }
 
 function* syncSaga() {

@@ -53,6 +53,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
+const myGetIden = (data: any) => {
+  return data.name ?? data.title ?? data.on ?? ((data.firstName && data.lastName) ? `${data.firstName}, ${data.lastName}` : "");
+}
+
 const genDescStr = (log: Log) => {
   const genActionStr = (x: LogType) => {
     switch (x) {
@@ -88,12 +92,8 @@ const genDescStr = (log: Log) => {
         return "";
     }
   };
-  return `${genActionStr(log.type)} ${genDataTypeStr(log.dataType)}`;
+  return `${genActionStr(log.type)} ${genDataTypeStr(log.dataType)} "${myGetIden(log.desc.original ?? log.desc.data)}"`;
 };
-
-const myGetIden = (data: any) => {
-  return data.name ?? data.title ?? data.on ?? (data.firstName && data.lastName) ? `${data.firstName}, ${data.lastName}` : "";
-}
 
 const ChangeLogView: React.FunctionComponent = () => {
   const dispatch = useDispatch();
