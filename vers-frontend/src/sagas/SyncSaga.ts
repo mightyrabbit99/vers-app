@@ -67,7 +67,6 @@ function* putItem({ payload }: ModifyAction) {
       }
     }
     yield put(submitSuccess(res.success ? undefined : res.data));
-    
   } catch (error) {
     yield put(submitError(error.message));
   }
@@ -85,14 +84,17 @@ function* deleteItem({ payload }: EraseAction) {
     yield put(reload());
     yield put(submitSuccess(undefined));
   } catch (error) {
-    yield put(submitError(error.message));
+    yield put(submitError({ message: error.message, data: error }));
   }
 }
 
 function* submitExcelData({ payload }: SubmitExcelAction) {
   let { selectedPlantId: pId } = yield select(getData);
   let { type, data } = payload;
-  yield k.submitExcel(pId, type, data);
+  let res: Result[] = yield k.submitExcel(pId, type, data);
+  if (res.some((x) => !x.success)) {
+    yield put(submitError({ message: "Some Error Occurred: See Log" }));
+  }
 }
 
 function* syncSaga() {

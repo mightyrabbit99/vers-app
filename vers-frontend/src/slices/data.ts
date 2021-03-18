@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ItemType, Item } from "src/kernel";
-import { DataState } from "src/types";
+import { DataState, MyError } from "src/types";
 
 type DetailChange = { type: ItemType; id: number; prop: string; val: any };
 
@@ -77,7 +77,7 @@ const dataSlice = createSlice({
     reloadSuccess: (state) => {
       state.loading = false;
     },
-    reloadError: (state, { payload }: PayloadAction<string>) => {
+    reloadError: (state, { payload }: PayloadAction<undefined | MyError>) => {
       state.loading = false;
       state.error = payload;
     },

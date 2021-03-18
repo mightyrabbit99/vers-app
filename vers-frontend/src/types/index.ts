@@ -88,6 +88,11 @@ export interface RootState {
 
 type IdMap<T> = { [id: number]: T };
 
+export interface MyError {
+  data?: any;
+  message: string;
+}
+
 export interface DataState {
   plants: IdMap<Plant>;
   selectedPlantId?: number;
@@ -113,13 +118,13 @@ export interface DataState {
 
   loading: boolean;
   calculating: boolean;
-  error?: any;
+  error?: MyError;
 }
 
 export interface SyncState {
   syncing: boolean;
   feedback?: any;
-  error?: any;
+  error?: MyError;
 }
 
 export interface SettingsState {}

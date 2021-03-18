@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Item, ItemType } from "src/kernel";
-import { SyncState } from "src/types";
+import { MyError, SyncState } from "src/types";
 
 export const initialState: SyncState = {
   syncing: false,
@@ -16,14 +16,14 @@ const syncSlice = createSlice({
     fetchDataSuccess: (state) => {
       state.syncing = false;
     },
-    fetchDataError: (state, { payload }: PayloadAction<string>) => {
+    fetchDataError: (state, { payload }: PayloadAction<undefined | MyError>) => {
       state.syncing = false;
       state.error = payload;
     },
     syncing: (state) => {
       state.syncing = true;
     },
-    submitError: (state, { payload }: PayloadAction<string>) => {
+    submitError: (state, { payload }: PayloadAction<undefined | MyError>) => {
       state.syncing = false;
       state.error = payload;
     },

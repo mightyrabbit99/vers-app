@@ -381,7 +381,9 @@ class Kernel {
         return {
           success: false,
           statusText: "",
-          data: { plant: [`Line ${o.line}: Plant ${o.plant} does not exist`] },
+          data: { 
+            _type: ItemType.Plant,
+            plant: [`Line ${o.line}: Plant ${o.plant} does not exist`] },
         };
       } else {
         return await st.submitOrNew(st.getNew({ ...o, plant: plantId }));
@@ -403,6 +405,7 @@ class Kernel {
           success: false,
           statusText: "",
           data: {
+            _type: ItemType.Sector,
             sector: [`Line ${o.line}: Sector ${o.sector} does not exist`],
           },
         };
@@ -429,6 +432,7 @@ class Kernel {
           success: false,
           statusText: "",
           data: {
+            _type: ItemType.Skill,
             subsector: [
               `Line ${o.line}: Subsector ${o.subsector} does not exist`,
             ],
@@ -457,6 +461,7 @@ class Kernel {
           success: false,
           statusText: "",
           data: {
+            _type: ItemType.Employee,
             subsector: [
               `Line ${o.line}: Home Location (Subsector) ${o.homeLocation} does not exist`,
             ],
