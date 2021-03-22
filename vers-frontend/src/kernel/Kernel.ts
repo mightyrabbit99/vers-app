@@ -170,9 +170,10 @@ class Kernel {
   };
 
   private _log = (desc: string, ...data: SubmitResult[]) => {
+    let sanitized = data.map(x => x.success ? x : { success: x.success, statusText: x.statusText, data: {} })
     this.personalLogs = [
       ...this.personalLogs,
-      { desc, time: Date.now(), vals: data },
+      { desc, time: Date.now(), vals: sanitized },
     ];
     setMyLog(this.personalLogs);
   };

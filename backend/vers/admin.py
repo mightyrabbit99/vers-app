@@ -5,29 +5,38 @@ from . import forms
 
 # Register your models here.
 
+
 class PlantAdmin(admin.ModelAdmin):
-    form = forms.PlantForm
+  form = forms.PlantForm
+
 
 class SectorAdmin(admin.ModelAdmin):
-    form = forms.SectorForm
+  form = forms.SectorForm
+
 
 class SubsectorAdmin(admin.ModelAdmin):
-    form = forms.SubsectorForm
+  form = forms.SubsectorForm
+
 
 class DepartmentAdmin(admin.ModelAdmin):
-    form = forms.DepartmentForm
+  form = forms.DepartmentForm
+
 
 class SkillAdmin(admin.ModelAdmin):
-    form = forms.SkillForm
+  form = forms.SkillForm
+
 
 class EmployeeAdmin(admin.ModelAdmin):
-    form = forms.EmployeeForm
+  form = forms.EmployeeForm
+
 
 class EmpSkillMatrixAdmin(admin.ModelAdmin):
-    form = forms.EmpSkillMatrixForm
+  form = forms.EmpSkillMatrixForm
+
 
 class JobSkillMatrixAdmin(admin.ModelAdmin):
-    form = forms.JobSkillMatrixForm
+  form = forms.JobSkillMatrixForm
+
 
 admin.site.register(models.Plant, PlantAdmin)
 admin.site.register(models.Sector, SectorAdmin)

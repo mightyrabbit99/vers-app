@@ -214,39 +214,39 @@ class Fetcher {
   };
 
   static putPlant = async (data: PlantData): Promise<Result<PlantData>> => {
-    return await axios.put(`${plantUrl}${data.id}`, data, Fetcher.getConfig());
+    return await axios.put(`${plantUrl}${data.id}/`, data, Fetcher.getConfig());
   };
 
   static putSec = async (data: SectorData): Promise<Result<SectorData>> => {
-    return await axios.put(`${secUrl}${data.id}`, data, Fetcher.getConfig());
+    return await axios.put(`${secUrl}${data.id}/`, data, Fetcher.getConfig());
   };
 
   static putSubsec = async (
     data: SubsectorData
   ): Promise<Result<SubsectorData>> => {
     return await axios.put(
-      `${subsecUrl}${data.id}`,
+      `${subsecUrl}${data.id}/`,
       data,
       Fetcher.getConfig()
     );
   };
 
   static putEmp = async (data: EmployeeData): Promise<Result<EmployeeData>> => {
-    return await axios.put(`${empUrl}${data.id}`, data, Fetcher.getConfig());
+    return await axios.put(`${empUrl}${data.id}/`, data, Fetcher.getConfig());
   };
 
   static putDept = async (
     data: DepartmentData
   ): Promise<Result<DepartmentData>> => {
-    return await axios.put(`${deptUrl}${data.id}`, data, Fetcher.getConfig());
+    return await axios.put(`${deptUrl}${data.id}/`, data, Fetcher.getConfig());
   };
 
   static putSkill = async (data: SkillData): Promise<Result<SkillData>> => {
-    return await axios.put(`${skillUrl}${data.id}`, data, Fetcher.getConfig());
+    return await axios.put(`${skillUrl}${data.id}/`, data, Fetcher.getConfig());
   };
 
   static putJob = async (data: JobData): Promise<Result<JobData>> => {
-    return await axios.put(`${jobUrl}${data.id}`, data, Fetcher.getConfig());
+    return await axios.put(`${jobUrl}${data.id}/`, data, Fetcher.getConfig());
   };
 
   static putUser = async (username: string, password: string) => {
@@ -261,7 +261,7 @@ class Fetcher {
     data: ForecastData
   ): Promise<Result<ForecastData>> => {
     return await axios.put(
-      `${forecastUrl}${data.id}`,
+      `${forecastUrl}${data.id}/`,
       data,
       Fetcher.getConfig()
     );
@@ -271,7 +271,7 @@ class Fetcher {
     data: CalEventData
   ): Promise<Result<CalEventData>> => {
     return await axios.put(
-      `${calEventUrl}${data.id}`,
+      `${calEventUrl}${data.id}/`,
       data,
       Fetcher.getConfig()
     );
@@ -280,51 +280,51 @@ class Fetcher {
   static deleteEmp = async (
     data: EmployeeData
   ): Promise<Result<EmployeeData>> => {
-    return await axios.delete(`${empUrl}${data.id}`, Fetcher.getConfig());
+    return await axios.delete(`${empUrl}${data.id}/`, Fetcher.getConfig());
   };
 
   static deletePlant = async (data: PlantData): Promise<Result<PlantData>> => {
-    return await axios.delete(`${plantUrl}${data.id}`, Fetcher.getConfig());
+    return await axios.delete(`${plantUrl}${data.id}/`, Fetcher.getConfig());
   };
 
   static deleteSec = async (data: SectorData): Promise<Result<SectorData>> => {
-    return await axios.delete(`${secUrl}${data.id}`, Fetcher.getConfig());
+    return await axios.delete(`${secUrl}${data.id}/`, Fetcher.getConfig());
   };
 
   static deleteSubsec = async (
     data: SubsectorData
   ): Promise<Result<SubsectorData>> => {
-    return await axios.delete(`${subsecUrl}${data.id}`, Fetcher.getConfig());
+    return await axios.delete(`${subsecUrl}${data.id}/`, Fetcher.getConfig());
   };
 
   static deleteDept = async (
     data: DepartmentData
   ): Promise<Result<DepartmentData>> => {
-    return await axios.delete(`${deptUrl}${data.id}`, Fetcher.getConfig());
+    return await axios.delete(`${deptUrl}${data.id}/`, Fetcher.getConfig());
   };
 
   static deleteSkill = async (data: SkillData): Promise<Result<SkillData>> => {
-    return await axios.delete(`${skillUrl}${data.id}`, Fetcher.getConfig());
+    return await axios.delete(`${skillUrl}${data.id}/`, Fetcher.getConfig());
   };
 
   static deleteJob = async (data: JobData): Promise<Result<JobData>> => {
-    return await axios.delete(`${jobUrl}${data.id}`, Fetcher.getConfig());
+    return await axios.delete(`${jobUrl}${data.id}/`, Fetcher.getConfig());
   };
 
   static deleteLog = async (data: LogData): Promise<Result<LogData>> => {
-    return await axios.delete(`${logUrl}${data.id}`, Fetcher.getConfig());
+    return await axios.delete(`${logUrl}${data.id}/`, Fetcher.getConfig());
   };
 
   static deleteForecast = async (
     data: ForecastData
   ): Promise<Result<ForecastData>> => {
-    return await axios.delete(`${forecastUrl}${data.id}`, Fetcher.getConfig());
+    return await axios.delete(`${forecastUrl}${data.id}/`, Fetcher.getConfig());
   };
 
   static deleteCalEvent = async (
     data: CalEventData
   ): Promise<Result<CalEventData>> => {
-    return await axios.delete(`${calEventUrl}${data.id}`, Fetcher.getConfig());
+    return await axios.delete(`${calEventUrl}${data.id}/`, Fetcher.getConfig());
   };
 }
 

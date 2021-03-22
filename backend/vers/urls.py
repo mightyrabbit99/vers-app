@@ -31,11 +31,11 @@ router.register(r'forecast', views.ForecastView, 'forecast')
 router.register(r'cal_event', views.CalEventView, 'events')
 
 urlpatterns = [
-    path('', views.IndexView.as_view(), name='index'),  
+    path('', views.IndexView.as_view(), name='index'),
     path('api/', include(router.urls)),
 
     path('log/', views.LogList.as_view(), name='logs'),
     path('user_modify/', views.UserDetail.as_view()),
 
-    re_path(r'^(?P<path>.*)/$', views.IndexView.as_view(), name='base'), 
+    re_path(r'^(?P<path>.*)/$', views.IndexView.as_view(), name='base'),
 ]
