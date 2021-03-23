@@ -11,6 +11,7 @@ import {
   ItemType,
   CalEvent,
   Item,
+  User,
 } from "src/kernel";
 import { UserData } from "src/kernel/data/UserData";
 import { Forecast } from "src/kernel/Forecast";
@@ -115,7 +116,7 @@ export interface DataState {
   newCalEvent?: CalEvent;
   logs: IdMap<Log>;
   personalLogs: MyLog[];
-
+  users: IdMap<User>;
   loading: boolean;
   calculating: boolean;
   error?: MyError;

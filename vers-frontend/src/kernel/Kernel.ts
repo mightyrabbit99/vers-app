@@ -18,6 +18,7 @@ import ExcelProcessor2, {
   SkillObj,
   SubsectorObj,
 } from "./ExcelProcessor2";
+import UserStore, { User } from "./User";
 
 enum DataAction {
   CREATE_NEW = 0,
@@ -73,6 +74,7 @@ class Kernel {
   forecastStore: Store<Forecast>;
   logStore: Store<Log>;
   calEventStore: Store<CalEvent>;
+  userStore: Store<User>;
   personalLogs: MyLog[];
 
   constructor() {
@@ -86,6 +88,7 @@ class Kernel {
     this.forecastStore = new ForecastStore();
     this.logStore = new LogStore();
     this.calEventStore = new CalEventStore();
+    this.userStore = new UserStore();
     this.personalLogs = getMyLog();
   }
 
@@ -111,6 +114,8 @@ class Kernel {
         return this.calEventStore;
       case DataType.LOG:
         return this.logStore;
+      case DataType.USER:
+        return this.userStore;
     }
   };
 
@@ -136,6 +141,8 @@ class Kernel {
         return this.calEventStore;
       case ItemType.Log:
         return this.logStore;
+      case ItemType.User:
+        return this.userStore;
     }
   };
 
@@ -238,6 +245,8 @@ class Kernel {
         return await this.forecastStore.submit(t as Forecast);
       case ItemType.CalEvent:
         return await this.calEventStore.submit(t as CalEvent);
+      case ItemType.User:
+        return await this.userStore.submit(t as User);
       default:
         return { success: false, statusText: "", data: {} };
     }
@@ -275,6 +284,8 @@ class Kernel {
         return await this.logStore.remove(t as Log);
       case ItemType.CalEvent:
         return await this.calEventStore.remove(t as CalEvent);
+      case ItemType.User:
+        return await this.userStore.remove(t as User);
       default:
         return { success: false, statusText: "", data: {} };
     }
@@ -351,13 +362,13 @@ class Kernel {
   };
 
   public isLoggedIn = Fetcher.isLoggedIn;
-  public getUser = async () => {
+  public getUser = async (): Promise<SubmitResult> => {
     try {
       let res = await Fetcher.getUser();
       this.registerSocket();
-      return { success: true, data: res.data };
+      return { success: true, statusText: "", data: res.data };
     } catch (e) {
-      return { success: false };
+      return { success: false, statusText: "", data: null};
     }
   };
 

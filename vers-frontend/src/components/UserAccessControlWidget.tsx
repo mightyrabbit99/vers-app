@@ -1,8 +1,8 @@
 import * as React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import { Employee } from "src/kernel";
-import EmployeeAccessCtrlList from "./lists/EmpAccessCtrlList";
+import { User } from "src/kernel";
+import UserAccessCtrlList from "./lists/EmpAccessCtrlList";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -15,8 +15,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface IEmpAccessCtrlProps {
-  lst: { [id: number]: Employee };
-  onSubmit?: (p: Employee) => void;
+  lst: { [id: number]: User };
+  onSubmit?: (p: User) => void;
   editSuper?: boolean;
 }
 
@@ -33,10 +33,10 @@ const EmpAccessCtrl: React.FunctionComponent<IEmpAccessCtrlProps> = (props) => {
           color="primary"
           gutterBottom
         >
-          Employee Access Control
+          User Access Control
         </Typography>
       </div>
-      <EmployeeAccessCtrlList lst={lst} onSubmit={onSubmit} editSuper={editSuper} />
+      <UserAccessCtrlList lst={lst} onSubmit={onSubmit} editSuper={editSuper} />
     </React.Fragment>
   );
 };

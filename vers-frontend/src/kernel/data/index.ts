@@ -9,3 +9,4 @@ export * from "./SkillData";
 export * from "./LogData";
 export * from "./ForecastData";
 export * from "./CalEventData";
+export * from "./UserData";

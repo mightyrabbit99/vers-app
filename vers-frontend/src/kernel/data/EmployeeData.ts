@@ -1,5 +1,4 @@
 import { Data } from "./Data";
-import { UserData } from "./UserData";
 
 interface EmpSkillData extends Data {
   skill: number;
@@ -15,7 +14,6 @@ interface EmployeeData extends Data {
   department?: number;
   report_to?: number;
   skills: EmpSkillData[];
-  user: UserData;
   available: boolean;
   birth_date?: string;
   gender: string;

@@ -155,8 +155,6 @@ class Employee(models.Model):
   profile_pic = models.ImageField(
       upload_to=up_path("profile_pic"), null=True)
 
-  user = models.OneToOneField(
-      User, related_name="employee", null=True, on_delete=models.SET_NULL)
   owner = models.ForeignKey(
       User, related_name='created_employee', on_delete=models.SET_NULL, null=True)
 

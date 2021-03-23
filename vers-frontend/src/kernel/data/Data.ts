@@ -13,6 +13,7 @@ enum DataType {
   FORECAST = 7,
   CALEVENT = 8,
   LOG = 9,
+  USER = 10,
 }
 
 export type { Data };

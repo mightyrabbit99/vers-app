@@ -14,12 +14,7 @@ import { EditUserAction, LoginAction } from "src/types";
 
 function* init() {
   if (k.isLoggedIn()) {
-    let res: any;
-    try {
-      res = yield k.getUser();
-    } catch (e) {
-      console.log(e);
-    }
+    let res: Result = yield k.getUser();
     if (res.success) {
       yield put(fetchData());
       yield put(_setAuthenticated({ authenticated: true, user: res.data }));
@@ -40,7 +35,7 @@ function logoutThenUpdatePermission() {
 function* loginThenUpdatePermission({ payload }: LoginAction) {
   const feedback: Result = yield k.login(payload.username, payload.password, payload.remember);
   if (feedback.success) {
-    let res: any = yield k.getUser();
+    let res: Result = yield k.getUser();
     yield put(_setAuthenticated({ authenticated: true, user: res.data }));
     yield put(loginSuccess(undefined));
     yield put(fetchData());

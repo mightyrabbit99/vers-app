@@ -11,25 +11,25 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import Checkbox from "@material-ui/core/Checkbox";
 
-import { AccessLevel, Employee } from "src/kernel";
+import { AccessLevel, User } from "src/kernel";
 
 
-interface IEmployeeAccessCtrlListProps {
-  lst: { [id: number]: Employee };
-  onSubmit?: (e: Employee) => void;
+interface IUserAccessCtrlListProps {
+  lst: { [id: number]: User };
+  onSubmit?: (e: User) => void;
   editSuper?: boolean;
 }
-const getName = (p: Employee) => `${p.firstName}, ${p.lastName}`;
+const getName = (p: User) => p.username;
 
-const EmployeeAccessCtrlList: React.FC<IEmployeeAccessCtrlListProps> = (
+const UserAccessCtrlList: React.FC<IUserAccessCtrlListProps> = (
   props
 ) => {
   const { lst, onSubmit, editSuper = false } = props;
 
   const empLst = Object.values(lst);
 
-  const genTableRow = (emp: Employee, idx: number) => {
-    const vers_user = emp.user.vers_user;
+  const genTableRow = (user: User, idx: number) => {
+    const vers_user = user.vers_user;
     type VersUserIndex = keyof typeof vers_user;
     function isValidName(value: string): value is VersUserIndex {
       return value in vers_user;
@@ -42,16 +42,13 @@ const EmployeeAccessCtrlList: React.FC<IEmployeeAccessCtrlListProps> = (
       const val = getVal(name);
       const handleChange = (e: React.ChangeEvent<any>) => {
         const { name, value } = e.target;
-        const newEmp: Employee = {
-          ...emp,
-          user: {
-            ...emp.user,
+        const newEmp: User = {
+            ...user.user,
             vers_user: {
-              ...emp.user.vers_user,
+              ...user.vers_user,
               [name]: value,
             },
-          },
-        };
+          };
         onSubmit && onSubmit(newEmp);
       };
       return (
@@ -62,7 +59,7 @@ const EmployeeAccessCtrlList: React.FC<IEmployeeAccessCtrlListProps> = (
             name={name}
             value={val}
             onChange={handleChange}
-            disabled={!onSubmit || emp.user.is_superuser}
+            disabled={!onSubmit || user.user.is_superuser}
           >
             <MenuItem value={AccessLevel.NONE}>None</MenuItem>
             <MenuItem value={AccessLevel.EDIT}>Edit</MenuItem>
@@ -74,11 +71,11 @@ const EmployeeAccessCtrlList: React.FC<IEmployeeAccessCtrlListProps> = (
 
     const handleSuperuserChange = (e: React.ChangeEvent<any>) => {
       const { checked } = e.target;
-      const newEmp: Employee = {
-        ...emp,
-        user: {
-          ...emp.user,
-          is_superuser: checked,
+      const newEmp: User = {
+        ...user,
+        is_superuser: checked,
+        vers_user: {
+          ...user.vers_user,
         },
       };
       onSubmit && onSubmit(newEmp);
@@ -86,12 +83,12 @@ const EmployeeAccessCtrlList: React.FC<IEmployeeAccessCtrlListProps> = (
 
     return (
       <TableRow hover key={idx}>
-        <TableCell>{getName(emp)}</TableCell>
+        <TableCell>{getName(user)}</TableCell>
         {editSuper ? (
           <TableCell padding="checkbox">
             <Checkbox
               name="is_superuser"
-              checked={emp.user.is_superuser}
+              checked={user.is_superuser}
               onChange={handleSuperuserChange}
             />
           </TableCell>
@@ -100,7 +97,7 @@ const EmployeeAccessCtrlList: React.FC<IEmployeeAccessCtrlListProps> = (
         <TableCell>{genSelector("sector_group")}</TableCell>
         <TableCell>{genSelector("subsector_group")}</TableCell>
         <TableCell>{genSelector("department_group")}</TableCell>
-        <TableCell>{genSelector("employee_group")}</TableCell>
+        <TableCell>{genSelector("User_group")}</TableCell>
         <TableCell>{genSelector("skill_group")}</TableCell>
         <TableCell>{genSelector("job_group")}</TableCell>
       </TableRow>
@@ -133,7 +130,7 @@ const EmployeeAccessCtrlList: React.FC<IEmployeeAccessCtrlListProps> = (
               <b>Department</b>
             </TableCell>
             <TableCell>
-              <b>Employee</b>
+              <b>User</b>
             </TableCell>
             <TableCell>
               <b>Skill</b>
@@ -149,4 +146,4 @@ const EmployeeAccessCtrlList: React.FC<IEmployeeAccessCtrlListProps> = (
   );
 };
 
-export default EmployeeAccessCtrlList;
+export default UserAccessCtrlList;

@@ -6,21 +6,15 @@ import datetime
 
 from django.contrib.auth.models import User
 from django.core import exceptions
-import django.contrib.auth.password_validation as validators
+import django.contrib.auth.password_validation as pw_validators
+from django.core.validators import EmailValidator
+from captcha.fields import CaptchaField
 
 from . import models
 from . import logger as lg
 
 
 class VersUserSerializer(serializers.ModelSerializer):
-  user = serializers.ReadOnlyField(source='user.username')
-
-  class Meta:
-    model = models.VersUser
-    fields = '__all__'
-
-
-class VersUserSerializer2(serializers.ModelSerializer):
   class Meta:
     model = models.VersUser
     fields = ['plant_group', 'sector_group', 'subsector_group',
@@ -29,8 +23,45 @@ class VersUserSerializer2(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
   password = serializers.CharField(write_only=True)
-  vers_user = VersUserSerializer2(many=False, read_only=True)
+  vers_user = VersUserSerializer(many=False, read_only=True)
   is_superuser = serializers.BooleanField(read_only=True)
+  is_active = serializers.BooleanField(read_only=True)
+
+  def update(self, instance, validated_data):
+    instance.username = validated_data.get('username', instance.username)
+    a = validated_data.get('password', instance.password)
+    instance.set_password(a)
+    instance.save()
+    return instance
+
+  def validate(self, data):
+    # get the password from the data
+    password = data.get('password')
+    errors = dict()
+    try:
+      pw_validators.validate_password(password=password, user=User)
+
+    except exceptions.ValidationError as e:
+      errors['password'] = list(e.messages)
+
+    if errors:
+      raise serializers.ValidationError(errors)
+
+    return super().validate(data)
+
+  class Meta:
+    model = User
+    fields = ['username', "password",
+              'vers_user', 'is_superuser', 'is_active']
+
+
+class UserSerializer2(serializers.ModelSerializer):
+  password = serializers.CharField(write_only=True)
+  email = serializers.CharField(validators=[EmailValidator])
+  vers_user = VersUserSerializer(many=False, read_only=True)
+  is_superuser = serializers.BooleanField(read_only=True)
+  is_active = serializers.BooleanField(read_only=True)
+  captcha = CaptchaField()
 
   def create(self, validated_data):
     user = User(
@@ -43,33 +74,26 @@ class UserSerializer(serializers.ModelSerializer):
     vers_user.save()
     return user
 
+  class Meta:
+    model = User
+    fields = ['username', 'email', 'password', 'vers_user', 'is_superuser', 'is_active']
+
+
+class UserSerializer3(serializers.ModelSerializer):
+  username = serializers.CharField(read_only=True)
+  vers_user = VersUserSerializer(many=False)
+
   def update(self, instance, validated_data):
-    instance.username = validated_data.get('username', instance.username)
-    a = validated_data.get('password', instance.password)
-    instance.set_password(a)
-    instance.save()
-    return instance
+    vers_user_data = validated_data.pop('vers_user')
+    for (key, value) in vers_user_data.items():
+      setattr(instance.vers_user, key, value)
+    instance.vers_user.save()
 
-  def validate(self, data):
-    # get the password from the data
-    password = data.get('password')
-
-    errors = dict()
-    try:
-      validators.validate_password(password=password, user=User)
-
-    except exceptions.ValidationError as e:
-      errors['password'] = list(e.messages)
-
-    if errors:
-      raise serializers.ValidationError(errors)
-
-    return super().validate(data)
+    return super().update(instance, validated_data)
 
   class Meta:
     model = User
-    fields = ['id', 'username', "password",
-              'vers_user', 'is_superuser', 'is_active']
+    fields = ['username', 'vers_user', 'is_superuser', 'is_active']
 
 
 OWNER_USERNAME = 'owner.username'
@@ -243,18 +267,6 @@ class EmpSkillMatrixSerializer(serializers.ModelSerializer):
     fields = ['skill', 'level', 'desc']
 
 
-class UserSerializer2(serializers.ModelSerializer):
-  vers_user = VersUserSerializer2(many=False)
-  is_superuser = serializers.BooleanField()
-  is_active = serializers.BooleanField(read_only=True)
-  username = serializers.CharField(read_only=True)
-
-  class Meta:
-    model = User
-    fields = ['id', 'username',
-              'vers_user', 'is_superuser', 'is_active']
-
-
 def sesa_id_val(value):
   if len(value) < 4:
     raise serializers.ValidationError(
@@ -266,7 +278,6 @@ def sesa_id_val(value):
 
 class EmployeeSerializer(serializers.ModelSerializer):
   skills = EmpSkillMatrixSerializer(many=True)
-  user = UserSerializer2()
   owner = serializers.ReadOnlyField(source=OWNER_USERNAME)
   sesa_id = serializers.CharField(validators=[sesa_id_val])
 
@@ -283,30 +294,11 @@ class EmployeeSerializer(serializers.ModelSerializer):
   def create(self, validated_data):
     g = lg.log_create(
         data_type=lg.EMPLOYEE,
-        user=self.get_request_user(), data=validated_data)
+        owner=self.get_request_user(), data=validated_data)
     validated_data['sesa_id'] = validated_data['sesa_id'].upper()
     skills_data = validated_data.pop('skills')
-    user_data = validated_data.pop('user')
-    user_data.pop('vers_user')
-    user_data.pop('is_superuser')
-
-    # creating users
-    vers_user = models.VersUser()  # user empty for now
-    user = User(
-        username=validated_data['sesa_id'],
-        is_superuser=False,
-        vers_user=vers_user,
-        **user_data
-    )
-    vers_user.user = user
-    user.set_password(validated_data['sesa_id'])
-    emp = models.Employee(user=user, **validated_data)
-    user.save()  # must save user first
-    vers_user.save()
-
-    # save employee
+    emp = models.Employee(**validated_data)
     emp.save()
-
     # save skills
     for s in skills_data:
       new_emp_skill = models.EmpSkillMatrix(employee=emp, **s)
@@ -323,7 +315,6 @@ class EmployeeSerializer(serializers.ModelSerializer):
         user=self.get_request_user(), data=validated_data, origin=instance)
     validated_data['sesa_id'] = validated_data['sesa_id'].upper()
     skills_data = validated_data.pop('skills')
-    user_data = validated_data.pop('user')
 
     origin_skills = instance.skills.all()
     for s in origin_skills:
@@ -332,19 +323,6 @@ class EmployeeSerializer(serializers.ModelSerializer):
       new_emp_skill = models.EmpSkillMatrix(
           employee=instance, **s)
       new_emp_skill.save()
-
-    if user_data:
-      vers_user_data = user_data.pop('vers_user')
-      vers_user = instance.user.vers_user
-      for (key, value) in vers_user_data.items():
-        setattr(vers_user, key, value)
-      vers_user.save()
-
-      user = self.get_request_user()
-      if user and user.is_superuser:
-        superuser = user_data.pop('is_superuser')
-        instance.user.is_superuser = superuser
-        instance.user.save()
 
     for (key, value) in validated_data.items():
       setattr(instance, key, value)

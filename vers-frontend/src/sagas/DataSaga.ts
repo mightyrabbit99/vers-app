@@ -33,7 +33,8 @@ function* reloadData() {
     jobs,
     forecasts,
     calEvents,
-    logs;
+    logs,
+    users;
   let newPlant,
     newSector,
     newSubsector,
@@ -76,6 +77,7 @@ function* reloadData() {
   newCalEvent = k.calEventStore.getNew();
   logs = k.logStore.getLst();
   let personalLogs = k.personalLogs;
+  users = k.userStore.getLst();
 
   yield put(
     _reload({
@@ -99,6 +101,7 @@ function* reloadData() {
       newCalEvent,
       logs,
       personalLogs,
+      users,
     })
   );
   yield put(calculate());

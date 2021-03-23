@@ -40,6 +40,10 @@ groups
 		1, 1, 1
 '''
 
+class SuperUserPermission(permissions.BasePermission):
+  def has_permission(self, request, view):
+    return request.user.is_superuser
+
 
 class VersPermission1(permissions.BasePermission):
   def has_permission(self, request, view):

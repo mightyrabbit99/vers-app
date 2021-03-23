@@ -4,7 +4,7 @@ from django.http import HttpRequest, HttpResponseRedirect
 from django.views.generic import ListView
 from django.views import View
 from django.urls import reverse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from rest_framework import status, viewsets, generics
 from rest_framework.response import Response
 from django.contrib.auth.models import User
@@ -14,28 +14,30 @@ from . import models
 from . import serializers
 from . import logger as lg
 from . import permissions as my_perms
+from .forms import UserCreateForm
 from rest_framework import permissions
 
 # raw data serving
 
 
-class DepartmentList(generics.ListCreateAPIView):
-  queryset = models.Department.objects.all()
-  serializer_class = serializers.DepartmentSerializer
+def new_user_register(request):
+    title = "Create account"
+    if request.method == 'POST':
+        form = UserCreateForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/')
+    else:
+        form = UserCreateForm()
 
-
-class DepartmentDetail(generics.RetrieveUpdateDestroyAPIView):
-  queryset = models.Department.objects.all()
-  serializer_class = serializers.DepartmentSerializer
-  permission_classes = [permissions.AllowAny]
-
-
-class UserList(generics.ListCreateAPIView):
-  queryset = User.objects.all()
-  serializer_class = serializers.UserSerializer
+    context = {'form': form, 'title': title}
+    return render(request, 'registration.html', context=context)
 
 
 class UserDetail(generics.RetrieveUpdateAPIView):
+  '''
+    User retrieve & update information about himself
+  '''
   serializer_class = serializers.UserSerializer
   model = User
   permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
@@ -44,17 +46,6 @@ class UserDetail(generics.RetrieveUpdateAPIView):
     obj = self.request.user
     return obj
 
-
-class VersUserList(generics.ListAPIView):
-  queryset = models.VersUser.objects.all()
-  serializer_class = serializers.VersUserSerializer
-  permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-
-class VersUserDetail(generics.RetrieveUpdateAPIView):
-  queryset = models.VersUser.objects.all()
-  serializer_class = serializers.VersUserSerializer
-  permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 # model view sets to be used in router
 
@@ -488,6 +479,16 @@ class CalEventView(viewsets.ModelViewSet):
 
   def get_queryset(self):
     return models.CalEvent.objects.all()
+
+
+class UserView(viewsets.ModelViewSet):
+  serializer_class = serializers.UserSerializer3
+  model = User
+  permission_classes = (my_perms.SuperUserPermission)
+
+  def get_queryset(self):
+    return models.User.objects.all()
+
 
 # main page
 

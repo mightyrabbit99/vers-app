@@ -12,3 +12,4 @@ export * from "./Job";
 export * from "./Log";
 export * from "./Forecast";
 export * from "./CalEvent";
+export * from "./User";

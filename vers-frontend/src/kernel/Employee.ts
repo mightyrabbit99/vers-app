@@ -1,5 +1,4 @@
 import { EmployeeData, EmpSkillData } from "./data";
-import { UserData, AccessLevel } from "./data/UserData";
 import Fetcher from "./Fetcher";
 import store, { Item, ItemType } from "./Store";
 
@@ -16,7 +15,6 @@ interface Employee extends Item {
   reportTo: number;
   gender: string;
   hireDate: string;
-  user: UserData;
 }
 
 function dataToObj(x: EmployeeData): Employee {
@@ -34,7 +32,6 @@ function dataToObj(x: EmployeeData): Employee {
     reportTo: x.report_to ?? -1,
     gender: x.gender,
     hireDate: x.hire_date ?? "",
-    user: x.user,
   };
 }
 
@@ -52,7 +49,6 @@ function objToData(x: Employee): EmployeeData {
     report_to: x.reportTo === -1 ? undefined : x.reportTo,
     gender: x.gender,
     hire_date: x.hireDate === "" ? undefined : x.hireDate,
-    user: x.user,
   };
 }
 
@@ -104,23 +100,6 @@ const generator = (init?: any): Employee => ({
   gender: "M",
   hireDate: "",
   ...init,
-  user: {
-    id: -1,
-    username: "",
-    is_superuser: false,
-    is_active: false,
-    ...init?.user,
-    vers_user: {
-      plant_group: AccessLevel.NONE,
-      sector_group: AccessLevel.NONE,
-      subsector_group: AccessLevel.NONE,
-      department_group: AccessLevel.NONE,
-      employee_group: AccessLevel.NONE,
-      job_group: AccessLevel.NONE,
-      skill_group: AccessLevel.NONE,
-      ...init?.user?.vers_user,
-    }
-  }
 });
 
 const hasher = (t: Employee) => t.sesaId.trim().toLowerCase();
@@ -128,5 +107,4 @@ const hasher = (t: Employee) => t.sesaId.trim().toLowerCase();
 const EmployeeStore = store<Employee>(get, post, put, del, generator, dataToObj, hasher);
 
 export type { Employee, EmpSkillData };
-export { AccessLevel };
 export default EmployeeStore;

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'vers',
     'django_celery_results',
+    'captcha',
 ]
 
 MIDDLEWARE = [

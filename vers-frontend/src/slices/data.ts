@@ -41,6 +41,7 @@ export const initialState: DataState = {
   logs: {},
   calEvents: {},
   personalLogs: [],
+  users: {},
   loading: true,
   calculating: false,
 };
@@ -70,6 +71,7 @@ const dataSlice = createSlice({
       state.newCalEvent = payload.newCalEvent ?? undefined;
       state.logs = payload.logs ?? {};
       state.personalLogs = payload.personalLogs ?? [];
+      state.users = payload.users ?? {};
     },
     reload: (state) => {
       state.loading = true;

@@ -9,6 +9,7 @@ import {
   LogData,
   ForecastData,
   CalEventData,
+  UserData,
 } from "./data";
 import axios, { AxiosResponse } from "axios";
 /*
@@ -30,6 +31,7 @@ const jobUrl = `${host}${process.env.REACT_APP_REST_API_JOB_PATH}/`;
 const logUrl = `${host}${process.env.REACT_APP_REST_API_LOG_PATH}/`;
 const forecastUrl = `${host}${process.env.REACT_APP_REST_API_FORECAST_PATH}/`;
 const calEventUrl = `${host}${process.env.REACT_APP_REST_API_CAL_EVENT_PATH}/`;
+const allUserUrl = `${host}${process.env.REACT_APP_REST_API_USER_PATH}/`;
 
 const getCookie = (name: string) => {
   var cookieValue = null;
@@ -149,6 +151,10 @@ class Fetcher {
     return await axios.get(calEventUrl, Fetcher.getConfig());
   };
 
+  static getUsers = async (): Promise<Result<UserData[]>> => {
+    return await axios.get(allUserUrl, Fetcher.getConfig());
+  };
+
   // POST
   static postPlant = async (data: PlantData): Promise<Result<PlantData>> => {
     return await axios.post(plantUrl, data, Fetcher.getConfig());
@@ -257,6 +263,10 @@ class Fetcher {
     );
   };
 
+  static putOtherUser = async (data: UserData) => {
+    return await axios.put(allUserUrl, data, Fetcher.getConfig());
+  }
+
   static putForecast = async (
     data: ForecastData
   ): Promise<Result<ForecastData>> => {
@@ -326,6 +336,10 @@ class Fetcher {
   ): Promise<Result<CalEventData>> => {
     return await axios.delete(`${calEventUrl}${data.id}/`, Fetcher.getConfig());
   };
+
+  static deleteUser = async (data: UserData): Promise<Result<UserData>> => {
+    return await axios.delete(`${allUserUrl}${data.id}/`, Fetcher.getConfig());
+  }
 }
 
 export default Fetcher;
