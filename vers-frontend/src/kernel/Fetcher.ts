@@ -264,7 +264,7 @@ class Fetcher {
   };
 
   static putOtherUser = async (data: UserData) => {
-    return await axios.put(allUserUrl, data, Fetcher.getConfig());
+    return await axios.put(`${allUserUrl}${data.id}/`, data, Fetcher.getConfig());
   }
 
   static putForecast = async (

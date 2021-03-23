@@ -19,22 +19,26 @@ import DialogContent from "@material-ui/core/DialogContent";
 import Button from "@material-ui/core/Button";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContentText from "@material-ui/core/DialogContentText";
+import ButtonBase from "@material-ui/core/ButtonBase";
 
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
-import CameraIcon from "@material-ui/icons/PhotoCamera";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 
 import { getData, getSession } from "src/selectors";
-import { Plant } from "src/kernel";
+import { AccessLevel, Plant } from "src/kernel";
 import PlantCard from "src/components/cards/PlantCard";
 import { selPlant, saveData, delData } from "src/slices/data";
 import MyDialog from "src/components/commons/Dialog";
 import PlantForm from "src/components/forms/PlantForm";
 import { logout } from "src/slices/session";
+import SchneiderLogo from "src/components/commons/SchneiderLogo";
+import { UserData } from "src/kernel/data";
 
 const useStyles = makeStyles((theme) => ({
   icon: {
     marginRight: theme.spacing(2),
+    width: 150,
+    height: 50,
   },
   heroContent: {
     backgroundColor: theme.palette.background.paper,
@@ -85,6 +89,10 @@ const useStyles = makeStyles((theme) => ({
 
 interface IPlantPageProps {}
 
+const canCrete = (user?: UserData) => {
+  return user?.is_superuser || user?.vers_user.plant_group === AccessLevel.EDIT;
+};
+
 const PlantPage: React.FunctionComponent<IPlantPageProps> = (props) => {
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -97,18 +105,19 @@ const PlantPage: React.FunctionComponent<IPlantPageProps> = (props) => {
     history.push("/dashboard");
   };
 
-  const [confirmDel, setConfirmDel] = React.useState<number | undefined>(undefined);
+  const [confirmDel, setConfirmDel] = React.useState<number | undefined>(
+    undefined
+  );
   const handleDeleteOnClick = (id: number) => {
     setConfirmDel(id);
   };
   const handleDelConfirmClose = () => {
     setConfirmDel(undefined);
-  }
+  };
   const handleConfirmDel = () => {
     confirmDel && dispatch(delData(lst[confirmDel]));
     handleDelConfirmClose();
-  }
-  
+  };
 
   const [formOpen, setFormOpen] = React.useState(false);
   const [formData, setFormData] = React.useState(newPlant);
@@ -141,6 +150,18 @@ const PlantPage: React.FunctionComponent<IPlantPageProps> = (props) => {
     return user?.is_superuser ? true : user?.vers_user.plant_group === 1;
   };
 
+  const [mainAnchorEl, setMainAnchorEl] = React.useState<null | HTMLElement>(
+    null
+  );
+
+  const handleMainTitleClick = (e: React.ChangeEvent<any>) => {
+    setMainAnchorEl(e.currentTarget);
+  };
+
+  const handlePageSelClose = () => {
+    setMainAnchorEl(null);
+  };
+
   const [
     settingsAnchorEl,
     setSettingsAnchorEl,
@@ -162,15 +183,21 @@ const PlantPage: React.FunctionComponent<IPlantPageProps> = (props) => {
     history.push("/user");
   };
 
+  const handleViewAccessCtrl = () => {
+    history.push("/access_ctrl");
+  };
+
   return (
     <React.Fragment>
       <CssBaseline />
       <AppBar position="relative">
         <Toolbar>
-          <CameraIcon className={classes.icon} />
-          <Typography variant="h6" color="inherit" noWrap>
-            Plants
-          </Typography>
+          <svg className={classes.icon}>{SchneiderLogo}</svg>
+          <ButtonBase className={classes.title} onClick={handleMainTitleClick}>
+            <Typography component="h1" variant="h6" color="inherit" noWrap>
+              Plants
+            </Typography>
+          </ButtonBase>
           <div className={classes.settings}>
             <Typography variant="caption">
               {user ? user.username : "Guest"}
@@ -204,6 +231,7 @@ const PlantPage: React.FunctionComponent<IPlantPageProps> = (props) => {
                 <CardActionArea
                   className={classes.cardContent}
                   onClick={handleCreateOnClick}
+                  disabled={!canCrete(user)}
                 >
                   <AddCircleOutlineIcon className={classes.addCircleIcon} />
                 </CardActionArea>
@@ -235,6 +263,9 @@ const PlantPage: React.FunctionComponent<IPlantPageProps> = (props) => {
         onClose={handleSettingsClose}
       >
         <MenuItem onClick={handleViewProfile}>Profile</MenuItem>
+        {user?.is_superuser ? (
+          <MenuItem onClick={handleViewAccessCtrl}>Access Control</MenuItem>
+        ) : null}
         <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>
       <MyDialog open={formOpen} onClose={handleFormClose}>
@@ -287,6 +318,16 @@ const PlantPage: React.FunctionComponent<IPlantPageProps> = (props) => {
           </Button>
         </DialogActions>
       </Dialog>
+      <Menu
+        id="simple-menu"
+        anchorEl={mainAnchorEl}
+        keepMounted
+        open={Boolean(mainAnchorEl)}
+        onClose={handlePageSelClose}
+      >
+        <MenuItem onClick={handlePageSelClose}>Plants</MenuItem>
+        {user?.is_superuser ? <MenuItem onClick={handleViewAccessCtrl}>Access Control</MenuItem> : null}
+      </Menu>
     </React.Fragment>
   );
 };

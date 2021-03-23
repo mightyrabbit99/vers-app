@@ -45,7 +45,7 @@ function* postItemThenSave({ payload }: CreateNewAction) {
       yield put(submitSuccess(undefined));
       //yield put(_saveData(payload));
     } else {
-      yield put(submitSuccess(feedback.data));
+      yield put(submitSuccess(feedback));
     }
   } catch (error) {
     yield put(submitError(error.message));
@@ -66,7 +66,7 @@ function* putItem({ payload }: ModifyAction) {
         break;
       }
     }
-    yield put(submitSuccess(res.success ? undefined : res.data));
+    yield put(submitSuccess(res.success ? undefined : res));
   } catch (error) {
     yield put(submitError(error.message));
   }

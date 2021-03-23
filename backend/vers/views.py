@@ -85,7 +85,7 @@ def get_group(view, user):
   elif view == "job":
     return user.vers_user.job_group
   elif view == "forecast":
-    return user.vers_user.forecast
+    return user.vers_user.forecast_group
 
 
 NONE = 3
@@ -149,7 +149,6 @@ def notify_consumer(typ, data_type, data):
 class PlantView(viewsets.ModelViewSet):
   txt = "plant"
   serializer_class = serializers.PlantSerializer
-  permission_classes = [my_perms.VersPermission1]
 
   def get_queryset(self):
     return perform_get_queryset(self.txt, self.request.user)
@@ -437,7 +436,6 @@ class LogList(generics.ListAPIView):
 class ForecastView(viewsets.ModelViewSet):
   txt = "forecast"
   serializer_class = serializers.ForecastPackSerializer
-  permission_classes = [my_perms.VersPermission1]
 
   def get_queryset(self):
     return perform_get_queryset(self.txt, self.request.user)
@@ -482,12 +480,18 @@ class CalEventView(viewsets.ModelViewSet):
 
 
 class UserView(viewsets.ModelViewSet):
+  txt = 'user'
   serializer_class = serializers.UserSerializer3
   model = User
-  permission_classes = (my_perms.SuperUserPermission)
 
   def get_queryset(self):
-    return models.User.objects.all()
+    return User.objects.all()
+
+  def update(self, request, *args, **kwargs):
+    if has_update_permission(self.txt, self.request.user):
+      return super().update(request, *args, **kwargs)
+    else:
+      return Response(status=status.HTTP_403_FORBIDDEN)
 
 
 # main page

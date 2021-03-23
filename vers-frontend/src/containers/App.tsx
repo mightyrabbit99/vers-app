@@ -10,6 +10,7 @@ import SpinningBall from "./SpinningBall";
 import ProfilePage from "./ProfilePage";
 import UserEditPage from "./UserEditPage";
 import PlantPage from "./PlantPage";
+import AccessCtrlPage from "./AccessCtrlPage";
 
 import { getData, getSession } from "src/selectors";
 import { reload } from "src/slices/data";
@@ -17,20 +18,6 @@ import { initLogin } from "src/slices/session";
 import k from "src/kernel";
 
 interface IAppProps {}
-
-interface MainRouteProps {
-  auth?: boolean;
-  type: string;
-  [name: string]: any;
-}
-
-const MainRoute: React.FC<MainRouteProps> = (props) => {
-  const { auth, type, ...otherProps } = props;
-  if (type === "guest" && auth) return <Redirect to="/" />;
-  if (type === "private" && !auth) return <Redirect to="/" />;
-
-  return <Route {...otherProps} />;
-};
 
 const theme = createMuiTheme({
   palette: {
@@ -81,20 +68,15 @@ const App: React.FC<IAppProps> = () => {
         <Route exact path="/plants">
           {auth ? <PlantPage /> : <Redirect to="/" />}
         </Route>
-        <MainRoute
-          exact
-          auth={auth}
-          type="private"
-          path="/user"
-          render={() => <ProfilePage />}
-        />
-        <MainRoute
-          exact
-          auth={auth}
-          type="private"
-          path="/user_edit"
-          render={() => <UserEditPage />}
-        />
+        <Route exact path="/access_ctrl">
+          {auth ? <AccessCtrlPage /> : <Redirect to="/" />}
+        </Route>
+        <Route exact path="/user">
+          {auth ? <ProfilePage /> : <Redirect to="/" />}
+        </Route>
+        <Route exact path="/user_edit">
+          {auth ? <UserEditPage /> : <Redirect to="/" />}
+        </Route>
         <Route exact path="/signin">
           <SigninPage />
         </Route>

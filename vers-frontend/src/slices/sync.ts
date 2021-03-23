@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Item, ItemType } from "src/kernel";
+import { Item, ItemType, Result } from "src/kernel";
 import { MyError, SyncState } from "src/types";
 
 export const initialState: SyncState = {
@@ -27,9 +27,9 @@ const syncSlice = createSlice({
       state.syncing = false;
       state.error = payload;
     },
-    submitSuccess: (state, { payload }: PayloadAction<any>) => {
+    submitSuccess: (state, { payload }: PayloadAction<Result | undefined>) => {
       state.syncing = false;
-      state.feedback = payload;
+      state.feedback = payload?.data;
     },
     createNew: (state, { payload }: PayloadAction<Item>) => {
       state.syncing = true;

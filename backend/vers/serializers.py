@@ -76,24 +76,8 @@ class UserSerializer2(serializers.ModelSerializer):
 
   class Meta:
     model = User
-    fields = ['username', 'email', 'password', 'vers_user', 'is_superuser', 'is_active']
-
-
-class UserSerializer3(serializers.ModelSerializer):
-  username = serializers.CharField(read_only=True)
-  vers_user = VersUserSerializer(many=False)
-
-  def update(self, instance, validated_data):
-    vers_user_data = validated_data.pop('vers_user')
-    for (key, value) in vers_user_data.items():
-      setattr(instance.vers_user, key, value)
-    instance.vers_user.save()
-
-    return super().update(instance, validated_data)
-
-  class Meta:
-    model = User
-    fields = ['username', 'vers_user', 'is_superuser', 'is_active']
+    fields = ['username', 'email', 'password',
+              'vers_user', 'is_superuser', 'is_active']
 
 
 OWNER_USERNAME = 'owner.username'
@@ -111,6 +95,26 @@ def notify_consumer(typ, data_type, data):
   }
   async_to_sync(channel_layer.group_send)(
       "main", event)
+
+
+class UserSerializer3(serializers.ModelSerializer):
+  username = serializers.CharField(read_only=True)
+  vers_user = VersUserSerializer(many=False)
+
+  def notify(self, typ, res):
+    notify_consumer(typ, lg.USER, UserSerializer3(res).data)
+
+  def update(self, instance, validated_data):
+    vers_user_data = validated_data.pop('vers_user')
+    for (key, value) in vers_user_data.items():
+      setattr(instance.vers_user, key, value)
+    instance.vers_user.save()
+    self.notify(lg.UPDATE, instance)
+    return super().update(instance, validated_data)
+
+  class Meta:
+    model = User
+    fields = ['id', 'username', 'vers_user', 'is_superuser', 'is_active']
 
 
 class PlantSerializer(serializers.ModelSerializer):

@@ -42,7 +42,6 @@ import EmployeeView from "./EmployeeView";
 import JobView from "./JobView";
 import ForecastView from "./ForecastView";
 import ChangeLogView from "./ChangeLogView";
-import AccessCtrlView from "./AccessCtrlView";
 import CalendarView from "./CalendarView";
 
 import { clearFeedback, fetchData } from "src/slices/sync";
@@ -50,6 +49,7 @@ import { logout } from "src/slices/session";
 import { selPlant } from "src/slices/data";
 import { getData, getSession } from "src/selectors";
 import { AccessLevel, ItemType } from "src/kernel";
+import SchneiderLogo from "src/components/commons/SchneiderLogo";
 
 function Copyright() {
   return (
@@ -100,6 +100,11 @@ const useStyles = makeStyles((theme) => ({
   },
   menuButtonHidden: {
     display: "none",
+  },
+  icon: {
+    marginRight: theme.spacing(2),
+    width: 150,
+    height: 50,
   },
   title: {},
   settings: {
@@ -165,7 +170,6 @@ enum DashboardView {
   Job,
   Forecast,
   ChangeLog,
-  AccessCtrl,
   Calendar,
 }
 
@@ -255,6 +259,10 @@ const Dashboard: React.FC = () => {
     dispatch(selPlant());
   };
 
+  const handleViewAccessCtrl = () => {
+    history.push("/access_ctrl");
+  }
+
   const cannotView = (i: DashboardView) => {
     if (user?.is_superuser) return false;
     switch (i) {
@@ -272,8 +280,6 @@ const Dashboard: React.FC = () => {
         return user?.vers_user.employee_group === AccessLevel.NONE;
       case DashboardView.Job:
         return user?.vers_user.job_group === AccessLevel.NONE;
-      case DashboardView.AccessCtrl:
-        return user?.is_superuser;
       case DashboardView.ChangeLog:
       case DashboardView.Calendar:
         return true;
@@ -379,17 +385,6 @@ const Dashboard: React.FC = () => {
       </ListItem>
       <ListItem
         button
-        disabled={cannotView(DashboardView.AccessCtrl)}
-        selected={currView === DashboardView.AccessCtrl}
-        onClick={handleListClick(DashboardView.AccessCtrl)}
-      >
-        <ListItemIcon>
-          <LayersIcon />
-        </ListItemIcon>
-        <ListItemText primary="Access Control" />
-      </ListItem>
-      <ListItem
-        button
         disabled={cannotView(DashboardView.Calendar)}
         selected={currView === DashboardView.Calendar}
         onClick={handleListClick(DashboardView.Calendar)}
@@ -420,8 +415,6 @@ const Dashboard: React.FC = () => {
         return <ForecastView />;
       case DashboardView.ChangeLog:
         return <ChangeLogView />;
-      case DashboardView.AccessCtrl:
-        return <AccessCtrlView />;
       case DashboardView.Calendar:
         return <CalendarView />;
       default:
@@ -450,6 +443,7 @@ const Dashboard: React.FC = () => {
             >
               <MenuIcon />
             </IconButton>
+            <svg className={classes.icon}>{SchneiderLogo}</svg>
             <ButtonBase
               className={classes.title}
               onClick={handleMainTitleClick}
@@ -513,6 +507,7 @@ const Dashboard: React.FC = () => {
         onClose={handlePageSelClose}
       >
         <MenuItem onClick={handlePageSelClose}>Dashboard</MenuItem>
+        {user?.is_superuser ? <MenuItem onClick={handleViewAccessCtrl}>Access Control</MenuItem> : null}
         <MenuItem onClick={toPlant}>Plants</MenuItem>
       </Menu>
       <Backdrop className={classes.backdrop} open={loading}>

@@ -20,6 +20,7 @@ class DataType(models.IntegerChoices):
   FORECAST = 7, 'FORECAST'
   CAL_EVENT = 8, 'CAL EVENT'
   LOG = 9, 'LOG'
+  USER = 10, 'USER'
 
 
 class PermissionGroupChoices(models.IntegerChoices):

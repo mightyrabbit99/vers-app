@@ -43,7 +43,7 @@ const UserAccessCtrlList: React.FC<IUserAccessCtrlListProps> = (
       const handleChange = (e: React.ChangeEvent<any>) => {
         const { name, value } = e.target;
         const newEmp: User = {
-            ...user.user,
+            ...user,
             vers_user: {
               ...user.vers_user,
               [name]: value,
@@ -59,7 +59,7 @@ const UserAccessCtrlList: React.FC<IUserAccessCtrlListProps> = (
             name={name}
             value={val}
             onChange={handleChange}
-            disabled={!onSubmit || user.user.is_superuser}
+            disabled={!onSubmit || user.is_superuser}
           >
             <MenuItem value={AccessLevel.NONE}>None</MenuItem>
             <MenuItem value={AccessLevel.EDIT}>Edit</MenuItem>
@@ -97,7 +97,6 @@ const UserAccessCtrlList: React.FC<IUserAccessCtrlListProps> = (
         <TableCell>{genSelector("sector_group")}</TableCell>
         <TableCell>{genSelector("subsector_group")}</TableCell>
         <TableCell>{genSelector("department_group")}</TableCell>
-        <TableCell>{genSelector("User_group")}</TableCell>
         <TableCell>{genSelector("skill_group")}</TableCell>
         <TableCell>{genSelector("job_group")}</TableCell>
       </TableRow>
@@ -130,9 +129,6 @@ const UserAccessCtrlList: React.FC<IUserAccessCtrlListProps> = (
               <b>Department</b>
             </TableCell>
             <TableCell>
-              <b>User</b>
-            </TableCell>
-            <TableCell>
               <b>Skill</b>
             </TableCell>
             <TableCell>
@@ -140,7 +136,7 @@ const UserAccessCtrlList: React.FC<IUserAccessCtrlListProps> = (
             </TableCell>
           </TableRow>
         </TableHead>
-        <TableBody>{empLst.map(genTableRow)}</TableBody>
+        <TableBody>{empLst.filter(x => x.vers_user).map(genTableRow)}</TableBody>
       </Table>
     </TableContainer>
   );
