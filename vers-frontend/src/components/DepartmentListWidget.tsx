@@ -12,7 +12,9 @@ const useStyles = makeStyles((theme) => ({
   title: {
     height: "15%",
   },
-  form: {},
+  form: {
+    width: 400,
+  },
   formTitle: {
     height: "15%",
   },

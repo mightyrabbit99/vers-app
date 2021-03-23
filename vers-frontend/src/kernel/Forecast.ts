@@ -40,7 +40,6 @@ const post = async (t: Forecast) => {
 };
 
 const put = async (t: Forecast) => {
-  console.log(t);
   let res;
   try {
     res = await Fetcher.putForecast(objToData(t));
@@ -48,7 +47,6 @@ const put = async (t: Forecast) => {
     if (!error.response) throw error;
     res = error.response;
   }
-  console.log(res);
   return { success: res.status === 200, statusText: res.statusText, data: dataToObj(res.data) };
 };
 

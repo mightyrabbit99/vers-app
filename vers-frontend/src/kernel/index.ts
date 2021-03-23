@@ -1,5 +1,4 @@
 import Kernel from "./Kernel";
-import ExcelProcessor from "./ExcelProcessor";
 export default Kernel;
 export * from "./Kernel";
 export * from "./Plant";
@@ -13,4 +12,3 @@ export * from "./Job";
 export * from "./Log";
 export * from "./Forecast";
 export * from "./CalEvent";
-export { ExcelProcessor };

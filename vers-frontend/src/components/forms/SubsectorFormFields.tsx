@@ -83,15 +83,15 @@ const SubsectorFF: React.FunctionComponent<ISubsectorFFProps> = (props) => {
     name,
     value: getDataProp(name),
     onChange: handleChange,
-    InputLabelProps: {
-      shrink: getDataProp(name) !== "",
-    },
   });
 
   const genActiveProps = (name: string) => ({
     ...genProps(name),
     error: getFeedback(name) !== "",
     helperText: getFeedback(name),
+    InputLabelProps: {
+      shrink: getDataProp(name) !== "",
+    },
   });
 
   return (

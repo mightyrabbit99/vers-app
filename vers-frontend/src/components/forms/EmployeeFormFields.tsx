@@ -20,9 +20,7 @@ import { FormChoiceField, FormChoices } from "./types";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    "& > *": {
-      margin: theme.spacing(1),
-    },
+    width: "100%",
   },
   formControl: {
     margin: theme.spacing(1),
@@ -123,8 +121,8 @@ const EmployeeFF: React.FunctionComponent<IEmployeeFFProps> = (props) => {
   })
 
   return (
-    <form className={classes.root} noValidate autoComplete="off">
-      <Grid container spacing={3}>
+    //<form  noValidate autoComplete="off">
+      <Grid container spacing={3} className={classes.root}>
         <Grid item xs={4}>
           <TextField
             required
@@ -159,7 +157,6 @@ const EmployeeFF: React.FunctionComponent<IEmployeeFFProps> = (props) => {
           <TextField
             required
             label="First name"
-            fullWidth
             autoComplete="given-name"
             variant="standard"
             {...genProps("firstName")}
@@ -169,7 +166,6 @@ const EmployeeFF: React.FunctionComponent<IEmployeeFFProps> = (props) => {
           <TextField
             required
             label="Last name"
-            fullWidth
             autoComplete="family-name"
             variant="standard"
             {...genProps("lastName")}
@@ -226,6 +222,7 @@ const EmployeeFF: React.FunctionComponent<IEmployeeFFProps> = (props) => {
               className={classes.department}
               disabled={choices["department"].choices.length === 0}
               {...genActiveProps("department")}
+              error={getFeedback("department") !== ""}
             >
               {choices["department"].choices.map((x, idx) => (
                 <MenuItem key={idx} value={idx}>
@@ -243,6 +240,7 @@ const EmployeeFF: React.FunctionComponent<IEmployeeFFProps> = (props) => {
               className={classes.subsector}
               disabled={choices["subsector"].choices.length === 0}
               {...genActiveProps("subsector")}
+              error={getFeedback("subsector") !== ""}
             >
               {choices["subsector"].choices.map((x, idx) => (
                 <MenuItem key={idx} value={idx}>
@@ -270,7 +268,7 @@ const EmployeeFF: React.FunctionComponent<IEmployeeFFProps> = (props) => {
           </FormControl>
         </Grid>
       </Grid>
-    </form>
+    //</form>
   );
 };
 

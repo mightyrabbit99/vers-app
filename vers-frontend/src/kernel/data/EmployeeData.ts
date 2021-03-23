@@ -12,7 +12,7 @@ interface EmployeeData extends Data {
   first_name: string;
   last_name: string;
   subsector: number;
-  department: number;
+  department?: number;
   report_to?: number;
   skills: EmpSkillData[];
   user: UserData;

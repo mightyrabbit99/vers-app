@@ -14,7 +14,12 @@ import {
   clearMyLog,
 } from "src/slices/data";
 import { createNew, modify, erase } from "src/slices/sync";
-import { SaveDataAction, DeleteDataAction, ReloadDataAction, DownloadExcelAction } from "src/types";
+import {
+  SaveDataAction,
+  DeleteDataAction,
+  ReloadDataAction,
+  DownloadExcelAction,
+} from "src/types";
 import k, { Department, Sector, Subsector } from "src/kernel";
 import { getData } from "src/selectors";
 
@@ -42,9 +47,17 @@ function* reloadData() {
   let { selectedPlantId: p } = yield select(getData);
   plants = k.plantStore.getLst();
   newPlant = k.plantStore.getNew();
-  p && !(p in plants) && (p = undefined);
-  !p && (p = (Object.values(plants).length > 0 ? Object.values(plants)[0].id : undefined));
-  p ? localStorage.setItem("lastPlant", `${p}`) : localStorage.removeItem("lastPlant");
+  if (p && !(p in plants)) p = undefined;
+  if (!p) {
+    p = Object.values(plants).length > 0
+        ? Object.values(plants)[0].id
+        : undefined;
+  }
+  if (p) {
+    localStorage.setItem("lastPlant", `${p}`)
+  } else {
+    localStorage.removeItem("lastPlant");
+  }
   sectors = k.secStore.getLst(p ? (x) => x.plant === p : undefined);
   newSector = k.secStore.getNew({ plant: p });
   subsectors = k.subsecStore.getLst((x) => x.sector in sectors);
@@ -53,9 +66,7 @@ function* reloadData() {
   newSkill = k.skillStore.getNew();
   departments = k.deptStore.getLst();
   newDepartment = k.deptStore.getNew();
-  employees = k.empStore.getLst(
-    (x) => x.department in departments && x.subsector in subsectors
-  );
+  employees = k.empStore.getLst();
   newEmployee = k.empStore.getNew();
   jobs = k.jobStore.getLst();
   newJob = k.jobStore.getNew();
@@ -65,7 +76,7 @@ function* reloadData() {
   newCalEvent = k.calEventStore.getNew();
   logs = k.logStore.getLst();
   let personalLogs = k.personalLogs;
-  
+
   yield put(
     _reload({
       plants,

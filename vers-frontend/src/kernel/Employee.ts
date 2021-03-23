@@ -9,7 +9,7 @@ interface Employee extends Item {
   firstName: string;
   lastName: string;
   subsector: number;
-  department: number;
+  department?: number;
   skills: EmpSkillData[];
   available: boolean;
   birthDate: string;
@@ -45,7 +45,7 @@ function objToData(x: Employee): EmployeeData {
     first_name: x.firstName,
     last_name: x.lastName,
     subsector: x.subsector,
-    department: x.department,
+    department: x.department === -1 ? undefined : x.department,
     skills: x.skills,
     available: x.available,
     birth_date: x.birthDate === "" ? undefined : x.birthDate,

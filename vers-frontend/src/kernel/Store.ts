@@ -104,11 +104,15 @@ function store<T extends Item>(
     };
 
     submitNew = async (t: T) => {
-      return await post(t);
+      const res = await post(t);
+      console.log(res);
+      return res;
     };
 
     submit = async (t: T) => {
-      return await put(t);
+      const res = await put(t);
+      console.log(res);
+      return res;
     };
 
     submitOrNew = async (t: T) => {
