@@ -1,26 +1,15 @@
 import * as React from "react";
-import {
-  makeStyles,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-} from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import TextField from "@material-ui/core/TextField";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import Grid from "@material-ui/core/Grid";
 import { Sector } from "src/kernel";
-import { FormChoiceField, FormChoices } from "./types";
+import { commonFormFieldStyles, FormChoiceField, FormChoices } from "./types";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    "& > *": {
-      margin: theme.spacing(1),
-    },
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-}));
+const useStyles = makeStyles(commonFormFieldStyles);
 
 interface SectorFormChoices extends FormChoices {
   plant: FormChoiceField;
@@ -48,7 +37,6 @@ const SectorFF: React.FunctionComponent<ISectorFFProps> = (props) => {
   const handleChange = (e: React.ChangeEvent<any>) => {
     let { name, value } = e.target;
 
-
     if (name === "plant") {
       value = parseInt(value, 10);
       choices[name].init = value;
@@ -56,8 +44,8 @@ const SectorFF: React.FunctionComponent<ISectorFFProps> = (props) => {
     }
 
     data[name] = value;
-    setFeedback({...feedback, [name]: undefined});
-    onChange ? onChange(data) : setState({...state, [name]: value});
+    setFeedback({ ...feedback, [name]: undefined });
+    onChange ? onChange(data) : setState({ ...state, [name]: value });
   };
 
   const getFeedback = (name: string) => {
@@ -78,25 +66,35 @@ const SectorFF: React.FunctionComponent<ISectorFFProps> = (props) => {
 
   return (
     <form className={classes.root} noValidate autoComplete="off">
-      <TextField label="Name" variant="outlined" {...genActiveProps("name")} />
-      <FormControl className={classes.formControl}>
-        <InputLabel id="demo-simple-select-label">Plant</InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          name="plant"
-          error={getFeedback("plant") !== ""}
-          defaultValue={1}
-          value={getDataIdx("plant")}
-          onChange={handleChange}
-          disabled={choices["plant"].choices.length < 2}
-        >
-          {choices["plant"].choices.map((x, idx) => (
-            <MenuItem key={idx} value={idx}>
-              {x.name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <Grid container className={classes.form}>
+        <Grid item xs={8}>
+          <TextField
+            label="Name"
+            variant="outlined"
+            {...genActiveProps("name")}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <FormControl className={classes.formControl}>
+            <InputLabel id="demo-simple-select-label">Plant</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              name="plant"
+              error={getFeedback("plant") !== ""}
+              defaultValue={1}
+              value={getDataIdx("plant")}
+              onChange={handleChange}
+              disabled={choices["plant"].choices.length < 2}
+            >
+              {choices["plant"].choices.map((x, idx) => (
+                <MenuItem key={idx} value={idx}>
+                  {x.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+      </Grid>
     </form>
   );
 };

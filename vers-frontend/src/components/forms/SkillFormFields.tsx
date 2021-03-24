@@ -1,27 +1,15 @@
 import * as React from "react";
-import {
-  makeStyles,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Grid,
-} from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import TextField from "@material-ui/core/TextField";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import Grid from "@material-ui/core/Grid";
 import { Skill } from "src/kernel";
-import { FormChoiceField, FormChoices } from "./types";
+import { commonFormFieldStyles, FormChoiceField, FormChoices } from "./types";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    "& > *": {
-      margin: theme.spacing(1),
-    },
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-}));
+const useStyles = makeStyles(commonFormFieldStyles);
 
 interface SkillFormChoices extends FormChoices {
   subsector: FormChoiceField;
@@ -96,13 +84,16 @@ const SkillFF: React.FunctionComponent<ISkillFFProps> = (props) => {
 
   return (
     <form className={classes.root} noValidate autoComplete="off">
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
+      <Grid container spacing={3} className={classes.form}>
+        <Grid item xs={12} sm={7}>
           <TextField
+            fullWidth
             label="Name"
             variant="outlined"
             {...genActiveProps("name")}
           />
+        </Grid> 
+        <Grid item xs={12} sm={5}>
           <FormControl className={classes.formControl}>
             <InputLabel id="demo-simple-select-label">Subsector</InputLabel>
             <Select
@@ -121,9 +112,10 @@ const SkillFF: React.FunctionComponent<ISkillFFProps> = (props) => {
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} sm={6}>
           <TextField
             required
+            fullWidth
             label="Priority"
             variant="filled"
             {...genActiveProps("priority")}
@@ -131,9 +123,10 @@ const SkillFF: React.FunctionComponent<ISkillFFProps> = (props) => {
             type="number"
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} sm={6}>
           <TextField
             required
+            fullWidth
             label="% of Sector"
             variant="filled"
             {...genActiveProps("percentageOfSector")}

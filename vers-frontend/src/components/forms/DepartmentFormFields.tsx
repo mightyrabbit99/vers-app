@@ -1,14 +1,13 @@
 import * as React from "react";
-import { makeStyles, TextField } from "@material-ui/core";
-import { Department } from "src/kernel";
+import { makeStyles } from "@material-ui/core/styles";
+import Grid from "@material-ui/core/Grid";
+import TextField from "@material-ui/core/TextField";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    "& > *": {
-      margin: theme.spacing(1),
-    },
-  },
-}));
+import { Department } from "src/kernel";
+import { commonFormFieldStyles } from "./types";
+
+
+const useStyles = makeStyles(commonFormFieldStyles);
 
 interface IDepartmentFFProps {
   data: Department;
@@ -18,7 +17,7 @@ interface IDepartmentFFProps {
 
 const DepartmentFF: React.FunctionComponent<IDepartmentFFProps> = (props) => {
   const classes = useStyles();
-  const { data, feedback : fb, onChange } = props;
+  const { data, feedback: fb, onChange } = props;
   const [state, setState] = React.useState(data);
   const [feedback, setFeedback] = React.useState(fb ?? {});
   React.useEffect(() => {
@@ -31,8 +30,8 @@ const DepartmentFF: React.FunctionComponent<IDepartmentFFProps> = (props) => {
   const handleChange = (e: React.ChangeEvent<any>) => {
     const { name, value } = e.target;
     data[name] = value;
-    setFeedback({...feedback, [name]: undefined});
-    onChange ? onChange(data) : setState({...state, [name]: value});
+    setFeedback({ ...feedback, [name]: undefined });
+    onChange ? onChange(data) : setState({ ...state, [name]: value });
   };
 
   const getFeedback = (name: string) => {
@@ -49,7 +48,16 @@ const DepartmentFF: React.FunctionComponent<IDepartmentFFProps> = (props) => {
 
   return (
     <form className={classes.root} noValidate autoComplete="off">
-      <TextField label="Name" variant="outlined" {...genActiveProps("name")} />
+      <Grid container className={classes.form}>
+        <Grid item xs={12}>
+          <TextField
+            fullWidth
+            label="Name"
+            variant="outlined"
+            {...genActiveProps("name")}
+          />
+        </Grid>
+      </Grid>
     </form>
   );
 };

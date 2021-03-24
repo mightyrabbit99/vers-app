@@ -1,27 +1,15 @@
 import * as React from "react";
-import {
-  makeStyles,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Grid,
-} from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import TextField from "@material-ui/core/TextField";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import Grid from "@material-ui/core/Grid";
 import { Subsector } from "src/kernel";
-import { FormChoiceField, FormChoices } from "./types";
+import { commonFormFieldStyles, FormChoiceField, FormChoices } from "./types";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    "& > *": {
-      margin: theme.spacing(1),
-    },
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-}));
+const useStyles = makeStyles(commonFormFieldStyles);
 
 interface SubsectorFormChoices extends FormChoices {
   sector: FormChoiceField;
@@ -95,14 +83,17 @@ const SubsectorFF: React.FunctionComponent<ISubsectorFFProps> = (props) => {
   });
 
   return (
-    <form className={classes.root} noValidate autoComplete="off">
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
+    <form noValidate autoComplete="off" className={classes.root}>
+      <Grid container spacing={3} className={classes.form}>
+        <Grid item xs={12} sm={8}>
           <TextField
+            fullWidth
             label="Name"
             variant="outlined"
             {...genActiveProps("name")}
           />
+        </Grid>
+        <Grid item xs={12} sm={4}>
           <FormControl className={classes.formControl}>
             <InputLabel id="demo-simple-select-label">Sector</InputLabel>
             <Select labelId="demo-simple-select-label" {...genProps("sector")}>
@@ -114,10 +105,10 @@ const SubsectorFF: React.FunctionComponent<ISubsectorFFProps> = (props) => {
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} sm={4}>
           <TextField fullWidth label="Unit" {...genActiveProps("unit")} />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} sm={4}>
           <TextField
             required
             fullWidth
@@ -128,7 +119,7 @@ const SubsectorFF: React.FunctionComponent<ISubsectorFFProps> = (props) => {
             type="number"
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} sm={4}>
           <TextField
             required
             fullWidth

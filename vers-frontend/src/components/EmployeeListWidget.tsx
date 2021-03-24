@@ -13,8 +13,8 @@ const useStyles = makeStyles((theme) => ({
     height: "15%",
   },
   form: {
-    width: 1000,
-    minWidth: 300,
+    width: 700,
+    minWidth: 600,
   },
   formTitle: {
     height: "15%",

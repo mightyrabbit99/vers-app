@@ -23,11 +23,19 @@ import ExcelProcessor2 from "src/kernel/ExcelProcessor2";
 import ExcelUploadForm from "src/components/forms/ExcelUploadForm";
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    "& > *": {
+      margin: theme.spacing(2),
+    },
+  },
   ctrlButtons: {
     display: "flex",
     flexDirection: "row",
     height: "20%",
     width: "100%",
+  },
+  rightOffset: {
+    width: 50,
   },
   button: {
     marginLeft: "auto",
@@ -35,7 +43,9 @@ const useStyles = makeStyles((theme) => ({
   content: {
     height: "80%",
   },
-  form: {},
+  form: {
+    width: 600,
+  },
   formTitle: {},
   formContent: {},
 }));
@@ -119,7 +129,7 @@ const CalendarView: React.FC<ICalendarViewProps> = () => {
 
   return (
     <React.Fragment>
-      <div>
+      <div className={classes.root}>
         <div className={classes.ctrlButtons}>
           <IconButton
             onClick={handleExcelDownloadClick}
@@ -137,6 +147,7 @@ const CalendarView: React.FC<ICalendarViewProps> = () => {
           >
             Add
           </Button>
+          <div className={classes.rightOffset}/>
         </div>
         <div className={classes.content}>
           <Calendar

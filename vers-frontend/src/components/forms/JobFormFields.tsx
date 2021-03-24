@@ -9,19 +9,9 @@ import {
   Grid,
 } from "@material-ui/core";
 import { Job } from "src/kernel";
-import { FormChoiceField, FormChoices } from "./types";
+import { commonFormFieldStyles, FormChoiceField, FormChoices } from "./types";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    "& > *": {
-      margin: theme.spacing(1),
-    },
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-}));
+const useStyles = makeStyles(commonFormFieldStyles);
 
 interface JobFormChoices extends FormChoices {
   subsector: FormChoiceField;
@@ -89,13 +79,15 @@ const JobFF: React.FunctionComponent<IJobFFProps> = (props) => {
 
   return (
     <form className={classes.root} noValidate autoComplete="off">
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
+      <Grid container spacing={3} className={classes.form}>
+        <Grid item xs={12} sm={6}>
           <TextField
             label="Title"
             variant="outlined"
             {...genActiveProps("title")}
           />
+        </Grid>
+        <Grid item xs={12} sm={6}>
           <FormControl className={classes.formControl}>
             <InputLabel id="demo-simple-select-label">Subsector</InputLabel>
             <Select
@@ -117,6 +109,7 @@ const JobFF: React.FunctionComponent<IJobFFProps> = (props) => {
         <Grid item xs={12}>
           <TextField
             required
+            fullWidth
             label="Headcount Required"
             variant="filled"
             {...genActiveProps("pplAmtRequired")}
@@ -127,6 +120,7 @@ const JobFF: React.FunctionComponent<IJobFFProps> = (props) => {
         <Grid item xs={12}>
           <TextField
             required
+            fullWidth
             label="Salary"
             variant="filled"
             {...genActiveProps("salaryAmount")}
@@ -134,7 +128,7 @@ const JobFF: React.FunctionComponent<IJobFFProps> = (props) => {
             type="number"
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={6}>
           <TextField
             label="From"
             type="date"
@@ -144,7 +138,7 @@ const JobFF: React.FunctionComponent<IJobFFProps> = (props) => {
             }}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={6}>
           <TextField
             label="Hire date"
             type="date"

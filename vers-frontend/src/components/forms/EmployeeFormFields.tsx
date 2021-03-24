@@ -1,31 +1,23 @@
 import * as React from "react";
-import {
-  makeStyles,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Grid,
-  Typography,
-  Button,
-  FormLabel,
-  FormControlLabel,
-  RadioGroup,
-  Radio,
-} from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import TextField from "@material-ui/core/TextField";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import Grid from "@material-ui/core/Grid";
+import Typography from "@material-ui/core/Typography";
+import Button from "@material-ui/core/Button";
+import FormLabel from "@material-ui/core/FormLabel";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import Radio from "@material-ui/core/Radio";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
 import { Employee } from "src/kernel";
-import { FormChoiceField, FormChoices } from "./types";
+import { commonFormFieldStyles, FormChoiceField, FormChoices } from "./types";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
+  ...commonFormFieldStyles(theme),
   genderLabels: {
     display: "flex",
     flexDirection: "row",
@@ -118,12 +110,12 @@ const EmployeeFF: React.FunctionComponent<IEmployeeFFProps> = (props) => {
     InputLabelProps: {
       shrink: getDataProp(name) !== "",
     },
-  })
+  });
 
   return (
-    //<form  noValidate autoComplete="off">
-      <Grid container spacing={3} className={classes.root}>
-        <Grid item xs={4}>
+    <form noValidate autoComplete="off" className={classes.root}>
+      <Grid container spacing={3} className={classes.form}>
+        <Grid item xs={12} sm={7}>
           <TextField
             required
             label="SESA ID"
@@ -133,7 +125,7 @@ const EmployeeFF: React.FunctionComponent<IEmployeeFFProps> = (props) => {
             {...genProps("sesaId")}
           />
         </Grid>
-        <Grid item xs={8}>
+        <Grid item xs={12} sm={5}>
           <Typography variant="caption" component="h3">
             Upload Profile Picture
           </Typography>
@@ -156,6 +148,7 @@ const EmployeeFF: React.FunctionComponent<IEmployeeFFProps> = (props) => {
         <Grid item xs={6}>
           <TextField
             required
+            fullWidth
             label="First name"
             autoComplete="given-name"
             variant="standard"
@@ -165,6 +158,7 @@ const EmployeeFF: React.FunctionComponent<IEmployeeFFProps> = (props) => {
         <Grid item xs={6}>
           <TextField
             required
+            fullWidth
             label="Last name"
             autoComplete="family-name"
             variant="standard"
@@ -219,6 +213,7 @@ const EmployeeFF: React.FunctionComponent<IEmployeeFFProps> = (props) => {
             <InputLabel id="demo-simple-select-label">Department</InputLabel>
             <Select
               labelId="demo-simple-select-label"
+              fullWidth
               className={classes.department}
               disabled={choices["department"].choices.length === 0}
               {...genActiveProps("department")}
@@ -237,6 +232,7 @@ const EmployeeFF: React.FunctionComponent<IEmployeeFFProps> = (props) => {
             <InputLabel id="demo-simple-select-label">Home Location</InputLabel>
             <Select
               labelId="demo-simple-select-label"
+              fullWidth
               className={classes.subsector}
               disabled={choices["subsector"].choices.length === 0}
               {...genActiveProps("subsector")}
@@ -255,6 +251,7 @@ const EmployeeFF: React.FunctionComponent<IEmployeeFFProps> = (props) => {
             <InputLabel id="demo-simple-select-label">Report to</InputLabel>
             <Select
               labelId="demo-simple-select-label"
+              fullWidth
               className={classes.reportTo}
               disabled={choices["reportTo"].choices.length === 0}
               {...genActiveProps("reportTo")}
@@ -268,7 +265,7 @@ const EmployeeFF: React.FunctionComponent<IEmployeeFFProps> = (props) => {
           </FormControl>
         </Grid>
       </Grid>
-    //</form>
+    </form>
   );
 };
 

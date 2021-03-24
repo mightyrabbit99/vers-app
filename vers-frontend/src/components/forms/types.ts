@@ -19,3 +19,19 @@ export interface FormData {
 export interface FormFeedback {
   [field: string]: any;
 }
+
+export const commonFormFieldStyles = (theme: any) => ({
+  root: {
+    width: "inherit",
+    "& > *": {
+      margin: theme.spacing(1),
+    },
+  },
+  form: {
+    width: "inherit",
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+});

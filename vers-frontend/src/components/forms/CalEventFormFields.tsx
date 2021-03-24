@@ -1,7 +1,13 @@
 import * as React from "react";
+import { makeStyles } from "@material-ui/core/styles";
+
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import { CalEvent } from "src/kernel";
+import { commonFormFieldStyles } from "./types";
+
+const useStyles = makeStyles(commonFormFieldStyles);
+
 
 interface ICalEventFormProps {
   data: CalEvent;
@@ -10,6 +16,7 @@ interface ICalEventFormProps {
 }
 
 const CalEventForm: React.FunctionComponent<ICalEventFormProps> = (props) => {
+  const classes = useStyles();
   const { data, feedback: fb, onChange } = props;
   const [state, setState] = React.useState(data);
   const [feedback, setFeedback] = React.useState(fb ?? {});
@@ -40,42 +47,46 @@ const CalEventForm: React.FunctionComponent<ICalEventFormProps> = (props) => {
   });
 
   return (
-    <Grid container>
-      <Grid item xs={12}>
-        <TextField
-          label="Title"
-          variant="outlined"
-          {...genActiveProps("title")}
-        />
+    <form className={classes.root} noValidate autoComplete="off">
+      <Grid container className={classes.form} spacing={2}>
+        <Grid item xs={12} sm={7}>
+          <TextField
+            fullWidth
+            label="Title"
+            variant="outlined"
+            {...genActiveProps("title")}
+          />
+        </Grid>
+        <Grid item xs={12} sm={5}>
+          <TextField
+            fullWidth
+            label="Event Type"
+            variant="outlined"
+            {...genActiveProps("eventType")}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            label="Start"
+            type="date"
+            {...genActiveProps("start")}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            label="End"
+            type="date"
+            {...genActiveProps("end")}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+        </Grid>
       </Grid>
-      <Grid item xs={12}>
-        <TextField
-          label="Event Type"
-          variant="outlined"
-          {...genActiveProps("eventType")}
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <TextField
-          label="Start"
-          type="date"
-          {...genActiveProps("start")}
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <TextField
-          label="End"
-          type="date"
-          {...genActiveProps("end")}
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
-      </Grid>
-    </Grid>
+    </form>
   );
 };
 
