@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const myGetIden = (data: any) => {
-  return data.name ?? data.title ?? data.on ?? ((data.firstName && data.lastName) ? `${data.firstName}, ${data.lastName}` : "");
+  return data.name ?? data.title ?? data.on ?? ((data.first_name && data.last_name) ? `${data.first_name}, ${data.last_name}` : "");
 }
 
 const genDescStr = (log: Log) => {

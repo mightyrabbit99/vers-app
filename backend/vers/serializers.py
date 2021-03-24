@@ -309,7 +309,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
   def create(self, validated_data):
     g = lg.log_create(
         data_type=lg.EMPLOYEE,
-        owner=self.get_request_user(), data=validated_data)
+        user=self.get_request_user(), data=validated_data)
     validated_data['sesa_id'] = validated_data['sesa_id'].upper()
     skills_data = validated_data.pop('skills')
     emp = models.Employee(**validated_data)
@@ -377,8 +377,13 @@ class JobSerializer(serializers.ModelSerializer):
         data_type=lg.JOB,
         user=self.get_request_user(), data=validated_data)
     skills_data = validated_data.pop('skills_required')
+    emp_assigned_data = validated_data.pop('emp_assigned')
     job = models.Job(**validated_data)
     job.save()
+    
+    emps = models.Employee.objects.filter(pk__in=emp_assigned_data)
+    job.emp_assigned.set(emps)
+
     for s in skills_data:
       job_skill = models.JobSkillMatrix(job=job, **s)
       job_skill.save()
@@ -392,6 +397,11 @@ class JobSerializer(serializers.ModelSerializer):
         data_type=lg.JOB,
         user=self.get_request_user(), data=validated_data, origin=instance)
     skills_data = validated_data.pop('skills_required')
+    emp_assigned_data = validated_data.pop('emp_assigned')
+
+    emps = models.Employee.objects.filter(pk__in=emp_assigned_data)
+    instance.emp_assigned.set(emps)
+
     origin_skills = instance.skills_required.all()
     for s in origin_skills:
       s.delete()

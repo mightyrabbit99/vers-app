@@ -219,6 +219,7 @@ class Kernel {
     let a = await this._saveNew(t);
     this._log("Create", a);
     if (!this.soc) {
+      this.getStore2(t._type)?.add(t);
       this.refresh();
       this.trigger();
     }
@@ -256,6 +257,7 @@ class Kernel {
     let a = await this._save(t);
     this._log("Save", a);
     if (!this.soc) {
+      this.getStore2(t._type)?.add(t);
       this.refresh();
       this.trigger();
     }
@@ -337,6 +339,7 @@ class Kernel {
     ress.concat(await Promise.all(dels.map(this._del)));
     this._log("Delete", ...ress);
     if (!this.soc) {
+      this.getStore2(t._type)?.erase(t);
       this.refresh();
       this.trigger();
     }

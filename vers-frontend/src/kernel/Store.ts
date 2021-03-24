@@ -58,6 +58,12 @@ function store<T extends Item>(
     private store: { [id: number]: T } = {};
     private hStore: { [k: string]: T } = {};
 
+    private getNewId = () => {
+      return Object.keys(this.store)
+        .map((x) => parseInt(x, 10))
+        .reduce((pr, cu) => Math.max(pr, cu), -1);
+    };
+
     static generator = generator;
 
     refresh = async () => {
@@ -72,23 +78,24 @@ function store<T extends Item>(
     };
 
     add = (t: T) => {
+      if (t.id === -1) t.id = this.getNewId();
       this.store[t.id] = t;
       hasher && (this.hStore[hasher(t)] = t);
     };
 
     erase = (t: T) => {
+      if (t.id === -1) return;
       delete this.store[t.id];
       hasher && delete this.hStore[hasher(t)];
     };
 
     addData = (d: any) => {
       this.add(dataToObj(d));
-    }
+    };
 
     eraseData = (d: any) => {
       this.erase(dataToObj(d));
-    }
-
+    };
 
     get = (id: number) => this.store[id];
 

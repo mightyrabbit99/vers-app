@@ -140,7 +140,7 @@ const JobFF: React.FunctionComponent<IJobFFProps> = (props) => {
         </Grid>
         <Grid item xs={6}>
           <TextField
-            label="Hire date"
+            label="To"
             type="date"
             {...genActiveProps("toDate")}
             InputLabelProps={{

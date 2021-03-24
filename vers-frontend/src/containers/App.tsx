@@ -18,6 +18,7 @@ import { getData, getSession, getSync } from "src/selectors";
 import { reload } from "src/slices/data";
 import { initLogin } from "src/slices/session";
 import k from "src/kernel";
+import { clearFeedback } from "src/slices/sync";
 
 interface IAppProps {}
 
@@ -39,7 +40,10 @@ const App: React.FC<IAppProps> = () => {
     setOpen(!!error);
   }, [error]);
 
-  const handleClose = () => { setOpen(false); }
+  const handleClose = () => { 
+    dispatch(clearFeedback());
+    setOpen(false); 
+  }
 
   k.trigger = () => {
     dispatch(reload());

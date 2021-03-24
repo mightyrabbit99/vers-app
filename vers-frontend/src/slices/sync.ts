@@ -49,7 +49,8 @@ const syncSlice = createSlice({
       state.syncing = true;
     },
     clearFeedback: (state) => {
-      state.feedback = undefined;
+      delete state.feedback;
+      delete state.error;
     },
   },
 });
