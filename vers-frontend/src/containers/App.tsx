@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { green, purple } from "@material-ui/core/colors";
+import Snackbar from "@material-ui/core/Snackbar";
+import Alert from "@material-ui/lab/Alert";
 
 import SigninPage from "./SignInPage";
 import DashboardPage from "./DashboardPage";
@@ -12,7 +14,7 @@ import UserEditPage from "./UserEditPage";
 import PlantPage from "./PlantPage";
 import AccessCtrlPage from "./AccessCtrlPage";
 
-import { getData, getSession } from "src/selectors";
+import { getData, getSession, getSync } from "src/selectors";
 import { reload } from "src/slices/data";
 import { initLogin } from "src/slices/session";
 import k from "src/kernel";
@@ -30,6 +32,14 @@ const App: React.FC<IAppProps> = () => {
   const dispatch = useDispatch();
   const { authenticated: auth, syncing } = useSelector(getSession);
   const { selectedPlantId: pId } = useSelector(getData);
+  const { error } = useSelector(getSync);
+
+  const [open, setOpen] = React.useState(false);
+  React.useEffect(() => {
+    setOpen(!!error);
+  }, [error]);
+
+  const handleClose = () => { setOpen(false); }
 
   k.trigger = () => {
     dispatch(reload());
@@ -81,6 +91,11 @@ const App: React.FC<IAppProps> = () => {
           <SigninPage />
         </Route>
       </Switch>
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity={"error"}>
+          {error}
+        </Alert>
+      </Snackbar>
     </ThemeProvider>
   );
 };

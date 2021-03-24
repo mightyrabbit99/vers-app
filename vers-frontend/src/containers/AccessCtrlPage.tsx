@@ -10,6 +10,7 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import IconButton from "@material-ui/core/IconButton";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
+import ButtonBase from "@material-ui/core/ButtonBase";
 
 import UserAccessCtrlWidget from "src/components/UserAccessControlWidget";
 import { getData, getSession } from "src/selectors";
@@ -17,6 +18,7 @@ import { logout } from "src/slices/session";
 import { User } from "src/kernel";
 import { saveData, selPlant } from "src/slices/data";
 import SchneiderLogo from "src/components/commons/SchneiderLogo";
+
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -86,6 +88,7 @@ const BasePage: React.FunctionComponent<IBasePageProps> = (props) => {
 
   const toPlant = () => {
     dispatch(selPlant());
+    history.push("/plants");
   };
 
   const [mainAnchorEl, setMainAnchorEl] = React.useState<null | HTMLElement>(
@@ -120,15 +123,21 @@ const BasePage: React.FunctionComponent<IBasePageProps> = (props) => {
     history.push("/access_ctrl");
   };
 
+  const handleMainTitleClick = (e: React.ChangeEvent<any>) => {
+    setMainAnchorEl(e.currentTarget);
+  };
+
   return (
     <React.Fragment>
       <CssBaseline />
       <AppBar position="relative">
         <Toolbar>
           <svg className={classes.icon}>{SchneiderLogo}</svg>
-          <Typography variant="h6" color="inherit" noWrap>
-            Access Controls
-          </Typography>
+          <ButtonBase className={classes.title} onClick={handleMainTitleClick}>
+            <Typography variant="h6" color="inherit" noWrap>
+              Access Controls
+            </Typography>
+          </ButtonBase>
           <div className={classes.settings}>
             <Typography variant="caption">
               {user ? user.username : "Guest"}

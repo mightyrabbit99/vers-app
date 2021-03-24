@@ -101,6 +101,13 @@ class UserSerializer3(serializers.ModelSerializer):
   username = serializers.CharField(read_only=True)
   vers_user = VersUserSerializer(many=False)
 
+  def get_request_user(self):
+    user = None
+    request = self.context.get("request")
+    if request and hasattr(request, "user"):
+      user = request.user
+    return user
+
   def notify(self, typ, res):
     notify_consumer(typ, lg.USER, UserSerializer3(res).data)
 
@@ -109,8 +116,12 @@ class UserSerializer3(serializers.ModelSerializer):
     for (key, value) in vers_user_data.items():
       setattr(instance.vers_user, key, value)
     instance.vers_user.save()
+    instance = super().update(instance, validated_data)
+    lg.log_update(
+        data_type=lg.USER,
+        user=self.get_request_user(), data=validated_data, origin=instance).save()
     self.notify(lg.UPDATE, instance)
-    return super().update(instance, validated_data)
+    return instance
 
   class Meta:
     model = User
@@ -525,6 +536,13 @@ class CalEventSerializer(serializers.ModelSerializer):
   start = serializers.DateField()
   end = serializers.DateField()
 
+  def get_request_user(self):
+    user = None
+    request = self.context.get("request")
+    if request and hasattr(request, "user"):
+      user = request.user
+    return user
+
   def notify(self, typ, res):
     notify_consumer(typ, lg.CAL_EVENT, CalEventSerializer(res).data)
 
@@ -537,6 +555,15 @@ class CalEventSerializer(serializers.ModelSerializer):
       raise serializers.ValidationError(errors)
 
     return super().validate(attrs)
+
+  def update(self, instance, validated_data):
+      instance = super().update(instance, validated_data)
+      self.notify(lg.UPDATE, instance)
+      lg.log_update(
+        data_type=lg.CAL_EVENT,
+        user=self.get_request_user(), data=validated_data, origin=instance).save()
+      return instance
+
 
   class Meta:
     model = models.CalEvent
