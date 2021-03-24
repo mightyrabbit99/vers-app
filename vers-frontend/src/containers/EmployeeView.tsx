@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 
 interface IEmployeeViewProps {}
 
-const EmployeeView: React.FunctionComponent<IEmployeeViewProps> = (props) => {
+const EmployeeView: React.FC<IEmployeeViewProps> = (props) => {
   const dispatch = useDispatch();
   const classes = useStyles();
   const {

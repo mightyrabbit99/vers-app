@@ -7,7 +7,7 @@ import { changeUserDetail, clearFeedback } from "src/slices/session";
 
 interface IUserEditProps {}
 
-const UserEdit: React.FunctionComponent<IUserEditProps> = (props) => {
+const UserEdit: React.FC<IUserEditProps> = (props) => {
   const dispatch = useDispatch();
   const { user, feedback } = useSelector(getSession);
   React.useEffect(() => {

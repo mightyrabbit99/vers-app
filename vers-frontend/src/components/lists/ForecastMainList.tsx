@@ -25,7 +25,7 @@ const initState: IForecastMainListState = {
   chgLst: [],
 };
 
-const ForecastMainList: React.FunctionComponent<IForecastMainListProps> = (
+const ForecastMainList: React.FC<IForecastMainListProps> = (
   props
 ) => {
   const { lst, onSubmit, selected, selectedOnChange } = props;

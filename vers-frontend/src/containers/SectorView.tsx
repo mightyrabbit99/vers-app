@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
 
 interface ISectorViewProps {}
 
-const SectorView: React.FunctionComponent<ISectorViewProps> = (props) => {
+const SectorView: React.FC<ISectorViewProps> = (props) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { sectors, newSector, plants } = useSelector(getData);

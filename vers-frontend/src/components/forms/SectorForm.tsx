@@ -13,7 +13,7 @@ interface ISectorFormProps {
   onCancel?: () => void;
 }
 
-const SectorForm: React.FunctionComponent<ISectorFormProps> = (props) => {
+const SectorForm: React.FC<ISectorFormProps> = (props) => {
   const { data, feedback, plantLst, onSubmit, onChange, onCancel } = props;
   const newData = { ...data };
   const choices: SectorFormChoices = {

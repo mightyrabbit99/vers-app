@@ -12,7 +12,7 @@ interface IExcelUploadFormProps {
   templateUrl?: string;
 }
 
-const ExcelUploadForm: React.FunctionComponent<IExcelUploadFormProps> = (
+const ExcelUploadForm: React.FC<IExcelUploadFormProps> = (
   props
 ) => {
   const { feedback, onSubmit, onCancel, templateUrl } = props;

@@ -13,7 +13,7 @@ interface IJobFormProps {
   onCancel?: () => void;
 }
 
-const JobForm: React.FunctionComponent<IJobFormProps> = (props) => {
+const JobForm: React.FC<IJobFormProps> = (props) => {
   const { data, feedback, subsectorLst, onSubmit, onChange, onCancel } = props;
   const newData = { ...data };
   const subsectors = Object.values(subsectorLst);

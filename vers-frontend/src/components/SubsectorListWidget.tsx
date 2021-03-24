@@ -38,7 +38,7 @@ interface ISubsectorListWidgetProps {
   downloadExcel?: () => void;
 }
 
-const SubsectorListWidget: React.FunctionComponent<ISubsectorListWidgetProps> = (
+const SubsectorListWidget: React.FC<ISubsectorListWidgetProps> = (
   props
 ) => {
   const classes = useStyles();

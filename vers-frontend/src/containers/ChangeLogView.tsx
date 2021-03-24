@@ -95,7 +95,7 @@ const genDescStr = (log: Log) => {
   return `${genActionStr(log.type)} ${genDataTypeStr(log.dataType)} "${myGetIden(log.desc.original ?? log.desc.data)}"`;
 };
 
-const ChangeLogView: React.FunctionComponent = () => {
+const ChangeLogView: React.FC = () => {
   const dispatch = useDispatch();
   const classes = useStyles();
   const { logs, personalLogs } = useSelector(getData);

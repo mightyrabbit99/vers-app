@@ -20,7 +20,7 @@ interface IEmpAccessCtrlProps {
   editSuper?: boolean;
 }
 
-const EmpAccessCtrl: React.FunctionComponent<IEmpAccessCtrlProps> = (props) => {
+const EmpAccessCtrl: React.FC<IEmpAccessCtrlProps> = (props) => {
   const classes = useStyles();
   const { lst, onSubmit, editSuper = false } = props;
   return (

@@ -12,7 +12,7 @@ interface IDepartmentFormProps {
   onCancel?: () => void;
 }
 
-const DepartmentForm: React.FunctionComponent<IDepartmentFormProps> = (
+const DepartmentForm: React.FC<IDepartmentFormProps> = (
   props
 ) => {
   const { data, feedback, onSubmit, onChange, onCancel } = props;

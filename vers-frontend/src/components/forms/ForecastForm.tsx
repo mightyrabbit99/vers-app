@@ -13,7 +13,7 @@ interface IForecastFormProps {
   onCancel?: () => void;
 }
 
-const ForecastForm: React.FunctionComponent<IForecastFormProps> = (props) => {
+const ForecastForm: React.FC<IForecastFormProps> = (props) => {
   const { data, feedback, onSubmit, onChange, onCancel } = props;
   const [state, setState] = React.useState(data);
   React.useEffect(() => {

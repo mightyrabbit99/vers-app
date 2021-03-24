@@ -35,7 +35,7 @@ interface IDepartmentListWidgetProps {
   downloadExcel?: () => void;
 }
 
-const DepartmentListWidget: React.FunctionComponent<IDepartmentListWidgetProps> = (
+const DepartmentListWidget: React.FC<IDepartmentListWidgetProps> = (
   props
 ) => {
   const classes = useStyles();

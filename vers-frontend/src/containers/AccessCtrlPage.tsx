@@ -75,7 +75,7 @@ const useStyles = makeStyles((theme) => ({
 
 interface IBasePageProps {}
 
-const BasePage: React.FunctionComponent<IBasePageProps> = (props) => {
+const BasePage: React.FC<IBasePageProps> = (props) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { users } = useSelector(getData);

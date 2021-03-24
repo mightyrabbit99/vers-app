@@ -15,7 +15,7 @@ interface ISubsectorFormProps {
   onCancel?: () => void;
 }
 
-const SubsectorForm: React.FunctionComponent<ISubsectorFormProps> = (props) => {
+const SubsectorForm: React.FC<ISubsectorFormProps> = (props) => {
   const { data, feedback, sectorLst, onSubmit, onChange, onCancel } = props;
   const newData = { ...data };
   const sectors = Object.values(sectorLst);

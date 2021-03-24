@@ -15,7 +15,7 @@ interface ICalEventFormProps {
   onChange?: (data: CalEvent) => void;
 }
 
-const CalEventForm: React.FunctionComponent<ICalEventFormProps> = (props) => {
+const CalEventForm: React.FC<ICalEventFormProps> = (props) => {
   const classes = useStyles();
   const { data, feedback: fb, onChange } = props;
   const [state, setState] = React.useState(data);

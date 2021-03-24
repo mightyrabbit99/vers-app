@@ -38,7 +38,7 @@ interface IForecastListWidgetProps {
   downloadExcel?: () => void;
 }
 
-const ForecastListWidget: React.FunctionComponent<IForecastListWidgetProps> = (
+const ForecastListWidget: React.FC<IForecastListWidgetProps> = (
   props
 ) => {
   const classes = useStyles();

@@ -47,7 +47,7 @@ interface IEmployeeFFProps {
   onChange?: (data: Employee) => void;
 }
 
-const EmployeeFF: React.FunctionComponent<IEmployeeFFProps> = (props) => {
+const EmployeeFF: React.FC<IEmployeeFFProps> = (props) => {
   const classes = useStyles();
   const { data, choices, feedback: fb, onChange } = props;
   const [state, setState] = React.useState(data);

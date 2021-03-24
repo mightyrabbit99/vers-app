@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 
 interface IJobViewProps {}
 
-const JobView: React.FunctionComponent<IJobViewProps> = (props) => {
+const JobView: React.FC<IJobViewProps> = (props) => {
   const dispatch = useDispatch();
   const classes = useStyles();
   const { jobs, newJob, skills, subsectors, employees } = useSelector(getData);

@@ -35,7 +35,7 @@ interface ISectorListWidgetProps {
   downloadExcel?: () => void;
 }
 
-const SectorListWidget: React.FunctionComponent<ISectorListWidgetProps> = (
+const SectorListWidget: React.FC<ISectorListWidgetProps> = (
   props
 ) => {
   const classes = useStyles();

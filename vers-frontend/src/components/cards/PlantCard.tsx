@@ -30,7 +30,7 @@ interface IPlantCardProps {
   onEditClick?: () => void;
 }
 
-const PlantCard: React.FunctionComponent<IPlantCardProps> = (props) => {
+const PlantCard: React.FC<IPlantCardProps> = (props) => {
   const { p, onClick, onDelete, onEditClick } = props;
   const classes = useStyles();
   return (

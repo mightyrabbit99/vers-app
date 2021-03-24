@@ -24,7 +24,7 @@ interface IJobFFProps {
   onChange?: (data: Job) => void;
 }
 
-const JobFF: React.FunctionComponent<IJobFFProps> = (props) => {
+const JobFF: React.FC<IJobFFProps> = (props) => {
   const classes = useStyles();
   const { data, choices, feedback: fb, onChange } = props;
   const [state, setState] = React.useState(data);

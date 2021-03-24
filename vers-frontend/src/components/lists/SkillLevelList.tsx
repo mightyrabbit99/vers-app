@@ -22,7 +22,7 @@ interface ISkillLevelListProps {
   onSubmit: (lst: SkillLevel[]) => void;
 }
 
-const SkillLevelList: React.FunctionComponent<ISkillLevelListProps> = (
+const SkillLevelList: React.FC<ISkillLevelListProps> = (
   props
 ) => {
   const { lst, onSubmit } = props;

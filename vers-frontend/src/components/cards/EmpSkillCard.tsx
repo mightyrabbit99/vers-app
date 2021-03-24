@@ -27,7 +27,7 @@ interface IEmpSkillCardProps {
 
 const getName = (item: Employee) => `${item.firstName}, ${item.lastName}`;
 
-const EmpSkillCard: React.FunctionComponent<IEmpSkillCardProps> = (props) => {
+const EmpSkillCard: React.FC<IEmpSkillCardProps> = (props) => {
   const classes = useStyles();
   let { item } = props;
   const skillToChip = (x: EmpSkillData) => {

@@ -93,7 +93,7 @@ const canCrete = (user?: UserData) => {
   return user?.is_superuser || user?.vers_user.plant_group === AccessLevel.EDIT;
 };
 
-const PlantPage: React.FunctionComponent<IPlantPageProps> = (props) => {
+const PlantPage: React.FC<IPlantPageProps> = (props) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const history = useHistory();

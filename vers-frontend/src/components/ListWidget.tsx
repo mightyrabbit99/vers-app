@@ -54,7 +54,7 @@ interface IListWidgetProps {
   children: React.ReactNode;
 }
 
-const ListWidget: React.FunctionComponent<IListWidgetProps> = (props) => {
+const ListWidget: React.FC<IListWidgetProps> = (props) => {
   const classes = useStyles();
   const {
     title = "",

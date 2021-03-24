@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
 
 interface IDepartmentViewProps {}
 
-const DepartmentView: React.FunctionComponent<IDepartmentViewProps> = (props) => {
+const DepartmentView: React.FC<IDepartmentViewProps> = (props) => {
   const dispatch = useDispatch();
   const classes = useStyles();
   const { departments, newDepartment } = useSelector(getData);

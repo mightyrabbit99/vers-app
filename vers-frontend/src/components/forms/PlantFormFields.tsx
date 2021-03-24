@@ -16,7 +16,7 @@ interface IPlantFFProps {
   onChange?: (data: Plant) => void;
 }
 
-const PlantFF: React.FunctionComponent<IPlantFFProps> = (props) => {
+const PlantFF: React.FC<IPlantFFProps> = (props) => {
   const classes = useStyles();
   const { data, feedback: fb, onChange } = props;
   const [state, setState] = React.useState(data);

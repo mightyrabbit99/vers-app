@@ -47,7 +47,7 @@ interface IEmployeeSkillWidgetProps {
   onSubmit?: (p: Employee) => void;
 }
 
-const EmployeeSkillWidget: React.FunctionComponent<IEmployeeSkillWidgetProps> = (
+const EmployeeSkillWidget: React.FC<IEmployeeSkillWidgetProps> = (
   props
 ) => {
   const classes = useStyles();
@@ -121,6 +121,11 @@ const EmployeeSkillWidget: React.FunctionComponent<IEmployeeSkillWidgetProps> = 
     </ListItem>
   );
 
+  const handleEmpSubmit = (e: Employee) => {
+    setSel(e);
+    onSubmit && onSubmit(e);
+  }
+
   return (
     <React.Fragment>
       <Grid container spacing={1}>
@@ -154,7 +159,7 @@ const EmployeeSkillWidget: React.FunctionComponent<IEmployeeSkillWidgetProps> = 
               <EmpSkillList
                 item={sel}
                 skillLst={skillLst}
-                onSubmit={onSubmit}
+                onSubmit={handleEmpSubmit}
                 selected={selectedLst}
                 selectedOnChange={setSelectedLst}
               />

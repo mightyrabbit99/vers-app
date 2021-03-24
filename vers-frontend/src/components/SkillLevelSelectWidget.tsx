@@ -37,7 +37,7 @@ interface ISkillLevelSelectWidgetProps {
   onSubmit: (lst: SkillLevel[]) => void;
 }
 
-const SkillLevelSelectWidget: React.FunctionComponent<ISkillLevelSelectWidgetProps> = (
+const SkillLevelSelectWidget: React.FC<ISkillLevelSelectWidgetProps> = (
   props
 ) => {
   const classes = useStyles();

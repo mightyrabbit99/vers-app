@@ -13,7 +13,7 @@ interface ISkillFormProps {
   onCancel?: () => void;
 }
 
-const SkillForm: React.FunctionComponent<ISkillFormProps> = (props) => {
+const SkillForm: React.FC<ISkillFormProps> = (props) => {
   const { data, feedback, subsectorLst, onSubmit, onChange, onCancel } = props;
   const newData = { ...data };
   const subsectors = Object.values(subsectorLst);

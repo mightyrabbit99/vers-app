@@ -29,7 +29,7 @@ interface IEmpSkillListProps {
   selectedOnChange?: (lst: number[]) => void;
 }
 
-const EmpSkillList: React.FunctionComponent<IEmpSkillListProps> = (props) => {
+const EmpSkillList: React.FC<IEmpSkillListProps> = (props) => {
   const classes = useStyles();
   const { item, skillLst, selected = [], onSubmit, selectedOnChange } = props;
 

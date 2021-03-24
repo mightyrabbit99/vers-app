@@ -22,7 +22,7 @@ interface ISubsectorFFProps {
   onChange?: (data: Subsector) => void;
 }
 
-const SubsectorFF: React.FunctionComponent<ISubsectorFFProps> = (props) => {
+const SubsectorFF: React.FC<ISubsectorFFProps> = (props) => {
   const classes = useStyles();
   const { data, choices, feedback: fb, onChange } = props;
   const [state, setState] = React.useState(data);

@@ -22,7 +22,7 @@ interface ISkillFFProps {
   onChange?: (data: Skill) => void;
 }
 
-const SkillFF: React.FunctionComponent<ISkillFFProps> = (props) => {
+const SkillFF: React.FC<ISkillFFProps> = (props) => {
   const classes = useStyles();
   const { data, choices, feedback: fb, onChange } = props;
   const [state, setState] = React.useState(data);

@@ -7,7 +7,7 @@ import Button from "@material-ui/core/Button";
 
 interface IProfileProps {}
 
-const ProfilePage: React.FunctionComponent<IProfileProps> = (props) => {
+const ProfilePage: React.FC<IProfileProps> = (props) => {
   const { user } = useSelector(getSession);
   const history = useHistory();
 

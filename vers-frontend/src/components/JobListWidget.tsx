@@ -36,7 +36,7 @@ interface IJobListWidgetProps {
   downloadExcel?: () => void;
 }
 
-const JobListWidget: React.FunctionComponent<IJobListWidgetProps> = (props) => {
+const JobListWidget: React.FC<IJobListWidgetProps> = (props) => {
   const classes = useStyles();
   const {
     lst,

@@ -22,7 +22,7 @@ interface ISectorFFProps {
   onChange?: (data: Sector) => void;
 }
 
-const SectorFF: React.FunctionComponent<ISectorFFProps> = (props) => {
+const SectorFF: React.FC<ISectorFFProps> = (props) => {
   const classes = useStyles();
   const { data, choices, feedback: fb, onChange } = props;
   const [state, setState] = React.useState(data);

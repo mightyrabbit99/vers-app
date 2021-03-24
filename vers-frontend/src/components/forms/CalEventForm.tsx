@@ -12,7 +12,7 @@ interface ICalEventFormProps {
   onCancel?: () => void;
 }
 
-const CalEventForm: React.FunctionComponent<ICalEventFormProps> = (
+const CalEventForm: React.FC<ICalEventFormProps> = (
   props
 ) => {
   const { data, feedback, onSubmit, onChange, onCancel } = props;

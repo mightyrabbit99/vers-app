@@ -48,20 +48,23 @@ interface IJobSkillWidgetProps {
   onSubmit?: (p: Job) => void;
 }
 
-const JobSkillWidget: React.FunctionComponent<IJobSkillWidgetProps> = (
+const JobSkillWidget: React.FC<IJobSkillWidgetProps> = (
   props
 ) => {
   const classes = useStyles();
   const { lst, skillLst, onSubmit } = props;
-  const [sel, setSel] = React.useState<number>(-1);
+  const [sel, setSel] = React.useState<Job>();
+  React.useEffect(() => {
+    setSel(sel => sel && sel.id in lst ? lst[sel.id] : undefined);
+  }, [lst]);
 
   const [addLstOpen, setAddLstOpen] = React.useState(false);
   const [availSkills, setAvailSkills] = React.useState<Skill[]>([]);
   const [selectedLst, setSelectedLst] = React.useState<number[]>([]);
 
   React.useEffect(() => {
-    if (sel === -1) return;
-    let skillIds = lst[sel].skillsRequired.map((x) => x.skill);
+    if (!sel) return;
+    let skillIds = sel.skillsRequired.map((x) => x.skill);
     let newAvailSkills = Object.entries(skillLst)
       .filter(([k, v]) => !skillIds.includes(v.id))
       .map((x) => x[1]);
@@ -69,7 +72,7 @@ const JobSkillWidget: React.FunctionComponent<IJobSkillWidgetProps> = (
   }, [sel, lst, skillLst]);
 
   const handleListItemClick = (event: React.ChangeEvent<any>, i: number) => {
-    setSel(i);
+    setSel(lst[i]);
     setSelectedLst([]);
   };
 
@@ -78,11 +81,10 @@ const JobSkillWidget: React.FunctionComponent<IJobSkillWidgetProps> = (
     setAddLstOpen(true);
   };
   const handleDeleteOnClick = () => {
-    if (sel === -1) return;
-    let job = lst[sel];
+    if (!sel) return;
     let newJob = {
-      ...job,
-      skillsRequired: job.skillsRequired.filter(
+      ...sel,
+      skillsRequired: sel.skillsRequired.filter(
         (x) => !selectedLst.includes(x.id)
       ),
     };
@@ -91,29 +93,34 @@ const JobSkillWidget: React.FunctionComponent<IJobSkillWidgetProps> = (
   };
 
   const handleAddSkill = (newSkills: Skill[]) => {
-    if (sel === -1) return;
-    let job = lst[sel];
+    if (!sel) return;
     let newJob = {
-      ...job,
+      ...sel,
       skillsRequired: [
-        ...job.skillsRequired,
+        ...sel.skillsRequired,
         ...newSkills.map((x) => ({
           id: -1,
           desc: "",
           level: 1,
-          job: job.id,
+          job: sel.id,
           skill: x.id,
         })),
       ],
     };
     setAddLstOpen(false);
+    setSel(newJob);
     onSubmit && onSubmit(newJob);
   };
+
+  const handleJobSubmit = (j: Job) => {
+    setSel(j);
+    onSubmit && onSubmit(j);
+  }
 
   const genListItem = (e: Job, idx: number) => (
     <ListItem
       button
-      selected={sel === e.id}
+      selected={sel && sel.id === e.id}
       onClick={(event) => handleListItemClick(event, e.id)}
       key={idx}
     >
@@ -148,7 +155,7 @@ const JobSkillWidget: React.FunctionComponent<IJobSkillWidgetProps> = (
             <Button
               variant="contained"
               color="primary"
-              disabled={sel === -1 || availSkills.length === 0 || !onSubmit}
+              disabled={!sel || availSkills.length === 0 || !onSubmit}
               onClick={handleAddOnClick}
             >
               Add
@@ -156,18 +163,18 @@ const JobSkillWidget: React.FunctionComponent<IJobSkillWidgetProps> = (
             <Button
               variant="contained"
               color="primary"
-              disabled={sel === -1 || selectedLst.length === 0 || !onSubmit}
+              disabled={!sel || selectedLst.length === 0 || !onSubmit}
               onClick={handleDeleteOnClick}
             >
               Delete
             </Button>
           </div>
           <div>
-            {sel !== -1 ? (
+            {sel ? (
               <JobSkillList
-                item={lst[sel]}
+                item={sel}
                 skillLst={skillLst}
-                onSubmit={onSubmit}
+                onSubmit={handleJobSubmit}
                 selected={selectedLst}
                 selectedOnChange={setSelectedLst}
               />

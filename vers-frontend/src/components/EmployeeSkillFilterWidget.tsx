@@ -12,7 +12,7 @@ interface IEmployeeSkillFilterProps {
   skillLst: { [id: number]: Skill };
 }
 
-const EmployeeSkillFilter: React.FunctionComponent<IEmployeeSkillFilterProps> = (
+const EmployeeSkillFilter: React.FC<IEmployeeSkillFilterProps> = (
   props
 ) => {
   let { lst, skillLst } = props;

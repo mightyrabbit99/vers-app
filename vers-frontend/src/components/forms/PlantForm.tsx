@@ -12,7 +12,7 @@ interface IPlantFormProps {
   onCancel?: () => void;
 }
 
-const PlantForm: React.FunctionComponent<IPlantFormProps> = (props) => {
+const PlantForm: React.FC<IPlantFormProps> = (props) => {
   const { data, feedback, onSubmit, onChange, onCancel } = props;
   const newData = { ...data };
 

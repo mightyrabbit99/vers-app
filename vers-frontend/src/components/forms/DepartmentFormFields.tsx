@@ -15,7 +15,7 @@ interface IDepartmentFFProps {
   onChange?: (data: Department) => void;
 }
 
-const DepartmentFF: React.FunctionComponent<IDepartmentFFProps> = (props) => {
+const DepartmentFF: React.FC<IDepartmentFFProps> = (props) => {
   const classes = useStyles();
   const { data, feedback: fb, onChange } = props;
   const [state, setState] = React.useState(data);

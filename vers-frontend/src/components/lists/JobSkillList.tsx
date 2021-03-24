@@ -29,7 +29,7 @@ interface IJobSkillListProps {
   selectedOnChange?: (lst: number[]) => void;
 }
 
-const JobSkillList: React.FunctionComponent<IJobSkillListProps> = (props) => {
+const JobSkillList: React.FC<IJobSkillListProps> = (props) => {
   const classes = useStyles();
   const { item, skillLst, selected = [], onSubmit, selectedOnChange } = props;
   const jobSkills = item.skillsRequired.map((x) => Object.assign({}, x));

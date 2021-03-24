@@ -8,7 +8,7 @@ interface IJobEmpAssignWidgetProps {
   onSubmit?: (j: Job) => void;
 }
 
-const JobEmpAssignWidget: React.FunctionComponent<IJobEmpAssignWidgetProps> = (props) => {
+const JobEmpAssignWidget: React.FC<IJobEmpAssignWidgetProps> = (props) => {
   return <div/>;
 };
 

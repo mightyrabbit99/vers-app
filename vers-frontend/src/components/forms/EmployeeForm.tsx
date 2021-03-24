@@ -15,7 +15,7 @@ interface IEmployeeFormProps {
   onCancel?: () => void;
 }
 
-const EmployeeForm: React.FunctionComponent<IEmployeeFormProps> = (props) => {
+const EmployeeForm: React.FC<IEmployeeFormProps> = (props) => {
   const {
     data,
     feedback,

@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
 
 interface IForecastViewProps {}
 
-const ForecastView: React.FunctionComponent<IForecastViewProps> = (props) => {
+const ForecastView: React.FC<IForecastViewProps> = (props) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { forecasts, newForecast } = useSelector(getData);

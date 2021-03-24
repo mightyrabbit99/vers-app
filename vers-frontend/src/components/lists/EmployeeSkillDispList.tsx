@@ -12,7 +12,7 @@ interface IEmpSkillDispListProps {
 
 const getName = (p: Employee) => `${p.firstName}, ${p.lastName}`;
 
-const EmpSkillDispList: React.FunctionComponent<IEmpSkillDispListProps> = (
+const EmpSkillDispList: React.FC<IEmpSkillDispListProps> = (
   props
 ) => {
   const { lst, skills } = props;
