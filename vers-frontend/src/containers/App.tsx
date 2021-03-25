@@ -97,7 +97,7 @@ const App: React.FC<IAppProps> = () => {
       </Switch>
       <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity={"error"}>
-          {error}
+          {error?.message}
         </Alert>
       </Snackbar>
     </ThemeProvider>

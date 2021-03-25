@@ -7,6 +7,7 @@ import SkillMainList from "./lists/SkillMainList";
 import MyDialog from "./commons/Dialog";
 import SkillForm from "./forms/SkillForm";
 import ListWidget from "./ListWidget";
+import { skillExcelUrl } from "src/kernel/Fetcher";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -114,7 +115,7 @@ const SkillListWidget: React.FC<ISkillListWidgetProps> = (props) => {
       deleteOnClick={handleDeleteOnClick}
       downloadExcel={downloadExcel}
       uploadExcel={uploadExcel}
-      excelTemplateUrl={process.env.REACT_APP_EXCEL_SKILL_TEMPLATE_URL}
+      excelTemplateUrl={skillExcelUrl}
     >
       <SkillMainList
         lst={lst}

@@ -12,13 +12,26 @@ import {
   UserData,
 } from "./data";
 import axios, { AxiosResponse } from "axios";
-/*
-import FakeServer from "./FakeServer";
-const axios = new FakeServer();
-*/
 
 export type Result<T> = AxiosResponse<T>;
-const host = process.env.REACT_APP_REST_API_URL;
+let host;
+if (process.env.NODE_ENV !== 'production') {
+  host = process.env.REACT_APP_REST_API_URL;
+} else {
+  host = window.location.origin;
+}
+let socHost;
+if (process.env.NODE_ENV !== 'production') {
+  socHost = process.env.REACT_APP_SOC_URL;
+} else {
+  socHost = `ws://${window.location.host}`
+}
+let xlsxTemplateHost;
+if (process.env.NODE_ENV !== 'production') {
+  xlsxTemplateHost = process.env.REACT_APP_EXCEL_TEMPLATE_URL;
+} else {
+  xlsxTemplateHost = window.location.origin;
+}
 const userUrl = `${host}${process.env.REACT_APP_REST_USER_MODIFY_PATH}/`;
 const apiTokenAuth = `${host}${process.env.REACT_APP_REST_TOKEN_AUTH_PATH}/`;
 const plantUrl = `${host}${process.env.REACT_APP_REST_API_PLANT_PATH}/`;
@@ -32,6 +45,14 @@ const logUrl = `${host}${process.env.REACT_APP_REST_API_LOG_PATH}/`;
 const forecastUrl = `${host}${process.env.REACT_APP_REST_API_FORECAST_PATH}/`;
 const calEventUrl = `${host}${process.env.REACT_APP_REST_API_CAL_EVENT_PATH}/`;
 const allUserUrl = `${host}${process.env.REACT_APP_REST_API_USER_PATH}/`;
+const socUrl = `${socHost}${process.env.REACT_APP_SOC_MAIN_PATH}`;
+
+export const plantExcelUrl = `${xlsxTemplateHost}${process.env.REACT_APP_EXCEL_PLANT_PATH}`;
+export const sectorExcelUrl = `${xlsxTemplateHost}${process.env.REACT_APP_EXCEL_SECTOR_PATH}`;
+export const subsectorExcelUrl = `${xlsxTemplateHost}${process.env.REACT_APP_EXCEL_SUBSECTOR_PATH}`;
+export const skillExcelUrl = `${xlsxTemplateHost}${process.env.REACT_APP_EXCEL_SKILL_PATH}`;
+export const empExcelUrl = `${xlsxTemplateHost}${process.env.REACT_APP_EXCEL_EMPLOYEE_PATH}`;
+export const calExcelUrl = `${xlsxTemplateHost}${process.env.REACT_APP_EXCEL_CAL_EVENT_PATH}`;
 
 const getCookie = (name: string) => {
   var cookieValue = null;
@@ -69,12 +90,10 @@ class Fetcher {
   };
 
   public static getSoc = () => {
-    if (!process.env.REACT_APP_SOC_URL || !process.env.REACT_APP_SOC_MAIN_PATH)
-      return;
-    let socUrl = `${process.env.REACT_APP_SOC_URL}${process.env.REACT_APP_SOC_MAIN_PATH}`;
-    if (Fetcher.token) socUrl = socUrl.concat(`?token=${Fetcher.token}`);
+    let u = socUrl;
+    if (Fetcher.token) u = u.concat(`?token=${Fetcher.token}`);
     try {
-      return new WebSocket(socUrl);
+      return new WebSocket(u);
     } catch (e) {
       return;
     }

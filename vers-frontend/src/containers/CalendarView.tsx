@@ -21,6 +21,7 @@ import { clearFeedback, submitExcel } from "src/slices/sync";
 import { CalEvent, ItemType } from "src/kernel";
 import ExcelProcessor2 from "src/kernel/ExcelProcessor2";
 import ExcelUploadForm from "src/components/forms/ExcelUploadForm";
+import { calExcelUrl } from "src/kernel/Fetcher";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -55,7 +56,6 @@ const localizer = momentLocalizer(moment);
 interface ICalendarViewProps {}
 
 const CalendarView: React.FC<ICalendarViewProps> = () => {
-  const excelTemplateUrl = process.env.REACT_APP_EXCEL_CAL_EVENT_TEMPLATE_URL;
   const classes = useStyles();
   const dispatch = useDispatch();
   const { calEvents, newCalEvent } = useSelector(getData);
@@ -202,7 +202,7 @@ const CalendarView: React.FC<ICalendarViewProps> = () => {
               feedback={feedback}
               onSubmit={handleExcelFileUpload}
               onCancel={handleExcelFormClose}
-              templateUrl={excelTemplateUrl}
+              templateUrl={calExcelUrl}
             />
           </div>
         </div>

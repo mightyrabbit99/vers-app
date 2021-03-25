@@ -8,6 +8,7 @@ import SectorForm from "src/components/forms/SectorForm";
 import SectorList from "src/components/lists/SectorMainList";
 
 import ListWidget from "src/components/ListWidget";
+import { sectorExcelUrl } from "src/kernel/Fetcher";
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -97,7 +98,7 @@ const SectorListWidget: React.FC<ISectorListWidgetProps> = (
       deleteOnClick={handleDeleteOnClick}
       uploadExcel={uploadExcel}
       downloadExcel={downloadExcel}
-      excelTemplateUrl={process.env.REACT_APP_EXCEL_SECTOR_TEMPLATE_URL}
+      excelTemplateUrl={sectorExcelUrl}
     >
       <SectorList
         lst={lst}

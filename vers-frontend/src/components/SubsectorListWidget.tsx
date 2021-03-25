@@ -7,6 +7,7 @@ import MyDialog from "src/components/commons/Dialog";
 import SubsectorForm from "src/components/forms/SubsectorForm";
 import SubsectorList from "src/components/lists/SubsectorMainList";
 import ListWidget from "./ListWidget";
+import { subsectorExcelUrl } from "src/kernel/Fetcher";
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -101,7 +102,7 @@ const SubsectorListWidget: React.FC<ISubsectorListWidgetProps> = (
       deleteOnClick={handleDeleteOnClick}
       downloadExcel={downloadExcel}
       uploadExcel={uploadExcel}
-      excelTemplateUrl={process.env.REACT_APP_EXCEL_SUBSECTOR_TEMPLATE_URL}
+      excelTemplateUrl={subsectorExcelUrl}
     >
       <SubsectorList
         lst={lst}

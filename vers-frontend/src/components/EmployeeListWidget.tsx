@@ -7,6 +7,7 @@ import MyDialog from "src/components/commons/Dialog";
 import EmployeeForm from "src/components/forms/EmployeeForm";
 import EmployeeList from "src/components/lists/EmployeeMainList";
 import ListWidget from "./ListWidget";
+import { empExcelUrl } from "src/kernel/Fetcher";
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -102,7 +103,7 @@ const EmployeeListWidget: React.FC<IEmployeeListWidgetProps> = (
       deleteOnClick={handleDeleteOnClick}
       downloadExcel={downloadExcel}
       uploadExcel={uploadExcel}
-      excelTemplateUrl={process.env.REACT_APP_EXCEL_EMPLOYEE_TEMPLATE_URL}
+      excelTemplateUrl={empExcelUrl}
     >
       <EmployeeList
         lst={lst}

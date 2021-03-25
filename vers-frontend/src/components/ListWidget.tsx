@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   },
   form: {
     maxWidth: "60vw",
-    width: "fit-content",
+    width: 500,
     minWidth: 300,
   },
   formTitle: {
