@@ -15,22 +15,22 @@ import axios, { AxiosResponse } from "axios";
 
 export type Result<T> = AxiosResponse<T>;
 let host;
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== "production") {
   host = process.env.REACT_APP_REST_API_URL;
 } else {
   host = window.location.origin;
 }
 let socHost;
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== "production") {
   socHost = process.env.REACT_APP_SOC_URL;
 } else {
-  socHost = `ws://${window.location.host}`
+  socHost = `ws://${window.location.host}`;
 }
 let xlsxTemplateHost;
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== "production") {
   xlsxTemplateHost = process.env.REACT_APP_EXCEL_TEMPLATE_URL;
 } else {
-  xlsxTemplateHost = window.location.origin;
+  xlsxTemplateHost = `${process.env.PUBLIC_URL}${process.env.REACT_APP_EXCEL_TEMPLATE_PATH}`;
 }
 const userUrl = `${host}${process.env.REACT_APP_REST_USER_MODIFY_PATH}/`;
 const apiTokenAuth = `${host}${process.env.REACT_APP_REST_TOKEN_AUTH_PATH}/`;
@@ -97,7 +97,7 @@ class Fetcher {
     } catch (e) {
       return;
     }
-  }
+  };
 
   private static getConfig = () => {
     let headers: { [s: string]: any } = {};
@@ -283,8 +283,12 @@ class Fetcher {
   };
 
   static putOtherUser = async (data: UserData) => {
-    return await axios.put(`${allUserUrl}${data.id}/`, data, Fetcher.getConfig());
-  }
+    return await axios.put(
+      `${allUserUrl}${data.id}/`,
+      data,
+      Fetcher.getConfig()
+    );
+  };
 
   static putForecast = async (
     data: ForecastData
@@ -358,7 +362,7 @@ class Fetcher {
 
   static deleteUser = async (data: UserData): Promise<Result<UserData>> => {
     return await axios.delete(`${allUserUrl}${data.id}/`, Fetcher.getConfig());
-  }
+  };
 }
 
 export default Fetcher;

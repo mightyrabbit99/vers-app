@@ -25,6 +25,14 @@ const JobMainList: React.FC<IJobMainListProps> = (props) => {
       title: "Name",
       extractor: (p: Job) => p.title,
     },
+    {
+      title: "Start Date",
+      extractor: (p: Job) => p.fromDate,
+    },
+    {
+      title: "End Date",
+      extractor: (p: Job) => p.toDate,
+    },
   ];
 
   if (onEdit) {
