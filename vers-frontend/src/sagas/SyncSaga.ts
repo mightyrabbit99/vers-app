@@ -48,7 +48,7 @@ function* postItemThenSave({ payload }: CreateNewAction) {
       yield put(submitSuccess(feedback));
     }
   } catch (error) {
-    yield put(submitError(error.message));
+    yield put(submitError({ message: error.message }));
   }
 }
 
@@ -68,7 +68,7 @@ function* putItem({ payload }: ModifyAction) {
     }
     yield put(submitSuccess(res.success ? undefined : res));
   } catch (error) {
-    yield put(submitError(error.message));
+    yield put(submitError({ message: error.message }));
   }
 }
 
