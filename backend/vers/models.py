@@ -35,7 +35,7 @@ class VersUser(models.Model):
 
   # able to create,  delete, edit plant/sector/subsectors
   plant_group = models.IntegerField(
-      choices=PermissionGroupChoices.choices, default=PermissionGroupChoices.NONE)
+      choices=PermissionGroupChoices.choices, default=PermissionGroupChoices.EDIT)
   sector_group = models.IntegerField(
       choices=PermissionGroupChoices.choices, default=PermissionGroupChoices.NONE)
   subsector_group = models.IntegerField(

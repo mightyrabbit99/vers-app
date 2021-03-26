@@ -177,7 +177,9 @@ class Kernel {
   };
 
   private _log = (desc: string, ...data: SubmitResult[]) => {
-    let sanitized = data.map(x => x.success ? x : { success: x.success, statusText: x.statusText, data: {} })
+    let sanitized = data.map((x) =>
+      x.success ? x : { success: x.success, statusText: x.statusText, data: {} }
+    );
     this.personalLogs = [
       ...this.personalLogs,
       { desc, time: Date.now(), vals: sanitized },
@@ -371,7 +373,7 @@ class Kernel {
       this.registerSocket();
       return { success: true, statusText: "", data: res.data };
     } catch (e) {
-      return { success: false, statusText: "", data: null};
+      return { success: false, statusText: "", data: null };
     }
   };
 
@@ -395,10 +397,11 @@ class Kernel {
       if (o.plant !== plant.name) {
         return {
           success: false,
-          statusText: "",
-          data: { 
+          statusText: `Line ${o.line}: Plant "${o.plant}" does not exist`,
+          data: {
             _type: ItemType.Plant,
-            plant: [`Line ${o.line}: Plant ${o.plant} does not exist`] },
+            plant: [`Line ${o.line}: Plant "${o.plant}" does not exist`],
+          },
         };
       } else {
         return await st.submitOrNew(st.getNew({ ...o, plant: plantId }));
@@ -418,10 +421,10 @@ class Kernel {
       if (!(o.sector in secNames)) {
         return {
           success: false,
-          statusText: "",
+          statusText: `Line ${o.line}: Sector "${o.sector}" does not exist`,
           data: {
             _type: ItemType.Sector,
-            sector: [`Line ${o.line}: Sector ${o.sector} does not exist`],
+            sector: [`Line ${o.line}: Sector "${o.sector}" does not exist`],
           },
         };
       } else {
@@ -445,11 +448,11 @@ class Kernel {
       if (!(o.subsector in subsecNames)) {
         return {
           success: false,
-          statusText: "",
+          statusText: `Line ${o.line}: Subsector "${o.subsector}" does not exist`,
           data: {
             _type: ItemType.Skill,
             subsector: [
-              `Line ${o.line}: Subsector ${o.subsector} does not exist`,
+              `Line ${o.line}: Subsector "${o.subsector}" does not exist`,
             ],
           },
         };
@@ -468,29 +471,46 @@ class Kernel {
   ): Promise<SubmitResult[]> => {
     let sectors = this.secStore.getLst((x) => x.plant === plantId);
     let subsectors = this.subsecStore.getLst((x) => x.sector in sectors);
+    let skills = this.skillStore.getLst();
     let subsecNames = genMap(subsectors, (x) => x.name);
+    let skillNames = genMap(skills, (x) => x.name);
     const saveObj = async (o: EmployeeObj) => {
       const st = this.empStore;
       if (!(o.homeLocation in subsecNames)) {
         return {
           success: false,
-          statusText: "",
+          statusText: `Line ${o.line}: Home Location (Subsector) "${o.homeLocation}" does not exist`,
           data: {
             _type: ItemType.Employee,
             subsector: [
-              `Line ${o.line}: Home Location (Subsector) ${o.homeLocation} does not exist`,
+              `Line ${o.line}: Home Location (Subsector) "${o.homeLocation}" does not exist`,
             ],
           },
         };
-      } else {
-        return await st.submitOrNew(
-          st.getNew({
-            ...o,
-            department: undefined, // TODO
-            subsector: subsecNames[o.homeLocation][0].id,
-          })
-        );
       }
+      if (o.skills.some((x) => !(x.skillName in skillNames))) {
+        return {
+          success: false,
+          statusText: "Skill not found",
+          data: {
+            _type: ItemType.Employee,
+            skills: o.skills
+              .filter((x) => !(x.skillName in skillNames))
+              .map((x) => `Skill "${x.skillName}" not found`),
+          },
+        };
+      }
+      return await st.submitOrNew(
+        st.getNew({
+          ...o,
+          department: undefined, // TODO
+          subsector: subsecNames[o.homeLocation][0].id,
+          skills: o.skills.map((x, idx) => ({
+            skill: skillNames[o.skills[idx].skillName][0].id,
+            level: x.level,
+          })),
+        })
+      );
     };
     return await Promise.all(objs.map(saveObj));
   };

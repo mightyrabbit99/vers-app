@@ -55,7 +55,12 @@ const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
   let ans: EmployeeObj[] = [];
 
   function checkRow(row: Excel.Row) {
-    if ([1, 2, 3, 4, 5].some((x) => row.getCell(x).text.trim().length === 0))
+    const values: { [n: number]: Excel.CellValue } = row.values;
+    if (
+      [1, 2, 3, 4, 5].some(
+        (x) => !values[x] || `${values[x]}`.trim().length === 0
+      )
+    )
       return false;
     return true;
   }
@@ -69,38 +74,43 @@ const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
   const skillNames = getSkillNames(ws.getRow(1));
 
   let sesaId, firstName, lastName, department, homeLocation;
-  ws.eachRow((row, rowIndex) => {
-    if (rowIndex === 1 || !checkRow(row)) return;
-    [sesaId, firstName, lastName, department, homeLocation] = [
-      1,
-      2,
-      3,
-      4,
-      5,
-    ].map((x) => row.getCell(x).text.trim());
-    if (sesaId === "") return;
+  ws.eachRow((row: Excel.Row, rowIndex) => {
+    try {
+      if (rowIndex === 1 || !checkRow(row)) return;
+      const values: { [n: number]: Excel.CellValue } = row.values;
+      [sesaId, firstName, lastName, department, homeLocation] = [
+        1,
+        2,
+        3,
+        4,
+        5,
+      ].map((x) => `${values[x]}`.trim());
+      if (sesaId === "") return;
 
-    if (!sets[homeLocation]) {
-      sets[homeLocation] = new Set();
+      if (!sets[homeLocation]) {
+        sets[homeLocation] = new Set();
+      }
+
+      let s = sets[homeLocation];
+      if (s.has(sesaId)) return;
+      s.add(sesaId);
+      ans.push({
+        _type: ItemType.Employee,
+        line: rowIndex,
+        sesaId,
+        firstName,
+        lastName,
+        homeLocation,
+        skills: Object.entries(skillNames)
+          .filter((x) => x[0] in row.values)
+          .map((x) => ({
+            skillName: x[1],
+            level: parseInt(`${values[parseInt(x[0], 10)]}`, 10),
+          })),
+      });
+    } catch (e) {
+      throw new Error(`Error on employee sheet Row ${rowIndex}: ${e}`);
     }
-
-    let s = sets[homeLocation];
-    if (s.has(sesaId)) return;
-    s.add(sesaId);
-    ans.push({
-      _type: ItemType.Employee,
-      line: rowIndex,
-      sesaId,
-      firstName,
-      lastName,
-      homeLocation,
-      skills: Object.entries(skillNames)
-        .filter((x) => row.getCell(x[0]) !== null)
-        .map((x) => ({
-          skillName: x[1],
-          level: row.getCell(x[0]).value as number,
-        })),
-    });
   });
   return ans;
 };
@@ -108,11 +118,20 @@ const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
 const readSkillSheet = (ws: Excel.Worksheet): SkillObj[] => {
   let ans: SkillObj[] = [];
   let name, subsector, priority, percentageOfSector;
+  function checkRow(row: Excel.Row) {
+    const values: { [n: number]: Excel.CellValue } = row.values;
+    if (
+      [1, 2, 3, 4].some((x) => !values[x] || `${values[x]}`.trim().length === 0)
+    )
+      return false;
+    return true;
+  }
   ws.eachRow((row, rowIndex) => {
     try {
-      if (rowIndex === 1) return;
+      if (rowIndex === 1 || !checkRow(row)) return;
+      const values: { [n: number]: Excel.CellValue } = row.values;
       [name, subsector, priority, percentageOfSector] = [1, 2, 3, 4].map((x) =>
-        row.getCell(x).text.trim()
+        `${values[x]}`.trim()
       );
 
       ans.push({
@@ -124,7 +143,7 @@ const readSkillSheet = (ws: Excel.Worksheet): SkillObj[] => {
         percentageOfSector: parseInt(percentageOfSector, 10),
       });
     } catch (e) {
-      throw new Error(`Error on skill sheet: Row ${rowIndex}`);
+      throw new Error(`Error on skill sheet Row ${rowIndex}: ${e}`);
     }
   });
   return ans;
@@ -133,11 +152,22 @@ const readSkillSheet = (ws: Excel.Worksheet): SkillObj[] => {
 const readSubsectorSheet = (ws: Excel.Worksheet): SubsectorObj[] => {
   let ans: SubsectorObj[] = [];
   let name, sector, unit, cycleTime, efficiency;
+  function checkRow(row: Excel.Row) {
+    const values: { [n: number]: Excel.CellValue } = row.values;
+    if (
+      [1, 2, 3, 4, 5].some(
+        (x) => !values[x] || `${values[x]}`.trim().length === 0
+      )
+    )
+      return false;
+    return true;
+  }
   ws.eachRow((row, rowIndex) => {
     try {
-      if (rowIndex === 1) return;
+      if (rowIndex === 1 || !checkRow(row)) return;
+      const values: { [n: number]: Excel.CellValue } = row.values;
       [name, sector, unit, cycleTime, efficiency] = [1, 2, 3, 4, 5].map((x) =>
-        row.getCell(x).text.trim()
+        `${values[x]}`.trim()
       );
 
       ans.push({
@@ -150,7 +180,7 @@ const readSubsectorSheet = (ws: Excel.Worksheet): SubsectorObj[] => {
         efficiency: parseInt(efficiency, 10),
       });
     } catch (e) {
-      throw new Error(`Error on subsector sheet: Row ${rowIndex}`);
+      throw new Error(`Error on subsector sheet Row ${rowIndex}: ${e}`);
     }
   });
   return ans;
@@ -159,16 +189,27 @@ const readSubsectorSheet = (ws: Excel.Worksheet): SubsectorObj[] => {
 const readSectorSheet = (ws: Excel.Worksheet): SectorObj[] => {
   let ans: SectorObj[] = [];
   let name, plant;
+  function checkRow(row: Excel.Row) {
+    const values: { [n: number]: Excel.CellValue } = row.values;
+    if ([1, 2].some((x) => !values[x] || `${values[x]}`.trim().length === 0))
+      return false;
+    return true;
+  }
   ws.eachRow((row, rowIndex) => {
-    if (rowIndex === 1) return;
-    [name, plant] = [1, 2].map((x) => row.getCell(x).text.trim());
+    try {
+      if (rowIndex === 1 || !checkRow(row)) return;
+      const values: { [n: number]: Excel.CellValue } = row.values;
+      [name, plant] = [1, 2].map((x) => `${values[x]}`.trim());
 
-    ans.push({
-      _type: ItemType.Sector,
-      line: rowIndex,
-      name,
-      plant,
-    });
+      ans.push({
+        _type: ItemType.Sector,
+        line: rowIndex,
+        name,
+        plant,
+      });
+    } catch (e) {
+      throw new Error(`Error on subsector sheet Row ${rowIndex}: ${e}`);
+    }
   });
   return ans;
 };
@@ -176,9 +217,20 @@ const readSectorSheet = (ws: Excel.Worksheet): SectorObj[] => {
 const readCalEventSheet = (ws: Excel.Worksheet): CalEventObj[] => {
   let ans: CalEventObj[] = [];
   let name, start, end, eventType;
+  function checkRow(row: Excel.Row) {
+    const values: { [n: number]: Excel.CellValue } = row.values;
+    if (
+      [1, 2, 3, 4].some((x) => !values[x] || `${values[x]}`.trim().length === 0)
+    )
+      return false;
+    return true;
+  }
   ws.eachRow((row, rowIndex) => {
-    if (rowIndex === 1) return;
-    [start, end, name, eventType] = [1, 2, 3, 4].map((x) => row.getCell(x).text.trim());
+    if (rowIndex === 1 || !checkRow(row)) return;
+    const values: { [n: number]: Excel.CellValue } = row.values;
+    [start, end, name, eventType] = [1, 2, 3, 4].map((x) =>
+      `${values[x]}`.trim()
+    );
 
     ans.push({
       _type: ItemType.CalEvent,
@@ -213,7 +265,7 @@ const employeeSheetWriter = (emps: EmployeeObj[]) => (ws: Excel.Worksheet) => {
     }, {} as { [name: string]: number });
     return {
       ...rest,
-      ...sk
+      ...sk,
     };
   };
 
@@ -254,7 +306,9 @@ const sectorSheetWriter = (sectors: SectorObj[]) => (ws: Excel.Worksheet) => {
   ws.addRows(sectors);
 };
 
-const calEventSheetWriter = (calEvents: CalEventObj[]) => (ws: Excel.Worksheet) => {
+const calEventSheetWriter = (calEvents: CalEventObj[]) => (
+  ws: Excel.Worksheet
+) => {
   ws.columns = [
     { header: "Start Date", key: "start" },
     { header: "End Date", key: "end" },
@@ -263,7 +317,7 @@ const calEventSheetWriter = (calEvents: CalEventObj[]) => (ws: Excel.Worksheet) 
   ] as Excel.Column[];
 
   ws.addRows(calEvents);
-}
+};
 
 function readFile<T>(f: File, read: (ws: Excel.Worksheet) => T): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -316,7 +370,7 @@ class ExcelProcessor2 {
   };
   static readCalEventFile = async (file: File) => {
     return await readFile(file, readCalEventSheet);
-  }
+  };
   static readFile = async (type: ItemType, file: File) => {
     switch (type) {
       case ItemType.Sector:
@@ -332,7 +386,7 @@ class ExcelProcessor2 {
       default:
         return null;
     }
-  }
+  };
 
   static genSectorFile = async (sectors: SectorObj[]) => {
     return await genFile(sectorSheetWriter(sectors));
@@ -352,7 +406,7 @@ class ExcelProcessor2 {
 
   static genCalEventFile = async (calEvents: CalEventObj[]) => {
     return await genFile(calEventSheetWriter(calEvents));
-  }
+  };
 
   static genFile = async (type: ItemType, objs: ExcelObj[]) => {
     switch (type) {
@@ -369,7 +423,7 @@ class ExcelProcessor2 {
       default:
         return null;
     }
-  }
+  };
 }
 
 export type { ExcelObj, SectorObj, SubsectorObj, SkillObj, EmployeeObj };
