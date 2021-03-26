@@ -566,6 +566,11 @@ class CalEventSerializer(serializers.ModelSerializer):
 
     return super().validate(attrs)
 
+  def create(self, validated_data):
+      new_cal = super().create(validated_data)
+      self.notify(lg.CREATE, new_cal)
+      return new_cal
+
   def update(self, instance, validated_data):
       instance = super().update(instance, validated_data)
       self.notify(lg.UPDATE, instance)

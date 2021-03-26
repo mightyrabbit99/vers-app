@@ -13,7 +13,6 @@ const useStyles = makeStyles((theme) => ({
   widget: {
     padding: theme.spacing(2),
     display: "flex",
-    overflow: "hide",
     flexDirection: "column",
     height: "70vh",
   },

@@ -16,7 +16,7 @@ import CalEventForm from "src/components/forms/CalEventForm";
 import MyDialog from "src/components/commons/Dialog";
 
 import { getData, getSync } from "src/selectors";
-import { downloadExcel, saveData } from "src/slices/data";
+import { delData, downloadExcel, saveData } from "src/slices/data";
 import { clearFeedback, submitExcel } from "src/slices/sync";
 import { CalEvent, ItemType } from "src/kernel";
 import ExcelProcessor2 from "src/kernel/ExcelProcessor2";
@@ -47,7 +47,9 @@ const useStyles = makeStyles((theme) => ({
   form: {
     width: 600,
   },
-  formTitle: {},
+  formTitle: {
+    display: "flex",
+  },
   formContent: {},
 }));
 
@@ -64,11 +66,16 @@ const CalendarView: React.FC<ICalendarViewProps> = () => {
   const [formOpen, setFormOpen] = React.useState(false);
   const [formData, setFormData] = React.useState<CalEvent>();
   React.useEffect(() => {
-    setFormData(formData => formData ?? newCalEvent);
+    setFormData((formData) => formData ?? newCalEvent);
   }, [newCalEvent]);
   React.useEffect(() => {
     setFormOpen(!!feedback);
   }, [feedback]);
+
+  const handleDelete = () => {
+    formData && dispatch(delData(formData));
+    setFormOpen(false);
+  }
 
   const handleSubmit = (data: CalEvent) => {
     dispatch(saveData(data));
@@ -112,12 +119,12 @@ const CalendarView: React.FC<ICalendarViewProps> = () => {
   const handleSelectEvent = (e: Event) => {
     setFormData(e.resource);
     setFormOpen(true);
-  }
+  };
 
   const handleCreateNewOnClick = () => {
     setFormData(newCalEvent);
     setFormOpen(true);
-  }
+  };
 
   const myEventsList: Event[] = Object.values(calEvents).map((x) => ({
     title: x.title,
@@ -147,7 +154,7 @@ const CalendarView: React.FC<ICalendarViewProps> = () => {
           >
             Add
           </Button>
-          <div className={classes.rightOffset}/>
+          <div className={classes.rightOffset} />
         </div>
         <div className={classes.content}>
           <Calendar
@@ -171,8 +178,11 @@ const CalendarView: React.FC<ICalendarViewProps> = () => {
             >
               {formData && formData.id === -1
                 ? "Add New Event"
-                : "Edit Event"}
+                : "Edit/Delete Event"}
             </Typography>
+            {formData && formData.id !== -1 ? <Button onClick={handleDelete}>
+              Delete
+            </Button> : null}
           </div>
           <div className={classes.formContent}>
             {formData ? (

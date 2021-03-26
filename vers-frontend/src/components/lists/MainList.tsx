@@ -9,6 +9,9 @@ import {
   TableHead,
   TableRow,
   makeStyles,
+  Theme,
+  Size,
+  Padding,
 } from "@material-ui/core";
 
 type Item = any;
@@ -18,24 +21,41 @@ interface Col {
   extractor: (item: Item) => string | React.ReactNode;
 }
 
-interface IMainListProps {
+interface IMainListStyles {
+  minWidth?: any;
+  width?: any;
+  height?: any;
+}
+
+interface IMainListProps extends IMainListStyles {
   title?: string;
   lst: Item[];
   cols: Col[];
   selected?: number[];
   selectedOnChange?: (ids: number[]) => void;
+  size?: Size;
+  padding?: Padding;
 }
 
-const useStyles = makeStyles((themes) => ({
+const useStyles = makeStyles<Theme, IMainListStyles>((themes) => ({
   content: {
-    height: "100%",
-    width: "100%",
+    height: (props) => props.height ?? "100%",
+    width: (props) => props.width ?? "100%",
+    minWidth: (props) => props.minWidth,
   },
 }));
 
 const ItemMainList: React.FC<IMainListProps> = (props) => {
-  const classes = useStyles();
-  const { lst, cols, selected, selectedOnChange = (lst) => {} } = props;
+  const {
+    lst,
+    cols,
+    selected,
+    selectedOnChange = (lst) => {},
+    size,
+    padding,
+    ...styles
+  } = props;
+  const classes = useStyles(styles);
 
   const [selectedIds, setSelectedIds] = React.useState<number[]>(
     selected ?? []
@@ -70,7 +90,7 @@ const ItemMainList: React.FC<IMainListProps> = (props) => {
 
   return (
     <TableContainer className={classes.content}>
-      <Table stickyHeader>
+      <Table stickyHeader size={size} padding={padding}>
         <TableHead>
           <TableRow>
             {selected ? (

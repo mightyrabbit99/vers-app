@@ -27,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
   },
   content: {
     height: "85%",
+    overflowX: "scroll",
   },
   form: {
     maxWidth: "60vw",
