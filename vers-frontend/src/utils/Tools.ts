@@ -44,10 +44,6 @@ export class Cal {
   }
 
   getDaysLeftInMonth = (month: Date) => {
-    month.setDate(0);
-    let start = new Date(month);
-    month.setMonth(month.getMonth() + 1);
-    let end = new Date(month);
     let ans = 27;
 
     return ans;

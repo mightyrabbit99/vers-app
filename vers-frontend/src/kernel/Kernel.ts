@@ -664,6 +664,8 @@ class Kernel {
     this.calc.setVars(vars);
   };
 
+  getVars = () => this.calc.getVars();
+
   calcHeadcountReq = (
     skill: Skill,
     subsec: Subsector,

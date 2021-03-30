@@ -9,10 +9,13 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
+import IconButton from "@material-ui/core/IconButton";
+import SettingsIcon from "@material-ui/icons/Settings";
 
-import { Skill, Subsector, Forecast, CalEvent } from "src/kernel";
-import k from "src/kernel";
+import k, { Skill, Subsector, Forecast, CalEvent, CalcVars } from "src/kernel";
+import MyDialog from "src/components/commons/Dialog";
 import HeadcountMainList from "./lists/HeadcountMainList";
+import CalcVarsForm from "./forms/CalcVarsForm";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -21,6 +24,19 @@ const useStyles = makeStyles((theme) => ({
   },
   formControl: {
     width: "inherit",
+  },
+  title: {
+    height: "15%",
+  },
+  form: {
+    width: 700,
+    minWidth: 600,
+  },
+  formTitle: {
+    height: "15%",
+  },
+  formContent: {
+    height: "85%",
   },
 }));
 
@@ -39,16 +55,20 @@ interface IHeadcountListWidgetState {
 
   // data
   forecastVal?: number;
+  formData: CalcVars;
 
   // display
   selectedMonth?: string;
   selectedForecast?: number;
   skillLst: Skill[];
+  formOpen: boolean;
 }
 
 const initState: IHeadcountListWidgetState = {
   displaces: {},
   skillLst: [],
+  formOpen: false,
+  formData: k.getVars(),
 };
 
 function reducer(
@@ -81,6 +101,10 @@ function reducer(
       };
     case "setSkillLst":
       return { ...state, skillLst: action.data };
+    case "setFormOpen":
+      return { ...state, formOpen: action.data };
+    case "setFormData":
+      return { ...state, formData: action.data };
     default:
       throw new Error();
   }
@@ -91,6 +115,7 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
   const classes = useStyles(props);
 
   const [state, dispatch] = React.useReducer(reducer, initState);
+
   React.useEffect(() => {
     //generate choices
     let data = Object.values(forecasts).reduce((pr, cu) => {
@@ -108,9 +133,19 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
     dispatch({ type: "setDisplaces", data });
   }, [forecasts]);
 
+  React.useEffect(() => {
+    // select first if has
+    if (_.isEmpty(state.displaces)) return;
+    let mP = Object.entries(state.displaces)[0];
+    let fP = Object.entries(mP[1])[0];
+    dispatch({ type: "setMonth", data: mP[0] });
+    dispatch({ type: "setForecast", data: fP[0] });
+  }, [state.displaces]);
+
   const genSkillLst = React.useCallback(
-    (forecastVal?: number, selectedMonth?: string) => {
+    (vars?: CalcVars, forecastVal?: number, selectedMonth?: string) => {
       let skillLst = Object.values(skills);
+      if (vars) k.setVars(vars);
       if (forecastVal !== undefined && selectedMonth)
         skillLst = skillLst.map((x) => ({
           ...x,
@@ -127,8 +162,8 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
   );
 
   React.useEffect(() => {
-    genSkillLst(state.forecastVal, state.selectedMonth);
-  }, [genSkillLst, state.selectedMonth, state.forecastVal]);
+    genSkillLst(state.formData, state.forecastVal, state.selectedMonth);
+  }, [genSkillLst, state.formData, state.selectedMonth, state.forecastVal]);
 
   const handleSelMonth = (e: React.ChangeEvent<any>) => {
     let { value } = e.target;
@@ -146,66 +181,103 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
     let lst = Object.entries(state.displaces[state.selectedMonth ?? ""]);
     return lst.map((x, idx) => (
       <MenuItem key={idx} value={x[0]}>
-        {x[0]}
+        {`-${x[0]}`}
       </MenuItem>
     ));
   };
 
+  const setFormOpen = (o: boolean) => {
+    dispatch({ type: "setFormOpen", data: o });
+  };
+
+  const handleSubmit = (data: CalcVars) => {
+    dispatch({ type: "setFormData", data });
+    setFormOpen(false);
+  };
+
   return (
-    <Grid container className={classes.root}>
-      <Grid item xs={12}>
-        <Grid container className={classes.ctrlPanel}>
-          <Grid item xs={2}>
-            <FormControl className={classes.formControl}>
-              <InputLabel id="demo-simple-select-label">Month</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                fullWidth
-                value={state.selectedMonth ?? ""}
-                disabled={_.isEmpty(state.displaces)}
-                onClick={handleSelMonth}
-              >
-                {Object.keys(state.displaces).map((x, idx) => (
-                  <MenuItem key={idx} value={x}>
-                    {x.slice(0, 7)}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={2}>
-            <FormControl className={classes.formControl}>
-              <InputLabel id="demo-simple-select-label">Forecast</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                fullWidth
-                disabled={
-                  !(
-                    state.selectedMonth &&
-                    state.selectedMonth in state.displaces
-                  )
-                }
-                value={state.selectedForecast ?? ""}
-                onClick={handleSetForecast}
-              >
-                {genForecastMenuItem()}
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={5}>
-          <Box component="span" m={1}>
-            <Typography variant="body2">
-              {`Forecast Value: ${state.forecastVal ?? ""}`}
-            </Typography>
-          </Box>
-            
+    <React.Fragment>
+      <Grid container className={classes.root}>
+        <Grid item xs={12}>
+          <Grid container className={classes.ctrlPanel}>
+            <Grid item xs={2}>
+              <FormControl className={classes.formControl}>
+                <InputLabel id="demo-simple-select-label">Month</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  fullWidth
+                  value={state.selectedMonth ?? ""}
+                  disabled={_.isEmpty(state.displaces)}
+                  onClick={handleSelMonth}
+                >
+                  {Object.keys(state.displaces).map((x, idx) => (
+                    <MenuItem key={idx} value={x}>
+                      {x.slice(0, 7)}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={2}>
+              <FormControl className={classes.formControl}>
+                <InputLabel id="demo-simple-select-label">Forecast</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  fullWidth
+                  disabled={
+                    !(
+                      state.selectedMonth &&
+                      state.selectedMonth in state.displaces
+                    )
+                  }
+                  value={state.selectedForecast ?? ""}
+                  onClick={handleSetForecast}
+                >
+                  {genForecastMenuItem()}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={7}>
+              <Box component="span" m={1}>
+                <Typography variant="body2">
+                  {`Forecast Value: ${state.forecastVal ?? ""}`}
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid item xs={1}>
+              <IconButton onClick={() => setFormOpen(true)}>
+                <SettingsIcon />
+              </IconButton>
+            </Grid>
           </Grid>
         </Grid>
+        <Grid item xs={12}>
+          <HeadcountMainList lst={state.skillLst} subsectorLst={subsectors} />
+        </Grid>
       </Grid>
-      <Grid item xs={12}>
-        <HeadcountMainList lst={state.skillLst} subsectorLst={subsectors} />
-      </Grid>
-    </Grid>
+      <MyDialog open={state.formOpen} onClose={() => setFormOpen(false)}>
+        <div className={classes.form}>
+          <div className={classes.formTitle}>
+            <Typography
+              className={classes.title}
+              component="h2"
+              variant="h6"
+              color="primary"
+              gutterBottom
+            >
+              Edit Settings
+            </Typography>
+          </div>
+          <div className={classes.formContent}>
+            <CalcVarsForm
+              data={state.formData}
+              onSubmit={handleSubmit}
+              onCancel={() => setFormOpen(false)}
+            />
+          </div>
+        </div>
+      </MyDialog>
+    </React.Fragment>
   );
 };
 

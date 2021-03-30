@@ -13,6 +13,7 @@ export * from "./Forecast";
 export * from "./CalEvent";
 export * from "./User";
 export * from "./types";
+export * from "./HeadCalc";
 
 const k = new Kernel();
 export default k;

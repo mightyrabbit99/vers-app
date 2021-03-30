@@ -9,6 +9,7 @@ export interface CalcVars {
   noTeaBreak: number;
   noLunchBreak: number;
   absentism: number;
+  [k: string]: number;
 }
 
 const initVars: CalcVars = {
@@ -30,6 +31,8 @@ class HeadCalc {
   setVars = (vars?: CalcVars) => {
     this.vars = vars ?? initVars;
   }
+
+  getVars = () => this.vars;
 
   private totalAvailTime = () => {
     return (

@@ -20,10 +20,7 @@ const SectorForm: React.FC<ISectorFormProps> = (props) => {
     plant: {
       choices: [
         { name: plantLst[data.plant]?.name, value: plantLst[data.plant]?.id },
-      ] /*plants.map((x) => ({
-        name: x.name,
-        value: x.id,
-      })),*/,
+      ],
       init: 0,
     },
   };
