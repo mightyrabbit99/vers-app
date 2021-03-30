@@ -61,7 +61,7 @@ const SubsectorFF: React.FC<ISubsectorFFProps> = (props) => {
 
   const numValueSetter = (e: React.ChangeEvent<any>) => {
     let { name, value } = e.target;
-    let num = parseInt(value, 10);
+    let num = parseFloat(value);
     value = isNaN(num) ? 0 : num;
     data[name] = value;
     onChange ? onChange(data) : setState({ ...state, [name]: value });
@@ -112,7 +112,7 @@ const SubsectorFF: React.FC<ISubsectorFFProps> = (props) => {
           <TextField
             required
             fullWidth
-            label="Cycle Time"
+            label="Cycle Time (min/unit)"
             variant="filled"
             {...genActiveProps("cycleTime")}
             onBlur={numValueSetter}
@@ -123,7 +123,7 @@ const SubsectorFF: React.FC<ISubsectorFFProps> = (props) => {
           <TextField
             required
             fullWidth
-            label="Efficiency"
+            label="Efficiency (%)"
             variant="filled"
             {...genActiveProps("efficiency")}
             onBlur={numValueSetter}

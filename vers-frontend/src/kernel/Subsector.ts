@@ -86,6 +86,7 @@ const generator = (init?: any): Subsector => ({
   skills: [],
   employees: [],
   jobs: [],
+  unit: "",
   ...init,
 });
 

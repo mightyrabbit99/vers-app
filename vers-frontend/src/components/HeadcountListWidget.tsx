@@ -1,20 +1,27 @@
 import * as React from "react";
 import _ from "lodash";
 
-import { makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import FormControl from "@material-ui/core/FormControl";
 import Grid from "@material-ui/core/Grid";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
+import Box from "@material-ui/core/Box";
+import Typography from "@material-ui/core/Typography";
 
 import { Skill, Subsector, Forecast, CalEvent } from "src/kernel";
 import k from "src/kernel";
+import HeadcountMainList from "./lists/HeadcountMainList";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
-  ctrlPanel: {},
-  formControl: {},
+  ctrlPanel: {
+    width: 1000,
+  },
+  formControl: {
+    width: "inherit",
+  },
 }));
 
 interface IHeadcountListWidgetProps {
@@ -24,17 +31,19 @@ interface IHeadcountListWidgetProps {
   calEvents: { [id: number]: CalEvent };
 }
 
+type DisplaceMap = { [month: string]: { [n: number]: number } };
+
 interface IHeadcountListWidgetState {
   // input choices
-  displaces: { [month: string]: { [n: number]: number } };
+  displaces: DisplaceMap;
 
   // data
-  skillLst: Skill[];
   forecastVal?: number;
 
-  // internal
+  // display
   selectedMonth?: string;
   selectedForecast?: number;
+  skillLst: Skill[];
 }
 
 const initState: IHeadcountListWidgetState = {
@@ -46,33 +55,41 @@ function reducer(
   state: IHeadcountListWidgetState,
   action: any
 ): IHeadcountListWidgetState {
+  let mo, n, valM, val;
   switch (action.type) {
     case "setDisplaces":
       return { ...state, displaces: action.data };
     case "setForecast":
-      let n = action.data;
-      if (n === undefined) return state; 
-      let mo = state.selectedMonth ?? "";
-      let val = mo in state.displaces && n in state.displaces[mo] ? state.displaces[mo][n] : 0;
+      n = action.data;
+      if (n === undefined) return state;
+      mo = state.selectedMonth ?? "";
+      val =
+        mo in state.displaces && n in state.displaces[mo]
+          ? state.displaces[mo][n]
+          : 0;
       return { ...state, selectedForecast: n, forecastVal: val };
-    case "setSkillLst":
-      return { ...state, skillLst: action.data };
     case "setMonth":
-      let valM = Object.entries(state.displaces[action.data]);
+      mo = action.data;
+      if (!mo) return state;
+      valM = Object.entries(state.displaces[mo]);
       return {
         ...state,
-        selectedMonth: action.data,
-        selectedForecast: valM.length === 1 ? parseInt(valM[0][0], 10) : undefined,
-        forecastVal: valM.length === 1 ? valM[0][1] : undefined,
+        selectedMonth: mo,
+        selectedForecast:
+          valM.length > 0 ? parseInt(valM[0][0], 10) : undefined,
+        forecastVal: valM[0][1],
       };
+    case "setSkillLst":
+      return { ...state, skillLst: action.data };
     default:
       throw new Error();
   }
 }
 
 const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
-  const { skills, subsectors, forecasts, calEvents } = props;
+  const { skills, subsectors, forecasts } = props;
   const classes = useStyles(props);
+
   const [state, dispatch] = React.useReducer(reducer, initState);
   React.useEffect(() => {
     //generate choices
@@ -91,20 +108,27 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
     dispatch({ type: "setDisplaces", data });
   }, [forecasts]);
 
+  const genSkillLst = React.useCallback(
+    (forecastVal?: number, selectedMonth?: string) => {
+      let skillLst = Object.values(skills);
+      if (forecastVal !== undefined && selectedMonth)
+        skillLst = skillLst.map((x) => ({
+          ...x,
+          headcount: k.calcHeadcountReq(
+            x,
+            subsectors[x.subsector],
+            forecastVal ?? 0,
+            selectedMonth
+          ),
+        }));
+      dispatch({ type: "setSkillLst", data: skillLst });
+    },
+    [skills, subsectors]
+  );
+
   React.useEffect(() => {
-    // calc headcount
-    if (!(state.forecastVal && state.selectedMonth)) return;
-    let data: Skill[] = Object.values(skills).map((x) => ({
-      ...x,
-      headcount: k.calcHeadcountReq(
-        x,
-        subsectors[x.subsector],
-        state.forecastVal ?? 0,
-        state.selectedMonth
-      ),
-    }));
-    dispatch({ type: "setSkillLst", data });
-  }, [skills, subsectors, calEvents, state.forecastVal, state.selectedMonth]);
+    genSkillLst(state.forecastVal, state.selectedMonth);
+  }, [genSkillLst, state.selectedMonth, state.forecastVal]);
 
   const handleSelMonth = (e: React.ChangeEvent<any>) => {
     let { value } = e.target;
@@ -168,7 +192,18 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
               </Select>
             </FormControl>
           </Grid>
+          <Grid item xs={5}>
+          <Box component="span" m={1}>
+            <Typography variant="body2">
+              {`Forecast Value: ${state.forecastVal ?? ""}`}
+            </Typography>
+          </Box>
+            
+          </Grid>
         </Grid>
+      </Grid>
+      <Grid item xs={12}>
+        <HeadcountMainList lst={state.skillLst} subsectorLst={subsectors} />
       </Grid>
     </Grid>
   );

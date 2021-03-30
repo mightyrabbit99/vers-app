@@ -31,6 +31,10 @@ export class Cal {
     es.forEach(this.addEvent);
   }
 
+  delEventByData = (data: any) => {
+    
+  }
+
   clearEvents = () => {
     this.events = {};
   }
@@ -44,10 +48,8 @@ export class Cal {
     let start = new Date(month);
     month.setMonth(month.getMonth() + 1);
     let end = new Date(month);
-    let ans = 0;
-    for (; start !== end; start.setDate(start.getDate() + 1)) {
-      if (this.isFree(start)) ans++;
-    }
+    let ans = 27;
+
     return ans;
   }
 }

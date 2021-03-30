@@ -165,6 +165,28 @@ class Kernel {
         case DataAction.CREATE_NEW:
         case DataAction.EDIT:
           this.getStore(payload.data_type)?.addData(payload.content);
+          if (payload.data_type === DataType.CALEVENT) {
+            this.cal.addEvent({
+              range: [
+                new Date(payload.content.start),
+                new Date(payload.content.end),
+              ],
+              data: payload.content,
+            });
+          }
+          this.trigger();
+          break;
+        case DataAction.DELETE:
+          this.getStore(payload.data_type)?.eraseData(payload.content);
+          if (payload.data_type === DataType.CALEVENT) {
+            this.cal.delEventByData({
+              range: [
+                new Date(payload.content.start),
+                new Date(payload.content.end),
+              ],
+              data: payload.content,
+            });
+          }
           this.trigger();
           break;
       }
@@ -180,6 +202,12 @@ class Kernel {
       lst = [lst];
     }
     await Promise.all(lst.map((x) => this.getStore2(x)?.refresh()));
+    this.cal = new Cal(
+      Object.values(this.calEventStore.getLst()).map((x) => ({
+        range: [new Date(x.start), new Date(x.end)],
+        data: x,
+      }))
+    );
   };
 
   private _log = (desc: string, ...data: SubmitResult[]) => {
@@ -295,7 +323,7 @@ class Kernel {
     }
   };
 
-  public calcChanges = (payload: Item) => {
+  private calcChanges = (payload: Item) => {
     let mods: Item[] = [],
       dels: Item[] = [];
     let sectors = this.secStore.getLst();
@@ -330,16 +358,14 @@ class Kernel {
   };
 
   public del = async (t: Item) => {
-    let [mods, dels] = this.calcChanges(t);
-    let ress: SubmitResult[] = [];
-    ress.concat(await Promise.all(mods.map(this._save)));
-    ress.concat(await Promise.all(dels.map(this._del)));
-    this._log("Delete", ...ress);
+    let a = await this._del(t);
+    this._log("Delete", a);
     if (!this.soc) {
       this.getStore2(t._type)?.erase(t);
       this.refresh();
       this.trigger();
     }
+    return a;
   };
 
   public login = async (
@@ -644,12 +670,10 @@ class Kernel {
     forecast: number,
     month?: string
   ) => {
-    let workingDays = month ? this.cal.getDaysLeftInMonth(new Date(month)) : 30;
+    let workingDays = month ? this.cal.getDaysLeftInMonth(new Date(month)) : 27;
     return this.calc.calcHeadcountReq(skill, subsec, forecast, workingDays);
   };
-  
 }
-
 
 export type { Item, Kernel };
 export default Kernel;

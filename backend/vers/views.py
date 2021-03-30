@@ -181,7 +181,7 @@ class PlantView(viewsets.ModelViewSet):
     lg.log_delete(
         data_type=lg.PLANT,
         user=self.request.user, origin=instance).save()
-    notify_consumer(lg.DELETE, lg.PLANT, instance)
+    notify_consumer(lg.DELETE, lg.PLANT, self.serializer_class(instance).data)
     return super().perform_destroy(instance)
 
 
@@ -221,7 +221,7 @@ class SectorView(viewsets.ModelViewSet):
     lg.log_delete(
         data_type=lg.SECTOR,
         user=self.request.user, origin=instance).save()
-    notify_consumer(lg.DELETE, lg.SECTOR, instance)
+    notify_consumer(lg.DELETE, lg.SECTOR, self.serializer_class(instance).data)
     return super().perform_destroy(instance)
 
 
@@ -261,7 +261,7 @@ class SubsectorView(viewsets.ModelViewSet):
     lg.log_delete(
         data_type=lg.SUBSECTOR,
         user=self.request.user, origin=instance).save()
-    notify_consumer(lg.DELETE, lg.SUBSECTOR, instance)
+    notify_consumer(lg.DELETE, lg.SUBSECTOR, self.serializer_class(instance).data)
     return super().perform_destroy(instance)
 
 
@@ -301,7 +301,7 @@ class SkillView(viewsets.ModelViewSet):
     lg.log_delete(
         data_type=lg.SKILL,
         user=self.request.user, origin=instance).save()
-    notify_consumer(lg.DELETE, lg.SKILL, instance)
+    notify_consumer(lg.DELETE, lg.SKILL, self.serializer_class(instance).data)
     return super().perform_destroy(instance)
 
 
@@ -343,7 +343,7 @@ class EmployeeView(viewsets.ModelViewSet):
         user=self.request.user, origin=instance).save()
     if instance.user:
       instance.user.delete()
-    notify_consumer(lg.DELETE, lg.EMPLOYEE, instance)
+    notify_consumer(lg.DELETE, lg.EMPLOYEE, self.serializer_class(instance).data)
     return super().perform_destroy(instance)
 
 
@@ -383,7 +383,7 @@ class JobView(viewsets.ModelViewSet):
     lg.log_delete(
         data_type=lg.JOB,
         user=self.request.user, origin=instance).save()
-    notify_consumer(lg.DELETE, lg.JOB, instance)
+    notify_consumer(lg.DELETE, lg.JOB, self.serializer_class(instance).data)
     return super().perform_destroy(instance)
 
 
@@ -428,7 +428,7 @@ class ForecastView(viewsets.ModelViewSet):
     lg.log_delete(
         data_type=lg.FORECAST,
         user=self.request.user, origin=instance).save()
-    notify_consumer(lg.DELETE, lg.FORECAST, instance)
+    notify_consumer(lg.DELETE, lg.FORECAST, self.serializer_class(instance).data)
     return super().perform_destroy(instance)
 
 
@@ -437,6 +437,13 @@ class CalEventView(viewsets.ModelViewSet):
 
   def get_queryset(self):
     return models.CalEvent.objects.all()
+  
+  def perform_destroy(self, instance):
+    lg.log_delete(
+        data_type=lg.CAL_EVENT,
+        user=self.request.user, origin=instance).save()
+    notify_consumer(lg.DELETE, lg.CAL_EVENT, self.serializer_class(instance).data)
+    return super().perform_destroy(instance)
 
 
 class UserView(viewsets.ModelViewSet):
@@ -452,6 +459,13 @@ class UserView(viewsets.ModelViewSet):
       return super().update(request, *args, **kwargs)
     else:
       return Response(status=status.HTTP_403_FORBIDDEN)
+
+  def perform_destroy(self, instance):
+    lg.log_delete(
+        data_type=lg.USER,
+        user=self.request.user, origin=instance).save()
+    notify_consumer(lg.DELETE, lg.USER, self.serializer_class(instance).data)
+    return super().perform_destroy(instance)
 
 
 # main page

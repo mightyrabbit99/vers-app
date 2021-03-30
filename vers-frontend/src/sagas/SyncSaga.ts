@@ -77,11 +77,15 @@ function* deleteItem({ payload }: EraseAction) {
     payload = [payload];
   }
   try {
+    let res: Result = { success: true, statusText: "", data: {} };
     for (let p of payload) {
-      yield k.del(p);
+      res = yield k.del(p);
+      if (!res.success) {
+        yield k.refresh();
+        yield put(reload());
+        break;
+      }
     }
-    yield k.refresh();
-    yield put(reload());
     yield put(submitSuccess(undefined));
   } catch (error) {
     yield put(submitError({ message: error.message, data: error }));

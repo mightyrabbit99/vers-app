@@ -45,10 +45,10 @@ class HeadCalc {
     forecast: number,
     workingDays: number = 30
   ) => {
-    let workingMins = (forecast * subsec.cycleTime) / subsec.efficiency;
+    let workingMinsReq = (forecast * subsec.cycleTime) / (subsec.efficiency / 100);
     let availMinsPerDayPerOp = this.totalAvailTime();
     let availMinsPerOp = availMinsPerDayPerOp * workingDays;
-    return workingMins / availMinsPerOp * skill.percentageOfSector;
+    return workingMinsReq / availMinsPerOp * (skill.percentageOfSector / 100) / (1 - this.vars.absentism);
   };
 }
 

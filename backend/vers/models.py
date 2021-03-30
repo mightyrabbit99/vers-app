@@ -88,8 +88,8 @@ class Subsector(models.Model):
   name = models.CharField(max_length=50)
   sector = models.ForeignKey(
       Sector, related_name='subsectors', on_delete=models.PROTECT)
-  cycle_time = models.IntegerField()
-  efficiency = models.IntegerField()
+  cycle_time = models.FloatField()
+  efficiency = models.FloatField()
   unit = models.CharField(max_length=50, null=True, blank=True)
   owner = models.ForeignKey(
       User, related_name='subsectors', on_delete=models.SET_NULL, null=True)
