@@ -14,13 +14,12 @@ class DataType(models.IntegerChoices):
   SECTOR = 1, 'SECTOR'
   SUBSECTOR = 2, 'SUBSECTOR'
   SKILL = 3, 'SKILL'
-  DEPARTMENT = 4, 'DEPARTMENT'
-  EMPLOYEE = 5, 'EMPLOYEE'
-  JOB = 6, 'JOB'
-  FORECAST = 7, 'FORECAST'
-  CAL_EVENT = 8, 'CAL EVENT'
-  LOG = 9, 'LOG'
-  USER = 10, 'USER'
+  EMPLOYEE = 4, 'EMPLOYEE'
+  JOB = 5, 'JOB'
+  FORECAST = 6, 'FORECAST'
+  CAL_EVENT = 7, 'CAL EVENT'
+  LOG = 8, 'LOG'
+  USER = 9, 'USER'
 
 
 class PermissionGroupChoices(models.IntegerChoices):
@@ -39,8 +38,6 @@ class VersUser(models.Model):
   sector_group = models.IntegerField(
       choices=PermissionGroupChoices.choices, default=PermissionGroupChoices.NONE)
   subsector_group = models.IntegerField(
-      choices=PermissionGroupChoices.choices, default=PermissionGroupChoices.NONE)
-  department_group = models.IntegerField(
       choices=PermissionGroupChoices.choices, default=PermissionGroupChoices.NONE)
   # able to create, delete, edit employees. assign skills to employees
   employee_group = models.IntegerField(
@@ -120,19 +117,6 @@ class Skill(models.Model):
     db_table = "skills"
 
 
-class Department(models.Model):
-  name = models.CharField(unique=True, max_length=40)
-  # related_name = name of self in target model
-  owner = models.ForeignKey(
-      User, related_name='depts', on_delete=models.SET_NULL, null=True)
-
-  def __str__(self):
-    return self.name
-
-  class Meta:
-    db_table = 'departments'
-
-
 class Gender(models.TextChoices):
   MALE = "M", "Male"
   FEMALE = "F", "Female"
@@ -144,8 +128,6 @@ class Employee(models.Model):
   last_name = models.CharField(max_length=50)
   subsector = models.ForeignKey(
       Subsector, related_name='employees', on_delete=models.SET_NULL, null=True)
-  department = models.ForeignKey(
-      Department, related_name='employees', on_delete=models.SET_NULL, null=True)
   report_to = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
 
   birth_date = models.DateField(null=True)

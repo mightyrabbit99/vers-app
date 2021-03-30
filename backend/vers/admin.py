@@ -18,10 +18,6 @@ class SubsectorAdmin(admin.ModelAdmin):
   form = forms.SubsectorForm
 
 
-class DepartmentAdmin(admin.ModelAdmin):
-  form = forms.DepartmentForm
-
-
 class SkillAdmin(admin.ModelAdmin):
   form = forms.SkillForm
 
@@ -41,7 +37,6 @@ class JobSkillMatrixAdmin(admin.ModelAdmin):
 admin.site.register(models.Plant, PlantAdmin)
 admin.site.register(models.Sector, SectorAdmin)
 admin.site.register(models.Subsector, SubsectorAdmin)
-admin.site.register(models.Department, DepartmentAdmin)
 admin.site.register(models.Skill, SkillAdmin)
 admin.site.register(models.Employee, EmployeeAdmin)
 admin.site.register(models.EmpSkillMatrix, EmpSkillMatrixAdmin)

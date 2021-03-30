@@ -18,7 +18,7 @@ class VersUserSerializer(serializers.ModelSerializer):
   class Meta:
     model = models.VersUser
     fields = ['plant_group', 'sector_group', 'subsector_group',
-              'employee_group', 'job_group', 'skill_group', 'department_group']
+              'employee_group', 'job_group', 'skill_group',]
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -237,42 +237,6 @@ class SubsectorSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = models.Subsector
-    fields = '__all__'
-
-
-class DepartmentSerializer(serializers.ModelSerializer):
-  owner = serializers.ReadOnlyField(source=OWNER_USERNAME)
-  employees = serializers.PrimaryKeyRelatedField(
-      many=True, read_only=True)
-
-  def notify(self, typ, res):
-    notify_consumer(typ, lg.DEPARTMENT, DepartmentSerializer(res).data)
-
-  def get_request_user(self):
-    user = None
-    request = self.context.get("request")
-    if request and hasattr(request, "user"):
-      user = request.user
-    return user
-
-  def create(self, validated_data):
-    lg.log_create(
-        data_type=lg.DEPARTMENT,
-        user=self.get_request_user(), data=validated_data).save()
-    res = super().create(validated_data)
-    self.notify(lg.CREATE, res)
-    return res
-
-  def update(self, instance, validated_data):
-    lg.log_update(
-        data_type=lg.DEPARTMENT,
-        user=self.get_request_user(), data=validated_data, origin=instance).save()
-    res = super().update(instance, validated_data)
-    self.notify(lg.UPDATE, res)
-    return res
-
-  class Meta:
-    model = models.Department
     fields = '__all__'
 
 

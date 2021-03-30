@@ -8,7 +8,7 @@ interface Employee extends ItemT {
   firstName: string;
   lastName: string;
   subsector: number;
-  department?: number;
+  department: string;
   skills: EmpSkillData[];
   available: boolean;
   birthDate: string;
@@ -42,7 +42,7 @@ function objToData(x: Employee): EmployeeData {
     first_name: x.firstName,
     last_name: x.lastName,
     subsector: x.subsector,
-    department: x.department === -1 ? undefined : x.department,
+    department: x.department,
     skills: x.skills,
     available: x.available,
     birth_date: x.birthDate === "" ? undefined : x.birthDate,
@@ -92,7 +92,7 @@ const generator = (init?: any): Employee => ({
   firstName: "",
   lastName: "",
   subsector: -1,
-  department: -1,
+  department: "",
   skills: [],
   available: true,
   reportTo: -1,

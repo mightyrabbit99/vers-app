@@ -14,8 +14,6 @@ function selLst(type: ItemType, state: DataState): { [id: number]: Item } {
       return state.subsectors;
     case ItemType.Skill:
       return state.skills;
-    case ItemType.Department:
-      return state.departments;
     case ItemType.Employee:
       return state.employees;
     case ItemType.Job:
@@ -33,7 +31,6 @@ export const initialState: DataState = {
   plants: {},
   sectors: {},
   subsectors: {},
-  departments: {},
   skills: {},
   employees: {},
   jobs: {},
@@ -59,8 +56,6 @@ const dataSlice = createSlice({
       state.newSubsector = payload.newSubsector ?? undefined;
       state.skills = payload.skills ?? {};
       state.newSkill = payload.newSkill ?? undefined;
-      state.departments = payload.departments ?? {};
-      state.newDepartment = payload.newDepartment ?? undefined;
       state.employees = payload.employees ?? {};
       state.newEmployee = payload.newEmployee ?? undefined;
       state.jobs = payload.jobs ?? {};

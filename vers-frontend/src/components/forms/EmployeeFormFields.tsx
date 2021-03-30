@@ -37,7 +37,6 @@ const useStyles = makeStyles((theme) => ({
 interface EmployeeFormChoices extends FormChoices {
   gender: FormChoiceField;
   subsector: FormChoiceField;
-  department: FormChoiceField;
 }
 
 interface IEmployeeFFProps {
@@ -70,7 +69,6 @@ const EmployeeFF: React.FC<IEmployeeFFProps> = (props) => {
     if (
       name === "gender" ||
       name === "reportTo" ||
-      name === "department" ||
       name === "subsector"
     ) {
       value = parseInt(value, 10);
@@ -89,7 +87,6 @@ const EmployeeFF: React.FC<IEmployeeFFProps> = (props) => {
     if (
       name === "gender" ||
       name === "reportTo" ||
-      name === "department" ||
       name === "subsector"
     ) {
       return choices[name].init === -1 ? "" : choices[name].init ?? "";
@@ -150,7 +147,7 @@ const EmployeeFF: React.FC<IEmployeeFFProps> = (props) => {
             required
             fullWidth
             label="First name"
-            autoComplete="given-name"
+            autoComplete="first-name"
             variant="standard"
             {...genProps("firstName")}
           />
@@ -160,7 +157,7 @@ const EmployeeFF: React.FC<IEmployeeFFProps> = (props) => {
             required
             fullWidth
             label="Last name"
-            autoComplete="family-name"
+            autoComplete="last-name"
             variant="standard"
             {...genProps("lastName")}
           />
@@ -209,23 +206,10 @@ const EmployeeFF: React.FC<IEmployeeFFProps> = (props) => {
           />
         </Grid>
         <Grid item xs={4}>
-          <FormControl className={classes.formControl}>
-            <InputLabel id="demo-simple-select-label">Department</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              fullWidth
-              className={classes.department}
-              disabled={choices["department"].choices.length === 0}
-              {...genActiveProps("department")}
-              error={getFeedback("department") !== ""}
-            >
-              {choices["department"].choices.map((x, idx) => (
-                <MenuItem key={idx} value={idx}>
-                  {x.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <TextField
+            label="Department"
+            {...genProps("department")}
+          />
         </Grid>
         <Grid item xs={4}>
           <FormControl className={classes.formControl}>

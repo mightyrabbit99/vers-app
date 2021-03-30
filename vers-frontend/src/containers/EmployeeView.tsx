@@ -43,7 +43,6 @@ const EmployeeView: React.FC<IEmployeeViewProps> = (props) => {
   const {
     employees,
     subsectors,
-    departments,
     skills,
     newEmployee,
   } = useSelector(getData);
@@ -89,7 +88,6 @@ const EmployeeView: React.FC<IEmployeeViewProps> = (props) => {
             <EmployeeListWidget
               lst={employees}
               subsectorLst={subsectors}
-              departmentLst={departments}
               newEmployee={newEmployee}
               feedback={feedback}
               edit={canEdit()}

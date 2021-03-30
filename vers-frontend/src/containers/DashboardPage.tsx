@@ -36,7 +36,6 @@ import MenuIcon from "@material-ui/icons/Menu";
 
 import SectorView from "./SectorView";
 import SubsectorView from "./SubsectorView";
-import DepartmentView from "./DepartmentView";
 import SkillView from "./SkillView";
 import EmployeeView from "./EmployeeView";
 import JobView from "./JobView";
@@ -50,6 +49,7 @@ import { selPlant } from "src/slices/data";
 import { getData, getSession } from "src/selectors";
 import { AccessLevel, ItemType } from "src/kernel";
 import SchneiderLogo from "src/components/commons/SchneiderLogo";
+import HeadcountView from "./HeadcountView";
 
 function Copyright() {
   return (
@@ -165,12 +165,12 @@ enum DashboardView {
   Sector,
   Subsector,
   Skill,
-  Department,
   Employee,
   Job,
   Forecast,
   ChangeLog,
   Calendar,
+  Headcount,
 }
 
 function getItemType(i: DashboardView) {
@@ -183,8 +183,6 @@ function getItemType(i: DashboardView) {
       return ItemType.Subsector;
     case DashboardView.Skill:
       return ItemType.Skill;
-    case DashboardView.Department:
-      return ItemType.Department;
     case DashboardView.Employee:
       return ItemType.Employee;
     case DashboardView.Job:
@@ -274,8 +272,6 @@ const Dashboard: React.FC = () => {
         return user?.vers_user.subsector_group === AccessLevel.NONE;
       case DashboardView.Skill:
         return user?.vers_user.skill_group === AccessLevel.NONE;
-      case DashboardView.Department:
-        return user?.vers_user.department_group === AccessLevel.NONE;
       case DashboardView.Employee:
         return user?.vers_user.employee_group === AccessLevel.NONE;
       case DashboardView.Job:
@@ -325,17 +321,6 @@ const Dashboard: React.FC = () => {
       </ListItem>
       <ListItem
         button
-        disabled={cannotView(DashboardView.Department)}
-        selected={currView === DashboardView.Department}
-        onClick={handleListClick(DashboardView.Department)}
-      >
-        <ListItemIcon>
-          <DashboardIcon />
-        </ListItemIcon>
-        <ListItemText primary="Departments" />
-      </ListItem>
-      <ListItem
-        button
         disabled={cannotView(DashboardView.Employee)}
         selected={currView === DashboardView.Employee}
         onClick={handleListClick(DashboardView.Employee)}
@@ -352,9 +337,25 @@ const Dashboard: React.FC = () => {
         onClick={handleListClick(DashboardView.Job)}
       >
         <ListItemIcon>
-          <LayersIcon />
+          <DashboardIcon />
         </ListItemIcon>
         <ListItemText primary="Jobs" />
+      </ListItem>
+    </div>
+  );
+
+  const secondaryListItems = (
+    <div>
+      <ListItem
+        button
+        disabled={cannotView(DashboardView.Calendar)}
+        selected={currView === DashboardView.Calendar}
+        onClick={handleListClick(DashboardView.Calendar)}
+      >
+        <ListItemIcon>
+          <LayersIcon />
+        </ListItemIcon>
+        <ListItemText primary="Calendar" />
       </ListItem>
       <ListItem
         button
@@ -367,11 +368,17 @@ const Dashboard: React.FC = () => {
         </ListItemIcon>
         <ListItemText primary="Forecasts" />
       </ListItem>
-    </div>
-  );
-
-  const secondaryListItems = (
-    <div>
+      <ListItem
+        button
+        disabled={cannotView(DashboardView.Headcount)}
+        selected={currView === DashboardView.Headcount}
+        onClick={handleListClick(DashboardView.Headcount)}
+      >
+        <ListItemIcon>
+          <LayersIcon />
+        </ListItemIcon>
+        <ListItemText primary="Headcount" />
+      </ListItem>
       <ListItem
         button
         disabled={cannotView(DashboardView.ChangeLog)}
@@ -382,17 +389,6 @@ const Dashboard: React.FC = () => {
           <LayersIcon />
         </ListItemIcon>
         <ListItemText primary="Change Log" />
-      </ListItem>
-      <ListItem
-        button
-        disabled={cannotView(DashboardView.Calendar)}
-        selected={currView === DashboardView.Calendar}
-        onClick={handleListClick(DashboardView.Calendar)}
-      >
-        <ListItemIcon>
-          <LayersIcon />
-        </ListItemIcon>
-        <ListItemText primary="Calendar" />
       </ListItem>
     </div>
   );
@@ -405,8 +401,6 @@ const Dashboard: React.FC = () => {
         return <SubsectorView />;
       case DashboardView.Skill:
         return <SkillView />;
-      case DashboardView.Department:
-        return <DepartmentView />;
       case DashboardView.Employee:
         return <EmployeeView />;
       case DashboardView.Job:
@@ -417,6 +411,8 @@ const Dashboard: React.FC = () => {
         return <ChangeLogView />;
       case DashboardView.Calendar:
         return <CalendarView />;
+      case DashboardView.Headcount:
+        return <HeadcountView />;
       default:
         return <SectorView />;
     }

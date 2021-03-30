@@ -5,12 +5,12 @@ enum ItemType {
   Job = "Job",
   Employee = "Employee",
   Skill = "Skill",
-  Department = "Department",
   EmpSkill = "EmpSkill",
   Log = "Log",
   Forecast = "Forecast",
   CalEvent = "CalEvent",
   User = "User",
+  Department = "Department",
 }
 
 interface ItemT {

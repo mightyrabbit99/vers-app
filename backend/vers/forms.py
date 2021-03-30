@@ -7,17 +7,18 @@ from captcha.fields import CaptchaField
 
 class UserCreateForm(forms.ModelForm):
   email = forms.CharField(widget=forms.EmailInput())
-  password = forms.CharField(widget=forms.PasswordInput(), validators=[validate_password])
+  password = forms.CharField(
+      widget=forms.PasswordInput(), validators=[validate_password])
   captcha = CaptchaField()
 
   def save(self, commit: bool = True):
-      instance = super().save(commit=False)
-      instance.set_password(self.cleaned_data['password'])
-      vers_user = models.VersUser(user=instance)
-      if commit:
-        instance.save()
-        vers_user.save()
-      return instance 
+    instance = super().save(commit=False)
+    instance.set_password(self.cleaned_data['password'])
+    vers_user = models.VersUser(user=instance)
+    if commit:
+      instance.save()
+      vers_user.save()
+    return instance
 
   class Meta:
     model = models.User
@@ -45,12 +46,6 @@ class SubsectorForm(forms.ModelForm):
 class SkillForm(forms.ModelForm):
   class Meta:
     model = models.Skill
-    fields = '__all__'
-
-
-class DepartmentForm(forms.ModelForm):
-  class Meta:
-    model = models.Department
     fields = '__all__'
 
 

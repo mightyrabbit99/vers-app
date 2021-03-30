@@ -150,150 +150,18 @@ const ForecastMainList: React.FC<IForecastMainListProps> = (props) => {
         return `${d.getFullYear()} - ${d.getMonth() + 1}`;
       },
     },
-    {
-      title: "n + 1",
+    ...[...new Array(12).keys()].map((x, idx) => idx + 1).map(x => ({
+      title: `n + ${x}`,
       extractor: (p: Forecast) => (
         <TextField
           className={classes.field}
-          value={getForecastVal(0, p)}
-          onChange={handleForecastChg(0, p)}
-          onBlur={handleForecastRealChg(0, p)}
+          value={getForecastVal(x, p)}
+          onChange={handleForecastChg(x, p)}
+          onBlur={handleForecastRealChg(x, p)}
           type="number"
         />
       ),
-    },
-    {
-      title: "n + 2",
-      extractor: (p: Forecast) => (
-        <TextField
-          className={classes.field}
-          value={getForecastVal(1, p)}
-          onChange={handleForecastChg(1, p)}
-          onBlur={handleForecastRealChg(1, p)}
-          type="number"
-        />
-      ),
-    },
-    {
-      title: "n + 3",
-      extractor: (p: Forecast) => (
-        <TextField
-          className={classes.field}
-          value={getForecastVal(2, p)}
-          onChange={handleForecastChg(2, p)}
-          onBlur={handleForecastRealChg(2, p)}
-          type="number"
-        />
-      ),
-    },
-    {
-      title: "n + 4",
-      extractor: (p: Forecast) => (
-        <TextField
-          className={classes.field}
-          value={getForecastVal(3, p)}
-          onChange={handleForecastChg(3, p)}
-          onBlur={handleForecastRealChg(3, p)}
-          type="number"
-        />
-      ),
-    },
-    {
-      title: "n + 5",
-      extractor: (p: Forecast) => (
-        <TextField
-          className={classes.field}
-          value={getForecastVal(4, p)}
-          onChange={handleForecastChg(4, p)}
-          onBlur={handleForecastRealChg(4, p)}
-          type="number"
-        />
-      ),
-    },
-    {
-      title: "n + 6",
-      extractor: (p: Forecast) => (
-        <TextField
-          className={classes.field}
-          value={getForecastVal(5, p)}
-          onChange={handleForecastChg(5, p)}
-          onBlur={handleForecastRealChg(5, p)}
-          type="number"
-        />
-      ),
-    },
-    {
-      title: "n + 7",
-      extractor: (p: Forecast) => (
-        <TextField
-          className={classes.field}
-          value={getForecastVal(6, p)}
-          onChange={handleForecastChg(6, p)}
-          onBlur={handleForecastRealChg(6, p)}
-          type="number"
-        />
-      ),
-    },
-    {
-      title: "n + 8",
-      extractor: (p: Forecast) => (
-        <TextField
-          className={classes.field}
-          value={getForecastVal(7, p)}
-          onChange={handleForecastChg(7, p)}
-          onBlur={handleForecastRealChg(7, p)}
-          type="number"
-        />
-      ),
-    },
-    {
-      title: "n + 9",
-      extractor: (p: Forecast) => (
-        <TextField
-          className={classes.field}
-          value={getForecastVal(8, p)}
-          onChange={handleForecastChg(8, p)}
-          onBlur={handleForecastRealChg(8, p)}
-          type="number"
-        />
-      ),
-    },
-    {
-      title: "n + 10",
-      extractor: (p: Forecast) => (
-        <TextField
-          className={classes.field}
-          value={getForecastVal(9, p)}
-          onChange={handleForecastChg(9, p)}
-          onBlur={handleForecastRealChg(9, p)}
-          type="number"
-        />
-      ),
-    },
-    {
-      title: "n + 11",
-      extractor: (p: Forecast) => (
-        <TextField
-          className={classes.field}
-          value={getForecastVal(4, p)}
-          onChange={handleForecastChg(10, p)}
-          onBlur={handleForecastRealChg(10, p)}
-          type="number"
-        />
-      ),
-    },
-    {
-      title: "n + 12",
-      extractor: (p: Forecast) => (
-        <TextField
-          className={classes.field}
-          value={getForecastVal(11, p)}
-          onChange={handleForecastChg(11, p)}
-          onBlur={handleForecastRealChg(11, p)}
-          type="number"
-        />
-      ),
-    },
+    })),
     {
       extractor: (p: Forecast) => (
         <IconButton

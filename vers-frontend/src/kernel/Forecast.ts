@@ -24,7 +24,7 @@ function objToData(x: Forecast): ForecastData {
 
 const get = async () => {
   let res = await Fetcher.getForecasts();
-  if (res.headers['content-type'] !== "application/json") return [];
+  if (res.headers["content-type"] !== "application/json") return [];
   return res.data.map(dataToObj);
 };
 
@@ -36,7 +36,11 @@ const post = async (t: Forecast) => {
     if (!error.response) throw error;
     res = error.response;
   }
-  return { success: res.status === 201, statusText: res.statusText, data: dataToObj(res.data) };
+  return {
+    success: res.status === 201,
+    statusText: res.statusText,
+    data: dataToObj(res.data),
+  };
 };
 
 const put = async (t: Forecast) => {
@@ -47,7 +51,11 @@ const put = async (t: Forecast) => {
     if (!error.response) throw error;
     res = error.response;
   }
-  return { success: res.status === 200, statusText: res.statusText, data: dataToObj(res.data) };
+  return {
+    success: res.status === 200,
+    statusText: res.statusText,
+    data: dataToObj(res.data),
+  };
 };
 
 const del = async (t: Forecast) => {
@@ -59,14 +67,23 @@ const generator = (init?: any): Forecast => ({
   id: -1,
   _type: ItemType.Forecast,
   on: "",
-  forecasts: [1, 2, 3, 4, 5, 6].map((x) => ({
-    id: -1,
-    n: x,
-    val: 0.0,
-  })),
+  forecasts: [...new Array(12).keys()]
+    .map((x, idx) => idx + 1)
+    .map((x) => ({
+      id: -1,
+      n: x,
+      val: 0.0,
+    })),
 });
 
-const ForecastStore = store<Forecast>(get, post, put, del, generator, dataToObj);
+const ForecastStore = store<Forecast>(
+  get,
+  post,
+  put,
+  del,
+  generator,
+  dataToObj
+);
 
 export type { Forecast, ForecastData };
 export default ForecastStore;

@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { Grid, Button } from "@material-ui/core";
-import { Employee, Subsector, Department } from "src/kernel";
+import { Employee, Subsector } from "src/kernel";
 import EmployeeFormFields, { EmployeeFormChoices } from "./EmployeeFormFields";
 
 interface IEmployeeFormProps {
@@ -9,7 +9,6 @@ interface IEmployeeFormProps {
   feedback?: any;
   employeeLst: { [id: number]: Employee };
   subsectorLst: { [id: number]: Subsector };
-  departmentLst: { [id: number]: Department };
   onSubmit: (p: Employee) => void;
   onChange?: (p: Employee) => void;
   onCancel?: () => void;
@@ -21,14 +20,12 @@ const EmployeeForm: React.FC<IEmployeeFormProps> = (props) => {
     feedback,
     subsectorLst,
     employeeLst,
-    departmentLst,
     onSubmit,
     onChange,
     onCancel,
   } = props;
   const newData = { ...data };
   const employees = Object.values(employeeLst);
-  const departments = Object.values(departmentLst);
   const subsectors = Object.values(subsectorLst);
   const choices: EmployeeFormChoices = {
     gender: {
@@ -41,10 +38,6 @@ const EmployeeForm: React.FC<IEmployeeFormProps> = (props) => {
     subsector: {
       choices: subsectors.map((x) => ({ name: x.name, value: x.id })),
       init: subsectors.findIndex((x) => x.id === data.subsector),
-    },
-    department: {
-      choices: departments.map((x) => ({ name: x.name, value: x.id })),
-      init: departments.findIndex((x) => x.id === data.department),
     },
     reportTo: {
       choices: employees.map((x) => ({ name: x.firstName, value: x.id })),

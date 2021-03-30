@@ -30,10 +30,11 @@ interface IHeadcountListWidgetState {
 
   // data
   skillLst: Skill[];
+  forecastVal?: number;
 
   // internal
   selectedMonth?: string;
-  forecastVal?: number;
+  selectedForecast?: number;
 }
 
 const initState: IHeadcountListWidgetState = {
@@ -49,9 +50,21 @@ function reducer(
     case "setDisplaces":
       return { ...state, displaces: action.data };
     case "setForecast":
-      return { ...state, forecastVal: action.data };
+      let n = action.data;
+      if (n === undefined) return state; 
+      let mo = state.selectedMonth ?? "";
+      let val = mo in state.displaces && n in state.displaces[mo] ? state.displaces[mo][n] : 0;
+      return { ...state, selectedForecast: n, forecastVal: val };
     case "setSkillLst":
       return { ...state, skillLst: action.data };
+    case "setMonth":
+      let valM = Object.entries(state.displaces[action.data]);
+      return {
+        ...state,
+        selectedMonth: action.data,
+        selectedForecast: valM.length === 1 ? parseInt(valM[0][0], 10) : undefined,
+        forecastVal: valM.length === 1 ? valM[0][1] : undefined,
+      };
     default:
       throw new Error();
   }
@@ -94,20 +107,21 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
   }, [skills, subsectors, calEvents, state.forecastVal, state.selectedMonth]);
 
   const handleSelMonth = (e: React.ChangeEvent<any>) => {
-    let { val } = e.target;
-    dispatch({ type: "setMonth", data: val });
+    let { value } = e.target;
+    dispatch({ type: "setMonth", data: value });
   };
 
   const handleSetForecast = (e: React.ChangeEvent<any>) => {
-    let { val } = e.target;
-    dispatch({ type: "setForecast", data: val });
+    let { value } = e.target;
+    dispatch({ type: "setForecast", data: value });
   };
 
   const genForecastMenuItem = () => {
-    if (!(state.selectedMonth && state.selectedMonth in state.displaces)) return null;
+    if (!(state.selectedMonth && state.selectedMonth in state.displaces))
+      return null;
     let lst = Object.entries(state.displaces[state.selectedMonth ?? ""]);
     return lst.map((x, idx) => (
-      <MenuItem key={idx} value={x[1]}>
+      <MenuItem key={idx} value={x[0]}>
         {x[0]}
       </MenuItem>
     ));
@@ -117,33 +131,37 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
     <Grid container className={classes.root}>
       <Grid item xs={12}>
         <Grid container className={classes.ctrlPanel}>
-          <Grid item xs={6}>
+          <Grid item xs={2}>
             <FormControl className={classes.formControl}>
               <InputLabel id="demo-simple-select-label">Month</InputLabel>
               <Select
                 labelId="demo-simple-select-label"
                 fullWidth
+                value={state.selectedMonth ?? ""}
                 disabled={_.isEmpty(state.displaces)}
                 onClick={handleSelMonth}
               >
                 {Object.keys(state.displaces).map((x, idx) => (
                   <MenuItem key={idx} value={x}>
-                    {x}
+                    {x.slice(0, 7)}
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={2}>
             <FormControl className={classes.formControl}>
-              <InputLabel id="demo-simple-select-label">Month</InputLabel>
+              <InputLabel id="demo-simple-select-label">Forecast</InputLabel>
               <Select
                 labelId="demo-simple-select-label"
                 fullWidth
                 disabled={
-                  !state.selectedMonth ||
-                  !(state.selectedMonth in state.displaces)
+                  !(
+                    state.selectedMonth &&
+                    state.selectedMonth in state.displaces
+                  )
                 }
+                value={state.selectedForecast ?? ""}
                 onClick={handleSetForecast}
               >
                 {genForecastMenuItem()}

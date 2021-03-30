@@ -1,4 +1,3 @@
-import DepartmentStore, { Department } from "./Department";
 import EmployeeStore, { Employee } from "./Employee";
 import Fetcher from "./Fetcher";
 import JobStore, { Job } from "./Job";
@@ -36,7 +35,6 @@ type Item =
   | Subsector
   | Forecast
   | Employee
-  | Department
   | Job
   | CalEvent
   | Log
@@ -77,7 +75,6 @@ class Kernel {
   plantStore: Store<Plant>;
   secStore: Store<Sector>;
   subsecStore: Store<Subsector>;
-  deptStore: Store<Department>;
   skillStore: Store<Skill>;
   empStore: Store<Employee>;
   jobStore: Store<Job>;
@@ -93,7 +90,6 @@ class Kernel {
     this.plantStore = new PlantStore();
     this.secStore = new SectorStore();
     this.subsecStore = new SubsectorStore();
-    this.deptStore = new DepartmentStore();
     this.skillStore = new SkillStore();
     this.empStore = new EmployeeStore();
     this.jobStore = new JobStore();
@@ -114,8 +110,6 @@ class Kernel {
         return this.secStore;
       case DataType.SUBSECTOR:
         return this.subsecStore;
-      case DataType.DEPARTMENT:
-        return this.deptStore;
       case DataType.SKILL:
         return this.skillStore;
       case DataType.EMPLOYEE:
@@ -141,8 +135,6 @@ class Kernel {
         return this.secStore;
       case ItemType.Subsector:
         return this.subsecStore;
-      case ItemType.Department:
-        return this.deptStore;
       case ItemType.Skill:
         return this.skillStore;
       case ItemType.Employee:
@@ -216,8 +208,6 @@ class Kernel {
         return await this.subsecStore.submitNew(t as Subsector);
       case ItemType.Skill:
         return await this.skillStore.submitNew(t as Skill);
-      case ItemType.Department:
-        return await this.deptStore.submitNew(t as Department);
       case ItemType.Employee:
         return await this.empStore.submitNew(t as Employee);
       case ItemType.Job:
@@ -252,8 +242,6 @@ class Kernel {
         return await this.subsecStore.submit(t as Subsector);
       case ItemType.Skill:
         return await this.skillStore.submit(t as Skill);
-      case ItemType.Department:
-        return await this.deptStore.submit(t as Department);
       case ItemType.Employee:
         return await this.empStore.submit(t as Employee);
       case ItemType.Job:
@@ -290,8 +278,6 @@ class Kernel {
         return await this.subsecStore.remove(t as Subsector);
       case ItemType.Skill:
         return await this.skillStore.remove(t as Skill);
-      case ItemType.Department:
-        return await this.deptStore.remove(t as Department);
       case ItemType.Employee:
         return await this.empStore.remove(t as Employee);
       case ItemType.Job:
@@ -334,11 +320,6 @@ class Kernel {
             .map((x) => employees[x])
             .forEach(cascadeDel);
           (p as Subsector).jobs.map((x) => jobs[x]).forEach(cascadeDel);
-          break;
-        case ItemType.Department:
-          (p as Department).employees
-            .map((x) => employees[x])
-            .forEach(cascadeDel);
           break;
       }
     }
@@ -517,7 +498,6 @@ class Kernel {
       return await st.submitOrNew(
         st.getNew({
           ...o,
-          department: undefined, // TODO
           subsector: subsecNames[o.homeLocation][0].id,
           skills: o.skills.map((x, idx) => ({
             skill: skillNames[o.skills[idx].skillName][0].id,

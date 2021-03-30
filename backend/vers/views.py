@@ -305,46 +305,6 @@ class SkillView(viewsets.ModelViewSet):
     return super().perform_destroy(instance)
 
 
-class DepartmentView(viewsets.ModelViewSet):
-  txt = "department"
-  serializer_class = serializers.DepartmentSerializer
-  permission_classes = [permissions.IsAuthenticated]
-
-  def get_queryset(self):
-    return perform_get_queryset(self.txt, self.request.user)
-
-  def create(self, request, *args, **kwargs):
-    if has_create_permission(self.txt, self.request.user):
-      return super().create(request, *args, **kwargs)
-    else:
-      return Response(status=status.HTTP_403_FORBIDDEN)
-
-  def perform_create(self, serializer):
-    if self.request.user.is_authenticated:
-      serializer.save(owner=self.request.user)
-    else:
-      serializer.save()
-
-  def update(self, request, *args, **kwargs):
-    if has_update_permission(self.txt, self.request.user):
-      return super().update(request, *args, **kwargs)
-    else:
-      return Response(status=status.HTTP_403_FORBIDDEN)
-
-  def destroy(self, request, *args, **kwargs):
-    if has_delete_permission(self.txt, self.request.user):
-      return super().destroy(request, *args, **kwargs)
-    else:
-      return Response(status=status.HTTP_403_FORBIDDEN)
-
-  def perform_destroy(self, instance):
-    lg.log_delete(
-        data_type=lg.DEPARTMENT,
-        user=self.request.user, origin=instance).save()
-    notify_consumer(lg.DELETE, lg.DEPARTMENT, instance)
-    return super().perform_destroy(instance)
-
-
 class EmployeeView(viewsets.ModelViewSet):
   txt = "employee"
   serializer_class = serializers.EmployeeSerializer

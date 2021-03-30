@@ -72,8 +72,6 @@ const genDescStr = (log: Log) => {
   };
   const genDataTypeStr = (x: DataType) => {
     switch (x) {
-      case DataType.DEPARTMENT:
-        return "Department";
       case DataType.EMPLOYEE:
         return "Employee";
       case DataType.PLANT:

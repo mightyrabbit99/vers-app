@@ -7,13 +7,12 @@ enum DataType {
   SECTOR = 1,
   SUBSECTOR = 2,
   SKILL = 3,
-  DEPARTMENT = 4,
-  EMPLOYEE = 5,
-  JOB = 6,
-  FORECAST = 7,
-  CALEVENT = 8,
-  LOG = 9,
-  USER = 10,
+  EMPLOYEE = 4,
+  JOB = 5,
+  FORECAST = 6,
+  CALEVENT = 7,
+  LOG = 8,
+  USER = 9,
 }
 
 export type { Data };

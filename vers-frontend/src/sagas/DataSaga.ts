@@ -20,7 +20,7 @@ import {
   ReloadDataAction,
   DownloadExcelAction,
 } from "src/types";
-import k, { Department, Sector, Subsector } from "src/kernel";
+import k, { Sector, Subsector } from "src/kernel";
 import { getData } from "src/selectors";
 
 function* reloadData() {
@@ -28,7 +28,6 @@ function* reloadData() {
     sectors: { [id: number]: Sector },
     subsectors: { [id: number]: Subsector },
     skills,
-    departments: { [id: number]: Department },
     employees,
     jobs,
     forecasts,
@@ -39,7 +38,6 @@ function* reloadData() {
     newSector,
     newSubsector,
     newSkill,
-    newDepartment,
     newEmployee,
     newJob,
     newForecast,
@@ -65,8 +63,6 @@ function* reloadData() {
   newSubsector = k.subsecStore.getNew();
   skills = k.skillStore.getLst((x) => x.subsector in subsectors);
   newSkill = k.skillStore.getNew();
-  departments = k.deptStore.getLst();
-  newDepartment = k.deptStore.getNew();
   employees = k.empStore.getLst();
   newEmployee = k.empStore.getNew();
   jobs = k.jobStore.getLst();
@@ -89,8 +85,6 @@ function* reloadData() {
       newSubsector,
       skills,
       newSkill,
-      departments,
-      newDepartment,
       employees,
       newEmployee,
       jobs,

@@ -2,7 +2,6 @@ import {
   Plant,
   Sector,
   Subsector,
-  Department,
   Skill,
   Employee,
   Job,
@@ -104,8 +103,6 @@ export interface DataState {
   newSubsector?: Subsector;
   skills: IdMap<Skill>;
   newSkill?: Skill;
-  departments: IdMap<Department>;
-  newDepartment?: Department;
   employees: IdMap<Employee>;
   newEmployee?: Employee;
   jobs: IdMap<Job>;

@@ -1,5 +1,4 @@
 import {
-  DepartmentData,
   EmployeeData,
   JobData,
   PlantData,
@@ -38,7 +37,6 @@ const plantUrl = `${host}${process.env.REACT_APP_REST_API_PLANT_PATH}/`;
 const secUrl = `${host}${process.env.REACT_APP_REST_API_SECTOR_PATH}/`;
 const subsecUrl = `${host}${process.env.REACT_APP_REST_API_SUBSECTOR_PATH}/`;
 const empUrl = `${host}${process.env.REACT_APP_REST_API_EMP_PATH}/`;
-const deptUrl = `${host}${process.env.REACT_APP_REST_API_DEPT_PATH}/`;
 const skillUrl = `${host}${process.env.REACT_APP_REST_API_SKILL_PATH}/`;
 const jobUrl = `${host}${process.env.REACT_APP_REST_API_JOB_PATH}/`;
 const logUrl = `${host}${process.env.REACT_APP_REST_API_LOG_PATH}/`;
@@ -146,10 +144,6 @@ class Fetcher {
     return await axios.get(empUrl, Fetcher.getConfig());
   };
 
-  static getDepts = async (): Promise<Result<DepartmentData[]>> => {
-    return await axios.get(deptUrl, Fetcher.getConfig());
-  };
-
   static getSkills = async (): Promise<Result<SkillData[]>> => {
     return await axios.get(skillUrl, Fetcher.getConfig());
   };
@@ -212,12 +206,6 @@ class Fetcher {
     return ans;*/
   };
 
-  static postDept = async (
-    data: DepartmentData
-  ): Promise<Result<DepartmentData>> => {
-    return await axios.post(deptUrl, data, Fetcher.getConfig());
-  };
-
   static postSkill = async (data: SkillData): Promise<Result<SkillData>> => {
     return await axios.post(skillUrl, data, Fetcher.getConfig());
   };
@@ -258,12 +246,6 @@ class Fetcher {
 
   static putEmp = async (data: EmployeeData): Promise<Result<EmployeeData>> => {
     return await axios.put(`${empUrl}${data.id}/`, data, Fetcher.getConfig());
-  };
-
-  static putDept = async (
-    data: DepartmentData
-  ): Promise<Result<DepartmentData>> => {
-    return await axios.put(`${deptUrl}${data.id}/`, data, Fetcher.getConfig());
   };
 
   static putSkill = async (data: SkillData): Promise<Result<SkillData>> => {
@@ -328,12 +310,6 @@ class Fetcher {
     data: SubsectorData
   ): Promise<Result<SubsectorData>> => {
     return await axios.delete(`${subsecUrl}${data.id}/`, Fetcher.getConfig());
-  };
-
-  static deleteDept = async (
-    data: DepartmentData
-  ): Promise<Result<DepartmentData>> => {
-    return await axios.delete(`${deptUrl}${data.id}/`, Fetcher.getConfig());
   };
 
   static deleteSkill = async (data: SkillData): Promise<Result<SkillData>> => {
