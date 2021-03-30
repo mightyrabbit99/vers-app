@@ -1,5 +1,5 @@
 import Kernel from "./Kernel";
-export default Kernel;
+
 export * from "./Kernel";
 export * from "./Plant";
 export * from "./Sector";
@@ -13,3 +13,7 @@ export * from "./Log";
 export * from "./Forecast";
 export * from "./CalEvent";
 export * from "./User";
+export * from "./types";
+
+const k = new Kernel();
+export default k;

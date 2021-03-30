@@ -1,8 +1,8 @@
 import { SkillData } from "./data";
 import Fetcher from "./Fetcher";
-import store, { Item, ItemType } from "./Store";
+import store, { ItemT, ItemType } from "./Store";
 
-interface Skill extends Item {
+interface Skill extends ItemT {
   _type: ItemType.Skill;
   name: string;
   priority: number;
@@ -10,6 +10,7 @@ interface Skill extends Item {
   subsector: number;
   employees: number[];
   jobs: number[];
+  headcount: number;
 }
 
 function dataToObj(x: SkillData): Skill {
@@ -18,10 +19,11 @@ function dataToObj(x: SkillData): Skill {
     _type: ItemType.Skill,
     name: x.name,
     priority: x.priority,
-    percentageOfSector: x.percentage_of_sector,
+    percentageOfSector: x.percentage_of_subsector,
     subsector: x.subsector,
     employees: x.employees,
     jobs: x.jobs,
+    headcount: 0,
   };
 }
 
@@ -30,7 +32,7 @@ function objToData(x: Skill): SkillData {
     id: x.id,
     name: x.name,
     priority: x.priority,
-    percentage_of_sector: x.percentageOfSector,
+    percentage_of_subsector: x.percentageOfSector,
     subsector: x.subsector,
     employees: x.employees,
     jobs: x.jobs,
@@ -82,7 +84,7 @@ const del = async (t: Skill) => {
   return { success: res.status === 204, statusText: res.statusText, data: {} };
 };
 
-const hasher = (t: Skill) => t.name.trim().toLowerCase();
+const hasher = (t: Skill) => `${t.name.trim().toLowerCase()}\n${t.subsector}`;
 
 const SkillStore = store<Skill>(get, post, put, del, generator, dataToObj, hasher);
 

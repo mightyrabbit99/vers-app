@@ -13,7 +13,7 @@ enum ItemType {
   User = "User",
 }
 
-interface Item {
+interface ItemT {
   id: number;
   _type: ItemType;
   [str: string]: any;
@@ -25,7 +25,7 @@ interface Result {
   data: any;
 }
 
-interface Store<T extends Item> {
+interface Store<T extends ItemT> {
   // retrieval
   refresh: () => Promise<void>;
   get: (id: number) => T;
@@ -37,6 +37,7 @@ interface Store<T extends Item> {
   erase: (t: any) => void;
   addData: (d: any) => void;
   eraseData: (d: any) => void;
+  forEach: (f: (t: any) => any) => void;
 
   // server
   submit: (t: T) => Promise<Result>;
@@ -45,7 +46,7 @@ interface Store<T extends Item> {
   remove: (t: T) => Promise<Result>;
 }
 
-function store<T extends Item>(
+function store<T extends ItemT>(
   get: () => Promise<T[]>,
   post: (t: T) => Promise<Result>,
   put: (t: T) => Promise<Result>,
@@ -97,6 +98,10 @@ function store<T extends Item>(
       this.erase(dataToObj(d));
     };
 
+    forEach = (f: (t: T) => any) => {
+      Object.values(this.store).forEach(f);
+    }
+
     get = (id: number) => this.store[id];
 
     getLst = (filterer?: (t: T) => boolean): { [id: number]: T } => {
@@ -140,6 +145,6 @@ function store<T extends Item>(
   };
 }
 
-export type { Item, Store, Result };
+export type { ItemT, Store, Result };
 export { ItemType };
 export default store;

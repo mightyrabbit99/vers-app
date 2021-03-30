@@ -1,8 +1,8 @@
 import { EmployeeData, EmpSkillData } from "./data";
 import Fetcher from "./Fetcher";
-import store, { Item, ItemType } from "./Store";
+import store, { ItemT, ItemType } from "./Store";
 
-interface Employee extends Item {
+interface Employee extends ItemT {
   _type: ItemType.Employee;
   sesaId: string;
   firstName: string;

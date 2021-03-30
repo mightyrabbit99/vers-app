@@ -5,11 +5,12 @@ import JobStore, { Job } from "./Job";
 import PlantStore, { Plant } from "./Plant";
 import SectorStore, { Sector } from "./Sector";
 import SkillStore, { Skill } from "./Skill";
-import { Store, Item, ItemType, Result as SubmitResult } from "./Store";
+import { Store, ItemType, Result as SubmitResult } from "./Store";
 import SubsectorStore, { Subsector } from "./Subsector";
 import ForecastStore, { Forecast } from "./Forecast";
 import LogStore, { DataType, Log } from "./Log";
 import CalEventStore, { CalEvent } from "./CalEvent";
+import { MyLog } from "./types";
 
 import ExcelProcessor2, {
   EmployeeObj,
@@ -19,12 +20,27 @@ import ExcelProcessor2, {
   SubsectorObj,
 } from "./ExcelProcessor2";
 import UserStore, { User } from "./User";
+import HeadCalc, { CalcVars } from "./HeadCalc";
+import { Cal } from "src/utils/tools";
 
 enum DataAction {
   CREATE_NEW = 0,
   EDIT = 1,
   DELETE = 2,
 }
+
+type Item =
+  | Plant
+  | Sector
+  | Skill
+  | Subsector
+  | Forecast
+  | Employee
+  | Department
+  | Job
+  | CalEvent
+  | Log
+  | User;
 
 function genMap<T>(
   lst: { [id: number]: T },
@@ -38,12 +54,6 @@ function genMap<T>(
     prev[newId].push(curr);
     return prev;
   }, {} as { [name: string]: T[] });
-}
-
-export interface MyLog {
-  desc: string;
-  time: number;
-  vals: SubmitResult[];
 }
 
 const getMyLog = (): MyLog[] => {
@@ -76,6 +86,8 @@ class Kernel {
   calEventStore: Store<CalEvent>;
   userStore: Store<User>;
   personalLogs: MyLog[];
+  calc: HeadCalc;
+  cal: Cal;
 
   constructor() {
     this.plantStore = new PlantStore();
@@ -90,6 +102,8 @@ class Kernel {
     this.calEventStore = new CalEventStore();
     this.userStore = new UserStore();
     this.personalLogs = getMyLog();
+    this.calc = new HeadCalc();
+    this.cal = new Cal();
   }
 
   private getStore = (t: DataType) => {
@@ -639,8 +653,23 @@ class Kernel {
         return await this.genCalEventExcel(items as CalEvent[]);
     }
   };
+
+  setVars = (vars: CalcVars) => {
+    this.calc.setVars(vars);
+  };
+
+  calcHeadcountReq = (
+    skill: Skill,
+    subsec: Subsector,
+    forecast: number,
+    month?: string
+  ) => {
+    let workingDays = month ? this.cal.getDaysLeftInMonth(new Date(month)) : 30;
+    return this.calc.calcHeadcountReq(skill, subsec, forecast, workingDays);
+  };
+  
 }
 
-const k = new Kernel();
+
 export type { Item, Kernel };
-export default k;
+export default Kernel;

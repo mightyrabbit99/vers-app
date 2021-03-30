@@ -1,8 +1,8 @@
 import { DepartmentData } from "./data";
 import Fetcher from "./Fetcher";
-import store, { Item, ItemType } from "./Store";
+import store, { ItemT, ItemType } from "./Store";
 
-interface Department extends Item {
+interface Department extends ItemT {
   _type: ItemType.Department;
   name: string;
   employees: number[];

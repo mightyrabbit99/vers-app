@@ -1,17 +1,24 @@
 import Excel from "exceljs";
 import { ItemType } from "./Store";
 
-interface ExcelObj {
+interface ExcelObjT {
+  _type: ItemType;
   line: number;
+  [name: string]: any;
 }
 
-interface SectorObj extends ExcelObj {
+interface PlantObj extends ExcelObjT {
+  _type: ItemType.Plant;
+  name: string;
+}
+
+interface SectorObj extends ExcelObjT {
   _type: ItemType.Sector;
   name: string;
   plant: string;
 }
 
-interface SubsectorObj extends ExcelObj {
+interface SubsectorObj extends ExcelObjT {
   _type: ItemType.Subsector;
   name: string;
   sector: string;
@@ -20,7 +27,7 @@ interface SubsectorObj extends ExcelObj {
   efficiency: number;
 }
 
-interface SkillObj extends ExcelObj {
+interface SkillObj extends ExcelObjT {
   _type: ItemType.Skill;
   name: string;
   subsector: string;
@@ -33,7 +40,7 @@ interface SkillMatrixObj {
   level: number;
 }
 
-interface EmployeeObj extends ExcelObj {
+interface EmployeeObj extends ExcelObjT {
   _type: ItemType.Employee;
   sesaId: string;
   firstName: string;
@@ -42,7 +49,7 @@ interface EmployeeObj extends ExcelObj {
   skills: SkillMatrixObj[];
 }
 
-interface CalEventObj extends ExcelObj {
+interface CalEventObj extends ExcelObjT {
   _type: ItemType.CalEvent;
   name: string;
   start: string;
@@ -50,19 +57,24 @@ interface CalEventObj extends ExcelObj {
   eventType: string;
 }
 
+type ExcelObj = PlantObj | SectorObj | SubsectorObj | SkillObj | EmployeeObj | CalEventObj;
+
+const checkRowSomeEmpty = (idxs: number[]) => (row: Excel.Row) => {
+  const values: { [n: number]: Excel.CellValue } = row.values;
+  return idxs.some((x) => !values[x] || `${values[x]}`.trim().length === 0);
+};
+
+const checkRowAllEmpty = (idxs: number[]) => (row: Excel.Row) => {
+  const values: { [n: number]: Excel.CellValue } = row.values;
+  return idxs.every((x) => !values[x] || `${values[x]}`.trim().length === 0);
+};
+
 const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
   let sets: { [homeLocation: string]: Set<string> } = {};
   let ans: EmployeeObj[] = [];
 
   function checkRow(row: Excel.Row) {
-    const values: { [n: number]: Excel.CellValue } = row.values;
-    if (
-      [1, 2, 3, 4, 5].some(
-        (x) => !values[x] || `${values[x]}`.trim().length === 0
-      )
-    )
-      return false;
-    return true;
+    return !checkRowSomeEmpty([1, 2, 3, 4, 5])(row);
   }
   function getSkillNames(row: Excel.Row) {
     let ans: { [i: number]: string } = [];
@@ -119,12 +131,7 @@ const readSkillSheet = (ws: Excel.Worksheet): SkillObj[] => {
   let ans: SkillObj[] = [];
   let name, subsector, priority, percentageOfSector;
   function checkRow(row: Excel.Row) {
-    const values: { [n: number]: Excel.CellValue } = row.values;
-    if (
-      [1, 2, 3, 4].some((x) => !values[x] || `${values[x]}`.trim().length === 0)
-    )
-      return false;
-    return true;
+    return !checkRowSomeEmpty([1, 2, 3, 4])(row);
   }
   ws.eachRow((row, rowIndex) => {
     try {
@@ -153,14 +160,7 @@ const readSubsectorSheet = (ws: Excel.Worksheet): SubsectorObj[] => {
   let ans: SubsectorObj[] = [];
   let name, sector, unit, cycleTime, efficiency;
   function checkRow(row: Excel.Row) {
-    const values: { [n: number]: Excel.CellValue } = row.values;
-    if (
-      [1, 2, 3, 4, 5].some(
-        (x) => !values[x] || `${values[x]}`.trim().length === 0
-      )
-    )
-      return false;
-    return true;
+    return !checkRowSomeEmpty([1, 2, 3, 4, 5])(row);
   }
   ws.eachRow((row, rowIndex) => {
     try {
@@ -190,10 +190,7 @@ const readSectorSheet = (ws: Excel.Worksheet): SectorObj[] => {
   let ans: SectorObj[] = [];
   let name, plant;
   function checkRow(row: Excel.Row) {
-    const values: { [n: number]: Excel.CellValue } = row.values;
-    if ([1, 2].some((x) => !values[x] || `${values[x]}`.trim().length === 0))
-      return false;
-    return true;
+    return !checkRowSomeEmpty([1, 2])(row);
   }
   ws.eachRow((row, rowIndex) => {
     try {
@@ -218,12 +215,7 @@ const readCalEventSheet = (ws: Excel.Worksheet): CalEventObj[] => {
   let ans: CalEventObj[] = [];
   let name, start, end, eventType;
   function checkRow(row: Excel.Row) {
-    const values: { [n: number]: Excel.CellValue } = row.values;
-    if (
-      [1, 2, 3, 4].some((x) => !values[x] || `${values[x]}`.trim().length === 0)
-    )
-      return false;
-    return true;
+    return !checkRowSomeEmpty([1, 2, 3, 4])(row);
   }
   ws.eachRow((row, rowIndex) => {
     if (rowIndex === 1 || !checkRow(row)) return;
@@ -240,6 +232,32 @@ const readCalEventSheet = (ws: Excel.Worksheet): CalEventObj[] => {
       end,
       eventType,
     });
+  });
+  return ans;
+};
+
+const readPlantProfile = (ws: Excel.Worksheet): ExcelObj[] => {
+  let ans: ExcelObj[] = [];
+  let pl: string, se: string, su: string, sk: string;
+  let plant, sector, subsec, skill;
+  function checkRow(row: Excel.Row) {
+    return !checkRowAllEmpty([1, 2, 3, 4])(row);
+  }
+  ws.eachRow((row, rowIndex) => {
+    if (rowIndex === 1 || !checkRow(row)) return;
+    const values: { [n: number]: Excel.CellValue } = row.values;
+    [plant = pl, sector = se, subsec = su, skill = sk] = [1, 2, 3, 4].map((x) =>
+      `${values[x]}`.trim()
+    );
+    if (!(plant && sector && subsec && skill)) throw new Error("Not enough info");
+    if (plant !== pl) {
+      ans.push({ _type: ItemType.Plant, name: plant, line: rowIndex });
+      pl = plant;
+    }
+    if (sector !== se) {
+      ans.push({ _type: ItemType.Sector, name: sector, line: rowIndex, plant });
+      se = sector;
+    }
   });
   return ans;
 };
@@ -386,6 +404,10 @@ class ExcelProcessor2 {
       default:
         return null;
     }
+  };
+
+  static readFile2 = async (file: File) => {
+    return await readFile(file, readPlantProfile);
   };
 
   static genSectorFile = async (sectors: SectorObj[]) => {

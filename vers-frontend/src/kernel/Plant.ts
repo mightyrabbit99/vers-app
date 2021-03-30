@@ -1,8 +1,8 @@
 import { PlantData } from "./data";
 import Fetcher from "./Fetcher";
-import store, { Item, ItemType } from "./Store";
+import store, { ItemT, ItemType } from "./Store";
 
-interface Plant extends Item {
+interface Plant extends ItemT {
   _type: ItemType.Plant;
   name: string;
   sectors: number[];

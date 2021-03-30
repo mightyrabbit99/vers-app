@@ -1,8 +1,8 @@
 import { JobData, JobSkillData } from "./data";
 import Fetcher from "./Fetcher";
-import store, { Item, ItemType } from "./Store";
+import store, { ItemT, ItemType } from "./Store";
 
-interface Job extends Item {
+interface Job extends ItemT {
   _type: ItemType.Job;
   title: string;
   pplAmtRequired: number;

@@ -1,8 +1,8 @@
 import { SubsectorData } from "./data";
 import Fetcher from "./Fetcher";
-import store, { Item, ItemType } from "./Store";
+import store, { ItemT, ItemType } from "./Store";
 
-interface Subsector extends Item {
+interface Subsector extends ItemT {
   _type: ItemType.Subsector;
   name: string;
   cycleTime: number;
@@ -89,7 +89,7 @@ const generator = (init?: any): Subsector => ({
   ...init,
 });
 
-const hasher = (t: Subsector) => t.name.trim().toLowerCase();
+const hasher = (t: Subsector) => `${t.name.trim().toLowerCase()}\n${t.sector}`;
 
 const SubsectorStore = store<Subsector>(get, post, put, del, generator, dataToObj, hasher);
 

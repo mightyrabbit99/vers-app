@@ -1,8 +1,8 @@
 import { CalEventData } from "./data";
 import Fetcher from "./Fetcher";
-import store, { Item, ItemType } from "./Store";
+import store, { ItemT, ItemType } from "./Store";
 
-interface CalEvent extends Item {
+interface CalEvent extends ItemT {
   _type: ItemType.CalEvent;
   title: string;
   start: string;

@@ -107,7 +107,7 @@ class Subsector(models.Model):
 class Skill(models.Model):
   name = models.CharField(max_length=50, unique=True)
   priority = models.IntegerField()
-  percentage_of_sector = models.IntegerField()
+  percentage_of_subsector = models.IntegerField()
   subsector = models.ForeignKey(
       Subsector, related_name='skills', on_delete=models.PROTECT)
   owner = models.ForeignKey(

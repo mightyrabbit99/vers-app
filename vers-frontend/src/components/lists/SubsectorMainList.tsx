@@ -30,11 +30,11 @@ const SubsectorMainList: React.FC<ISubsectorMainListProps> = (props) => {
       extractor: (p: Subsector) => p.unit ?? "",
     },
     {
-      title: "Cycle Time",
+      title: "Cycle Time (min/unit)",
       extractor: (p: Subsector) => `${p.cycleTime}`,
     },
     {
-      title: "Efficiency",
+      title: "Efficiency (%)",
       extractor: (p: Subsector) => `${p.efficiency}`,
     },
   ];

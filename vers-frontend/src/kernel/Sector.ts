@@ -1,8 +1,8 @@
 import { SectorData } from "./data";
 import Fetcher from "./Fetcher";
-import store, { Item, ItemType } from "./Store";
+import store, { ItemT, ItemType } from "./Store";
 
-interface Sector extends Item {
+interface Sector extends ItemT {
   _type: ItemType.Sector;
   name: string;
   plant: number;

@@ -1,8 +1,8 @@
 import { AccessLevel, UserData } from "./data";
 import Fetcher from "./Fetcher";
-import store, { Item, ItemType } from "./Store";
+import store, { ItemT, ItemType } from "./Store";
 
-interface User extends Item {
+interface User extends ItemT {
   _type: ItemType.User;
   username: string;
   is_superuser: boolean;

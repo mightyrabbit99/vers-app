@@ -1,8 +1,8 @@
 import { ForecastData, FData } from "./data";
-import store, { Item, ItemType } from "./Store";
+import store, { ItemT, ItemType } from "./Store";
 import Fetcher from "./Fetcher";
 
-interface Forecast extends Item {
+interface Forecast extends ItemT {
   _type: ItemType.Forecast;
   on: string;
   forecasts: FData[];

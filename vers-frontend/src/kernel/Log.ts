@@ -1,8 +1,8 @@
 import { LogData, LogType, DataType } from "./data";
 import Fetcher from "./Fetcher";
-import store, { Item, ItemType } from "./Store";
+import store, { ItemT, ItemType } from "./Store";
 
-interface Log extends Item {
+interface Log extends ItemT {
   _type: ItemType.Log;
   success?: boolean;
   type: LogType;
