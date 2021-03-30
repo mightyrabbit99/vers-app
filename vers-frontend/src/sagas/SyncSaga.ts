@@ -25,7 +25,7 @@ function* fetchDatas({ payload }: FetchDataAction) {
   try {
     yield k.refresh(payload);
   } catch (error) {
-    yield put(fetchDataError(error.message));
+    yield put(fetchDataError({ message: error.message }));
     return;
   }
   yield put(fetchDataSuccess());
