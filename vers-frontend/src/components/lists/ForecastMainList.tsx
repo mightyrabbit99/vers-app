@@ -146,7 +146,7 @@ const ForecastMainList: React.FC<IForecastMainListProps> = (props) => {
     {
       title: "On",
       extractor: (p: Forecast) => {
-        let d = new Date(Date.parse(p.on));
+        let d = new Date(p.on);
         return `${d.getFullYear()} - ${d.getMonth() + 1}`;
       },
     },

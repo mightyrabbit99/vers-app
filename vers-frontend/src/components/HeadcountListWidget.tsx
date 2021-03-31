@@ -54,6 +54,7 @@ interface IHeadcountListWidgetState {
   displaces: DisplaceMap;
 
   // data
+  availDaysInMonth?: number;
   forecastVal?: number;
   formData: CalcVars;
 
@@ -105,6 +106,8 @@ function reducer(
       return { ...state, formOpen: action.data };
     case "setFormData":
       return { ...state, formData: action.data };
+    case "setAvailDaysInMonth":
+      return { ...state, availDaysInMonth: action.data };
     default:
       throw new Error();
   }
@@ -119,7 +122,7 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
   React.useEffect(() => {
     //generate choices
     let data = Object.values(forecasts).reduce((pr, cu) => {
-      let d = new Date(Date.parse(cu.on));
+      let d = new Date(cu.on);
       for (let fo of cu.forecasts) {
         let dd = new Date(d);
         dd.setMonth(d.getMonth() + fo.n);
@@ -142,6 +145,16 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
     dispatch({ type: "setForecast", data: fP[0] });
   }, [state.displaces]);
 
+  React.useEffect(() => {
+    // calc available days of the month
+    if (!state.selectedMonth) return;
+    let mo = state.selectedMonth;
+    dispatch({
+      type: "setAvailDaysInMonth",
+      data: k.cal.getDaysLeftInMonth(new Date(mo)),
+    });
+  }, [state.selectedMonth]);
+
   const genSkillLst = React.useCallback(
     (vars?: CalcVars, forecastVal?: number, selectedMonth?: string) => {
       let skillLst = Object.values(skills);
@@ -162,6 +175,7 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
   );
 
   React.useEffect(() => {
+    // calculate skill list and update calc vars
     genSkillLst(state.formData, state.forecastVal, state.selectedMonth);
   }, [genSkillLst, state.formData, state.selectedMonth, state.forecastVal]);
 
@@ -218,6 +232,13 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
                 </Select>
               </FormControl>
             </Grid>
+            <Grid item xs={3}>
+              <Box component="span" m={1}>
+                <Typography variant="body2">
+                  {`Working Days: ${state.availDaysInMonth ?? ""}`}
+                </Typography>
+              </Box>
+            </Grid>
             <Grid item xs={2}>
               <FormControl className={classes.formControl}>
                 <InputLabel id="demo-simple-select-label">Forecast</InputLabel>
@@ -237,7 +258,7 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={7}>
+            <Grid item xs={4}>
               <Box component="span" m={1}>
                 <Typography variant="body2">
                   {`Forecast Value: ${state.forecastVal ?? ""}`}

@@ -84,7 +84,7 @@ class Kernel {
   userStore: Store<User>;
   personalLogs: MyLog[];
   calc: HeadCalc;
-  cal: Cal;
+  cal: Cal<number>;
 
   constructor() {
     this.plantStore = new PlantStore();
@@ -171,7 +171,7 @@ class Kernel {
                 new Date(payload.content.start),
                 new Date(payload.content.end),
               ],
-              data: payload.content,
+              data: payload.content['id'],
             });
           }
           this.trigger();
@@ -179,12 +179,12 @@ class Kernel {
         case DataAction.DELETE:
           this.getStore(payload.data_type)?.eraseData(payload.content);
           if (payload.data_type === DataType.CALEVENT) {
-            this.cal.delEventByData({
+            this.cal.delEvent({
               range: [
                 new Date(payload.content.start),
                 new Date(payload.content.end),
               ],
-              data: payload.content,
+              data: payload.content['id'],
             });
           }
           this.trigger();
@@ -202,10 +202,11 @@ class Kernel {
       lst = [lst];
     }
     await Promise.all(lst.map((x) => this.getStore2(x)?.refresh()));
-    this.cal = new Cal(
+    this.cal = new Cal();
+    this.cal.addEvents(
       Object.values(this.calEventStore.getLst()).map((x) => ({
         range: [new Date(x.start), new Date(x.end)],
-        data: x,
+        data: x.id,
       }))
     );
   };
