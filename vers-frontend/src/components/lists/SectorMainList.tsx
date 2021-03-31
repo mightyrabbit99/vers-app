@@ -20,10 +20,15 @@ const SectorMainList: React.FC<ISectorMainListProps> = (props) => {
     {
       title: "Name",
       extractor: (p: Sector) => p.name,
+      comparator: (p1: Sector, p2: Sector) => p1.name < p2.name ? 1 : p1.name === p2.name ? 0 : -1,
     },
     {
       title: "Plant",
       extractor: (p: Sector) => plantLst[p.plant].name,
+      comparator: (p1: Sector, p2: Sector) => {
+        let pp1 = plantLst[p1.plant].name, pp2 = plantLst[p2.plant].name;
+        return pp1 < pp2 ? 1 : pp1 === pp2 ? 0 : -1;
+      },
     },
   ];
 

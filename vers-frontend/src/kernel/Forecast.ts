@@ -76,13 +76,16 @@ const generator = (init?: any): Forecast => ({
     })),
 });
 
+const hasher = (t: Forecast) => t.on;
+
 const ForecastStore = store<Forecast>(
   get,
   post,
   put,
   del,
   generator,
-  dataToObj
+  dataToObj,
+  hasher
 );
 
 export type { Forecast, ForecastData };

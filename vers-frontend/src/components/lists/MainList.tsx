@@ -1,24 +1,26 @@
 import * as React from "react";
 
-import {
-  Checkbox,
-  TableContainer,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  makeStyles,
-  Theme,
-  Size,
-  Padding,
-} from "@material-ui/core";
+import { makeStyles, Theme } from "@material-ui/core/styles";
+import Table, { Size, Padding } from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import TableSortLabel from "@material-ui/core/TableSortLabel";
+import Checkbox from "@material-ui/core/Checkbox";
 
 type Item = any;
+
+enum SortDirection {
+  ASC = "asc",
+  DES = "desc",
+}
 
 interface Col {
   title?: string;
   extractor: (item: Item) => string | React.ReactNode;
+  comparator?: (i1: Item, i2: Item) => number;
 }
 
 interface IMainListStyles {
@@ -47,7 +49,7 @@ const useStyles = makeStyles<Theme, IMainListStyles>((themes) => ({
 
 const ItemMainList: React.FC<IMainListProps> = (props) => {
   const {
-    lst,
+    lst: l,
     cols,
     selected,
     selectedOnChange = (lst) => {},
@@ -56,6 +58,8 @@ const ItemMainList: React.FC<IMainListProps> = (props) => {
     ...styles
   } = props;
   const classes = useStyles(styles);
+
+  const [lst, setLst] = React.useState<Item[]>([]);
 
   const [selectedIds, setSelectedIds] = React.useState<number[]>(
     selected ?? []
@@ -88,6 +92,38 @@ const ItemMainList: React.FC<IMainListProps> = (props) => {
     selectedOnChange(newSelectedIds);
   };
 
+  const [sortCol, setSortCol] = React.useState<number>();
+  const [sortDire, setSortDire] = React.useState<SortDirection>(
+    SortDirection.ASC
+  );
+  const createSortHandler = (colIdx: number) => (
+    e: React.MouseEvent<unknown>
+  ) => {
+    if (sortCol !== colIdx) {
+      setSortCol(colIdx);
+      setSortDire(SortDirection.ASC);
+    } else {
+      setSortDire((d) => (d === SortDirection.ASC ? SortDirection.DES : SortDirection.ASC));
+    }
+  };
+
+  const stableSort = React.useCallback(
+    (lst: Item[]) => {
+      if (sortCol === undefined) return lst;
+      const comp = cols[sortCol].comparator;
+      if (!comp) return lst;
+      return lst.sort(
+        sortDire === SortDirection.DES
+          ? comp
+          : (i1: Item, i2: Item) => comp(i2, i1)
+      );
+    },
+    [sortCol, sortDire, cols]
+  );
+  React.useEffect(() => {
+    setLst(stableSort([...l]));
+  }, [stableSort, l]);
+
   return (
     <TableContainer className={classes.content}>
       <Table stickyHeader size={size} padding={padding}>
@@ -108,8 +144,22 @@ const ItemMainList: React.FC<IMainListProps> = (props) => {
             ) : null}
             {cols.map((x, idx) => {
               return x.title ? (
-                <TableCell key={idx}>
-                  <b>{x.title}</b>
+                <TableCell key={idx} sortDirection={false}>
+                  {x.comparator ? (
+                    <TableSortLabel
+                      active={sortCol === idx}
+                      direction={
+                        sortCol === undefined || sortCol !== idx
+                          ? SortDirection.ASC
+                          : sortDire
+                      }
+                      onClick={createSortHandler(idx)}
+                    >
+                      <b>{x.title}</b>
+                    </TableSortLabel>
+                  ) : (
+                    <b>{x.title}</b>
+                  )}
                 </TableCell>
               ) : (
                 <TableCell padding="checkbox" key={idx}></TableCell>
@@ -124,7 +174,7 @@ const ItemMainList: React.FC<IMainListProps> = (props) => {
                 <TableCell padding="checkbox">
                   <Checkbox
                     checked={selectedIds.includes(item.id)}
-                    onChange={(event) => handleSelectOne(event, item.id)}
+                    onChange={(e) => handleSelectOne(e, item.id)}
                     value="true"
                   />
                 </TableCell>

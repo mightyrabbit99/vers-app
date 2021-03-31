@@ -57,16 +57,37 @@ interface CalEventObj extends ExcelObjT {
   eventType: string;
 }
 
-type ExcelObj = PlantObj | SectorObj | SubsectorObj | SkillObj | EmployeeObj | CalEventObj;
+interface ForecastObj extends ExcelObjT {
+  _type: ItemType.Forecast;
+  on: Date;
+  forecasts: { n: number; val: number }[];
+}
+
+type ExcelObj =
+  | PlantObj
+  | SectorObj
+  | SubsectorObj
+  | SkillObj
+  | EmployeeObj
+  | CalEventObj
+  | ForecastObj;
+
+type ValMap<T> = { [n: number]: T };
+type CValMap = ValMap<Excel.CellValue>;
 
 const checkRowSomeEmpty = (idxs: number[]) => (row: Excel.Row) => {
-  const values: { [n: number]: Excel.CellValue } = row.values;
+  const values: CValMap = row.values;
   return idxs.some((x) => !values[x] || `${values[x]}`.trim().length === 0);
 };
 
 const checkRowAllEmpty = (idxs: number[]) => (row: Excel.Row) => {
-  const values: { [n: number]: Excel.CellValue } = row.values;
+  const values: CValMap = row.values;
   return idxs.every((x) => !values[x] || `${values[x]}`.trim().length === 0);
+};
+
+const checkRowLegal = (fs: ValMap<(v: any) => boolean>) => (row: Excel.Row) => {
+  const values: CValMap = row.values;
+  return Object.entries(fs).every(([k, f]) => f(values[parseInt(k, 10)]));
 };
 
 const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
@@ -85,18 +106,14 @@ const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
   }
   const skillNames = getSkillNames(ws.getRow(1));
 
-  let sesaId, firstName, lastName, department, homeLocation;
+  let sesaId, firstName, lastName, homeLocation;
   ws.eachRow((row: Excel.Row, rowIndex) => {
     try {
       if (rowIndex === 1 || !checkRow(row)) return;
-      const values: { [n: number]: Excel.CellValue } = row.values;
-      [sesaId, firstName, lastName, department, homeLocation] = [
-        1,
-        2,
-        3,
-        4,
-        5,
-      ].map((x) => `${values[x]}`.trim());
+      const values: CValMap = row.values;
+      [sesaId, firstName, lastName, homeLocation] = [1, 2, 3, 5].map((x) =>
+        `${values[x]}`.trim()
+      );
       if (sesaId === "") return;
 
       if (!sets[homeLocation]) {
@@ -136,7 +153,7 @@ const readSkillSheet = (ws: Excel.Worksheet): SkillObj[] => {
   ws.eachRow((row, rowIndex) => {
     try {
       if (rowIndex === 1 || !checkRow(row)) return;
-      const values: { [n: number]: Excel.CellValue } = row.values;
+      const values: CValMap = row.values;
       [name, subsector, priority, percentageOfSector] = [1, 2, 3, 4].map((x) =>
         `${values[x]}`.trim()
       );
@@ -165,7 +182,7 @@ const readSubsectorSheet = (ws: Excel.Worksheet): SubsectorObj[] => {
   ws.eachRow((row, rowIndex) => {
     try {
       if (rowIndex === 1 || !checkRow(row)) return;
-      const values: { [n: number]: Excel.CellValue } = row.values;
+      const values: CValMap = row.values;
       [name, sector, unit, cycleTime, efficiency] = [1, 2, 3, 4, 5].map((x) =>
         `${values[x]}`.trim()
       );
@@ -195,7 +212,7 @@ const readSectorSheet = (ws: Excel.Worksheet): SectorObj[] => {
   ws.eachRow((row, rowIndex) => {
     try {
       if (rowIndex === 1 || !checkRow(row)) return;
-      const values: { [n: number]: Excel.CellValue } = row.values;
+      const values: CValMap = row.values;
       [name, plant] = [1, 2].map((x) => `${values[x]}`.trim());
 
       ans.push({
@@ -219,7 +236,7 @@ const readCalEventSheet = (ws: Excel.Worksheet): CalEventObj[] => {
   }
   ws.eachRow((row, rowIndex) => {
     if (rowIndex === 1 || !checkRow(row)) return;
-    const values: { [n: number]: Excel.CellValue } = row.values;
+    const values: CValMap = row.values;
     [start, end, name, eventType] = [1, 2, 3, 4].map((x) =>
       `${values[x]}`.trim()
     );
@@ -236,6 +253,36 @@ const readCalEventSheet = (ws: Excel.Worksheet): CalEventObj[] => {
   return ans;
 };
 
+const readForecastSheet = (ws: Excel.Worksheet): ForecastObj[] => {
+  let ans: ForecastObj[] = [];
+  let on: string, forecasts: string[];
+  function checkRow(row: Excel.Row) {
+    return (
+      !checkRowSomeEmpty([1])(row) &&
+      checkRowLegal({
+        1: (s) => !isNaN(new Date(s).getTime()),
+      })(row)
+    );
+  }
+  ws.eachRow((row, rowIndex) => {
+    if (rowIndex === 1 || !checkRow(row)) return;
+    const values: CValMap = row.values;
+    [on, ...forecasts] = [...Array(13).keys()]
+      .map((x) => x + 1)
+      .map((x) => `${values[x]}`.trim());
+    ans.push({
+      _type: ItemType.Forecast,
+      line: rowIndex,
+      on: new Date(on),
+      forecasts: forecasts.map((x, idx) => ({
+        n: idx,
+        val: isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10),
+      })),
+    });
+  });
+  return ans;
+};
+
 const readPlantProfile = (ws: Excel.Worksheet): ExcelObj[] => {
   let ans: ExcelObj[] = [];
   let pl: string, se: string, su: string, sk: string;
@@ -245,11 +292,12 @@ const readPlantProfile = (ws: Excel.Worksheet): ExcelObj[] => {
   }
   ws.eachRow((row, rowIndex) => {
     if (rowIndex === 1 || !checkRow(row)) return;
-    const values: { [n: number]: Excel.CellValue } = row.values;
+    const values: CValMap = row.values;
     [plant = pl, sector = se, subsec = su, skill = sk] = [1, 2, 3, 4].map((x) =>
       `${values[x]}`.trim()
     );
-    if (!(plant && sector && subsec && skill)) throw new Error("Not enough info");
+    if (!(plant && sector && subsec && skill))
+      throw new Error("Not enough info");
     if (plant !== pl) {
       ans.push({ _type: ItemType.Plant, name: plant, line: rowIndex });
       pl = plant;
@@ -337,6 +385,26 @@ const calEventSheetWriter = (calEvents: CalEventObj[]) => (
   ws.addRows(calEvents);
 };
 
+const forecastSheetWriter = (forecasts: ForecastObj[]) => (
+  ws: Excel.Worksheet
+) => {
+  let zwoelf = [...Array(12).keys()].map((x) => x + 1);
+  ws.columns = [
+    { header: "On", key: "on" },
+    ...zwoelf.map((x) => ({ header: `n + ${x}`, key: x })),
+  ] as Excel.Column[];
+
+  ws.addRows(
+    forecasts.map((fo) => ({
+      on: fo.on.toISOString().slice(0, 7),
+      ...fo.forecasts.reduce((pr, cu) => {
+        pr[cu.n] = cu.val;
+        return pr;
+      }, {} as { [n: number]: number }),
+    }))
+  );
+};
+
 function readFile<T>(f: File, read: (ws: Excel.Worksheet) => T): Promise<T> {
   return new Promise((resolve, reject) => {
     const wb = new Excel.Workbook();
@@ -389,6 +457,9 @@ class ExcelProcessor2 {
   static readCalEventFile = async (file: File) => {
     return await readFile(file, readCalEventSheet);
   };
+  static readForecastFile = async (file: File) => {
+    return await readFile(file, readForecastSheet);
+  };
   static readFile = async (type: ItemType, file: File) => {
     switch (type) {
       case ItemType.Sector:
@@ -401,6 +472,8 @@ class ExcelProcessor2 {
         return await ExcelProcessor2.readEmployeeFile(file);
       case ItemType.CalEvent:
         return await ExcelProcessor2.readCalEventFile(file);
+      case ItemType.Forecast:
+        return await ExcelProcessor2.readForecastFile(file);
       default:
         return null;
     }
@@ -430,6 +503,10 @@ class ExcelProcessor2 {
     return await genFile(calEventSheetWriter(calEvents));
   };
 
+  static genForecastFile = async (forecasts: ForecastObj[]) => {
+    return await genFile(forecastSheetWriter(forecasts));
+  };
+
   static genFile = async (type: ItemType, objs: ExcelObj[]) => {
     switch (type) {
       case ItemType.Sector:
@@ -442,6 +519,8 @@ class ExcelProcessor2 {
         return await ExcelProcessor2.genEmployeeFile(objs as EmployeeObj[]);
       case ItemType.CalEvent:
         return await ExcelProcessor2.genCalEventFile(objs as CalEventObj[]);
+      case ItemType.Forecast:
+        return await ExcelProcessor2.genForecastFile(objs as ForecastObj[]);
       default:
         return null;
     }

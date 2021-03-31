@@ -489,7 +489,7 @@ const Dashboard: React.FC = () => {
         id="simple-menu"
         anchorEl={settingsAnchorEl}
         keepMounted
-        open={Boolean(settingsAnchorEl)}
+        open={!!settingsAnchorEl}
         onClose={handleSettingsClose}
       >
         <MenuItem onClick={handleViewProfile}>Profile</MenuItem>
@@ -499,12 +499,11 @@ const Dashboard: React.FC = () => {
         id="simple-menu"
         anchorEl={mainAnchorEl}
         keepMounted
-        open={Boolean(mainAnchorEl)}
+        open={!!mainAnchorEl}
         onClose={handlePageSelClose}
       >
-        <MenuItem onClick={handlePageSelClose}>Dashboard</MenuItem>
-        {user?.is_superuser ? <MenuItem onClick={handleViewAccessCtrl}>Access Control</MenuItem> : null}
         <MenuItem onClick={toPlant}>Plants</MenuItem>
+        {user?.is_superuser ? <MenuItem onClick={handleViewAccessCtrl}>Access Control</MenuItem> : null}
       </Menu>
       <Backdrop className={classes.backdrop} open={loading}>
         <CircularProgress color="inherit" />

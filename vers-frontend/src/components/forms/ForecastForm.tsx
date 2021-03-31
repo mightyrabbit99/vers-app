@@ -43,7 +43,7 @@ const ForecastForm: React.FC<IForecastFormProps> = (props) => {
           label="Date"
           variant="standard"
           name="on"
-          value={state.on.substr(0, 7)}
+          value={state.on}
           onChange={handleChange}
           error={feedback?.on}
           type="month"

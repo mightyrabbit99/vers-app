@@ -26,13 +26,13 @@ import { calExcelUrl } from "src/kernel/Fetcher";
 const useStyles = makeStyles((theme) => ({
   root: {
     "& > *": {
-      margin: theme.spacing(2),
+      margin: theme.spacing(1),
     },
   },
   ctrlButtons: {
     display: "flex",
     flexDirection: "row",
-    height: "20%",
+    height: "15%",
     width: "100%",
   },
   rightOffset: {
@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "auto",
   },
   content: {
-    height: "80%",
+    height: "85%",
   },
   form: {
     width: 600,
@@ -121,6 +121,14 @@ const CalendarView: React.FC<ICalendarViewProps> = () => {
     setFormOpen(true);
   };
 
+  const handleNavigate = (a: Date) => {
+    a.setDate(a.getDate() + 1);
+    let dd = a.toISOString().slice(0, 10);
+    if (!formData) return;
+    setFormData({ ...formData, start: dd, end: dd });
+    setFormOpen(true);
+  }
+
   const handleCreateNewOnClick = () => {
     setFormData(newCalEvent);
     setFormOpen(true);
@@ -164,6 +172,8 @@ const CalendarView: React.FC<ICalendarViewProps> = () => {
             endAccessor="end"
             style={{ height: 500 }}
             onSelectEvent={handleSelectEvent}
+            onNavigate={handleNavigate}
+            views={{ month: true }}
           />
         </div>
       </div>

@@ -20,10 +20,15 @@ const SubsectorMainList: React.FC<ISubsectorMainListProps> = (props) => {
     {
       title: "Name",
       extractor: (p: Subsector) => p.name,
+      comparator: (p1: Subsector, p2: Subsector) => p1.name < p2.name ? 1 : p1.name === p2.name ? 0 : -1,
     },
     {
       title: "Sector",
       extractor: (p: Subsector) => sectorLst[p.sector].name,
+      comparator: (p1: Subsector, p2: Subsector) => {
+        let pp1 = sectorLst[p1.sector].name, pp2 = sectorLst[p2.sector].name;
+        return pp1 < pp2 ? 1 : pp1 === pp2 ? 0 : -1;
+      },
     },
     {
       title: "Unit",
@@ -32,10 +37,12 @@ const SubsectorMainList: React.FC<ISubsectorMainListProps> = (props) => {
     {
       title: "Cycle Time (min/unit)",
       extractor: (p: Subsector) => `${p.cycleTime}`,
+      comparator: (p1: Subsector, p2: Subsector) => p2.cycleTime - p1.cycleTime,
     },
     {
       title: "Efficiency (%)",
       extractor: (p: Subsector) => `${p.efficiency}`,
+      comparator: (p1: Subsector, p2: Subsector) => p2.efficiency - p1.efficiency,
     },
   ];
 

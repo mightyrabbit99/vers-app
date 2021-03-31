@@ -625,6 +625,17 @@ class Kernel {
     );
   };
 
+  private genForecastExcel = async (items: Forecast[]) => {
+    return await ExcelProcessor2.genForecastFile(
+      items.map((x, idx) => ({
+        _type: x._type,
+        line: idx,
+        on: new Date(x.on),
+        forecasts: x.forecasts,
+      }))
+    );
+  }
+
   public getExcel = async (type: ItemType, items?: Item[]) => {
     if (!items) {
       switch (type) {
@@ -643,6 +654,9 @@ class Kernel {
         case ItemType.CalEvent:
           items = Object.values(this.calEventStore.getLst());
           break;
+        case ItemType.Forecast:
+          items = Object.values(this.forecastStore.getLst());
+          break;
         default:
           items = [];
       }
@@ -658,6 +672,8 @@ class Kernel {
         return await this.genEmployeeExcel(items as Employee[]);
       case ItemType.CalEvent:
         return await this.genCalEventExcel(items as CalEvent[]);
+      case ItemType.Forecast:
+        return await this.genForecastExcel(items as Forecast[]);
     }
   };
 
