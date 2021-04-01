@@ -1,7 +1,5 @@
 import * as React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Calendar, Event, momentLocalizer } from "react-big-calendar";
-import moment from "moment";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
@@ -22,38 +20,40 @@ import { CalEvent, ItemType } from "src/kernel";
 import ExcelProcessor2 from "src/kernel/ExcelProcessor2";
 import ExcelUploadForm from "src/components/forms/ExcelUploadForm";
 import { calExcelUrl } from "src/kernel/Fetcher";
+import Calendar, { Event } from "src/components/calendar/Calendar";
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    height: "89vh",
+  },
+  ctrlButtons: {
     "& > *": {
       margin: theme.spacing(1),
     },
-  },
-  ctrlButtons: {
     display: "flex",
     flexDirection: "row",
-    height: "15%",
+    height: "10%",
     width: "100%",
   },
   rightOffset: {
     width: 50,
   },
-  button: {
+  leftButton: {
     marginLeft: "auto",
   },
   content: {
-    height: "85%",
+    height: "90%",
   },
   form: {
-    width: 600,
+    maxWidth: "60vw",
+    width: 500,
+    minWidth: 300,
   },
   formTitle: {
     display: "flex",
   },
   formContent: {},
 }));
-
-const localizer = momentLocalizer(moment);
 
 interface ICalendarViewProps {}
 
@@ -75,7 +75,7 @@ const CalendarView: React.FC<ICalendarViewProps> = () => {
   const handleDelete = () => {
     formData && dispatch(delData(formData));
     setFormOpen(false);
-  }
+  };
 
   const handleSubmit = (data: CalEvent) => {
     dispatch(saveData(data));
@@ -93,13 +93,15 @@ const CalendarView: React.FC<ICalendarViewProps> = () => {
     setFbOpen(false);
   };
 
-  const handleExcelUploadClick = () => {};
-
   const handleExcelDownloadClick = async () => {
     dispatch(downloadExcel({ type: ItemType.CalEvent }));
   };
 
   const [excelFormOpen, setExcelFormOpen] = React.useState(false);
+
+  const handleExcelUploadClick = () => {
+    setExcelFormOpen(true);
+  };
 
   const handleExcelFileUpload = async (file: File) => {
     setExcelFormOpen(false);
@@ -121,13 +123,12 @@ const CalendarView: React.FC<ICalendarViewProps> = () => {
     setFormOpen(true);
   };
 
-  const handleNavigate = (a: Date) => {
-    a.setDate(a.getDate() + 1);
+  const handleSelectDate = (a: Date) => {
     let dd = a.toISOString().slice(0, 10);
     if (!formData) return;
     setFormData({ ...formData, start: dd, end: dd });
     setFormOpen(true);
-  }
+  };
 
   const handleCreateNewOnClick = () => {
     setFormData(newCalEvent);
@@ -148,7 +149,7 @@ const CalendarView: React.FC<ICalendarViewProps> = () => {
         <div className={classes.ctrlButtons}>
           <IconButton
             onClick={handleExcelDownloadClick}
-            className={classes.button}
+            className={classes.leftButton}
           >
             <CloudDownload />
           </IconButton>
@@ -166,14 +167,9 @@ const CalendarView: React.FC<ICalendarViewProps> = () => {
         </div>
         <div className={classes.content}>
           <Calendar
-            localizer={localizer}
             events={myEventsList}
-            startAccessor="start"
-            endAccessor="end"
-            style={{ height: 500 }}
             onSelectEvent={handleSelectEvent}
-            onNavigate={handleNavigate}
-            views={{ month: true }}
+            onSelectDate={handleSelectDate}
           />
         </div>
       </div>
@@ -190,9 +186,9 @@ const CalendarView: React.FC<ICalendarViewProps> = () => {
                 ? "Add New Event"
                 : "Edit/Delete Event"}
             </Typography>
-            {formData && formData.id !== -1 ? <Button onClick={handleDelete}>
-              Delete
-            </Button> : null}
+            {formData && formData.id !== -1 ? (
+              <Button onClick={handleDelete}>Delete</Button>
+            ) : null}
           </div>
           <div className={classes.formContent}>
             {formData ? (
@@ -200,6 +196,7 @@ const CalendarView: React.FC<ICalendarViewProps> = () => {
                 data={formData}
                 feedback={feedback}
                 onSubmit={handleSubmit}
+                onCancel={handleFormClose}
               />
             ) : null}
           </div>

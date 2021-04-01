@@ -47,14 +47,12 @@ interface IEmployeeSkillWidgetProps {
   onSubmit?: (p: Employee) => void;
 }
 
-const EmployeeSkillWidget: React.FC<IEmployeeSkillWidgetProps> = (
-  props
-) => {
+const EmployeeSkillWidget: React.FC<IEmployeeSkillWidgetProps> = (props) => {
   const classes = useStyles();
   const { lst, skillLst, onSubmit } = props;
   const [sel, setSel] = React.useState<Employee>();
   React.useEffect(() => {
-    setSel(sel => sel && sel.id in lst ? lst[sel.id] : undefined);
+    setSel((sel) => (sel && sel.id in lst ? lst[sel.id] : undefined));
   }, [lst]);
 
   const [addLstOpen, setAddLstOpen] = React.useState(false);
@@ -124,7 +122,7 @@ const EmployeeSkillWidget: React.FC<IEmployeeSkillWidgetProps> = (
   const handleEmpSubmit = (e: Employee) => {
     setSel(e);
     onSubmit && onSubmit(e);
-  }
+  };
 
   return (
     <React.Fragment>
@@ -140,7 +138,7 @@ const EmployeeSkillWidget: React.FC<IEmployeeSkillWidgetProps> = (
             <Button
               variant="contained"
               color="primary"
-              disabled={!sel|| availSkills.length === 0 || !onSubmit}
+              disabled={!sel || availSkills.length === 0 || !onSubmit}
               onClick={handleAddOnClick}
             >
               Add
@@ -154,17 +152,15 @@ const EmployeeSkillWidget: React.FC<IEmployeeSkillWidgetProps> = (
               Delete
             </Button>
           </div>
-          <div>
-            {sel ? (
-              <EmpSkillList
-                item={sel}
-                skillLst={skillLst}
-                onSubmit={handleEmpSubmit}
-                selected={selectedLst}
-                selectedOnChange={setSelectedLst}
-              />
-            ) : null}
-          </div>
+          {sel ? (
+            <EmpSkillList
+              item={sel}
+              skillLst={skillLst}
+              onSubmit={handleEmpSubmit}
+              selected={selectedLst}
+              selectedOnChange={setSelectedLst}
+            />
+          ) : null}
         </Grid>
       </Grid>
       <MyDialog open={addLstOpen} onClose={() => setAddLstOpen(false)}>

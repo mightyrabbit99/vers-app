@@ -27,7 +27,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface IForecastListWidgetProps {
+  title?: string;
   lst: { [id: number]: Forecast };
+  fNLst?: number[];
   newForecast?: Forecast;
   edit?: boolean;
   feedback?: any;
@@ -43,7 +45,9 @@ const ForecastListWidget: React.FC<IForecastListWidgetProps> = (
 ) => {
   const classes = useStyles();
   const {
+    title,
     lst,
+    fNLst,
     newForecast,
     edit = true,
     feedback,
@@ -90,7 +94,7 @@ const ForecastListWidget: React.FC<IForecastListWidgetProps> = (
 
   return (
     <ListWidget
-      title="Forecasts"
+      title={title ?? "Forecasts"}
       disableCreate={!edit}
       disableDelete={selected.length === 0 || !edit}
       createOnClick={handleCreateOnClick}
@@ -100,6 +104,7 @@ const ForecastListWidget: React.FC<IForecastListWidgetProps> = (
     >
       <ForecastMainList
         lst={lst}
+        fNLst={fNLst}
         onSubmit={handleSubmit}
         selected={selected}
         selectedOnChange={setSelected}

@@ -13,7 +13,6 @@ import { clearFeedback, submitExcel } from "src/slices/sync";
 import { Forecast, ItemType } from "src/kernel";
 import ExcelProcessor2 from "src/kernel/ExcelProcessor2";
 
-
 const useStyles = makeStyles((theme) => ({
   widget: {
     padding: theme.spacing(2),
@@ -66,6 +65,7 @@ const ForecastView: React.FC<IForecastViewProps> = (props) => {
         <Grid item xs={12}>
           <Paper className={classes.widget}>
             <ForecastListWidget
+              title="Forecast"
               lst={forecasts}
               newForecast={newForecast}
               feedback={feedback}

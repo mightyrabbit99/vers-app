@@ -45,6 +45,7 @@ type FL = { [id: number]: Forecast };
 
 interface IForecastMainListProps {
   lst: FL;
+  fNLst?: number[];
   onSubmit: (f: Forecast) => void;
   selected?: number[];
   selectedOnChange?: (ids: number[]) => void;
@@ -60,9 +61,11 @@ const initState: IForecastMainListState = {
   chgLst: [],
 };
 
+const zwoelf = [...new Array(12).keys()].map((x, idx) => idx + 1);
+
 const ForecastMainList: React.FC<IForecastMainListProps> = (props) => {
   const classes = useStyles(props);
-  const { lst, onSubmit, selected, selectedOnChange } = props;
+  const { lst, fNLst = zwoelf, onSubmit, selected, selectedOnChange } = props;
 
   const [state, setState] = React.useState<IForecastMainListState>(initState);
   const { chgLst, stateLst } = state;
@@ -88,9 +91,7 @@ const ForecastMainList: React.FC<IForecastMainListProps> = (props) => {
   ) => {
     let { value } = e.target;
     let i = p.forecasts.findIndex((x) => x.n === n);
-    let floatVal = parseFloat(value);
-    let noChg = isNaN(floatVal) && floatVal === p.forecasts[i].val;
-    if (noChg) return;
+    if (value !== "" && !/^([0-9]*[.])?[0-9]*$/.test(value)) return;
     let newForecasts = [...p.forecasts];
     if (i === -1) {
       newForecasts.push({ n, val: value });
@@ -117,7 +118,11 @@ const ForecastMainList: React.FC<IForecastMainListProps> = (props) => {
     e: React.ChangeEvent<any>
   ) => {
     let { value } = e.target;
-    e.target.value = value === "" ? 0.0 : parseFloat(value);
+    if (value === "") {
+      e.target.value = 0.0;
+    } else {
+      e.target.value = parseFloat(value);
+    }
     handleForecastChg(n, p)(e);
   };
 
@@ -150,7 +155,7 @@ const ForecastMainList: React.FC<IForecastMainListProps> = (props) => {
         return `${d.getFullYear()} - ${d.getMonth() + 1}`;
       },
     },
-    ...[...new Array(12).keys()].map((x, idx) => idx + 1).map(x => ({
+    ...fNLst.map((x) => ({
       title: `n + ${x}`,
       extractor: (p: Forecast) => (
         <TextField
@@ -158,7 +163,6 @@ const ForecastMainList: React.FC<IForecastMainListProps> = (props) => {
           value={getForecastVal(x, p)}
           onChange={handleForecastChg(x, p)}
           onBlur={handleForecastRealChg(x, p)}
-          type="number"
         />
       ),
     })),
@@ -195,7 +199,6 @@ const ForecastMainList: React.FC<IForecastMainListProps> = (props) => {
         cols={cols}
         selected={selected}
         selectedOnChange={selectedOnChange}
-        width="70vw"
         minWidth={950}
         size="small"
         padding="none"

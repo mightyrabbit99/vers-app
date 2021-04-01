@@ -13,6 +13,7 @@ const useStyles = makeStyles((theme) => ({
   header: {
     display: "flex",
     flexDirection: "row",
+    height: "15%",
   },
   ctrlButtons: {
     display: "flex",
@@ -22,8 +23,12 @@ const useStyles = makeStyles((theme) => ({
       margin: theme.spacing(1),
     },
   },
+  buttonIcon: {
+    width: 23,
+    heiht: 23,
+  },
   title: {
-    height: "15%",
+    
   },
   content: {
     height: "85%",
@@ -99,12 +104,12 @@ const ListWidget: React.FC<IListWidgetProps> = (props) => {
         <div className={classes.ctrlButtons}>
           {downloadExcel ? (
             <IconButton onClick={downloadExcel}>
-              <CloudDownload />
+              <CloudDownload className={classes.buttonIcon}/>
             </IconButton>
           ) : null}
           {uploadExcel ? (
             <IconButton onClick={uploadOnClick}>
-              <CloudUpload />
+              <CloudUpload className={classes.buttonIcon}/>
             </IconButton>
           ) : null}
           <Button

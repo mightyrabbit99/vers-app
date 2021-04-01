@@ -48,14 +48,12 @@ interface IJobSkillWidgetProps {
   onSubmit?: (p: Job) => void;
 }
 
-const JobSkillWidget: React.FC<IJobSkillWidgetProps> = (
-  props
-) => {
+const JobSkillWidget: React.FC<IJobSkillWidgetProps> = (props) => {
   const classes = useStyles();
   const { lst, skillLst, onSubmit } = props;
   const [sel, setSel] = React.useState<Job>();
   React.useEffect(() => {
-    setSel(sel => sel && sel.id in lst ? lst[sel.id] : undefined);
+    setSel((sel) => (sel && sel.id in lst ? lst[sel.id] : undefined));
   }, [lst]);
 
   const [addLstOpen, setAddLstOpen] = React.useState(false);
@@ -115,7 +113,7 @@ const JobSkillWidget: React.FC<IJobSkillWidgetProps> = (
   const handleJobSubmit = (j: Job) => {
     setSel(j);
     onSubmit && onSubmit(j);
-  }
+  };
 
   const genListItem = (e: Job, idx: number) => (
     <ListItem
@@ -169,17 +167,15 @@ const JobSkillWidget: React.FC<IJobSkillWidgetProps> = (
               Delete
             </Button>
           </div>
-          <div>
-            {sel ? (
-              <JobSkillList
-                item={sel}
-                skillLst={skillLst}
-                onSubmit={handleJobSubmit}
-                selected={selectedLst}
-                selectedOnChange={setSelectedLst}
-              />
-            ) : null}
-          </div>
+          {sel ? (
+            <JobSkillList
+              item={sel}
+              skillLst={skillLst}
+              onSubmit={handleJobSubmit}
+              selected={selectedLst}
+              selectedOnChange={setSelectedLst}
+            />
+          ) : null}
         </Grid>
       </Grid>
       <MyDialog open={addLstOpen} onClose={() => setAddLstOpen(false)}>
