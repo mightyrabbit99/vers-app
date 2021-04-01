@@ -63,9 +63,9 @@ function* reloadData() {
   newSubsector = k.subsecStore.getNew();
   skills = k.skillStore.getLst((x) => x.subsector in subsectors);
   newSkill = k.skillStore.getNew();
-  employees = k.empStore.getLst();
+  employees = k.empStore.getLst((x) => x.subsector in subsectors);
   newEmployee = k.empStore.getNew();
-  jobs = k.jobStore.getLst();
+  jobs = k.jobStore.getLst((x) => x.subsector in subsectors);
   newJob = k.jobStore.getNew();
   forecasts = k.forecastStore.getLst();
   newForecast = k.forecastStore.getNew();

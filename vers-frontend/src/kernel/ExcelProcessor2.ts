@@ -237,7 +237,7 @@ const readCalEventSheet = (ws: Excel.Worksheet): CalEventObj[] => {
   ws.eachRow((row, rowIndex) => {
     if (rowIndex === 1 || !checkRow(row)) return;
     const values: CValMap = row.values;
-    [start, end, name, eventType] = [1, 2, 3, 4].map((x) =>
+    [name, eventType, start, end] = [1, 2, 3, 4].map((x) =>
       `${values[x]}`.trim()
     );
 
