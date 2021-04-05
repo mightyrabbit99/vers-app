@@ -4,6 +4,7 @@ import { MyError, SyncState } from "src/types";
 
 export const initialState: SyncState = {
   syncing: false,
+  fetching: false,
 };
 
 const syncSlice = createSlice({
@@ -11,17 +12,14 @@ const syncSlice = createSlice({
   initialState,
   reducers: {
     fetchData: (state, { payload }: PayloadAction<undefined | ItemType | ItemType[]>) => {
-      state.syncing = true;
+      state.fetching = true;
     },
     fetchDataSuccess: (state) => {
-      state.syncing = false;
+      state.fetching = false;
     },
     fetchDataError: (state, { payload }: PayloadAction<undefined | MyError>) => {
-      state.syncing = false;
+      state.fetching = false;
       state.error = payload;
-    },
-    syncing: (state) => {
-      state.syncing = true;
     },
     submitError: (state, { payload }: PayloadAction<undefined | MyError>) => {
       state.syncing = false;
@@ -59,7 +57,6 @@ export const {
   fetchData,
   fetchDataSuccess,
   fetchDataError,
-  syncing,
   submitSuccess,
   submitError,
   createNew,

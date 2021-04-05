@@ -121,6 +121,7 @@ export interface DataState {
 
 export interface SyncState {
   syncing: boolean;
+  fetching: boolean;
   feedback?: any;
   error?: MyError;
 }

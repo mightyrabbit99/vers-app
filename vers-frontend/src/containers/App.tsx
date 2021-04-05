@@ -4,7 +4,7 @@ import { Redirect, Route, Switch } from "react-router-dom";
 import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { green, purple } from "@material-ui/core/colors";
 import Snackbar from "@material-ui/core/Snackbar";
-import Alert from "@material-ui/lab/Alert";
+import Alert, { Color } from "@material-ui/lab/Alert";
 
 import SigninPage from "./SignInPage";
 import DashboardPage from "./DashboardPage";
@@ -29,21 +29,56 @@ const theme = createMuiTheme({
   },
 });
 
+interface NoteState {
+  open: boolean;
+  ready: boolean;
+  message: string;
+  severity: Color;
+}
+
+const initNoteState: NoteState = {
+  open: false,
+  ready: false,
+  message: "",
+  severity: "error",
+};
+
 const App: React.FC<IAppProps> = () => {
   const dispatch = useDispatch();
   const { authenticated: auth, syncing } = useSelector(getSession);
   const { selectedPlantId: pId } = useSelector(getData);
-  const { error } = useSelector(getSync);
+  const { error, feedback, syncing: submitting } = useSelector(getSync);
 
-  const [open, setOpen] = React.useState(false);
+  const [noteState, setNoteState] = React.useState<NoteState>(initNoteState);
   React.useEffect(() => {
-    setOpen(!!error);
+    error &&
+      setNoteState({
+        open: true,
+        ready: false,
+        message: error.message ?? "",
+        severity: "error",
+      });
   }, [error]);
 
-  const handleClose = () => { 
+  React.useEffect(() => {
+    setNoteState((s) =>
+      submitting
+        ? { ...s, ready: true }
+        : !error && s.ready && !feedback
+        ? {
+            open: true,
+            ready: false,
+            message: "Success",
+            severity: "success",
+          }
+        : s
+    );
+  }, [feedback, submitting, error]);
+
+  const handleClose = () => {
     dispatch(clearFeedback());
-    setOpen(false); 
-  }
+    setNoteState({ ...noteState, open: false });
+  };
 
   k.trigger = () => {
     dispatch(reload());
@@ -95,9 +130,13 @@ const App: React.FC<IAppProps> = () => {
           <SigninPage />
         </Route>
       </Switch>
-      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity={"error"}>
-          {error?.message}
+      <Snackbar
+        open={noteState.open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+      >
+        <Alert onClose={handleClose} severity={noteState.severity}>
+          {noteState.message}
         </Alert>
       </Snackbar>
     </ThemeProvider>

@@ -582,6 +582,8 @@ class Kernel {
         return await this.saveEmpObjs(plantId, objs as EmployeeObj[]);
       case ItemType.Forecast:
         return await this.saveForecastObjs(objs as ForecastObj[]);
+      case ItemType.CalEvent:
+        return await this.saveCalEventObjs(objs as CalEventObj[]);
     }
   };
 

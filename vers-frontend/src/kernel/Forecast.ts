@@ -64,12 +64,11 @@ const del = async (t: Forecast) => {
 };
 
 const generator = (init?: Forecast): Forecast => {
-  let forecasts = init?.forecasts
-    ? init.forecasts.reduce((pr: any, cu: any) => {
-        pr[cu.n] = cu.val;
-        return pr;
-      }, {} as { [n: number]: number })
-    : {};
+  let forecasts =
+    init?.forecasts?.reduce((pr: any, cu: any) => {
+      pr[cu.n] = cu.val;
+      return pr;
+    }, {} as { [n: number]: number }) ?? {};
   return {
     id: -1,
     _type: ItemType.Forecast,
