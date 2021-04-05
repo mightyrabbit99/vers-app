@@ -127,7 +127,7 @@ const CalendarView: React.FC<ICalendarViewProps> = () => {
   const handleSelectDate = (a: Date) => {
     let dd = a.toISOString().slice(0, 10);
     if (!formData) return;
-    setFormData({ ...formData, start: dd, end: dd });
+    setFormData({ ...formData, ...newCalEvent, start: dd, end: dd });
     setFormOpen(true);
   };
 

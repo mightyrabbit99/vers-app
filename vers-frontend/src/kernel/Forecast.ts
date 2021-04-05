@@ -63,18 +63,25 @@ const del = async (t: Forecast) => {
   return { success: res.status === 204, statusText: res.statusText, data: {} };
 };
 
-const generator = (init?: any): Forecast => ({
-  id: -1,
-  _type: ItemType.Forecast,
-  on: "",
-  forecasts: [...new Array(12).keys()]
-    .map((x, idx) => idx + 1)
-    .map((x) => ({
-      id: -1,
-      n: x,
-      val: 0.0,
-    })),
-});
+const generator = (init?: Forecast): Forecast => {
+  let forecasts = init?.forecasts
+    ? init.forecasts.reduce((pr: any, cu: any) => {
+        pr[cu.n] = cu.val;
+        return pr;
+      }, {} as { [n: number]: number })
+    : {};
+  return {
+    id: -1,
+    _type: ItemType.Forecast,
+    on: init?.on ?? "",
+    forecasts: [...new Array(12).keys()]
+      .map((x, idx) => idx + 1)
+      .map((x) => ({
+        n: x,
+        val: forecasts[x] ?? 0.0,
+      })),
+  };
+};
 
 const hasher = (t: Forecast) => t.on;
 

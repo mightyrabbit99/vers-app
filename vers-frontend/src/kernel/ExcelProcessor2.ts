@@ -52,14 +52,14 @@ interface EmployeeObj extends ExcelObjT {
 interface CalEventObj extends ExcelObjT {
   _type: ItemType.CalEvent;
   name: string;
-  start: string;
-  end: string;
+  start: number;
+  end: number;
   eventType: string;
 }
 
 interface ForecastObj extends ExcelObjT {
   _type: ItemType.Forecast;
-  on: Date;
+  on: number;
   forecasts: { n: number; val: number }[];
 }
 
@@ -245,8 +245,8 @@ const readCalEventSheet = (ws: Excel.Worksheet): CalEventObj[] => {
       _type: ItemType.CalEvent,
       line: rowIndex,
       name,
-      start,
-      end,
+      start: Date.parse(start),
+      end: Date.parse(end),
       eventType,
     });
   });
@@ -273,9 +273,9 @@ const readForecastSheet = (ws: Excel.Worksheet): ForecastObj[] => {
     ans.push({
       _type: ItemType.Forecast,
       line: rowIndex,
-      on: new Date(on),
+      on: Date.parse(on),
       forecasts: forecasts.map((x, idx) => ({
-        n: idx,
+        n: idx + 1,
         val: isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10),
       })),
     });
@@ -382,7 +382,13 @@ const calEventSheetWriter = (calEvents: CalEventObj[]) => (
     { header: "Event Type", key: "eventType" },
   ] as Excel.Column[];
 
-  ws.addRows(calEvents);
+  ws.addRows(
+    calEvents.map((x) => ({
+      ...x,
+      start: new Date(x.start).toISOString().slice(0, 10),
+      end: new Date(x.end).toISOString().slice(0, 10),
+    }))
+  );
 };
 
 const forecastSheetWriter = (forecasts: ForecastObj[]) => (
@@ -396,7 +402,7 @@ const forecastSheetWriter = (forecasts: ForecastObj[]) => (
 
   ws.addRows(
     forecasts.map((fo) => ({
-      on: fo.on.toISOString().slice(0, 7),
+      on: new Date(fo.on).toISOString().slice(0, 7),
       ...fo.forecasts.reduce((pr, cu) => {
         pr[cu.n] = cu.val;
         return pr;
@@ -527,5 +533,13 @@ class ExcelProcessor2 {
   };
 }
 
-export type { ExcelObj, SectorObj, SubsectorObj, SkillObj, EmployeeObj };
+export type {
+  ExcelObj,
+  SectorObj,
+  SubsectorObj,
+  SkillObj,
+  EmployeeObj,
+  ForecastObj,
+  CalEventObj,
+};
 export default ExcelProcessor2;

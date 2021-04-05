@@ -17,6 +17,8 @@ import ExcelProcessor2, {
   SectorObj,
   SkillObj,
   SubsectorObj,
+  ForecastObj,
+  CalEventObj,
 } from "./ExcelProcessor2";
 import UserStore, { User } from "./User";
 import HeadCalc, { CalcVars } from "./HeadCalc";
@@ -171,7 +173,7 @@ class Kernel {
                 new Date(payload.content.start),
                 new Date(payload.content.end),
               ],
-              data: payload.content['id'],
+              data: payload.content["id"],
             });
           }
           this.trigger();
@@ -184,7 +186,7 @@ class Kernel {
                 new Date(payload.content.start),
                 new Date(payload.content.end),
               ],
-              data: payload.content['id'],
+              data: payload.content["id"],
             });
           }
           this.trigger();
@@ -536,6 +538,34 @@ class Kernel {
     return await Promise.all(objs.map(saveObj));
   };
 
+  private saveForecastObjs = async (
+    objs: ForecastObj[]
+  ): Promise<SubmitResult[]> => {
+    const st = this.forecastStore;
+    const saveObj = async (o: ForecastObj) => {
+      return await st.submitOrNew(
+        st.getNew({ ...o, on: new Date(o.on).toISOString().slice(0, 10) })
+      );
+    };
+    return await Promise.all(objs.map(saveObj));
+  };
+
+  private saveCalEventObjs = async (
+    objs: CalEventObj[]
+  ): Promise<SubmitResult[]> => {
+    const st = this.calEventStore;
+    const saveObj = async (o: CalEventObj) => {
+      return await st.submitOrNew(
+        st.getNew({
+          ...o,
+          start: new Date(o.start).toISOString().slice(0, 10),
+          end: new Date(o.end).toISOString().slice(0, 10),
+        })
+      );
+    };
+    return await Promise.all(objs.map(saveObj));
+  };
+
   private _submitExcel = async (
     plantId: number,
     type: ItemType,
@@ -550,6 +580,8 @@ class Kernel {
         return await this.saveSkillObjs(plantId, objs as SkillObj[]);
       case ItemType.Employee:
         return await this.saveEmpObjs(plantId, objs as EmployeeObj[]);
+      case ItemType.Forecast:
+        return await this.saveForecastObjs(objs as ForecastObj[]);
     }
   };
 
@@ -618,8 +650,8 @@ class Kernel {
         _type: x._type,
         line: idx,
         name: x.title,
-        start: x.start,
-        end: x.end,
+        start: new Date(x.start).getTime(),
+        end: new Date(x.end).getTime(),
         eventType: x.eventType,
       }))
     );
@@ -630,11 +662,11 @@ class Kernel {
       items.map((x, idx) => ({
         _type: x._type,
         line: idx,
-        on: new Date(x.on),
+        on: new Date(x.on).getTime(),
         forecasts: x.forecasts,
       }))
     );
-  }
+  };
 
   public getExcel = async (type: ItemType, items?: Item[]) => {
     if (!items) {

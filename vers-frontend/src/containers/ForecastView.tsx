@@ -44,7 +44,7 @@ const ForecastView: React.FC<IForecastViewProps> = (props) => {
   let [fbOpen, setFbOpen] = React.useState(false);
   const handleUploadExcel = async (file: File) => {
     try {
-      let ans = await ExcelProcessor2.readEmployeeFile(file);
+      let ans = await ExcelProcessor2.readForecastFile(file);
       dispatch(submitExcel({ type: ItemType.Forecast, data: ans }));
     } catch (e) {
       setFbOpen(true);
