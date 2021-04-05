@@ -33,6 +33,7 @@ import BarChartIcon from "@material-ui/icons/BarChart";
 import LayersIcon from "@material-ui/icons/Layers";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import MenuIcon from "@material-ui/icons/Menu";
+import SchneiderLogo from "src/components/commons/SchneiderLogo";
 
 import SectorView from "./SectorView";
 import SubsectorView from "./SubsectorView";
@@ -42,14 +43,15 @@ import JobView from "./JobView";
 import ForecastView from "./ForecastView";
 import ChangeLogView from "./ChangeLogView";
 import CalendarView from "./CalendarView";
+import HeadcountView from "./HeadcountView";
 
 import { clearFeedback, fetchData } from "src/slices/sync";
 import { logout } from "src/slices/session";
 import { selPlant } from "src/slices/data";
 import { getData, getSession } from "src/selectors";
 import { AccessLevel, ItemType } from "src/kernel";
-import SchneiderLogo from "src/components/commons/SchneiderLogo";
-import HeadcountView from "./HeadcountView";
+import { initViewState, ViewContext } from "src/contexts";
+
 
 function Copyright() {
   return (
@@ -205,6 +207,12 @@ const Dashboard: React.FC = () => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
   let lastI = localStorage.getItem("lastDashboardView");
+  const [viewState, setViewState] = React.useState(initViewState);
+  React.useEffect(() => {
+    setViewState({
+      viewWidth: open ? 980 : 1150,
+    });
+  }, [open]);
   const [currView, setCurrView] = React.useState(lastI ? parseInt(lastI) : 0);
   const [mainAnchorEl, setMainAnchorEl] = React.useState<null | HTMLElement>(
     null
@@ -259,7 +267,7 @@ const Dashboard: React.FC = () => {
 
   const handleViewAccessCtrl = () => {
     history.push("/access_ctrl");
-  }
+  };
 
   const cannotView = (i: DashboardView) => {
     if (user?.is_superuser) return false;
@@ -478,7 +486,9 @@ const Dashboard: React.FC = () => {
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
           <Container maxWidth="lg" className={classes.container}>
-            <div>{genView()}</div>
+            <ViewContext.Provider value={viewState}>
+              {genView()}
+            </ViewContext.Provider>
             <Box pt={4}>
               <Copyright />
             </Box>
@@ -503,7 +513,9 @@ const Dashboard: React.FC = () => {
         onClose={handlePageSelClose}
       >
         <MenuItem onClick={toPlant}>Plants</MenuItem>
-        {user?.is_superuser ? <MenuItem onClick={handleViewAccessCtrl}>Access Control</MenuItem> : null}
+        {user?.is_superuser ? (
+          <MenuItem onClick={handleViewAccessCtrl}>Access Control</MenuItem>
+        ) : null}
       </Menu>
       <Backdrop className={classes.backdrop} open={loading}>
         <CircularProgress color="inherit" />

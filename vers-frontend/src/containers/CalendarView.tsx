@@ -21,6 +21,7 @@ import ExcelProcessor2 from "src/kernel/ExcelProcessor2";
 import ExcelUploadForm from "src/components/forms/ExcelUploadForm";
 import { calExcelUrl } from "src/kernel/Fetcher";
 import Calendar, { Event } from "src/components/calendar/Calendar";
+import { ViewContext } from "src/contexts";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -166,11 +167,20 @@ const CalendarView: React.FC<ICalendarViewProps> = () => {
           <div className={classes.rightOffset} />
         </div>
         <div className={classes.content}>
-          <Calendar
-            events={myEventsList}
-            onSelectEvent={handleSelectEvent}
-            onSelectDate={handleSelectDate}
-          />
+          <ViewContext.Consumer>
+            {({ viewWidth }) => {
+              return (
+                <Calendar
+                  events={myEventsList}
+                  onSelectEvent={handleSelectEvent}
+                  onSelectDate={handleSelectDate}
+                  style={{
+                    width: viewWidth,
+                  }}
+                />
+              );
+            }}
+          </ViewContext.Consumer>
         </div>
       </div>
       <MyDialog open={formOpen} onClose={handleFormClose}>
