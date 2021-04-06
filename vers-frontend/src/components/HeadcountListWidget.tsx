@@ -149,14 +149,22 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
     // calc available days of the month
     if (!state.selectedMonth) return;
     let mo = state.selectedMonth;
-    dispatch({
-      type: "setAvailDaysInMonth",
-      data: k.cal.getDaysLeftInMonth(new Date(mo)),
-    });
+    let isCancelled = false;
+    let f = async () => {
+      let data = k.cal.getDaysLeftInMonth(new Date(mo));
+      if (!isCancelled) dispatch({
+        type: "setAvailDaysInMonth",
+        data
+      });
+    }
+    f();
+    return () => {
+      isCancelled = true;
+    }
   }, [state.selectedMonth]);
 
   const genSkillLst = React.useCallback(
-    (vars?: CalcVars, forecastVal?: number, selectedMonth?: string) => {
+    async (vars?: CalcVars, forecastVal?: number, selectedMonth?: string) => {
       let skillLst = Object.values(skills);
       if (vars) k.setVars(vars);
       if (forecastVal !== undefined && selectedMonth)
@@ -169,14 +177,26 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
             selectedMonth
           ),
         }));
-      dispatch({ type: "setSkillLst", data: skillLst });
+      return skillLst;
     },
     [skills, subsectors]
   );
 
   React.useEffect(() => {
     // calculate skill list and update calc vars
-    genSkillLst(state.formData, state.forecastVal, state.selectedMonth);
+    let isCancelled = false;
+    let f = async () => {
+      let skillLst = await genSkillLst(
+        state.formData,
+        state.forecastVal,
+        state.selectedMonth
+      );
+      if (!isCancelled) dispatch({ type: "setSkillLst", data: skillLst });
+    };
+    f();
+    return () => {
+      isCancelled = true;
+    };
   }, [genSkillLst, state.formData, state.selectedMonth, state.forecastVal]);
 
   const handleSelMonth = (e: React.ChangeEvent<any>) => {
