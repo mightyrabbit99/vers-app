@@ -17,15 +17,6 @@ def gen_plant_df():
   return df
 
 
-def gen_department_df():
-  df = pd.DataFrame(columns=['Name'])
-  for x in models.Department.objects.all():
-    df = df.append({
-        'Name': x.name
-    }, ignore_index=True)
-  return df
-
-
 def gen_sector_df():
   df = pd.DataFrame(columns=['Name', 'Plant'])
   for x in models.Sector.objects.all():
@@ -52,13 +43,13 @@ def gen_subsector_df():
 
 def gen_skill_df():
   df = pd.DataFrame(
-      columns=['Name', 'Subsector', 'Priority', 'Percentage of Sector'])
+      columns=['Name', 'Subsector', 'Priority', 'Percentage of Subsector'])
   for x in models.Skill.objects.all():
     df = df.append({
         'Name': x.name,
         'Subsector': x.subsector.name,
         'Priority': x.priority,
-        'Percentage of Sector': x.percentage_of_sector,
+        'Percentage of Sector': x.percentage_of_subsector,
     }, ignore_index=True)
   return df
 
@@ -137,7 +128,6 @@ def add(x, y):
 def write_excel():
   writer = pd.ExcelWriter('datas.xlsx')
   df1 = gen_plant_df()
-  df2 = gen_department_df()
   df3 = gen_sector_df()
   df4 = gen_subsector_df()
   df5 = gen_skill_df()
@@ -145,7 +135,6 @@ def write_excel():
   df7 = gen_forecast_df()
 
   df1.to_excel(writer, sheet_name='Plants')
-  df2.to_excel(writer, sheet_name='Departments')
   df3.to_excel(writer, sheet_name='Sectors')
   df4.to_excel(writer, sheet_name='Subsectors')
   df5.to_excel(writer, sheet_name='Skills')

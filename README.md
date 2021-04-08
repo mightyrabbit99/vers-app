@@ -1,18 +1,27 @@
-start server
+# Start Backend Server
 
-in ./backend
+cd ./backend
 python manage.py runserver
 
 
-start worker
+# Start Celery Worker
 
-in ./backend
+cd ./backend
 celery -A backend worker -l INFO
 
 
-compile frontend
+# Compile Frontend
 
-in ./vers-frontend
+cd ./vers-frontend
 npm build
+
+
+# Message Broker 
+
+## Rabbitmq
+
+### Open Management UI
+
+localhost:15672
 
 
