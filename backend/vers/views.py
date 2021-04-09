@@ -67,6 +67,8 @@ def get_objects(view):
     return models.Job.objects
   elif view == "forecast":
     return models.ForecastPack.objects
+  elif view == "user":
+    return models.User.objects
 
 
 def get_group(view, user):
@@ -87,13 +89,24 @@ def get_group(view, user):
   elif view == "forecast":
     return user.vers_user.forecast_group
 
-
 NONE = 3
 USER = 2
 OWNER = 1
 
 
 def perform_get_queryset(view, user):
+  if view == "user":
+    if user.is_superuser:
+      return models.User.objects.all()
+    else:
+      return models.User.objects.none()
+
+  if view == "cal":
+    if user.is_authenticated:
+      return models.CalEvent.objects.all()
+    else:
+      return models.CalEvent.objects.none()
+
   objects = get_objects(view)
   if user.is_superuser:
     return objects.all()
@@ -106,7 +119,7 @@ def perform_get_queryset(view, user):
   grp = get_group(view, user)
   if grp == NONE:
     return objects.none()
-  return objects  # .filter(owner=user)
+  return objects.all() # .filter(owner=user)
 
 
 def has_create_permission(view, user):
@@ -433,10 +446,17 @@ class ForecastView(viewsets.ModelViewSet):
 
 
 class CalEventView(viewsets.ModelViewSet):
+  txt = 'cal'
   serializer_class = serializers.CalEventSerializer
 
   def get_queryset(self):
     return models.CalEvent.objects.all()
+
+  def update(self, request, *args, **kwargs):
+    if has_update_permission(self.txt, self.request.user):
+      return super().update(request, *args, **kwargs)
+    else:
+      return Response(status=status.HTTP_403_FORBIDDEN)
   
   def perform_destroy(self, instance):
     lg.log_delete(
@@ -452,13 +472,16 @@ class UserView(viewsets.ModelViewSet):
   model = User
 
   def get_queryset(self):
-    return User.objects.all()
+    return perform_get_queryset(self.txt, self.request.user)
 
   def update(self, request, *args, **kwargs):
     if has_update_permission(self.txt, self.request.user):
       return super().update(request, *args, **kwargs)
     else:
       return Response(status=status.HTTP_403_FORBIDDEN)
+  
+  def create(self, request):
+    return Response(status=status.HTTP_404_NOT_FOUND)
 
   def perform_destroy(self, instance):
     lg.log_delete(
