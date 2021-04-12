@@ -8,6 +8,7 @@ import ForecastMainList from "./lists/ForecastMainList";
 import ListWidget from "./ListWidget";
 import MyDialog from "src/components/commons/Dialog";
 import ForecastForm from "src/components/forms/ForecastForm";
+import { forecastExcelUrl } from "src/kernel/Fetcher";
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -101,6 +102,7 @@ const ForecastListWidget: React.FC<IForecastListWidgetProps> = (
       deleteOnClick={handleDeleteOnClick}
       downloadExcel={downloadExcel}
       uploadExcel={uploadExcel}
+      excelTemplateUrl={forecastExcelUrl}
     >
       <ForecastMainList
         lst={lst}

@@ -73,7 +73,7 @@ class Plant(models.Model):
 class Sector(models.Model):
   name = models.CharField(max_length=50)
   plant = models.ForeignKey(
-      Plant, related_name='sectors', on_delete=models.PROTECT)
+      Plant, related_name='sectors', on_delete=models.CASCADE)
   owner = models.ForeignKey(
       User, related_name='sectors', on_delete=models.SET_NULL, null=True)
 
@@ -87,7 +87,7 @@ class Sector(models.Model):
 class Subsector(models.Model):
   name = models.CharField(max_length=50)
   sector = models.ForeignKey(
-      Sector, related_name='subsectors', on_delete=models.PROTECT)
+      Sector, related_name='subsectors', on_delete=models.CASCADE)
   cycle_time = models.FloatField()
   efficiency = models.FloatField()
   unit = models.CharField(max_length=50, null=True, blank=True)
@@ -106,7 +106,7 @@ class Skill(models.Model):
   priority = models.IntegerField()
   percentage_of_subsector = models.IntegerField()
   subsector = models.ForeignKey(
-      Subsector, related_name='skills', on_delete=models.PROTECT)
+      Subsector, related_name='skills', on_delete=models.CASCADE)
   owner = models.ForeignKey(
       User, related_name='skills', on_delete=models.SET_NULL, null=True)
 

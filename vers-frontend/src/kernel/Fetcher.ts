@@ -51,6 +51,7 @@ export const subsectorExcelUrl = `${xlsxTemplateHost}${process.env.REACT_APP_EXC
 export const skillExcelUrl = `${xlsxTemplateHost}${process.env.REACT_APP_EXCEL_SKILL_PATH}`;
 export const empExcelUrl = `${xlsxTemplateHost}${process.env.REACT_APP_EXCEL_EMPLOYEE_PATH}`;
 export const calExcelUrl = `${xlsxTemplateHost}${process.env.REACT_APP_EXCEL_CAL_EVENT_PATH}`;
+export const forecastExcelUrl = `${xlsxTemplateHost}${process.env.REACT_APP_EXCEL_FORECAST_PATH}`;
 
 const getCookie = (name: string) => {
   var cookieValue = null;

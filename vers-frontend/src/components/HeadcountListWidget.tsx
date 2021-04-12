@@ -20,7 +20,7 @@ import CalcVarsForm from "./forms/CalcVarsForm";
 const useStyles = makeStyles((theme) => ({
   root: {},
   ctrlPanel: {
-    width: 1000,
+    width: "inherit",
   },
   formControl: {
     width: "inherit",
