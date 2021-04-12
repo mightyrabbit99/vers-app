@@ -321,7 +321,7 @@ class SkillView(viewsets.ModelViewSet):
 class EmployeeView(viewsets.ModelViewSet):
   txt = "employee"
   serializer_class = serializers.EmployeeSerializer
-  permission_classes = [my_perms.VersPermission1]
+  permission_classes = [my_perms.VersPermission1,]
 
   def get_queryset(self):
     return perform_get_queryset(self.txt, self.request.user)

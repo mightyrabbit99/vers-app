@@ -120,6 +120,10 @@ class Skill(models.Model):
     unique_together = (("name", "subsector"),)
 
 
+class EmployeeFile(models.Model):
+  file: models.FileField(upload_to=up_path("files"))
+
+
 class Gender(models.TextChoices):
   MALE = "M", "Male"
   FEMALE = "F", "Female"
@@ -140,6 +144,7 @@ class Employee(models.Model):
   hire_date = models.DateField(null=True)
   profile_pic = models.ImageField(
       upload_to=up_path("profile_pic"), null=True)
+  files = models.ManyToManyField(EmployeeFile, related_name="employee")
 
   owner = models.ForeignKey(
       User, related_name='created_employee', on_delete=models.SET_NULL, null=True)
