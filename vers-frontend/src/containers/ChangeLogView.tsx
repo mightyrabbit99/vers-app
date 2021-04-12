@@ -13,11 +13,12 @@ import IconButton from "@material-ui/core/IconButton";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteIcon from "@material-ui/icons/Delete";
 
 import { Log, MyLog, LogType, DataType } from "src/kernel";
 import { getData } from "src/selectors";
 import { clearMyLog } from "src/slices/data";
+import clsx from "clsx";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -51,11 +52,21 @@ const useStyles = makeStyles((theme: Theme) => ({
   myLogItem: {
     width: "99%",
   },
+  myLogItemError: {
+    color: "red",
+  },
 }));
 
 const myGetIden = (data: any) => {
-  return data.name ?? data.title ?? data.on ?? ((data.first_name && data.last_name) ? `${data.first_name}, ${data.last_name}` : "");
-}
+  return (
+    data.name ??
+    data.title ??
+    data.on ??
+    (data.first_name && data.last_name
+      ? `${data.first_name}, ${data.last_name}`
+      : "")
+  );
+};
 
 const genDescStr = (log: Log) => {
   const genActionStr = (x: LogType) => {
@@ -90,7 +101,9 @@ const genDescStr = (log: Log) => {
         return "";
     }
   };
-  return `${genActionStr(log.type)} ${genDataTypeStr(log.dataType)} "${myGetIden(log.desc.original ?? log.desc.data)}"`;
+  return `${genActionStr(log.type)} ${genDataTypeStr(
+    log.dataType
+  )} "${myGetIden(log.desc.original ?? log.desc.data)}"`;
 };
 
 const ChangeLogView: React.FC = () => {
@@ -100,21 +113,33 @@ const ChangeLogView: React.FC = () => {
 
   const genDetail = (x: any) => {
     let iden = myGetIden(x.data);
-    return `${x.success ? "Success" : "Failed"}: ${x.data._type} "${iden}" ${x.statusText}`;
+    return `${x.success ? "Success" : "Failed"}: ${x.data._type} "${iden}" ${
+      x.statusText
+    }`;
   };
 
   const genFailDetail = (x: any) => {
-    let err_lst = Object.entries(x).filter(x => (x[0] !== "_type") && (x[1] instanceof Array)) as [string, string[]][];
-    return err_lst.map(x => x[1].map(y => `${x[0]}: ${y}`)).reduce((prev, curr) => `${prev}\n${curr}`, "");
-  }
+    let err_lst = Object.entries(x).filter(
+      (x) => x[0] !== "_type" && x[1] instanceof Array
+    ) as [string, string[]][];
+    return err_lst
+      .map((x) => x[1].map((y) => `${x[0]}: ${y}`))
+      .reduce((prev, curr) => `${prev}\n${curr}`, "");
+  };
 
   const handleDeleteMyLog = () => {
     dispatch(clearMyLog());
-  }
+  };
 
   const genMyLogCard = (log: MyLog, idx: number) => {
     return (
-      <Accordion key={idx} className={classes.myLogItem}>
+      <Accordion
+        key={idx}
+        className={clsx(
+          classes.myLogItem,
+          log.vals.some((x) => !x.success) ? classes.myLogItemError : null
+        )}
+      >
         <AccordionSummary
           aria-controls="panel1a-content"
           id="panel1a-header"
@@ -153,10 +178,18 @@ const ChangeLogView: React.FC = () => {
       <Grid item xs={12}>
         <Paper className={classes.widget}>
           <div className={classes.topBar}>
-            <Typography component="h2" variant="h6" color="primary" gutterBottom>
+            <Typography
+              component="h2"
+              variant="h6"
+              color="primary"
+              gutterBottom
+            >
               My Changes
             </Typography>
-            <IconButton className={classes.rightItem} onClick={handleDeleteMyLog}>
+            <IconButton
+              className={classes.rightItem}
+              onClick={handleDeleteMyLog}
+            >
               <DeleteIcon />
             </IconButton>
           </div>

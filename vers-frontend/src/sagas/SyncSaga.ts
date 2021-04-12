@@ -1,7 +1,7 @@
 import { all, put, select, takeLatest } from "redux-saga/effects";
 import k, { Result } from "src/kernel";
 import { getData } from "src/selectors";
-import { reload, selPlant } from "src/slices/data";
+import { reload, selPlant, _saveData } from "src/slices/data";
 import {
   createNew,
   erase,
@@ -43,7 +43,7 @@ function* postItemThenSave({ payload }: CreateNewAction) {
     const feedback: Result = yield k.saveNew(payload);
     if (feedback.success) {
       yield put(submitSuccess(undefined));
-      //yield put(_saveData(payload));
+      yield put(_saveData(payload));
     } else {
       yield put(submitSuccess(feedback));
     }
@@ -62,7 +62,6 @@ function* putItem({ payload }: ModifyAction) {
       res = yield k.save(p);
       if (!res.success) {
         yield k.refresh();
-        yield put(reload());
         break;
       }
     }
@@ -82,7 +81,6 @@ function* deleteItem({ payload }: EraseAction) {
       res = yield k.del(p);
       if (!res.success) {
         yield k.refresh();
-        yield put(reload());
         break;
       }
     }
@@ -98,7 +96,13 @@ function* submitExcelData({ payload }: SubmitExcelAction) {
   let res: Result[] = yield k.submitExcel(pId, type, data);
   if (res.some((x) => !x.success)) {
     yield put(submitError({ message: "Some Error Occurred: See Log" }));
+  } else {
+    yield put(submitSuccess());
   }
+}
+
+function* reloadData() {
+  yield put(reload());
 }
 
 function* syncSaga() {
@@ -108,6 +112,7 @@ function* syncSaga() {
     takeLatest(modify.type, putItem),
     takeLatest(erase.type, deleteItem),
     takeLatest(submitExcel.type, submitExcelData),
+    takeLatest(submitSuccess.type, reloadData),
   ]);
 }
 

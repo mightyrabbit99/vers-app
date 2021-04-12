@@ -15,9 +15,7 @@ import PlantPage from "./PlantPage";
 import AccessCtrlPage from "./AccessCtrlPage";
 
 import { getData, getSession, getSync } from "src/selectors";
-import { reload } from "src/slices/data";
 import { initLogin } from "src/slices/session";
-import k from "src/kernel";
 import { clearFeedback } from "src/slices/sync";
 
 interface IAppProps {}
@@ -46,7 +44,7 @@ const initNoteState: NoteState = {
 const App: React.FC<IAppProps> = () => {
   const dispatch = useDispatch();
   const { authenticated: auth, syncing } = useSelector(getSession);
-  const { selectedPlantId: pId } = useSelector(getData);
+  const { selectedPlantId: pId, loading } = useSelector(getData);
   const { error, feedback, syncing: submitting } = useSelector(getSync);
 
   const [noteState, setNoteState] = React.useState<NoteState>(initNoteState);
@@ -78,10 +76,6 @@ const App: React.FC<IAppProps> = () => {
   const handleClose = () => {
     dispatch(clearFeedback());
     setNoteState({ ...noteState, open: false });
-  };
-
-  k.trigger = () => {
-    dispatch(reload());
   };
 
   React.useEffect(() => {

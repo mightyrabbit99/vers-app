@@ -18,7 +18,7 @@ class VersUserSerializer(serializers.ModelSerializer):
   class Meta:
     model = models.VersUser
     fields = ['plant_group', 'sector_group', 'subsector_group',
-              'employee_group', 'job_group', 'skill_group',]
+              'employee_group', 'job_group', 'skill_group', ]
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -344,7 +344,7 @@ class JobSerializer(serializers.ModelSerializer):
     emp_assigned_data = validated_data.pop('emp_assigned')
     job = models.Job(**validated_data)
     job.save()
-    
+
     emps = models.Employee.objects.filter(pk__in=emp_assigned_data)
     job.emp_assigned.set(emps)
 
@@ -386,9 +386,15 @@ class JobSerializer(serializers.ModelSerializer):
     fields = '__all__'
 
 
+class EmpSkillMatrixSerializer2(serializers.ModelSerializer):
+  class Meta:
+    model = models.EmpSkillMatrix
+    fields = ['employee', 'level', 'desc']
+
+
 class SkillSerializer(serializers.ModelSerializer):
   jobs = JobSkillMatrixSerializer(many=True, read_only=True)
-  employees = EmpSkillMatrixSerializer(many=True, read_only=True)
+  employees = EmpSkillMatrixSerializer2(many=True, read_only=True)
 
   def notify(self, typ, res):
     notify_consumer(typ, lg.SKILL, SkillSerializer(res).data)
@@ -531,18 +537,17 @@ class CalEventSerializer(serializers.ModelSerializer):
     return super().validate(attrs)
 
   def create(self, validated_data):
-      new_cal = super().create(validated_data)
-      self.notify(lg.CREATE, new_cal)
-      return new_cal
+    new_cal = super().create(validated_data)
+    self.notify(lg.CREATE, new_cal)
+    return new_cal
 
   def update(self, instance, validated_data):
-      instance = super().update(instance, validated_data)
-      self.notify(lg.UPDATE, instance)
-      lg.log_update(
+    instance = super().update(instance, validated_data)
+    self.notify(lg.UPDATE, instance)
+    lg.log_update(
         data_type=lg.CAL_EVENT,
         user=self.get_request_user(), data=validated_data, origin=instance).save()
-      return instance
-
+    return instance
 
   class Meta:
     model = models.CalEvent

@@ -16,14 +16,22 @@ const HeadcountMainList: React.FC<IHeadcountMainListProps> = (props) => {
       extractor: (p: Skill) =>
         subsectorLst[p.subsector] ? subsectorLst[p.subsector].name : "",
       comparator: (p1: Skill, p2: Skill) => {
-        let pp1 = subsectorLst[p1.subsector].name, pp2 = subsectorLst[p2.subsector].name;
+        let pp1 = subsectorLst[p1.subsector].name,
+          pp2 = subsectorLst[p2.subsector].name;
         return pp1 < pp2 ? 1 : pp1 === pp2 ? 0 : -1;
       },
     },
     {
       title: "Skill",
       extractor: (p: Skill) => p.name,
-      comparator: (p1: Skill, p2: Skill) => p1.name < p2.name ? 1 : p1.name === p2.name ? 0 : -1,
+      comparator: (p1: Skill, p2: Skill) =>
+        p1.name < p2.name ? 1 : p1.name === p2.name ? 0 : -1,
+    },
+    {
+      title: "Employee #",
+      extractor: (p: Skill) => p.employees.length,
+      comparator: (p1: Skill, p2: Skill) =>
+        p1.employees.length - p2.employees.length,
     },
     {
       title: "OT 0%",
@@ -52,12 +60,7 @@ const HeadcountMainList: React.FC<IHeadcountMainListProps> = (props) => {
     },
   ];
 
-  return (
-    <MainList
-      lst={Object.values(lst)}
-      cols={cols}
-    />
-  );
+  return <MainList lst={Object.values(lst)} cols={cols} />;
 };
 
 export default HeadcountMainList;

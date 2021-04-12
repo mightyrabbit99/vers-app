@@ -1,6 +1,6 @@
 import { Data } from "./Data";
 
-interface EmpSkillData extends Data {
+interface EmpSkillData {
   skill: number;
   level: number;
   desc: string;

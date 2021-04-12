@@ -215,7 +215,19 @@ class Kernel {
 
   private _log = (desc: string, ...data: SubmitResult[]) => {
     let sanitized = data.map((x) =>
-      x.success ? x : { success: x.success, statusText: x.statusText, data: {} }
+      x.success
+        ? x
+        : {
+            success: x.success,
+            statusText: x.statusText,
+            data: {
+              name: x.data.name,
+              firstName: x.data.firstName,
+              lastName: x.data.lastName,
+              on: x.data.on,
+              title: x.data.title,
+            },
+          }
     );
     this.personalLogs = [
       ...this.personalLogs,
@@ -256,7 +268,6 @@ class Kernel {
     let a = await this._saveNew(t);
     this._log("Create", a);
     if (!this.soc) {
-      this.getStore2(t._type)?.add(t);
       this.refresh();
       this.trigger();
     }
@@ -292,7 +303,6 @@ class Kernel {
     let a = await this._save(t);
     this._log("Save", a);
     if (!this.soc) {
-      this.getStore2(t._type)?.add(t);
       this.refresh();
       this.trigger();
     }
@@ -326,7 +336,7 @@ class Kernel {
     }
   };
 
-  private calcChanges = (payload: Item) => {
+  private calcCascadeChanges = (payload: Item) => {
     let mods: Item[] = [],
       dels: Item[] = [];
     let sectors = this.secStore.getLst();
@@ -354,21 +364,41 @@ class Kernel {
           break;
       }
     }
+    function cascadeMod2(p: Item) {
+      mods.push(p);
+    }
+
+    function cascadeMod(p: Item) {
+      switch (p._type) {
+        case ItemType.Skill:
+          (p as Skill).employees
+            .map((x) => employees[x.employee])
+            .forEach((x) =>
+              cascadeMod2({
+                ...x,
+                skills: x.skills.filter((y) => y.skill !== p.id),
+              })
+            );
+      }
+    }
     cascadeDel(payload);
+    cascadeMod(payload);
     mods.reverse();
     dels.reverse();
     return [mods, dels];
   };
 
   public del = async (t: Item) => {
-    let a = await this._del(t);
-    this._log("Delete", a);
+    let [mods, dels] = this.calcCascadeChanges(t);
+    let logs = [];
+    logs.push(...await Promise.all(mods.map((x) => this._save(x))));
+    logs.push(...await Promise.all(dels.map((x) => this._del(x))));
+    this._log("Delete", ...logs);
     if (!this.soc) {
-      this.getStore2(t._type)?.erase(t);
       this.refresh();
       this.trigger();
     }
-    return a;
+    return { success: logs.every(x => x.success) };
   };
 
   public login = async (

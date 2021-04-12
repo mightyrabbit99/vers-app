@@ -1,11 +1,17 @@
 import { Data } from "./Data";
 
+interface SkillEmpData {
+  employee: number;
+  level: number;
+  desc: string;
+}
+
 interface SkillData extends Data {
   name: string;
   priority: number;
   percentage_of_subsector: number;
   subsector: number;
-  employees: number[];
+  employees: SkillEmpData[];
   jobs: number[];
 }
 
@@ -19,5 +25,5 @@ const empty: SkillData = {
   jobs: [],
 }
 
-export type { SkillData };
+export type { SkillEmpData, SkillData };
 export { empty as emptySkillData };

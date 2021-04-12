@@ -119,12 +119,14 @@ function store<T extends ItemT>(
     submitNew = async (t: T) => {
       const res = await post(t);
       console.log(res);
+      res.success && this.add(res.data);
       return res;
     };
 
     submit = async (t: T) => {
       const res = await put(t);
       console.log(res);
+      res.success && this.add(res.data);
       return res;
     };
 
@@ -140,7 +142,9 @@ function store<T extends ItemT>(
     };
 
     remove = async (t: T) => {
-      return await del(t);
+      const res = await del(t);
+      res.success && this.erase(t);
+      return res;
     };
   };
 }

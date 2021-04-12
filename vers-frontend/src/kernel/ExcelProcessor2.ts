@@ -106,12 +106,12 @@ const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
   }
   const skillNames = getSkillNames(ws.getRow(1));
 
-  let sesaId, firstName, lastName, homeLocation;
+  let sesaId, firstName, lastName, homeLocation, department;
   ws.eachRow((row: Excel.Row, rowIndex) => {
     try {
       if (rowIndex === 1 || !checkRow(row)) return;
       const values: CValMap = row.values;
-      [sesaId, firstName, lastName, homeLocation] = [1, 2, 3, 5].map((x) =>
+      [sesaId, firstName, lastName, homeLocation, department] = [1, 2, 3, 4, 5].map((x) =>
         `${values[x]}`.trim()
       );
       if (sesaId === "") return;
@@ -130,6 +130,7 @@ const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
         firstName,
         lastName,
         homeLocation,
+        department,
         skills: Object.entries(skillNames)
           .filter((x) => x[0] in row.values)
           .map((x) => ({
@@ -320,6 +321,7 @@ const employeeSheetWriter = (emps: EmployeeObj[]) => (ws: Excel.Worksheet) => {
     { header: "First Name", key: "firstName" },
     { header: "Last Name", key: "lastName" },
     { header: "Home Location", key: "homeLocation" },
+    { header: "Department", key: "department" },
     ...[...skillSet].map((x) => ({ header: x, key: x })),
   ] as Excel.Column[];
 

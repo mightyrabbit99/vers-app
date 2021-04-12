@@ -46,7 +46,7 @@ const EmpSkillList: React.FC<IEmpSkillListProps> = (props) => {
     let newSelectedIds: number[];
 
     if (e.target.checked) {
-      newSelectedIds = empSkills.map((s) => s.id);
+      newSelectedIds = empSkills.map((s) => s.skill);
     } else {
       newSelectedIds = [];
     }
@@ -86,8 +86,8 @@ const EmpSkillList: React.FC<IEmpSkillListProps> = (props) => {
       <TableRow key={idx}>
         <TableCell padding="checkbox">
           <Checkbox
-            checked={selectedIds.includes(x.id)}
-            onChange={(event: any) => handleSelectOne(event, x.id)}
+            checked={selectedIds.includes(x.skill)}
+            onChange={(event: any) => handleSelectOne(event, x.skill)}
             value="true"
           />
         </TableCell>

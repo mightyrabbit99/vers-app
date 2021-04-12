@@ -1,4 +1,4 @@
-import { SkillData } from "./data";
+import { SkillData, SkillEmpData } from "./data";
 import Fetcher from "./Fetcher";
 import store, { ItemT, ItemType } from "./Store";
 
@@ -8,7 +8,7 @@ interface Skill extends ItemT {
   priority: number;
   percentageOfSector: number;
   subsector: number;
-  employees: number[];
+  employees: SkillEmpData[];
   jobs: number[];
   headcount: number;
 }

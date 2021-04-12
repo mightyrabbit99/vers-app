@@ -82,7 +82,7 @@ const EmployeeSkillWidget: React.FC<IEmployeeSkillWidgetProps> = (props) => {
     let emp = sel;
     let newEmp = {
       ...emp,
-      skills: emp.skills.filter((x) => !selectedLst.includes(x.id)),
+      skills: emp.skills.filter((x) => !selectedLst.includes(x.skill)),
     };
     setSelectedLst([]);
     onSubmit && onSubmit(newEmp);
