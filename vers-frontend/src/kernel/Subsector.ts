@@ -26,6 +26,7 @@ function dataToObj(x: SubsectorData): Subsector {
     skills: x.skills,
     employees: x.employees,
     jobs: x.jobs,
+    non_field_errors: x.non_field_errors,
   };
 }
 

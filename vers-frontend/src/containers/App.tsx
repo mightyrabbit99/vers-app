@@ -17,6 +17,8 @@ import AccessCtrlPage from "./AccessCtrlPage";
 import { getData, getSession, getSync } from "src/selectors";
 import { initLogin } from "src/slices/session";
 import { clearFeedback } from "src/slices/sync";
+import k from "src/kernel";
+import { reload } from "src/slices/data";
 
 interface IAppProps {}
 
@@ -44,7 +46,7 @@ const initNoteState: NoteState = {
 const App: React.FC<IAppProps> = () => {
   const dispatch = useDispatch();
   const { authenticated: auth, syncing } = useSelector(getSession);
-  const { selectedPlantId: pId, loading } = useSelector(getData);
+  const { selectedPlantId: pId } = useSelector(getData);
   const { error, feedback, syncing: submitting } = useSelector(getSync);
 
   const [noteState, setNoteState] = React.useState<NoteState>(initNoteState);
@@ -64,7 +66,7 @@ const App: React.FC<IAppProps> = () => {
         ? { ...s, ready: true }
         : !error && s.ready && !feedback
         ? {
-            open: true,
+            open: !feedback,
             ready: false,
             message: "Success",
             severity: "success",
@@ -81,6 +83,8 @@ const App: React.FC<IAppProps> = () => {
   React.useEffect(() => {
     dispatch(initLogin());
   }, [dispatch]);
+
+  k.trigger = () => { dispatch(reload()); };
 
   if (auth === undefined || syncing) return <SpinningBall />;
   return (

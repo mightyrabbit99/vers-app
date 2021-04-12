@@ -13,6 +13,7 @@ function dataToObj(x: ForecastData): Forecast {
     ...x,
     id: x.id ?? -1,
     _type: ItemType.Forecast,
+    non_field_errors: x.non_field_errors,
   };
 }
 

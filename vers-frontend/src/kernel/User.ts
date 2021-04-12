@@ -22,6 +22,7 @@ interface User extends ItemT {
 function dataToObj(x: UserData): User {
   return {
     _type: ItemType.User,
+    non_field_errors: x.non_field_errors,
     ...x,
   };
 }

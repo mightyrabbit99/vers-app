@@ -16,6 +16,7 @@ enum ItemType {
 interface ItemT {
   id: number;
   _type: ItemType;
+  non_field_errors?: string[];
   [str: string]: any;
 }
 

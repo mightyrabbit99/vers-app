@@ -25,6 +25,7 @@ function dataToObj(x: LogData): Log {
     dataType: x.data_type,
     timestamp: x.timestamp,
     desc: x.desc,
+    non_field_errors: x.non_field_errors,
   };
 }
 

@@ -25,6 +25,7 @@ function dataToObj(x: JobData): Job {
     subsector: x.subsector,
     empAssigned: x.emp_assigned,
     skillsRequired: x.skills_required,
+    non_field_errors: x.non_field_errors,
   };
 }
 

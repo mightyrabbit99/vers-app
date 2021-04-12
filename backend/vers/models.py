@@ -82,6 +82,7 @@ class Sector(models.Model):
 
   class Meta:
     db_table = 'sectors'
+    unique_together = (("name", "plant"),)
 
 
 class Subsector(models.Model):
@@ -99,10 +100,11 @@ class Subsector(models.Model):
 
   class Meta:
     db_table = 'subsectors'
+    unique_together = (("name", "sector"),)
 
 
 class Skill(models.Model):
-  name = models.CharField(max_length=50, unique=True)
+  name = models.CharField(max_length=50)
   priority = models.IntegerField()
   percentage_of_subsector = models.IntegerField()
   subsector = models.ForeignKey(
@@ -115,6 +117,7 @@ class Skill(models.Model):
 
   class Meta:
     db_table = "skills"
+    unique_together = (("name", "subsector"),)
 
 
 class Gender(models.TextChoices):

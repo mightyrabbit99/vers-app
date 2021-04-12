@@ -24,6 +24,8 @@ import UserStore, { User } from "./User";
 import HeadCalc, { CalcVars } from "./HeadCalc";
 import { Cal } from "src/utils/tools";
 
+const epsTi = 500;
+
 enum DataAction {
   CREATE_NEW = 0,
   EDIT = 1,
@@ -155,6 +157,12 @@ class Kernel {
   };
 
   public trigger = () => {};
+  private ti: NodeJS.Timeout | undefined;
+  private triggerDamp = () => {
+    if (this.ti) clearTimeout(this.ti);
+    this.ti = setTimeout(this.trigger, epsTi);
+  }
+
 
   public registerSocket = (soc?: WebSocket) => {
     let socket = soc ?? Fetcher.getSoc();
@@ -176,7 +184,7 @@ class Kernel {
               data: payload.content["id"],
             });
           }
-          this.trigger();
+          this.triggerDamp();
           break;
         case DataAction.DELETE:
           this.getStore(payload.data_type)?.eraseData(payload.content);
@@ -189,7 +197,7 @@ class Kernel {
               data: payload.content["id"],
             });
           }
-          this.trigger();
+          this.triggerDamp();
           break;
       }
     };

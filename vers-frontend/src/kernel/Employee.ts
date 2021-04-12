@@ -32,6 +32,7 @@ function dataToObj(x: EmployeeData): Employee {
     reportTo: x.report_to ?? -1,
     gender: x.gender,
     hireDate: x.hire_date ?? "",
+    non_field_errors: x.non_field_errors,
   };
 }
 

@@ -16,6 +16,7 @@ function dataToObj(x: SectorData): Sector {
     name: x.name,
     plant: x.plant,
     subsectors: x.subsectors,
+    non_field_errors: x.non_field_errors,
   };
 }
 

@@ -24,6 +24,7 @@ function dataToObj(x: SkillData): Skill {
     employees: x.employees,
     jobs: x.jobs,
     headcount: 0,
+    non_field_errors: x.non_field_errors,
   };
 }
 

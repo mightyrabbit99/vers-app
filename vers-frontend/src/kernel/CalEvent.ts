@@ -18,6 +18,7 @@ function dataToObj(x: CalEventData): CalEvent {
     start: x.start,
     end: x.end,
     eventType: x.event_type,
+    non_field_errors: x.non_field_errors,
   };
 }
 

@@ -1,5 +1,6 @@
 interface Data {
   id: number;
+  non_field_errors?: string[];
 }
 
 enum DataType {

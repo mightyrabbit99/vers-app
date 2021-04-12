@@ -1,7 +1,7 @@
 import { all, put, select, takeLatest } from "redux-saga/effects";
 import k, { Result } from "src/kernel";
 import { getData } from "src/selectors";
-import { reload, selPlant, _saveData } from "src/slices/data";
+import { reload, selPlant } from "src/slices/data";
 import {
   createNew,
   erase,
@@ -43,7 +43,6 @@ function* postItemThenSave({ payload }: CreateNewAction) {
     const feedback: Result = yield k.saveNew(payload);
     if (feedback.success) {
       yield put(submitSuccess(undefined));
-      yield put(_saveData(payload));
     } else {
       yield put(submitSuccess(feedback));
     }

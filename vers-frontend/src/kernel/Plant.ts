@@ -14,6 +14,7 @@ function dataToObj(x: PlantData): Plant {
     _type: ItemType.Plant,
     name: x.name,
     sectors: x.sectors,
+    non_field_errors: x.non_field_errors,
   };
 }
 
