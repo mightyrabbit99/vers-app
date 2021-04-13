@@ -26,6 +26,7 @@ hyperlink==21.0.0
 idna==3.1
 incremental==21.3.0
 kombu==5.0.2
+mysqlclient==2.0.3
 numpy==1.20.2
 openpyxl==3.0.7
 pandas==1.2.4

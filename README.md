@@ -11,35 +11,41 @@ Built using Django (python)
 ### Worker and Message Broker
 Built using Rabbitmq
 
-# Guide
-## Start Backend Server
+# Instructions
+## Backend (backend)
+### Make Migrations (DB Change Instructions)
+```
+python manage.py makemigrations
+```
+### Apply Migrations to DB
+```
+python manage.py migrate --database <db_name>
+```
+### Start Backend Server
 
 ```
-cd ./backend
-python manage.py runserver
+python manage.py runserver --settings=<path.to.settings> <ip>:<port>
 ```
 
-## Start Frontend Development Server
+### Start Celery Worker
 ```
-cd ./vers-frontend
+celery -A <name> worker -l INFO
+```
+
+### Open Rabbitmq Management Site
+goto http://localhost:15672  
+default user: guest, password: guest
+
+## Frontend (vers-frontend)
+### Start Frontend Development Server
+```
 npm start
 ```
 
-## Start Celery Worker
+### Compile Frontend
 ```
-cd ./backend
-celery -A backend worker -l INFO
-```
-
-## Compile Frontend
-```
-cd ./vers-frontend
 npm run build
 ```
-
-## Open Rabbitmq Management Site
-goto http://localhost:15672  
-default user: guest, password: guest
 
 # Dependencies
 ## Backend (python)
@@ -50,6 +56,9 @@ default user: guest, password: guest
 * captcha
 * django_celery_results
 * channels
+
+### Database
+* mysqlclient
 
 ### Data Processing
 * openpyxl

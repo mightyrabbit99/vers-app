@@ -29,6 +29,8 @@ ALLOWED_HOSTS = [
     '*'
 ]
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 
 # Application definition
 
@@ -85,18 +87,14 @@ ASGI_APPLICATION = 'backend.asgi.application'
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels.layers.InMemoryChannelLayer"
-    }
-}
-'''
-CHANNEL_LAYERS = {
-    "default": {
+    },
+    "redis": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             "hosts": [("127.0.0.1", 6379)],
         },
     },
 }
-'''
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
@@ -105,6 +103,22 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    },
+    'mymysql': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'vers_backend',
+        'USER': 'root',
+        'PASSWORD': '1234',
+        'HOST': 'localhost',
+        'PORT': '3306',
+    },
+    'viralmysql': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'vers_backend',
+        'USER': 'benn',
+        'PASSWORD': 'ahrg@35SAzx',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 
@@ -200,4 +214,3 @@ CELERY_BEAT_SCHEDULE = {
 }
 
 CELERY_TIMEZONE = 'UTC'
-
