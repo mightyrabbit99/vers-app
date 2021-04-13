@@ -360,6 +360,14 @@ class EmployeeView(viewsets.ModelViewSet):
     return super().perform_destroy(instance)
 
 
+class EmployeeFileView(viewsets.ModelViewSet):
+  serializer_class = serializers.EmployeeFileSerializer
+  permission_classes = [my_perms.VersPermission1]
+
+  def get_queryset(self):
+    return models.EmployeeFile.objects.all()
+
+
 class JobView(viewsets.ModelViewSet):
   txt = "job"
   serializer_class = serializers.JobSerializer

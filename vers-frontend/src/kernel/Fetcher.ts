@@ -188,23 +188,6 @@ class Fetcher {
     data: EmployeeData
   ): Promise<Result<EmployeeData>> => {
     return await axios.post(empUrl, data, Fetcher.getConfig());
-    /*
-    let fd = new FormData();
-    console.log(Object.entries(data));
-    Object.entries(data).forEach((x) => {
-      x[1] && fd.append(x[0], x[1]);
-    });
-    fd.delete("skills", Fetcher.getConfig());
-    console.log([...fd.entries()]);
-    let ans;
-    try {
-      ans = await axios.post(empUrl, fd);
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
-    console.log(ans);
-    return ans;*/
   };
 
   static postSkill = async (data: SkillData): Promise<Result<SkillData>> => {

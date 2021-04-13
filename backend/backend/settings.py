@@ -148,9 +148,15 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    BASE_DIR / "files",
     BASE_DIR / "vers/static",
 ]
+
+# Media files (other files)
+# https://stackoverflow.com/questions/402841/how-does-django-serve-media-files
+
+MEDIA_URL = '/files/'
+MEDIA_ROOT = BASE_DIR / 'files'
+
 
 # Authentication settings
 

@@ -254,6 +254,7 @@ def sesa_id_val(value):
     raise serializers.ValidationError(
         'This field must start with \'SESA\'')
 
+
 class EmployeeFileSerializer(serializers.ModelSerializer):
   class Meta:
     model = models.EmployeeFile
@@ -324,8 +325,8 @@ class EmployeeSerializer(serializers.ModelSerializer):
 
 class EmployeeFileSerializer(serializers.ModelSerializer):
   class Meta:
-    model = models.Employee
-    fields = ['sesa_id', 'files']
+    model = models.EmployeeFile
+    fields = '__all__'
 
 
 class JobSkillMatrixSerializer(serializers.ModelSerializer):

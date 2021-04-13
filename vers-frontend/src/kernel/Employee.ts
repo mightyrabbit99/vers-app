@@ -15,6 +15,7 @@ interface Employee extends ItemT {
   reportTo: number;
   gender: string;
   hireDate: string;
+  profilePic?: string | File;
 }
 
 function dataToObj(x: EmployeeData): Employee {
@@ -33,6 +34,7 @@ function dataToObj(x: EmployeeData): Employee {
     gender: x.gender,
     hireDate: x.hire_date ?? "",
     non_field_errors: x.non_field_errors,
+    profilePic: x.profile_pic,
   };
 }
 
@@ -50,6 +52,7 @@ function objToData(x: Employee): EmployeeData {
     report_to: x.reportTo === -1 ? undefined : x.reportTo,
     gender: x.gender,
     hire_date: x.hireDate === "" ? undefined : x.hireDate,
+    profile_pic: x.profilePic,
   };
 }
 

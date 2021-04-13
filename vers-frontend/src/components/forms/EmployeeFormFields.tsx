@@ -65,7 +65,7 @@ const EmployeeFF: React.FC<IEmployeeFFProps> = (props) => {
   };
 
   const handleChange = (e: React.ChangeEvent<any>) => {
-    let { name, value } = e.target;
+    let { name, value, files } = e.target;
     if (
       name === "gender" ||
       name === "reportTo" ||
@@ -74,6 +74,9 @@ const EmployeeFF: React.FC<IEmployeeFFProps> = (props) => {
       value = parseInt(value, 10);
       choices[name].init = value;
       value = choices[name].choices[value].value;
+    }
+    if (name === "profilePic") {
+      value = files[0];
     }
 
     chg(name, value);

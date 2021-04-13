@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 import enum
 
-user_upload_folder = 'files/'
+user_upload_folder = ''
 
 
 def up_path(path):
@@ -120,10 +120,6 @@ class Skill(models.Model):
     unique_together = (("name", "subsector"),)
 
 
-class EmployeeFile(models.Model):
-  file: models.FileField(upload_to=up_path("files"))
-
-
 class Gender(models.TextChoices):
   MALE = "M", "Male"
   FEMALE = "F", "Female"
@@ -144,7 +140,6 @@ class Employee(models.Model):
   hire_date = models.DateField(null=True)
   profile_pic = models.ImageField(
       upload_to=up_path("profile_pic"), null=True)
-  files = models.ManyToManyField(EmployeeFile, related_name="employee")
 
   owner = models.ForeignKey(
       User, related_name='created_employee', on_delete=models.SET_NULL, null=True)
@@ -154,6 +149,21 @@ class Employee(models.Model):
 
   class Meta:
     db_table = 'employees'
+
+
+class FileType(models.TextChoices):
+  PROFILE_PIC = 0, "Profile Pic"
+
+
+class EmployeeFile(models.Model):
+  file = models.FileField(upload_to=up_path("profile_pic"))
+  typ = models.IntegerField(choices=FileType.choices,
+                            default=FileType.PROFILE_PIC)
+  emp = models.ForeignKey(Employee, related_name="files",
+                          on_delete=models.CASCADE, null=True)
+
+  class Meta:
+    db_table = "employee_files"
 
 
 class SkillLevelChoices(models.IntegerChoices):
