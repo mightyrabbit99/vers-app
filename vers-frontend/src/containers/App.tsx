@@ -43,7 +43,7 @@ const initNoteState: NoteState = {
   severity: "error",
 };
 
-const App: React.FC<IAppProps> = () => {
+const App: React.FC<IAppProps> = (props) => {
   const dispatch = useDispatch();
   const { authenticated: auth, syncing } = useSelector(getSession);
   const { selectedPlantId: pId } = useSelector(getData);
@@ -85,46 +85,47 @@ const App: React.FC<IAppProps> = () => {
   }, [dispatch]);
 
   k.trigger = () => { dispatch(reload()); };
+  let p = window.location.pathname;
 
   if (auth === undefined || syncing) return <SpinningBall />;
   return (
     <ThemeProvider theme={theme}>
       <Switch>
-        <Route exact path="/">
+        <Route exact path={p}>
           {auth ? (
             pId ? (
-              <Redirect to="/dashboard" />
+              <Redirect to={`${p}/dashboard`} />
             ) : (
-              <Redirect to="/plants" />
+              <Redirect to={`${p}/plants`} />
             )
           ) : (
-            <Redirect to="/signin" />
+            <Redirect to={`${p}/signin`} />
           )}
         </Route>
-        <Route exact path="/dashboard">
+        <Route exact path={`${p}/dashboard`}>
           {auth ? (
             pId ? (
               <DashboardPage />
             ) : (
-              <Redirect to="/plants" />
+              <Redirect to={`${p}/plants`} />
             )
           ) : (
-            <Redirect to="/" />
+            <Redirect to={p} />
           )}
         </Route>
-        <Route exact path="/plants">
-          {auth ? <PlantPage /> : <Redirect to="/" />}
+        <Route exact path={`${p}/plants`}>
+          {auth ? <PlantPage /> : <Redirect to={p} />}
         </Route>
-        <Route exact path="/access_ctrl">
-          {auth ? <AccessCtrlPage /> : <Redirect to="/" />}
+        <Route exact path={`${p}/access_ctrl`}>
+          {auth ? <AccessCtrlPage /> : <Redirect to={p} />}
         </Route>
-        <Route exact path="/user">
-          {auth ? <ProfilePage /> : <Redirect to="/" />}
+        <Route exact path={`${p}/user`}>
+          {auth ? <ProfilePage /> : <Redirect to={p} />}
         </Route>
-        <Route exact path="/user_edit">
-          {auth ? <UserEditPage /> : <Redirect to="/" />}
+        <Route exact path={`${p}/user_edit`}>
+          {auth ? <UserEditPage /> : <Redirect to={p} />}
         </Route>
-        <Route exact path="/signin">
+        <Route exact path={`${p}/signin`}>
           <SigninPage />
         </Route>
       </Switch>

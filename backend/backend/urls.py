@@ -19,13 +19,15 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from rest_framework.authtoken.views import obtain_auth_token
+from .views import redirect_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
     path('captcha/', include('captcha.urls')),
-    path('', include('vers.urls')),
+    path('vers/', include('vers.urls')),
+    path('', redirect_view),
 ]
 
 # urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
