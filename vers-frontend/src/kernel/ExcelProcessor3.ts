@@ -53,8 +53,7 @@ interface EmployeeObj extends ExcelObjT {
   sesaId: string;
   firstName: string;
   lastName: string;
-  homeLocation: string;
-  department: string;
+  subsector: SubsectorObj;
   joinDate: Date;
   skills: SkillMatrixObj[];
 }
@@ -282,8 +281,8 @@ const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
     firstName,
     lastName,
     jobCode,
-    department,
-    homeLocation,
+    sector,
+    subsector,
     costType,
     contract,
     email,
@@ -303,14 +302,15 @@ const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
         firstName,
         lastName,
         jobCode,
-        department,
-        homeLocation,
+        sector,
+        subsector,
         costType,
         contract,
         email,
         joinDate,
       ] = enm(13).map((x) => values[x]);
-      if (!(joinDate instanceof Date)) throw new Error("Join Date must be a date");
+      if (!(joinDate instanceof Date))
+        throw new Error("Join Date must be a date");
       let skills: SkillMatrixObj[] = [];
       for (let i = 13; i < values.length; i++) {
         let v = values[i];
@@ -328,8 +328,16 @@ const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
         firstName: `${firstName}`.trim(),
         lastName: `${lastName}`.trim(),
         sesaId: `${sesa}`.trim(),
-        homeLocation: `${homeLocation}`.trim(),
-        department: `${department}`.trim(),
+        subsector: {
+          _type: ItemType.Subsector,
+          line: rowIndex,
+          name: `${subsector}`.trim(),
+          sector: {
+            _type: ItemType.Sector,
+            line: rowIndex,
+            name: `${sector}`.trim(),
+          },
+        },
         skills,
         joinDate,
       };

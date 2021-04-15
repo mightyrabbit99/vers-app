@@ -92,7 +92,8 @@ function* deleteItem({ payload }: EraseAction) {
 function* submitExcelData({ payload }: SubmitExcelAction) {
   let { selectedPlantId: pId } = yield select(getData);
   let { type, data } = payload;
-  let res: Result[] = yield k.submitExcel(pId, type, data);
+  k.setPid(pId);
+  let res: Result[] = yield k.submitExcel(type, data);
   if (res.some((x) => !x.success)) {
     yield put(submitError({ message: "Some Error Occurred: See Log" }));
   } else {

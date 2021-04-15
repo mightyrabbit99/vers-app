@@ -31,7 +31,7 @@ interface Store<T extends ItemT> {
   refresh: () => Promise<void>;
   get: (id: number) => T;
   getLst: (filterer?: (t: T) => boolean) => { [id: number]: T };
-  getNew: (init?: any) => T;
+  getNew: (init?: Partial<T>) => T;
 
   // local storage
   add: (t: any) => void;
@@ -113,7 +113,7 @@ function store<T extends ItemT>(
         : { ...this.store };
     };
 
-    getNew = (init?: any): T => {
+    getNew = (init?: Partial<T>): T => {
       return generator(init);
     };
 

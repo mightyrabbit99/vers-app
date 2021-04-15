@@ -11,7 +11,7 @@ import LogStore, { DataType, Log } from "./Log";
 import CalEventStore, { CalEvent } from "./CalEvent";
 import { MyLog } from "./types";
 
-import ExcelProcessor2, {
+import ExcelProcessor3, {
   EmployeeObj,
   ExcelObj,
   SectorObj,
@@ -19,7 +19,7 @@ import ExcelProcessor2, {
   SubsectorObj,
   ForecastObj,
   CalEventObj,
-} from "./ExcelProcessor2";
+} from "./ExcelProcessor3";
 import UserStore, { User } from "./User";
 import HeadCalc, { CalcVars } from "./HeadCalc";
 import { Cal } from "src/utils/tools";
@@ -56,6 +56,10 @@ function genMap<T>(
     prev[newId].push(curr);
     return prev;
   }, {} as { [name: string]: T[] });
+}
+
+function k(...s: any[]) {
+  return s.join("\t");
 }
 
 const getMyLog = (): MyLog[] => {
@@ -161,8 +165,7 @@ class Kernel {
   private triggerDamp = () => {
     if (this.ti) clearTimeout(this.ti);
     this.ti = setTimeout(this.trigger, epsTi);
-  }
-
+  };
 
   public registerSocket = (soc?: WebSocket) => {
     let socket = soc ?? Fetcher.getSoc();
@@ -399,14 +402,14 @@ class Kernel {
   public del = async (t: Item) => {
     let [mods, dels] = this.calcCascadeChanges(t);
     let logs = [];
-    logs.push(...await Promise.all(mods.map((x) => this._save(x))));
-    logs.push(...await Promise.all(dels.map((x) => this._del(x))));
+    logs.push(...(await Promise.all(mods.map((x) => this._save(x)))));
+    logs.push(...(await Promise.all(dels.map((x) => this._del(x)))));
     this._log("Delete", ...logs);
     if (!this.soc) {
       this.refresh();
       this.trigger();
     }
-    return { success: logs.every(x => x.success) };
+    return { success: logs.every((x) => x.success) };
   };
 
   public login = async (
@@ -449,305 +452,261 @@ class Kernel {
     return { success: res.status === 200, data: res.data };
   };
 
-  private saveSectorObjs = async (
-    plantId: number,
-    objs: SectorObj[]
-  ): Promise<SubmitResult[]> => {
-    let plant = this.plantStore.get(plantId);
-    const saveObj = async (o: SectorObj) => {
-      const st = this.secStore;
-      if (o.plant !== plant.name) {
-        return {
-          success: false,
-          statusText: `Line ${o.line}: Plant "${o.plant}" does not exist`,
-          data: {
-            _type: ItemType.Plant,
-            plant: [`Line ${o.line}: Plant "${o.plant}" does not exist`],
-          },
-        };
-      } else {
-        return await st.submitOrNew(st.getNew({ ...o, plant: plantId }));
+  private convObjsToSectors = (objs: SectorObj[]): Sector[] => {
+    const st = this.secStore;
+    const plantMap = genMap(this.plantStore.getLst(), (x) => x.name);
+    let f = (obj: SectorObj): Sector => {
+      if (!(obj.plant && obj.plant in plantMap)) {
+        throw new Error(
+          `Line ${obj.line}: plant ${obj.plant} of sector ${obj.name} not defined`
+        );
       }
+      return st.getNew({
+        plant: plantMap[obj.plant][0].id,
+        name: obj.name,
+        subsectors: [],
+      });
     };
-    return await Promise.all(objs.map(saveObj));
+    return objs.map(f);
   };
 
-  private saveSubsectorObjs = async (
-    plantId: number,
-    objs: SubsectorObj[]
-  ): Promise<SubmitResult[]> => {
-    let sectors = this.secStore.getLst((x) => x.plant === plantId);
-    let secNames = genMap(sectors, (x) => x.name);
-    const saveObj = async (o: SubsectorObj) => {
-      const st = this.subsecStore;
-      if (!(o.sector in secNames)) {
-        return {
-          success: false,
-          statusText: `Line ${o.line}: Sector "${o.sector}" does not exist`,
-          data: {
+  private convSectorsToObjs = (items: Sector[]): SectorObj[] => {
+    let f = (item: Sector, idx: number): SectorObj => {
+      return {
+        _type: ItemType.Sector,
+        line: idx,
+        name: item.name,
+        plant: this.plantStore.get(item.plant).name,
+      };
+    };
+    return items.map(f);
+  };
+
+  private convObjsToSubsectors = (objs: SubsectorObj[]): Subsector[] => {
+    const st = this.subsecStore;
+    const plantMap = this.plantStore.getLst();
+    const secMap = genMap(this.secStore.getLst(), (x) =>
+      k(x.name, plantMap[x.plant].name)
+    );
+    let f = (obj: SubsectorObj): Subsector => {
+      let kk = k(obj.sector.name, obj.sector.plant);
+      if (!(kk in secMap)) {
+        throw new Error(
+          `Line ${obj.line}: Sector ${obj.sector.name} of subsector ${obj.name} not defined`
+        );
+      }
+      return st.getNew({
+        sector: secMap[kk][0].id,
+        name: obj.name,
+      });
+    };
+    return objs.map(f);
+  };
+
+  private convSubsectorsToObjs = (items: Subsector[]): SubsectorObj[] => {
+    let f = (item: Subsector, idx: number): SubsectorObj => {
+      return {
+        _type: ItemType.Subsector,
+        line: idx,
+        name: item.name,
+        sector: {
+          _type: ItemType.Sector,
+          line: idx,
+          name: this.secStore.get(item.sector).name,
+        },
+      };
+    };
+    return items.map(f);
+  };
+
+  private convObjsToSkills = (objs: SkillObj[]): Skill[] => {
+    const st = this.skillStore;
+    const plantMap = this.plantStore.getLst();
+    const secMap = this.secStore.getLst();
+    const subsecMap = genMap(this.subsecStore.getLst(), (x) =>
+      k(x.name, secMap[x.sector].name, plantMap[secMap[x.sector].plant].name)
+    );
+    let f = (obj: SkillObj): Skill => {
+      let kk = k(
+        obj.subsector.name,
+        obj.subsector.sector.name,
+        obj.subsector.sector.plant
+      );
+      if (!(kk in secMap)) {
+        throw new Error(
+          `Line ${obj.line}: Subsector ${obj.sector.name} of skill ${obj.name} not defined`
+        );
+      }
+      return st.getNew({
+        subsector: subsecMap[obj.sector.name][0].id,
+        name: obj.name,
+      });
+    };
+    return objs.map(f);
+  };
+
+  private convSkillsToObjs = (items: Skill[]): SkillObj[] => {
+    let f = (item: Skill, idx: number): SkillObj => {
+      let ss = this.subsecStore.get(item.subsector);
+      let s = this.secStore.get(ss.sector);
+      let p = this.plantStore.get(s.plant);
+      return {
+        _type: ItemType.Skill,
+        line: idx,
+        name: item.name,
+        subsector: {
+          _type: ItemType.Subsector,
+          line: idx,
+          name: ss.name,
+          sector: {
             _type: ItemType.Sector,
-            sector: [`Line ${o.line}: Sector "${o.sector}" does not exist`],
+            line: idx,
+            name: s.name,
+            plant: p.name,
           },
-        };
-      } else {
-        return await st.submitOrNew(
-          st.getNew({ ...o, sector: secNames[o.sector][0].id })
-        );
-      }
+        },
+      };
     };
-    return await Promise.all(objs.map(saveObj));
+    return items.map(f);
   };
 
-  private saveSkillObjs = async (
-    plantId: number,
-    objs: SkillObj[]
-  ): Promise<SubmitResult[]> => {
-    let sectors = this.secStore.getLst((x) => x.plant === plantId);
-    let subsectors = this.subsecStore.getLst((x) => x.sector in sectors);
-    let subsecNames = genMap(subsectors, (x) => x.name);
-    const saveObj = async (o: SkillObj) => {
-      const st = this.skillStore;
-      if (!(o.subsector in subsecNames)) {
-        return {
-          success: false,
-          statusText: `Line ${o.line}: Subsector "${o.subsector}" does not exist`,
-          data: {
-            _type: ItemType.Skill,
-            subsector: [
-              `Line ${o.line}: Subsector "${o.subsector}" does not exist`,
-            ],
-          },
-        };
-      } else {
-        return await st.submitOrNew(
-          st.getNew({ ...o, subsector: subsecNames[o.subsector][0].id })
+  private pId: number = 0;
+  setPid = (id: number) => {
+    this.pId = id;
+  };
+  private convObjsToEmployees = (objs: EmployeeObj[]): Employee[] => {
+    const st = this.empStore;
+    const secMap = this.secStore.getLst((x) => x.plant === this.pId);
+    const subsecMap = this.subsecStore.getLst((x) => x.sector in secMap);
+    const subsecMap2 = genMap(subsecMap, (x) =>
+      k(x.name, secMap[x.sector].name)
+    );
+    const skillMap = genMap(
+      this.skillStore.getLst((x) => x.subsector in subsecMap),
+      (x) =>
+        k(
+          x.name,
+          subsecMap[x.subsector].name,
+          secMap[subsecMap[x.subsector].sector].name
+        )
+    );
+    let f = (obj: EmployeeObj): Employee => {
+      let kk = k(obj.subsector.name, obj.subsector.sector.name);
+      if (!(kk in subsecMap2)) {
+        throw new Error(
+          `Line ${obj.line}: Home Location (Subsector) ${obj.homeLocation} of employee ${obj.sesaId} not defined`
         );
       }
+      return st.getNew({
+        subsector: subsecMap2[kk][0].id,
+        firstName: obj.firstName,
+        lastName: obj.lastName,
+        sesaId: obj.sesaId,
+        hireDate: obj.joinDate.toISOString().slice(0, 10),
+        department: obj.department,
+        skills: obj.skills.map((sk) => {
+          let kk = k(
+            sk.skill.name,
+            sk.skill.subsector.name,
+            sk.skill.subsector.sector.name
+          );
+          if (!(kk in skillMap)) {
+            throw new Error(
+              `Col ${sk.skill.line}: Skill ${sk.skill.name} not defined`
+            );
+          }
+          return {
+            skill: skillMap[kk][0].id,
+            level: sk.level,
+            desc: "",
+          };
+        }),
+      });
     };
-    return await Promise.all(objs.map(saveObj));
+    return objs.map(f);
   };
 
-  private saveEmpObjs = async (
-    plantId: number,
-    objs: EmployeeObj[]
-  ): Promise<SubmitResult[]> => {
-    let sectors = this.secStore.getLst((x) => x.plant === plantId);
-    let subsectors = this.subsecStore.getLst((x) => x.sector in sectors);
-    let skills = this.skillStore.getLst();
-    let subsecNames = genMap(subsectors, (x) => x.name);
-    let skillNames = genMap(skills, (x) => x.name);
-    const saveObj = async (o: EmployeeObj) => {
-      const st = this.empStore;
-      if (!(o.homeLocation in subsecNames)) {
-        return {
-          success: false,
-          statusText: `Line ${o.line}: Home Location (Subsector) "${o.homeLocation}" does not exist`,
-          data: {
-            _type: ItemType.Employee,
-            subsector: [
-              `Line ${o.line}: Home Location (Subsector) "${o.homeLocation}" does not exist`,
-            ],
+  private convEmployeesToObjs = (items: Employee[]): EmployeeObj[] => {
+    let f = (item: Employee, idx: number): EmployeeObj => {
+      let ss = this.subsecStore.get(item.subsector);
+      let s = this.secStore.get(ss.sector);
+      let p = this.plantStore.get(s.plant);
+      return {
+        _type: ItemType.Employee,
+        line: idx,
+        firstName: item.firstName,
+        lastName: item.lastName,
+        sesaId: item.sesaId,
+        joinDate: new Date(item.hireDate),
+        department: item.department,
+        subsector: {
+          _type: ItemType.Subsector,
+          line: idx,
+          name: ss.name,
+          sector: {
+            _type: ItemType.Sector,
+            line: idx,
+            name: s.name,
+            plant: p.name,
           },
-        };
-      }
-      if (o.skills.some((x) => !(x.skillName in skillNames))) {
-        return {
-          success: false,
-          statusText: "Skill not found",
-          data: {
-            _type: ItemType.Employee,
-            skills: o.skills
-              .filter((x) => !(x.skillName in skillNames))
-              .map((x) => `Skill "${x.skillName}" not found`),
-          },
-        };
-      }
-      return await st.submitOrNew(
-        st.getNew({
-          ...o,
-          subsector: subsecNames[o.homeLocation][0].id,
-          skills: o.skills.map((x, idx) => ({
-            skill: skillNames[o.skills[idx].skillName][0].id,
+        },
+        skills: item.skills.map((x) => {
+          let sk = this.skillStore.get(x.skill);
+          let suk = this.subsecStore.get(sk.subsector);
+          let sek = this.secStore.get(suk.sector);
+          return {
+            skill: {
+              _type: ItemType.Skill,
+              line: idx,
+              name: sk.name,
+              subsector: {
+                _type: ItemType.Subsector,
+                line: idx,
+                name: suk.name,
+                sector: {
+                  _type: ItemType.Sector,
+                  line: idx,
+                  name: sek.name,
+                  plant: this.plantStore.get(sek.plant).name,
+                },
+              },
+            },
             level: x.level,
-          })),
-        })
-      );
+          };
+        }),
+      };
     };
-    return await Promise.all(objs.map(saveObj));
+    return items.map(f);
   };
 
-  private saveForecastObjs = async (
-    objs: ForecastObj[]
-  ): Promise<SubmitResult[]> => {
-    const st = this.forecastStore;
-    const saveObj = async (o: ForecastObj) => {
-      return await st.submitOrNew(
-        st.getNew({ ...o, on: new Date(o.on).toISOString().slice(0, 10) })
-      );
-    };
-    return await Promise.all(objs.map(saveObj));
-  };
-
-  private saveCalEventObjs = async (
-    objs: CalEventObj[]
-  ): Promise<SubmitResult[]> => {
-    const st = this.calEventStore;
-    const saveObj = async (o: CalEventObj) => {
-      return await st.submitOrNew(
-        st.getNew({
-          ...o,
-          start: new Date(o.start).toISOString().slice(0, 10),
-          end: new Date(o.end).toISOString().slice(0, 10),
-        })
-      );
-    };
-    return await Promise.all(objs.map(saveObj));
-  };
-
-  private _submitExcel = async (
-    plantId: number,
-    type: ItemType,
-    objs: ExcelObj[]
-  ): Promise<SubmitResult[] | undefined> => {
+  submitExcel = (type: ItemType, data: ExcelObj[]) => {
     switch (type) {
       case ItemType.Sector:
-        return await this.saveSectorObjs(plantId, objs as SectorObj[]);
+        this.convObjsToSectors(data as SectorObj[]).forEach(
+          this.secStore.submitOrNew
+        );
+        break;
       case ItemType.Subsector:
-        return await this.saveSubsectorObjs(plantId, objs as SubsectorObj[]);
+        this.convObjsToSubsectors(data as SubsectorObj[]).forEach(
+          this.subsecStore.submitOrNew
+        );
+        break;
       case ItemType.Skill:
-        return await this.saveSkillObjs(plantId, objs as SkillObj[]);
+        this.convObjsToSkills(data as SkillObj[]).forEach(
+          this.skillStore.submitOrNew
+        );
+        break;
       case ItemType.Employee:
-        return await this.saveEmpObjs(plantId, objs as EmployeeObj[]);
-      case ItemType.Forecast:
-        return await this.saveForecastObjs(objs as ForecastObj[]);
-      case ItemType.CalEvent:
-        return await this.saveCalEventObjs(objs as CalEventObj[]);
+        this.convObjsToEmployees(data as EmployeeObj[]).forEach(
+          this.empStore.submitOrNew
+        );
+        break;
+      default:
+        break;
     }
   };
 
-  public submitExcel = async (
-    plantId: number,
-    type: ItemType,
-    objs: ExcelObj[]
-  ) => {
-    let resLst = (await this._submitExcel(plantId, type, objs)) ?? [];
-    this._log(`Submit Excel file for ${type}`, ...resLst);
-    if (!this.soc) {
-      this.refresh();
-      this.trigger();
-    }
-    return resLst;
-  };
-
-  private genSectorExcel = async (items: Sector[]) => {
-    const plants = this.plantStore.getLst();
-    return await ExcelProcessor2.genSectorFile(
-      items.map((x, idx) => ({ ...x, line: idx, plant: plants[x.plant].name }))
-    );
-  };
-
-  private genSubsectorExcel = async (items: Subsector[]) => {
-    const sectors = this.secStore.getLst();
-    return await ExcelProcessor2.genSubsectorFile(
-      items.map((x, idx) => ({
-        ...x,
-        line: idx,
-        sector: sectors[x.sector].name,
-      }))
-    );
-  };
-
-  private genSkillExcel = async (items: Skill[]) => {
-    const subsectors = this.subsecStore.getLst();
-    return await ExcelProcessor2.genSkillFile(
-      items.map((x, idx) => ({
-        ...x,
-        line: idx,
-        subsector: subsectors[x.subsector].name,
-      }))
-    );
-  };
-
-  private genEmployeeExcel = async (items: Employee[]) => {
-    const subsectors = this.subsecStore.getLst();
-    const skills = this.skillStore.getLst();
-    return await ExcelProcessor2.genEmployeeFile(
-      items.map((x, idx) => ({
-        ...x,
-        line: idx,
-        homeLocation: subsectors[x.subsector].name,
-        skills: x.skills.map((y) => ({
-          skillName: skills[y.skill].name,
-          level: y.level,
-        })),
-      }))
-    );
-  };
-
-  private genCalEventExcel = async (items: CalEvent[]) => {
-    return await ExcelProcessor2.genCalEventFile(
-      items.map((x, idx) => ({
-        _type: x._type,
-        line: idx,
-        name: x.title,
-        start: new Date(x.start).getTime(),
-        end: new Date(x.end).getTime(),
-        eventType: x.eventType,
-      }))
-    );
-  };
-
-  private genForecastExcel = async (items: Forecast[]) => {
-    return await ExcelProcessor2.genForecastFile(
-      items.map((x, idx) => ({
-        _type: x._type,
-        line: idx,
-        on: new Date(x.on).getTime(),
-        forecasts: x.forecasts,
-      }))
-    );
-  };
-
-  public getExcel = async (type: ItemType, items?: Item[]) => {
-    if (!items) {
-      switch (type) {
-        case ItemType.Sector:
-          items = Object.values(this.secStore.getLst());
-          break;
-        case ItemType.Subsector:
-          items = Object.values(this.subsecStore.getLst());
-          break;
-        case ItemType.Skill:
-          items = Object.values(this.skillStore.getLst());
-          break;
-        case ItemType.Employee:
-          items = Object.values(this.empStore.getLst());
-          break;
-        case ItemType.CalEvent:
-          items = Object.values(this.calEventStore.getLst());
-          break;
-        case ItemType.Forecast:
-          items = Object.values(this.forecastStore.getLst());
-          break;
-        default:
-          items = [];
-      }
-    }
-    switch (type) {
-      case ItemType.Sector:
-        return await this.genSectorExcel(items as Sector[]);
-      case ItemType.Subsector:
-        return await this.genSubsectorExcel(items as Subsector[]);
-      case ItemType.Skill:
-        return await this.genSkillExcel(items as Skill[]);
-      case ItemType.Employee:
-        return await this.genEmployeeExcel(items as Employee[]);
-      case ItemType.CalEvent:
-        return await this.genCalEventExcel(items as CalEvent[]);
-      case ItemType.Forecast:
-        return await this.genForecastExcel(items as Forecast[]);
-    }
-  };
+  getExcel = (type: ItemType, items?: Item[]) => {};
 
   setVars = (vars: CalcVars) => {
     this.calc.setVars(vars);
