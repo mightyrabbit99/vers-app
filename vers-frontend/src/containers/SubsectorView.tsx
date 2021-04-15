@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     overflow: "hide",
     flexDirection: "column",
-    height: "70vh",
+    height: 500,
   },
 }));
 

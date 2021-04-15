@@ -132,14 +132,12 @@ class Employee(models.Model):
   subsector = models.ForeignKey(
       Subsector, related_name='employees', on_delete=models.SET_NULL, null=True)
   report_to = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
-
+  department = models.CharField(max_length=50)
   birth_date = models.DateField(null=True)
   gender = models.CharField(
       max_length=1, choices=Gender.choices, default=Gender.MALE)
   available = models.BooleanField(default=1)
   hire_date = models.DateField(null=True)
-  profile_pic = models.ImageField(
-      upload_to=up_path("profile_pic"), null=True)
 
   owner = models.ForeignKey(
       User, related_name='created_employee', on_delete=models.SET_NULL, null=True)

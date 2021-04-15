@@ -7,36 +7,44 @@ interface ExcelObjT {
   [name: string]: any;
 }
 
-interface PlantObj extends ExcelObjT {
-  _type: ItemType.Plant;
-  name: string;
-}
-
 interface SectorObj extends ExcelObjT {
   _type: ItemType.Sector;
   name: string;
-  plant: string;
+  plant?: string;
 }
+
+const emptySector: SectorObj = {
+  _type: ItemType.Sector,
+  line: 0,
+  name: "",
+};
 
 interface SubsectorObj extends ExcelObjT {
   _type: ItemType.Subsector;
   name: string;
-  sector: string;
+  sector: SectorObj;
   unit?: string;
-  cycleTime: number;
-  efficiency: number;
+  cycleTime?: number;
+  efficiency?: number;
 }
+
+const emptySubsector: SubsectorObj = {
+  _type: ItemType.Subsector,
+  line: 0,
+  name: "",
+  sector: emptySector,
+};
 
 interface SkillObj extends ExcelObjT {
   _type: ItemType.Skill;
   name: string;
-  subsector: string;
-  priority: number;
-  percentageOfSector: number;
+  subsector: SubsectorObj;
+  priority?: number;
+  percentageOfSector?: number;
 }
 
 interface SkillMatrixObj {
-  skillName: string;
+  skill: SkillObj;
   level: number;
 }
 
@@ -46,6 +54,8 @@ interface EmployeeObj extends ExcelObjT {
   firstName: string;
   lastName: string;
   homeLocation: string;
+  department: string;
+  joinDate: Date;
   skills: SkillMatrixObj[];
 }
 
@@ -64,7 +74,6 @@ interface ForecastObj extends ExcelObjT {
 }
 
 type ExcelObj =
-  | PlantObj
   | SectorObj
   | SubsectorObj
   | SkillObj
@@ -73,102 +82,65 @@ type ExcelObj =
   | ForecastObj;
 
 type ValMap<T> = { [n: number]: T };
-type CValMap = ValMap<Excel.CellValue>;
+type CValMap = Excel.CellValue[];
+
+const enm = (n: number) => [...Array(n).keys()].map((x) => x + 1);
 
 const checkRowSomeEmpty = (idxs: number[]) => (row: Excel.Row) => {
-  const values: CValMap = row.values;
+  const values: CValMap = row.values as Excel.CellValue[];
   return idxs.some((x) => !values[x] || `${values[x]}`.trim().length === 0);
 };
 
 const checkRowAllEmpty = (idxs: number[]) => (row: Excel.Row) => {
-  const values: CValMap = row.values;
+  const values: CValMap = row.values as Excel.CellValue[];
   return idxs.every((x) => !values[x] || `${values[x]}`.trim().length === 0);
 };
 
 const checkRowLegal = (fs: ValMap<(v: any) => boolean>) => (row: Excel.Row) => {
-  const values: CValMap = row.values;
+  const values: CValMap = row.values as Excel.CellValue[];
   return Object.entries(fs).every(([k, f]) => f(values[parseInt(k, 10)]));
 };
 
-const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
-  let sets: { [homeLocation: string]: Set<string> } = {};
-  let ans: EmployeeObj[] = [];
+function checkSectorObj(o: SectorObj) {
+  //TODO
+}
 
+function checkSubsectorObj(o: SubsectorObj) {
+  return; //TODO
+}
+
+function checkEmpObj(o: EmployeeObj) {
+  // TODO
+}
+
+function checkSkillObj(o: SkillObj) {
+  // TODO
+}
+
+const readSectorSheet = (ws: Excel.Worksheet): SectorObj[] => {
+  let ans: SectorObj[] = [];
+  let plant, name;
   function checkRow(row: Excel.Row) {
-    return !checkRowSomeEmpty([1, 2, 3, 4, 5])(row);
+    return !checkRowSomeEmpty([2])(row);
   }
-  function getSkillNames(row: Excel.Row) {
-    let ans: { [i: number]: string } = [];
-    for (let i = 6; row.getCell(i).value !== null; i++) {
-      ans[i] = row.getCell(i).text.trim();
-    }
-    return ans;
-  }
-  const skillNames = getSkillNames(ws.getRow(1));
-
-  let sesaId, firstName, lastName, homeLocation, department;
-  ws.eachRow((row: Excel.Row, rowIndex) => {
-    try {
-      if (rowIndex === 1 || !checkRow(row)) return;
-      const values: CValMap = row.values;
-      [sesaId, firstName, lastName, homeLocation, department] = [1, 2, 3, 4, 5].map((x) =>
-        `${values[x]}`.trim()
-      );
-      if (sesaId === "") return;
-
-      if (!sets[homeLocation]) {
-        sets[homeLocation] = new Set();
-      }
-
-      let s = sets[homeLocation];
-      if (s.has(sesaId)) return;
-      s.add(sesaId);
-      ans.push({
-        _type: ItemType.Employee,
-        line: rowIndex,
-        sesaId,
-        firstName,
-        lastName,
-        homeLocation,
-        department,
-        skills: Object.entries(skillNames)
-          .filter((x) => x[0] in row.values)
-          .map((x) => ({
-            skillName: x[1],
-            level: parseInt(`${values[parseInt(x[0], 10)]}`, 10),
-          })),
-      });
-    } catch (e) {
-      throw new Error(`Error on employee sheet Row ${rowIndex}: ${e}`);
-    }
-  });
-  return ans;
-};
-
-const readSkillSheet = (ws: Excel.Worksheet): SkillObj[] => {
-  let ans: SkillObj[] = [];
-  let name, subsector, priority, percentageOfSector;
-  function checkRow(row: Excel.Row) {
-    return !checkRowSomeEmpty([1, 2, 3, 4])(row);
-  }
+  let lastPlant: string = "";
   ws.eachRow((row, rowIndex) => {
     try {
       if (rowIndex === 1 || !checkRow(row)) return;
-      const values: CValMap = row.values;
-      [name, subsector, priority, percentageOfSector] = [1, 2, 3, 4].map((x) =>
-        `${values[x]}`.trim()
-      );
-
-      ans.push({
-        _type: ItemType.Skill,
+      const values: CValMap = row.values as Excel.CellValue[];
+      [plant, name] = [1, 2].map((x) => `${values[x]}`.trim());
+      lastPlant = plant.length > 0 ? plant : lastPlant;
+      if (!lastPlant) throw new Error("Plant not defined");
+      const obj: SectorObj = {
+        _type: ItemType.Sector,
         line: rowIndex,
         name,
-        subsector,
-        priority: parseInt(priority, 10),
-        percentageOfSector: parseInt(percentageOfSector, 10),
-      });
+        plant: lastPlant,
+      };
+      checkSectorObj(obj);
+      ans.push(obj);
     } catch (e) {
-      throw new Error(`Error on skill sheet Row ${rowIndex}: ${e}`);
+      throw new Error(`Error on Sector sheet Row ${rowIndex}: ${e}`);
     }
   });
   return ans;
@@ -176,27 +148,41 @@ const readSkillSheet = (ws: Excel.Worksheet): SkillObj[] => {
 
 const readSubsectorSheet = (ws: Excel.Worksheet): SubsectorObj[] => {
   let ans: SubsectorObj[] = [];
-  let name, sector, unit, cycleTime, efficiency;
+  let plant, sector, name, unit, cycleTime, efficiency;
   function checkRow(row: Excel.Row) {
-    return !checkRowSomeEmpty([1, 2, 3, 4, 5])(row);
+    return !checkRowSomeEmpty([3, 4, 5, 6])(row);
   }
+  let lastSector: SectorObj;
   ws.eachRow((row, rowIndex) => {
     try {
       if (rowIndex === 1 || !checkRow(row)) return;
-      const values: CValMap = row.values;
-      [name, sector, unit, cycleTime, efficiency] = [1, 2, 3, 4, 5].map((x) =>
-        `${values[x]}`.trim()
-      );
-
-      ans.push({
+      const values: CValMap = row.values as Excel.CellValue[];
+      [plant, sector, name, unit, cycleTime, efficiency] = [
+        1,
+        2,
+        3,
+        4,
+        5,
+      ].map((x) => `${values[x]}`.trim());
+      if (plant.length > 0 || sector.length > 0) {
+        lastSector = {
+          _type: ItemType.Sector,
+          line: rowIndex,
+          name: sector.length > 0 ? sector : lastSector?.name,
+          plant: plant.length > 0 ? plant : lastSector?.plant,
+        };
+      }
+      let obj: SubsectorObj = {
         _type: ItemType.Subsector,
         line: rowIndex,
         name,
-        sector,
+        sector: lastSector,
         unit,
         cycleTime: parseFloat(cycleTime),
         efficiency: parseInt(efficiency, 10),
-      });
+      };
+      checkSubsectorObj(obj);
+      ans.push(obj);
     } catch (e) {
       throw new Error(`Error on subsector sheet Row ${rowIndex}: ${e}`);
     }
@@ -204,26 +190,153 @@ const readSubsectorSheet = (ws: Excel.Worksheet): SubsectorObj[] => {
   return ans;
 };
 
-const readSectorSheet = (ws: Excel.Worksheet): SectorObj[] => {
-  let ans: SectorObj[] = [];
-  let name, plant;
+const readSkillSheet = (ws: Excel.Worksheet): SkillObj[] => {
+  let ans: SkillObj[] = [];
+  let plant, sector, subsector, name, priority, percentageOfSubsector;
   function checkRow(row: Excel.Row) {
-    return !checkRowSomeEmpty([1, 2])(row);
+    return !checkRowAllEmpty([1, 2, 3, 4])(row);
   }
+  let lastSector: SectorObj = emptySector,
+    lastSubsector: SubsectorObj = emptySubsector;
   ws.eachRow((row, rowIndex) => {
     try {
       if (rowIndex === 1 || !checkRow(row)) return;
-      const values: CValMap = row.values;
-      [name, plant] = [1, 2].map((x) => `${values[x]}`.trim());
-
-      ans.push({
-        _type: ItemType.Sector,
+      const values: CValMap = row.values as Excel.CellValue[];
+      [plant, sector, subsector, name, priority, percentageOfSubsector] = enm(
+        6
+      ).map((x) => `${values[x]}`.trim());
+      if (plant.length > 0 || sector.length > 0) {
+        lastSector = {
+          _type: ItemType.Sector,
+          line: rowIndex,
+          plant: plant.length > 0 ? plant : lastSector?.plant,
+          name: sector.length > 0 ? sector : lastSector?.name,
+        };
+      }
+      if (subsector.length > 0) {
+        lastSubsector = {
+          _type: ItemType.Subsector,
+          line: rowIndex,
+          name: subsector.length > 0 ? subsector : lastSubsector?.name,
+          sector: lastSector,
+        };
+      }
+      let obj: SkillObj = {
+        _type: ItemType.Skill,
         line: rowIndex,
         name,
-        plant,
-      });
+        subsector: lastSubsector,
+        priority: parseInt(priority, 10),
+        percentageOfSector: parseInt(percentageOfSubsector, 10),
+      };
+      checkSkillObj(obj);
+      ans.push(obj);
     } catch (e) {
-      throw new Error(`Error on subsector sheet Row ${rowIndex}: ${e}`);
+      throw new Error(`Error on skill sheet Row ${rowIndex}: ${e}`);
+    }
+  });
+  return ans;
+};
+
+const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
+  function getSkillDict() {
+    function checkEmpSkillCol(c: Excel.Column) {
+      return `${c.values[3]}`.trim().length > 0;
+    }
+    let sector, subsec, name;
+    let skillDict: { [i: number]: SkillObj } = {};
+    let lastSector = emptySector,
+      lastSubsector = emptySubsector;
+    for (let i = 13; checkEmpSkillCol(ws.getColumn(i)); i++) {
+      let c = ws.getColumn(i);
+      [sector, subsec, name] = [1, 2, 3].map((x) => `${c.values[x]}`.trim());
+      if (sector.length > 0) {
+        lastSector = {
+          _type: ItemType.Sector,
+          line: i,
+          name: sector ?? lastSector?.name,
+        };
+      }
+      if (subsec.length > 0) {
+        lastSubsector = {
+          _type: ItemType.Subsector,
+          line: i,
+          name: subsec ?? lastSubsector?.name,
+          sector: lastSector,
+        };
+      }
+
+      skillDict[i] = {
+        _type: ItemType.Skill,
+        line: i,
+        name,
+        subsector: lastSubsector,
+      };
+    }
+    return skillDict;
+  }
+  const skillDict = getSkillDict();
+  let no,
+    shift,
+    sesa,
+    firstName,
+    lastName,
+    jobCode,
+    department,
+    homeLocation,
+    costType,
+    contract,
+    email,
+    joinDate;
+  function checkRow(row: Excel.Row) {
+    return !checkRowSomeEmpty([3])(row);
+  }
+  let ans: EmployeeObj[] = [];
+  ws.eachRow((row, rowIndex) => {
+    try {
+      if (rowIndex < 4 || !checkRow(row)) return;
+      const values: CValMap = row.values as Excel.CellValue[];
+      [
+        no,
+        shift,
+        sesa,
+        firstName,
+        lastName,
+        jobCode,
+        department,
+        homeLocation,
+        costType,
+        contract,
+        email,
+        joinDate,
+      ] = enm(13).map((x) => values[x]);
+      if (!(joinDate instanceof Date)) throw new Error("Join Date must be a date");
+      let skills: SkillMatrixObj[] = [];
+      for (let i = 13; i < values.length; i++) {
+        let v = values[i];
+        if (!v) continue;
+        let vs = parseInt(`${v}`.trim());
+        if (isNaN(vs) || vs > 4 || vs < 1) continue;
+        skills.push({
+          skill: skillDict[i],
+          level: vs,
+        });
+      }
+      let obj: EmployeeObj = {
+        _type: ItemType.Employee,
+        line: rowIndex,
+        firstName: `${firstName}`.trim(),
+        lastName: `${lastName}`.trim(),
+        sesaId: `${sesa}`.trim(),
+        homeLocation: `${homeLocation}`.trim(),
+        department: `${department}`.trim(),
+        skills,
+        joinDate,
+      };
+      checkEmpObj(obj);
+      ans.push(obj);
+    } catch (e) {
+      throw new Error(`Error on Employee Sheet Row ${rowIndex}: ${e}`);
     }
   });
   return ans;
@@ -237,7 +350,7 @@ const readCalEventSheet = (ws: Excel.Worksheet): CalEventObj[] => {
   }
   ws.eachRow((row, rowIndex) => {
     if (rowIndex === 1 || !checkRow(row)) return;
-    const values: CValMap = row.values;
+    const values: CValMap = row.values as Excel.CellValue[];
     [name, eventType, start, end] = [1, 2, 3, 4].map((x) =>
       `${values[x]}`.trim()
     );
@@ -267,7 +380,7 @@ const readForecastSheet = (ws: Excel.Worksheet): ForecastObj[] => {
   }
   ws.eachRow((row, rowIndex) => {
     if (rowIndex === 1 || !checkRow(row)) return;
-    const values: CValMap = row.values;
+    const values: CValMap = row.values as Excel.CellValue[];
     [on, ...forecasts] = [...Array(13).keys()]
       .map((x) => x + 1)
       .map((x) => `${values[x]}`.trim());
@@ -284,36 +397,9 @@ const readForecastSheet = (ws: Excel.Worksheet): ForecastObj[] => {
   return ans;
 };
 
-const readPlantProfile = (ws: Excel.Worksheet): ExcelObj[] => {
-  let ans: ExcelObj[] = [];
-  let pl: string, se: string, su: string, sk: string;
-  let plant, sector, subsec, skill;
-  function checkRow(row: Excel.Row) {
-    return !checkRowAllEmpty([1, 2, 3, 4])(row);
-  }
-  ws.eachRow((row, rowIndex) => {
-    if (rowIndex === 1 || !checkRow(row)) return;
-    const values: CValMap = row.values;
-    [plant = pl, sector = se, subsec = su, skill = sk] = [1, 2, 3, 4].map((x) =>
-      `${values[x]}`.trim()
-    );
-    if (!(plant && sector && subsec && skill))
-      throw new Error("Not enough info");
-    if (plant !== pl) {
-      ans.push({ _type: ItemType.Plant, name: plant, line: rowIndex });
-      pl = plant;
-    }
-    if (sector !== se) {
-      ans.push({ _type: ItemType.Sector, name: sector, line: rowIndex, plant });
-      se = sector;
-    }
-  });
-  return ans;
-};
-
 const employeeSheetWriter = (emps: EmployeeObj[]) => (ws: Excel.Worksheet) => {
   let skillSet = emps.reduce((prev, curr) => {
-    curr.skills.forEach((x) => prev.add(x.skillName));
+    curr.skills.forEach((x) => prev.add(x.skill.name));
     return prev;
   }, new Set());
   ws.columns = [
@@ -328,7 +414,7 @@ const employeeSheetWriter = (emps: EmployeeObj[]) => (ws: Excel.Worksheet) => {
   const genEmpCol = (emp: EmployeeObj) => {
     let { skills, ...rest } = emp;
     let sk = skills.reduce((prev, curr) => {
-      prev[curr.skillName] = curr.level;
+      prev[curr.skill.name] = curr.level;
       return prev;
     }, {} as { [name: string]: number });
     return {
@@ -485,10 +571,6 @@ class ExcelProcessor2 {
       default:
         return null;
     }
-  };
-
-  static readFile2 = async (file: File) => {
-    return await readFile(file, readPlantProfile);
   };
 
   static genSectorFile = async (sectors: SectorObj[]) => {
