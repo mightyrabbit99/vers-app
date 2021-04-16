@@ -61,7 +61,7 @@ interface EmployeeObj extends ExcelObjT {
   firstName: string;
   lastName: string;
   subsector: SubsectorObj;
-  joinDate: Date;
+  joinDate?: Date;
   skills: SkillMatrixObj[];
 }
 
@@ -116,7 +116,10 @@ function checkSubsectorObj(o: SubsectorObj) {
 }
 
 function checkEmpObj(o: EmployeeObj) {
-  // TODO
+  if (o.sesaId === "") throw new Error("SESA ID must be defined");
+  if (!/^SESA.*/.test(o.sesaId.toUpperCase()))
+    throw new Error(`SESA ID "${o.sesaId}" invalid`);
+  if (!(o.joinDate instanceof Date)) o.joinDate = undefined;
 }
 
 function checkSkillObj(o: SkillObj) {
@@ -134,7 +137,7 @@ const readSectorSheet = (ws: Excel.Worksheet): SectorObj[] => {
     try {
       if (rowIndex === 1 || !checkRow(row)) return;
       const values: CValMap = row.values as Excel.CellValue[];
-      [plant, name] = [1, 2].map((x) => `${values[x]}`.trim());
+      [plant, name] = [1, 2].map((x) => values[x] ? `${values[x]}`.trim() : "");
       lastPlant = plant.length > 0 ? plant : lastPlant;
       if (!lastPlant) throw new Error("Plant not defined");
       const obj: SectorObj = {
@@ -169,7 +172,7 @@ const readSubsectorSheet = (ws: Excel.Worksheet): SubsectorObj[] => {
         3,
         4,
         5,
-      ].map((x) => `${values[x]}`.trim());
+      ].map((x) => values[x] ? `${values[x]}`.trim() : "");
       if (plant.length > 0 || sector.length > 0) {
         lastSector = {
           _type: ItemType.Sector,
@@ -210,7 +213,7 @@ const readSkillSheet = (ws: Excel.Worksheet): SkillObj[] => {
       const values: CValMap = row.values as Excel.CellValue[];
       [plant, sector, subsector, name, priority, percentageOfSubsector] = enm(
         6
-      ).map((x) => `${values[x]}`.trim());
+      ).map((x) => values[x] ? `${values[x]}`.trim() : "");
       if (plant.length > 0 || sector.length > 0) {
         lastSector = {
           _type: ItemType.Sector,
@@ -247,7 +250,7 @@ const readSkillSheet = (ws: Excel.Worksheet): SkillObj[] => {
 const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
   function getSkillDict() {
     function checkEmpSkillCol(c: Excel.Column) {
-      return `${c.values[3]}`.trim().length > 0;
+      return c.values[3] && `${c.values[3]}`.trim().length > 0;
     }
     let sector, subsec, name;
     let skillDict: { [i: number]: SkillObj } = {};
@@ -316,8 +319,7 @@ const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
         email,
         joinDate,
       ] = enm(13).map((x) => values[x]);
-      if (!(joinDate instanceof Date))
-        throw new Error("Join Date must be a date");
+      if (!(joinDate instanceof Date)) joinDate = undefined;
       let skills: SkillMatrixObj[] = [];
       for (let i = 13; i < values.length; i++) {
         let v = values[i];
@@ -332,9 +334,9 @@ const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
       let obj: EmployeeObj = {
         _type: ItemType.Employee,
         line: rowIndex,
-        firstName: `${firstName}`.trim(),
-        lastName: `${lastName}`.trim(),
-        sesaId: `${sesa}`.trim(),
+        firstName: firstName ? `${firstName}`.trim() : "",
+        lastName: lastName ? `${lastName}`.trim() : "",
+        sesaId: sesa ? `${sesa}`.trim() : "",
         subsector: {
           _type: ItemType.Subsector,
           line: rowIndex,
@@ -514,20 +516,34 @@ const forecastSheetWriter = (forecasts: ForecastObj[]) => (
   );
 };
 
-function readFile<T>(f: File, read: (ws: Excel.Worksheet) => T): Promise<T> {
-  return new Promise((resolve, reject) => {
-    const wb = new Excel.Workbook();
+async function readBuffer<T>(
+  b: Buffer,
+  read: (ws: Excel.Worksheet) => T
+): Promise<T> {
+  return new Promise(async (res, rej) => {
+    try {
+      const wb = new Excel.Workbook();
+      const r = await wb.xlsx.load(b);
+      let sheet = r.getWorksheet("Sheet1");
+      res(read(sheet));
+    } catch (e) {
+      rej(e);
+    }
+  });
+}
+
+async function readFile<T>(
+  f: File,
+  read: (ws: Excel.Worksheet) => T
+): Promise<T> {
+  return new Promise((res, rej) => {
     const reader = new FileReader();
-
     reader.onload = async () => {
-      const buffer = reader.result as ArrayBuffer;
+      const buffer = reader.result as Buffer;
       try {
-        let x = await wb.xlsx.load(buffer);
-        let sheet = x.getWorksheet("Sheet1");
-
-        resolve(read(sheet));
+        res(await readBuffer(buffer, read));
       } catch (e) {
-        reject(e);
+        rej(e);
       }
     };
     reader.readAsArrayBuffer(f);
@@ -569,22 +585,22 @@ class ExcelProcessor3 {
   static readForecastFile = async (file: File) => {
     return await readFile(file, readForecastSheet);
   };
-  static readFile = async (type: ItemType, file: File) => {
+  static readBuffer = async (type: ItemType, buffer: Buffer) => {
     switch (type) {
       case ItemType.Sector:
-        return await ExcelProcessor3.readSectorFile(file);
+        return await readBuffer(buffer, readSectorSheet);
       case ItemType.Subsector:
-        return await ExcelProcessor3.readSubsectorFile(file);
+        return await readBuffer(buffer, readSubsectorSheet);
       case ItemType.Skill:
-        return await ExcelProcessor3.readSkillFile(file);
+        return await readBuffer(buffer, readSkillSheet);
       case ItemType.Employee:
-        return await ExcelProcessor3.readEmployeeFile(file);
+        return await readBuffer(buffer, readEmployeeSheet);
       case ItemType.CalEvent:
-        return await ExcelProcessor3.readCalEventFile(file);
+        return await readBuffer(buffer, readCalEventSheet);
       case ItemType.Forecast:
-        return await ExcelProcessor3.readForecastFile(file);
+        return await readBuffer(buffer, readForecastSheet);
       default:
-        return null;
+        return [];
     }
   };
 
@@ -827,7 +843,7 @@ class ExcelObjConverter {
         firstName: obj.firstName,
         lastName: obj.lastName,
         sesaId: obj.sesaId,
-        hireDate: obj.joinDate.toISOString().slice(0, 10),
+        hireDate: obj.joinDate?.toISOString().slice(0, 10),
         department: obj.department,
         skills: obj.skills.map((sk) => {
           let kk = k(
