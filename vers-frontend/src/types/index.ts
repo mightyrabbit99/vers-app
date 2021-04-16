@@ -126,7 +126,9 @@ export interface SyncState {
   error?: MyError;
 }
 
-export interface SettingsState {}
+export interface SettingsState {
+  path: string;
+}
 
 export interface SessionState {
   syncing: boolean;

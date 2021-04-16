@@ -14,9 +14,10 @@ import UserEditPage from "./UserEditPage";
 import PlantPage from "./PlantPage";
 import AccessCtrlPage from "./AccessCtrlPage";
 
-import { getData, getSession, getSync } from "src/selectors";
+import { getData, getSession, getSettings, getSync } from "src/selectors";
 import { initLogin } from "src/slices/session";
 import { clearFeedback } from "src/slices/sync";
+import { setPath } from "src/slices/settings";
 import k from "src/kernel";
 import { reload } from "src/slices/data";
 
@@ -43,11 +44,19 @@ const initNoteState: NoteState = {
   severity: "error",
 };
 
+const BaseRedirect: React.FC = () => {
+  const dispatch = useDispatch();
+  const { path: p } = useSelector(getSettings);
+  dispatch(setPath(""))
+  return <Redirect to={p} />;
+}
+
 const App: React.FC<IAppProps> = (props) => {
   const dispatch = useDispatch();
   const { authenticated: auth, syncing } = useSelector(getSession);
   const { selectedPlantId: pId } = useSelector(getData);
   const { error, feedback, syncing: submitting } = useSelector(getSync);
+  const { path: p } = useSelector(getSettings);
 
   const [noteState, setNoteState] = React.useState<NoteState>(initNoteState);
   React.useEffect(() => {
@@ -85,50 +94,49 @@ const App: React.FC<IAppProps> = (props) => {
   }, [dispatch]);
 
   k.trigger = () => { dispatch(reload()); };
-  let p = window.location.pathname;
 
   if (auth === undefined || syncing) return <SpinningBall />;
   return (
     <ThemeProvider theme={theme}>
       <Switch>
-        <Route exact path="/">
+        <Route exact path={p}>
           {auth ? (
             pId ? (
-              <Redirect to="/dashboard" />
+              <Redirect to={`${p}dashboard`} />
             ) : (
-              <Redirect to="/plants" />
+              <Redirect to={`${p}plants`} />
             )
           ) : (
-            <Redirect to="/signin" />
+            <Redirect to={`${p}signin`} />
           )}
         </Route>
-        <Route exact path="/dashboard">
+        <Route exact path={`${p}dashboard`}>
           {auth ? (
             pId ? (
               <DashboardPage />
             ) : (
-              <Redirect to="/plants" />
+              <Redirect to={`${p}plants`} />
             )
           ) : (
-            <Redirect to="/" />
+            <Redirect to={p} />
           )}
         </Route>
-        <Route exact path="/plants">
+        <Route exact path={`${p}plants`}>
           {auth ? <PlantPage /> : <Redirect to={p} />}
         </Route>
-        <Route exact path="/access_ctrl">
-          {auth ? <AccessCtrlPage /> : <Redirect to={p} />}
+        <Route exact path={`${p}access_ctrl`}>
+          {auth ? <AccessCtrlPage /> : <Redirect to={p}/>}
         </Route>
-        <Route exact path="/user">
+        <Route exact path={`${p}user`}>
           {auth ? <ProfilePage /> : <Redirect to={p} />}
         </Route>
-        <Route exact path="/user_edit">
+        <Route exact path={`${p}user_edit`}>
           {auth ? <UserEditPage /> : <Redirect to={p} />}
         </Route>
-        <Route exact path="/signin">
+        <Route exact path={`${p}signin`}>
           <SigninPage />
         </Route>
-        <Redirect to="/" />
+        <BaseRedirect />
       </Switch>
       <Snackbar
         open={noteState.open}

@@ -13,24 +13,18 @@ import {
 import axios, { AxiosResponse } from "axios";
 
 export type Result<T> = AxiosResponse<T>;
-let host;
-if (process.env.NODE_ENV !== "production") {
-  host = process.env.REACT_APP_REST_API_URL;
-} else {
-  host = window.location.origin;
-}
-let socHost;
-if (process.env.NODE_ENV !== "production") {
-  socHost = process.env.REACT_APP_SOC_URL;
-} else {
-  socHost = `ws://${window.location.host}`;
-}
-let xlsxTemplateHost;
-if (process.env.NODE_ENV !== "production") {
-  xlsxTemplateHost = process.env.REACT_APP_EXCEL_TEMPLATE_URL;
-} else {
-  xlsxTemplateHost = `${process.env.PUBLIC_URL}${process.env.REACT_APP_EXCEL_TEMPLATE_PATH}`;
-}
+let host =
+  process.env.NODE_ENV !== "production"
+    ? process.env.REACT_APP_REST_API_URL
+    : window.location.origin;
+
+let socHost =
+  process.env.NODE_ENV !== "production"
+    ? process.env.REACT_APP_SOC_URL
+    : `ws://${window.location.host}`;
+
+let xlsxTemplateHost = `${process.env.MEDIA_URL}${process.env.REACT_APP_EXCEL_TEMPLATE_PATH}`;
+
 const userUrl = `${host}${process.env.REACT_APP_REST_USER_MODIFY_PATH}/`;
 const apiTokenAuth = `${host}${process.env.REACT_APP_REST_TOKEN_AUTH_PATH}/`;
 const plantUrl = `${host}${process.env.REACT_APP_REST_API_PLANT_PATH}/`;
