@@ -11,7 +11,7 @@ import { getData, getSync } from "src/selectors";
 import { delData, saveData, downloadExcel } from "src/slices/data";
 import { clearFeedback, submitExcel } from "src/slices/sync";
 import { Forecast, ItemType } from "src/kernel";
-import ExcelProcessor2 from "src/kernel/ExcelProcessor2";
+import ExcelProcessor3 from "src/kernel/ExcelProcessor3";
 
 const useStyles = makeStyles((theme) => ({
   widget: {
@@ -44,7 +44,7 @@ const ForecastView: React.FC<IForecastViewProps> = (props) => {
   let [fbOpen, setFbOpen] = React.useState(false);
   const handleUploadExcel = async (file: File) => {
     try {
-      let ans = await ExcelProcessor2.readForecastFile(file);
+      let ans = await ExcelProcessor3.readForecastFile(file);
       dispatch(submitExcel({ type: ItemType.Forecast, data: ans }));
     } catch (e) {
       setFbOpen(true);

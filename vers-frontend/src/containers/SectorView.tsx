@@ -7,7 +7,7 @@ import Grid from "@material-ui/core/Grid";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 
-import ExcelProcessor2 from "src/kernel/ExcelProcessor2";
+import ExcelProcessor3 from "src/kernel/ExcelProcessor3";
 import SectorListWidget from "../components/SectorListWidget";
 import { getData, getSync, getSession } from "src/selectors";
 import { delData, downloadExcel, saveData } from "src/slices/data";
@@ -60,7 +60,7 @@ const SectorView: React.FC<ISectorViewProps> = (props) => {
 
   const handleUploadExcel = async (file: File) => {
     try {
-      let ans = await ExcelProcessor2.readSectorFile(file);
+      let ans = await ExcelProcessor3.readSectorFile(file);
       dispatch(submitExcel({ type: ItemType.Sector, data: ans }));
     } catch (e) {
       setFbOpen(true);

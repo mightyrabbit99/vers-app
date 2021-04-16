@@ -16,7 +16,7 @@ import { getData, getSession, getSync } from "src/selectors";
 import { delData, downloadExcel, saveData } from "src/slices/data";
 import { clearFeedback, submitExcel } from "src/slices/sync";
 import { Employee, ItemType } from "src/kernel";
-import ExcelProcessor2 from "src/kernel/ExcelProcessor2";
+import ExcelProcessor3 from "src/kernel/ExcelProcessor3";
 
 const useStyles = makeStyles((theme) => ({
   list: {
@@ -65,7 +65,7 @@ const EmployeeView: React.FC<IEmployeeViewProps> = (props) => {
   let [fbOpen, setFbOpen] = React.useState(false);
   const handleUploadExcel = async (file: File) => {
     try {
-      let ans = await ExcelProcessor2.readEmployeeFile(file);
+      let ans = await ExcelProcessor3.readEmployeeFile(file);
       dispatch(submitExcel({ type: ItemType.Employee, data: ans }));
     } catch (e) {
       setFbOpen(true);

@@ -17,7 +17,7 @@ import { getData, getSync } from "src/selectors";
 import { delData, downloadExcel, saveData } from "src/slices/data";
 import { clearFeedback, submitExcel } from "src/slices/sync";
 import { CalEvent, ItemType } from "src/kernel";
-import ExcelProcessor2 from "src/kernel/ExcelProcessor2";
+import ExcelProcessor3 from "src/kernel/ExcelProcessor3";
 import ExcelUploadForm from "src/components/forms/ExcelUploadForm";
 import { calExcelUrl } from "src/kernel/Fetcher";
 import Calendar, { Event } from "src/components/calendar/Calendar";
@@ -107,7 +107,7 @@ const CalendarView: React.FC<ICalendarViewProps> = () => {
   const handleExcelFileUpload = async (file: File) => {
     setExcelFormOpen(false);
     try {
-      let ans = await ExcelProcessor2.readCalEventFile(file);
+      let ans = await ExcelProcessor3.readCalEventFile(file);
       dispatch(submitExcel({ type: ItemType.CalEvent, data: ans }));
     } catch (e) {
       setFbOpen(true);

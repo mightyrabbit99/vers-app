@@ -1,5 +1,7 @@
 import Excel from "exceljs";
+import { CalEvent } from "./CalEvent";
 import { Employee } from "./Employee";
+import { Forecast } from "./Forecast";
 import { Plant } from "./Plant";
 import { Sector } from "./Sector";
 import { Skill } from "./Skill";
@@ -548,7 +550,7 @@ async function genFile(...sheetWriters: Array<(ws: Excel.Worksheet) => void>) {
   return await wb.xlsx.writeBuffer();
 }
 
-class ExcelProcessor2 {
+class ExcelProcessor3 {
   static readSectorFile = async (file: File) => {
     return await readFile(file, readSectorSheet);
   };
@@ -570,17 +572,17 @@ class ExcelProcessor2 {
   static readFile = async (type: ItemType, file: File) => {
     switch (type) {
       case ItemType.Sector:
-        return await ExcelProcessor2.readSectorFile(file);
+        return await ExcelProcessor3.readSectorFile(file);
       case ItemType.Subsector:
-        return await ExcelProcessor2.readSubsectorFile(file);
+        return await ExcelProcessor3.readSubsectorFile(file);
       case ItemType.Skill:
-        return await ExcelProcessor2.readSkillFile(file);
+        return await ExcelProcessor3.readSkillFile(file);
       case ItemType.Employee:
-        return await ExcelProcessor2.readEmployeeFile(file);
+        return await ExcelProcessor3.readEmployeeFile(file);
       case ItemType.CalEvent:
-        return await ExcelProcessor2.readCalEventFile(file);
+        return await ExcelProcessor3.readCalEventFile(file);
       case ItemType.Forecast:
-        return await ExcelProcessor2.readForecastFile(file);
+        return await ExcelProcessor3.readForecastFile(file);
       default:
         return null;
     }
@@ -613,17 +615,17 @@ class ExcelProcessor2 {
   static genFile = async (type: ItemType, objs: ExcelObj[]) => {
     switch (type) {
       case ItemType.Sector:
-        return await ExcelProcessor2.genSectorFile(objs as SectorObj[]);
+        return await ExcelProcessor3.genSectorFile(objs as SectorObj[]);
       case ItemType.Subsector:
-        return await ExcelProcessor2.genSubsectorFile(objs as SubsectorObj[]);
+        return await ExcelProcessor3.genSubsectorFile(objs as SubsectorObj[]);
       case ItemType.Skill:
-        return await ExcelProcessor2.genSkillFile(objs as SkillObj[]);
+        return await ExcelProcessor3.genSkillFile(objs as SkillObj[]);
       case ItemType.Employee:
-        return await ExcelProcessor2.genEmployeeFile(objs as EmployeeObj[]);
+        return await ExcelProcessor3.genEmployeeFile(objs as EmployeeObj[]);
       case ItemType.CalEvent:
-        return await ExcelProcessor2.genCalEventFile(objs as CalEventObj[]);
+        return await ExcelProcessor3.genCalEventFile(objs as CalEventObj[]);
       case ItemType.Forecast:
-        return await ExcelProcessor2.genForecastFile(objs as ForecastObj[]);
+        return await ExcelProcessor3.genForecastFile(objs as ForecastObj[]);
       default:
         return null;
     }
@@ -895,6 +897,22 @@ class ExcelObjConverter {
     };
     return items.map(f);
   };
+
+  convObjsToForecasts = (objs: ForecastObj[]): Forecast[] => {
+    return [];
+  };
+
+  convForecastsToObjs = (items: Forecast[]): ForecastObj[] => {
+    return [];
+  };
+
+  convObjsToCalEvents = (objs: CalEventObj[]): CalEvent[] => {
+    return [];
+  };
+
+  convCalEventsToObjs = (items: CalEvent[]): CalEventObj[] => {
+    return [];
+  };
 }
 
 export type {
@@ -907,4 +925,4 @@ export type {
   CalEventObj,
 };
 export { ExcelObjConverter };
-export default ExcelProcessor2;
+export default ExcelProcessor3;

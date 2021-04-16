@@ -12,7 +12,7 @@ import { getData, getSync, getSession } from "src/selectors";
 import { delData, downloadExcel, saveData } from "src/slices/data";
 import { Skill, ItemType } from "src/kernel";
 import { clearFeedback, submitExcel } from "src/slices/sync";
-import ExcelProcessor2 from "src/kernel/ExcelProcessor2";
+import ExcelProcessor3 from "src/kernel/ExcelProcessor3";
 
 const useStyles = makeStyles((theme) => ({
   list: {
@@ -50,7 +50,7 @@ const SkillView: React.FC<ISkillViewProps> = (props) => {
   let [fbOpen, setFbOpen] = React.useState(false);
   const handleUploadExcel = async (file: File) => {
     try {
-      let ans = await ExcelProcessor2.readSkillFile(file);
+      let ans = await ExcelProcessor3.readSkillFile(file);
       dispatch(submitExcel({ type: ItemType.Skill, data: ans }));
     } catch (e) {
       setFbOpen(true);

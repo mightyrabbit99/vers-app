@@ -18,6 +18,8 @@ import ExcelProcessor3, {
   SkillObj,
   SubsectorObj,
   ExcelObjConverter,
+  ForecastObj,
+  CalEventObj,
 } from "./ExcelProcessor3";
 import UserStore, { User } from "./User";
 import HeadCalc, { CalcVars } from "./HeadCalc";
@@ -449,31 +451,75 @@ class Kernel {
     let conv = this.objConverter;
     switch (type) {
       case ItemType.Sector:
-        conv.convObjsToSectors(data as SectorObj[]).forEach(
-          this.secStore.submitOrNew
-        );
+        conv
+          .convObjsToSectors(data as SectorObj[])
+          .forEach(this.secStore.submitOrNew);
         break;
       case ItemType.Subsector:
-        conv.convObjsToSubsectors(data as SubsectorObj[]).forEach(
-          this.subsecStore.submitOrNew
-        );
+        conv
+          .convObjsToSubsectors(data as SubsectorObj[])
+          .forEach(this.subsecStore.submitOrNew);
         break;
       case ItemType.Skill:
-        conv.convObjsToSkills(data as SkillObj[]).forEach(
-          this.skillStore.submitOrNew
-        );
+        conv
+          .convObjsToSkills(data as SkillObj[])
+          .forEach(this.skillStore.submitOrNew);
         break;
       case ItemType.Employee:
-        conv.convObjsToEmployees(data as EmployeeObj[]).forEach(
-          this.empStore.submitOrNew
-        );
+        conv
+          .convObjsToEmployees(data as EmployeeObj[])
+          .forEach(this.empStore.submitOrNew);
+        break;
+      case ItemType.Forecast:
+        conv
+          .convObjsToForecasts(data as ForecastObj[])
+          .forEach(this.forecastStore.submitOrNew);
+        break;
+      case ItemType.CalEvent:
+        conv
+          .convObjsToCalEvents(data as CalEventObj[])
+          .forEach(this.calEventStore.submitOrNew);
         break;
       default:
         break;
     }
   };
 
-  getExcel = (type: ItemType, items?: Item[]) => {};
+  getExcel = (type: ItemType, items?: Item[]) => {
+    let conv = this.objConverter;
+    let itms, objs;
+    switch (type) {
+      case ItemType.Sector:
+        itms = (items as Sector[]) ?? Object.values(this.secStore.getLst());
+        objs = conv.convSectorsToObjs(itms);
+        return ExcelProcessor3.genSectorFile(objs);
+      case ItemType.Subsector:
+        itms =
+          (items as Subsector[]) ?? Object.values(this.subsecStore.getLst());
+        objs = conv.convSubsectorsToObjs(itms);
+        return ExcelProcessor3.genSubsectorFile(objs);
+      case ItemType.Skill:
+        itms = (items as Skill[]) ?? Object.values(this.skillStore.getLst());
+        objs = conv.convSkillsToObjs(itms);
+        return ExcelProcessor3.genSkillFile(objs);
+      case ItemType.Employee:
+        itms = (items as Employee[]) ?? Object.values(this.empStore.getLst());
+        objs = conv.convEmployeesToObjs(itms);
+        return ExcelProcessor3.genEmployeeFile(objs);
+      case ItemType.Forecast:
+        itms =
+          (items as Forecast[]) ?? Object.values(this.forecastStore.getLst());
+        objs = conv.convForecastsToObjs(itms);
+        return ExcelProcessor3.genForecastFile(objs);
+      case ItemType.CalEvent:
+        itms =
+          (items as CalEvent[]) ?? Object.values(this.calEventStore.getLst());
+        objs = conv.convCalEventsToObjs(itms);
+        return ExcelProcessor3.genCalEventFile(objs);
+      default:
+        break;
+    }
+  };
 
   setVars = (vars: CalcVars) => {
     this.calc.setVars(vars);
