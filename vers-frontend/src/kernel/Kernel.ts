@@ -97,7 +97,9 @@ class Kernel {
       this.secStore,
       this.subsecStore,
       this.skillStore,
-      this.empStore
+      this.empStore,
+      this.forecastStore,
+      this.calEventStore
     );
   }
 

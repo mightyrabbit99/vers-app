@@ -656,19 +656,25 @@ class ExcelObjConverter {
   private subsecStore: Store<Subsector>;
   private skillStore: Store<Skill>;
   private empStore: Store<Employee>;
+  private forecastStore: Store<Forecast>;
+  private calEventStore: Store<CalEvent>;
 
   constructor(
     plantStore: Store<Plant>,
     secStore: Store<Sector>,
     subsecStore: Store<Subsector>,
     skillStore: Store<Skill>,
-    empStore: Store<Employee>
+    empStore: Store<Employee>,
+    forecastStore: Store<Forecast>,
+    calEventStore: Store<CalEvent>
   ) {
     this.plantStore = plantStore;
     this.secStore = secStore;
     this.subsecStore = subsecStore;
     this.skillStore = skillStore;
     this.empStore = empStore;
+    this.forecastStore = forecastStore;
+    this.calEventStore = calEventStore;
   }
 
   convObjsToSectors = (objs: SectorObj[]): Sector[] => {
@@ -899,7 +905,14 @@ class ExcelObjConverter {
   };
 
   convObjsToForecasts = (objs: ForecastObj[]): Forecast[] => {
-    return [];
+    const st = this.forecastStore;
+    let f = (obj: ForecastObj): Forecast => {
+      return st.getNew({
+        ...obj,
+        on: new Date(obj.on).toISOString().slice(0, 10),
+      });
+    };
+    return objs.map(f);
   };
 
   convForecastsToObjs = (items: Forecast[]): ForecastObj[] => {
@@ -907,7 +920,15 @@ class ExcelObjConverter {
   };
 
   convObjsToCalEvents = (objs: CalEventObj[]): CalEvent[] => {
-    return [];
+    const st = this.calEventStore;
+    let f = (obj: CalEventObj): CalEvent => {
+      return st.getNew({
+        ...obj,
+        start: new Date(obj.start).toISOString().slice(0, 10),
+        end: new Date(obj.end).toISOString().slice(0, 10),
+      });
+    };
+    return objs.map(f);
   };
 
   convCalEventsToObjs = (items: CalEvent[]): CalEventObj[] => {
