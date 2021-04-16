@@ -1,5 +1,10 @@
 import Excel from "exceljs";
-import { ItemType } from "./Store";
+import { Employee } from "./Employee";
+import { Plant } from "./Plant";
+import { Sector } from "./Sector";
+import { Skill } from "./Skill";
+import { ItemType, Store } from "./Store";
+import { Subsector } from "./Subsector";
 
 interface ExcelObjT {
   _type: ItemType;
@@ -625,6 +630,273 @@ class ExcelProcessor2 {
   };
 }
 
+function genMap<T>(
+  lst: { [id: number]: T },
+  idMapper: (x: T) => any,
+  filterer?: (x: T) => boolean
+) {
+  return Object.values(lst).reduce((prev, curr) => {
+    if (filterer && !filterer(curr)) return prev;
+    const newId = idMapper(curr);
+    if (!prev[newId]) prev[newId] = [];
+    prev[newId].push(curr);
+    return prev;
+  }, {} as { [name: string]: T[] });
+}
+
+function k(...s: any[]) {
+  return s.join("\t");
+}
+
+class ExcelObjConverter {
+  private plantStore: Store<Plant>;
+  private secStore: Store<Sector>;
+  private subsecStore: Store<Subsector>;
+  private skillStore: Store<Skill>;
+  private empStore: Store<Employee>;
+
+  constructor(
+    plantStore: Store<Plant>,
+    secStore: Store<Sector>,
+    subsecStore: Store<Subsector>,
+    skillStore: Store<Skill>,
+    empStore: Store<Employee>
+  ) {
+    this.plantStore = plantStore;
+    this.secStore = secStore;
+    this.subsecStore = subsecStore;
+    this.skillStore = skillStore;
+    this.empStore = empStore;
+  }
+
+  convObjsToSectors = (objs: SectorObj[]): Sector[] => {
+    const st = this.secStore;
+    const plantMap = genMap(this.plantStore.getLst(), (x) => x.name);
+    let f = (obj: SectorObj): Sector => {
+      if (!(obj.plant && obj.plant in plantMap)) {
+        throw new Error(
+          `Line ${obj.line}: plant ${obj.plant} of sector ${obj.name} not defined`
+        );
+      }
+      return st.getNew({
+        plant: plantMap[obj.plant][0].id,
+        name: obj.name,
+        subsectors: [],
+      });
+    };
+    return objs.map(f);
+  };
+
+  convSectorsToObjs = (items: Sector[]): SectorObj[] => {
+    let f = (item: Sector, idx: number): SectorObj => {
+      return {
+        _type: ItemType.Sector,
+        line: idx,
+        name: item.name,
+        plant: this.plantStore.get(item.plant).name,
+      };
+    };
+    return items.map(f);
+  };
+
+  convObjsToSubsectors = (objs: SubsectorObj[]): Subsector[] => {
+    const st = this.subsecStore;
+    const plantMap = this.plantStore.getLst();
+    const secMap = genMap(this.secStore.getLst(), (x) =>
+      k(x.name, plantMap[x.plant].name)
+    );
+    let f = (obj: SubsectorObj): Subsector => {
+      let kk = k(obj.sector.name, obj.sector.plant);
+      if (!(kk in secMap)) {
+        throw new Error(
+          `Line ${obj.line}: Sector ${obj.sector.name} of subsector ${obj.name} not defined`
+        );
+      }
+      return st.getNew({
+        sector: secMap[kk][0].id,
+        name: obj.name,
+      });
+    };
+    return objs.map(f);
+  };
+
+  convSubsectorsToObjs = (items: Subsector[]): SubsectorObj[] => {
+    let f = (item: Subsector, idx: number): SubsectorObj => {
+      return {
+        _type: ItemType.Subsector,
+        line: idx,
+        name: item.name,
+        sector: {
+          _type: ItemType.Sector,
+          line: idx,
+          name: this.secStore.get(item.sector).name,
+        },
+      };
+    };
+    return items.map(f);
+  };
+
+  convObjsToSkills = (objs: SkillObj[]): Skill[] => {
+    const st = this.skillStore;
+    const plantMap = this.plantStore.getLst();
+    const secMap = this.secStore.getLst();
+    const subsecMap = genMap(this.subsecStore.getLst(), (x) =>
+      k(x.name, secMap[x.sector].name, plantMap[secMap[x.sector].plant].name)
+    );
+    let f = (obj: SkillObj): Skill => {
+      let kk = k(
+        obj.subsector.name,
+        obj.subsector.sector.name,
+        obj.subsector.sector.plant
+      );
+      if (!(kk in secMap)) {
+        throw new Error(
+          `Line ${obj.line}: Subsector ${obj.sector.name} of skill ${obj.name} not defined`
+        );
+      }
+      return st.getNew({
+        subsector: subsecMap[obj.sector.name][0].id,
+        name: obj.name,
+      });
+    };
+    return objs.map(f);
+  };
+
+  convSkillsToObjs = (items: Skill[]): SkillObj[] => {
+    let f = (item: Skill, idx: number): SkillObj => {
+      let ss = this.subsecStore.get(item.subsector);
+      let s = this.secStore.get(ss.sector);
+      let p = this.plantStore.get(s.plant);
+      return {
+        _type: ItemType.Skill,
+        line: idx,
+        name: item.name,
+        subsector: {
+          _type: ItemType.Subsector,
+          line: idx,
+          name: ss.name,
+          sector: {
+            _type: ItemType.Sector,
+            line: idx,
+            name: s.name,
+            plant: p.name,
+          },
+        },
+      };
+    };
+    return items.map(f);
+  };
+
+  private pId: number = 0;
+  setPid = (id: number) => {
+    this.pId = id;
+  };
+  convObjsToEmployees = (objs: EmployeeObj[]): Employee[] => {
+    const st = this.empStore;
+    const secMap = this.secStore.getLst((x) => x.plant === this.pId);
+    const subsecMap = this.subsecStore.getLst((x) => x.sector in secMap);
+    const subsecMap2 = genMap(subsecMap, (x) =>
+      k(x.name, secMap[x.sector].name)
+    );
+    const skillMap = genMap(
+      this.skillStore.getLst((x) => x.subsector in subsecMap),
+      (x) =>
+        k(
+          x.name,
+          subsecMap[x.subsector].name,
+          secMap[subsecMap[x.subsector].sector].name
+        )
+    );
+    let f = (obj: EmployeeObj): Employee => {
+      let kk = k(obj.subsector.name, obj.subsector.sector.name);
+      if (!(kk in subsecMap2)) {
+        throw new Error(
+          `Line ${obj.line}: Home Location (Subsector) ${obj.homeLocation} of employee ${obj.sesaId} not defined`
+        );
+      }
+      return st.getNew({
+        subsector: subsecMap2[kk][0].id,
+        firstName: obj.firstName,
+        lastName: obj.lastName,
+        sesaId: obj.sesaId,
+        hireDate: obj.joinDate.toISOString().slice(0, 10),
+        department: obj.department,
+        skills: obj.skills.map((sk) => {
+          let kk = k(
+            sk.skill.name,
+            sk.skill.subsector.name,
+            sk.skill.subsector.sector.name
+          );
+          if (!(kk in skillMap)) {
+            throw new Error(
+              `Col ${sk.skill.line}: Skill ${sk.skill.name} not defined`
+            );
+          }
+          return {
+            skill: skillMap[kk][0].id,
+            level: sk.level,
+            desc: "",
+          };
+        }),
+      });
+    };
+    return objs.map(f);
+  };
+
+  convEmployeesToObjs = (items: Employee[]): EmployeeObj[] => {
+    let f = (item: Employee, idx: number): EmployeeObj => {
+      let ss = this.subsecStore.get(item.subsector);
+      let s = this.secStore.get(ss.sector);
+      let p = this.plantStore.get(s.plant);
+      return {
+        _type: ItemType.Employee,
+        line: idx,
+        firstName: item.firstName,
+        lastName: item.lastName,
+        sesaId: item.sesaId,
+        joinDate: new Date(item.hireDate),
+        department: item.department,
+        subsector: {
+          _type: ItemType.Subsector,
+          line: idx,
+          name: ss.name,
+          sector: {
+            _type: ItemType.Sector,
+            line: idx,
+            name: s.name,
+            plant: p.name,
+          },
+        },
+        skills: item.skills.map((x) => {
+          let sk = this.skillStore.get(x.skill);
+          let suk = this.subsecStore.get(sk.subsector);
+          let sek = this.secStore.get(suk.sector);
+          return {
+            skill: {
+              _type: ItemType.Skill,
+              line: idx,
+              name: sk.name,
+              subsector: {
+                _type: ItemType.Subsector,
+                line: idx,
+                name: suk.name,
+                sector: {
+                  _type: ItemType.Sector,
+                  line: idx,
+                  name: sek.name,
+                  plant: this.plantStore.get(sek.plant).name,
+                },
+              },
+            },
+            level: x.level,
+          };
+        }),
+      };
+    };
+    return items.map(f);
+  };
+}
+
 export type {
   ExcelObj,
   SectorObj,
@@ -634,4 +906,5 @@ export type {
   ForecastObj,
   CalEventObj,
 };
+export { ExcelObjConverter };
 export default ExcelProcessor2;
