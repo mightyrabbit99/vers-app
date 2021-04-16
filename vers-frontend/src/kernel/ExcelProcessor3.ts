@@ -916,7 +916,13 @@ class ExcelObjConverter {
   };
 
   convForecastsToObjs = (items: Forecast[]): ForecastObj[] => {
-    return [];
+    let f = (x: Forecast, idx: number) => ({
+      _type: x._type,
+      line: idx,
+      on: new Date(x.on).getTime(),
+      forecasts: x.forecasts,
+    });
+    return items.map(f);
   };
 
   convObjsToCalEvents = (objs: CalEventObj[]): CalEvent[] => {
@@ -932,7 +938,15 @@ class ExcelObjConverter {
   };
 
   convCalEventsToObjs = (items: CalEvent[]): CalEventObj[] => {
-    return [];
+    let f = (x: CalEvent, idx: number) => ({
+      _type: x._type,
+      line: idx,
+      name: x.title,
+      start: new Date(x.start).getTime(),
+      end: new Date(x.end).getTime(),
+      eventType: x.eventType,
+    });
+    return items.map(f);
   };
 }
 
