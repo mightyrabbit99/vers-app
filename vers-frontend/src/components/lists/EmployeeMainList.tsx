@@ -8,7 +8,6 @@ import MainList, { Col } from "./MainList";
 
 interface IEmployeeMainListProps {
   lst: { [id: number]: Employee };
-  subsectorLst: { [id: number]: Subsector };
   selected?: number[];
   selectedOnChange?: (ids: number[]) => void;
   onEdit?: (id: number) => void;
@@ -17,7 +16,7 @@ interface IEmployeeMainListProps {
 const getName = (p: Employee) => `${p.firstName}, ${p.lastName}`;
 
 const EmployeeMainList: React.FC<IEmployeeMainListProps> = (props) => {
-  const { lst, subsectorLst, selected, selectedOnChange, onEdit } = props;
+  const { lst, selected, selectedOnChange, onEdit } = props;
   const cols: Col[] = [
     {
       title: "Name",
@@ -26,14 +25,15 @@ const EmployeeMainList: React.FC<IEmployeeMainListProps> = (props) => {
         p1.name < p2.name ? 1 : p1.name === p2.name ? 0 : -1,
     },
     {
+      title: "Department",
+      extractor: (p: Employee) => p.department,
+      comparator: (p1: Employee, p2: Employee) =>
+        p1.department < p2.department ? 1 : p1.department === p2.department ? 0 : -1,
+    },
+    {
       title: "Home Location",
-      extractor: (p: Employee) =>
-        subsectorLst[p.subsector] ? subsectorLst[p.subsector].name : "",
-      comparator: (p1: Employee, p2: Employee) => {
-        let pp1 = subsectorLst[p1.subsector].name,
-          pp2 = subsectorLst[p2.subsector].name;
-        return pp1 < pp2 ? 1 : pp1 === pp2 ? 0 : -1;
-      },
+      extractor: (p: Employee) => p.subsector,
+      comparator: (p1: Employee, p2: Employee) => p1.subsector < p2.subsector ? 1 : p1.subsector === p2.subsector ? 0 : -1,
     },
     {
       title: "Report to",

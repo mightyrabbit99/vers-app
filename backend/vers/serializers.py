@@ -204,8 +204,6 @@ class SubsectorSerializer(serializers.ModelSerializer):
   owner = serializers.ReadOnlyField(source=OWNER_USERNAME)
   skills = serializers.PrimaryKeyRelatedField(
       many=True, queryset=models.Skill.objects.all())
-  employees = serializers.PrimaryKeyRelatedField(
-      many=True, read_only=True)
   jobs = serializers.PrimaryKeyRelatedField(
       many=True, read_only=True)
 

@@ -1,14 +1,13 @@
 import * as React from "react";
 
 import { Grid, Button } from "@material-ui/core";
-import { Employee, Subsector } from "src/kernel";
+import { Employee } from "src/kernel";
 import EmployeeFormFields, { EmployeeFormChoices } from "./EmployeeFormFields";
 
 interface IEmployeeFormProps {
   data: Employee;
   feedback?: any;
   employeeLst: { [id: number]: Employee };
-  subsectorLst: { [id: number]: Subsector };
   onSubmit: (p: Employee) => void;
   onChange?: (p: Employee) => void;
   onCancel?: () => void;
@@ -18,7 +17,6 @@ const EmployeeForm: React.FC<IEmployeeFormProps> = (props) => {
   const {
     data,
     feedback,
-    subsectorLst,
     employeeLst,
     onSubmit,
     onChange,
@@ -26,7 +24,6 @@ const EmployeeForm: React.FC<IEmployeeFormProps> = (props) => {
   } = props;
   const newData = { ...data };
   const employees = Object.values(employeeLst);
-  const subsectors = Object.values(subsectorLst);
   const choices: EmployeeFormChoices = {
     gender: {
       choices: [
@@ -34,10 +31,6 @@ const EmployeeForm: React.FC<IEmployeeFormProps> = (props) => {
         { name: "Female", value: "F" },
       ],
       init: data.gender === "M" ? 0 : data.gender === "F" ? 1 : -1,
-    },
-    subsector: {
-      choices: subsectors.map((x) => ({ name: x.name, value: x.id })),
-      init: subsectors.findIndex((x) => x.id === data.subsector),
     },
     reportTo: {
       choices: employees.map((x) => ({ name: x.firstName, value: x.id })),

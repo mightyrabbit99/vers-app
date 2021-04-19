@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
 
 interface EmployeeFormChoices extends FormChoices {
   gender: FormChoiceField;
-  subsector: FormChoiceField;
+  reportTo: FormChoiceField;
 }
 
 interface IEmployeeFFProps {
@@ -68,17 +68,12 @@ const EmployeeFF: React.FC<IEmployeeFFProps> = (props) => {
     let { name, value, files } = e.target;
     if (
       name === "gender" ||
-      name === "reportTo" ||
-      name === "subsector"
+      name === "reportTo"
     ) {
       value = parseInt(value, 10);
       choices[name].init = value;
       value = choices[name].choices[value].value;
     }
-    if (name === "profilePic") {
-      value = files[0];
-    }
-
     chg(name, value);
   };
 
@@ -89,8 +84,7 @@ const EmployeeFF: React.FC<IEmployeeFFProps> = (props) => {
   const getDataProp = (name: string) => {
     if (
       name === "gender" ||
-      name === "reportTo" ||
-      name === "subsector"
+      name === "reportTo"
     ) {
       return choices[name].init === -1 ? "" : choices[name].init ?? "";
     }
@@ -215,23 +209,10 @@ const EmployeeFF: React.FC<IEmployeeFFProps> = (props) => {
           />
         </Grid>
         <Grid item xs={4}>
-          <FormControl className={classes.formControl}>
-            <InputLabel id="demo-simple-select-label">Home Location</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              fullWidth
-              className={classes.subsector}
-              disabled={choices["subsector"].choices.length === 0}
-              {...genActiveProps("subsector")}
-              error={getFeedback("subsector") !== ""}
-            >
-              {choices["subsector"].choices.map((x, idx) => (
-                <MenuItem key={idx} value={idx}>
-                  {x.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <TextField
+            label="Home Location"
+            {...genProps("subsector")}
+          />
         </Grid>
         <Grid item xs={4}>
           <FormControl className={classes.formControl}>

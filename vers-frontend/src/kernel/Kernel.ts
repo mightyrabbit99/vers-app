@@ -361,9 +361,6 @@ class Kernel {
           break;
         case ItemType.Subsector:
           (p as Subsector).skills.map((x) => skills[x]).forEach(cascadeDel);
-          (p as Subsector).employees
-            .map((x) => employees[x])
-            .forEach(cascadeDel);
           (p as Subsector).jobs.map((x) => jobs[x]).forEach(cascadeDel);
           break;
       }
@@ -449,43 +446,47 @@ class Kernel {
     this.objConverter.setPid(pId);
   };
 
-  submitExcel = (type: ItemType, data: ExcelObj[]) => {
+  _submitExcel = async (type: ItemType, data: ExcelObj[]) => {
     let conv = this.objConverter;
     switch (type) {
       case ItemType.Sector:
-        conv
+        return await Promise.all(conv
           .convObjsToSectors(data as SectorObj[])
-          .forEach(this.secStore.submitOrNew);
-        break;
+          .map(this.secStore.submitOrNew));
       case ItemType.Subsector:
-        conv
+        return await Promise.all(conv
           .convObjsToSubsectors(data as SubsectorObj[])
-          .forEach(this.subsecStore.submitOrNew);
-        break;
+          .map(this.subsecStore.submitOrNew));
       case ItemType.Skill:
-        conv
+        return await Promise.all(conv
           .convObjsToSkills(data as SkillObj[])
-          .forEach(this.skillStore.submitOrNew);
-        break;
+          .map(this.skillStore.submitOrNew));
       case ItemType.Employee:
-        conv
+        return await Promise.all(conv
           .convObjsToEmployees(data as EmployeeObj[])
-          .forEach(this.empStore.submitOrNew);
-        break;
+          .map(this.empStore.submitOrNew));
       case ItemType.Forecast:
-        conv
+        return await Promise.all(conv
           .convObjsToForecasts(data as ForecastObj[])
-          .forEach(this.forecastStore.submitOrNew);
-        break;
+          .map(this.forecastStore.submitOrNew));
       case ItemType.CalEvent:
-        conv
+        return await Promise.all(conv
           .convObjsToCalEvents(data as CalEventObj[])
-          .forEach(this.calEventStore.submitOrNew);
-        break;
+          .map(this.calEventStore.submitOrNew));
       default:
-        break;
+        return [];
     }
   };
+
+  submitExcel = async (type: ItemType, data: ExcelObj[]) => {
+    let res = await this._submitExcel(type, data);
+    this._log(`Submit Excel for ${type}`, ...res);
+    if (!this.soc) {
+      this.refresh();
+      this.trigger();
+    }
+    return res;
+  }
 
   getExcel = (type: ItemType, items?: Item[]) => {
     let conv = this.objConverter;

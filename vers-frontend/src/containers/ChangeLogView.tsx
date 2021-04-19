@@ -133,19 +133,20 @@ const ChangeLogView: React.FC = () => {
 
   const genMyLogCard = (log: MyLog, idx: number) => {
     return (
-      <Accordion
-        key={idx}
-        className={clsx(
-          classes.myLogItem,
-          log.vals.some((x) => !x.success) ? classes.myLogItemError : null
-        )}
-      >
+      <Accordion key={idx} className={classes.myLogItem}>
         <AccordionSummary
           aria-controls="panel1a-content"
           id="panel1a-header"
           expandIcon={<ExpandMoreIcon />}
         >
-          <Typography className={classes.heading}>{log.desc}</Typography>
+          <Typography
+            className={clsx(
+              classes.heading,
+              log.vals.some((x) => !x.success) ? classes.myLogItemError : null
+            )}
+          >
+            {log.desc}
+          </Typography>
         </AccordionSummary>
         <AccordionDetails>
           <List>
@@ -153,6 +154,7 @@ const ChangeLogView: React.FC = () => {
               return (
                 <ListItem key={idx}>
                   <ListItemText
+                    className={!x.success ? classes.myLogItemError : undefined}
                     primary={genDetail(x)}
                     secondary={x.success ? undefined : genFailDetail(x)}
                   />

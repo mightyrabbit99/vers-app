@@ -104,7 +104,7 @@ class Subsector(models.Model):
 
 
 class Skill(models.Model):
-  name = models.CharField(max_length=50)
+  name = models.CharField(max_length=100)
   priority = models.IntegerField()
   percentage_of_subsector = models.IntegerField()
   subsector = models.ForeignKey(
@@ -124,20 +124,23 @@ class Gender(models.TextChoices):
   MALE = "M", "Male"
   FEMALE = "F", "Female"
 
+class Shift(models.IntegerChoices):
+  FIRST = 1, "First"
+  SECOND = 2, "Second"
 
 class Employee(models.Model):
   sesa_id = models.CharField(unique=True, max_length=10)
   first_name = models.CharField(max_length=50)
   last_name = models.CharField(max_length=50)
-  subsector = models.ForeignKey(
-      Subsector, related_name='employees', on_delete=models.SET_NULL, null=True)
+  subsector = models.CharField(max_length=50, blank=True)
   report_to = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
-  department = models.CharField(max_length=50)
+  department = models.CharField(max_length=50, blank=True)
   birth_date = models.DateField(null=True)
   gender = models.CharField(
       max_length=1, choices=Gender.choices, default=Gender.MALE)
   available = models.BooleanField(default=1)
   hire_date = models.DateField(null=True)
+  shift = models.IntegerField(choices=Shift.choices, default=Shift.FIRST)
 
   owner = models.ForeignKey(
       User, related_name='created_employee', on_delete=models.SET_NULL, null=True)

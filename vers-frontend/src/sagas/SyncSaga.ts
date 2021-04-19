@@ -93,7 +93,12 @@ function* submitExcelData({ payload }: SubmitExcelAction) {
   let { selectedPlantId: pId } = yield select(getData);
   let { type, data } = payload;
   k.setPid(pId);
-  let res: Result[] = yield k.submitExcel(type, data);
+  let res: Result[] = [];
+  try {
+    res = yield k.submitExcel(type, data);
+  } catch (e) {
+    yield put(submitError({ message: `${e}` }));
+  }
   if (res.some((x) => !x.success)) {
     yield put(submitError({ message: "Some Error Occurred: See Log" }));
   } else {

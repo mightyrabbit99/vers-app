@@ -15,9 +15,10 @@ import Checkbox from "@material-ui/core/Checkbox";
 import { Employee, EmpSkillData, Skill } from "src/kernel";
 
 const useStyles = makeStyles((themes) => ({
-  content: {
+  root: {
     height: "100%",
     width: "100%",
+    overflowY: "scroll",
   },
 }));
 
@@ -114,7 +115,7 @@ const EmpSkillList: React.FC<IEmpSkillListProps> = (props) => {
   };
 
   return (
-    <TableContainer className={classes.content}>
+    <TableContainer className={classes.root}>
       <Table stickyHeader>
         <TableHead>
           <TableRow>

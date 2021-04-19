@@ -29,6 +29,10 @@ const useStyles = makeStyles((theme) => ({
   header: {
     display: "flex",
     flexDirection: "row",
+    height: "10%",
+  },
+  content: {
+    height: "90%",
   },
   title: {
     height: "15%",
@@ -42,7 +46,6 @@ const EmployeeView: React.FC<IEmployeeViewProps> = (props) => {
   const classes = useStyles();
   const {
     employees,
-    subsectors,
     skills,
     newEmployee,
   } = useSelector(getData);
@@ -87,7 +90,6 @@ const EmployeeView: React.FC<IEmployeeViewProps> = (props) => {
           <Paper className={classes.list}>
             <EmployeeListWidget
               lst={employees}
-              subsectorLst={subsectors}
               newEmployee={newEmployee}
               feedback={feedback}
               edit={canEdit()}
@@ -112,11 +114,13 @@ const EmployeeView: React.FC<IEmployeeViewProps> = (props) => {
                 Skills Assignment
               </Typography>
             </div>
-            <EmployeeSkillWidget
-              lst={employees}
-              skillLst={skills}
-              onSubmit={canEdit() ? handleSubmit : undefined}
-            />
+            <div className={classes.content}>
+              <EmployeeSkillWidget
+                lst={employees}
+                skillLst={skills}
+                onSubmit={canEdit() ? handleSubmit : undefined}
+              />
+            </div>
           </Paper>
         </Grid>
         <Grid item xs={12}>
@@ -132,7 +136,9 @@ const EmployeeView: React.FC<IEmployeeViewProps> = (props) => {
                 Skill Filter
               </Typography>
             </div>
-            <EmployeeSkillFilterWidget lst={employees} skillLst={skills} />
+            <div className={classes.content}>
+              <EmployeeSkillFilterWidget lst={employees} skillLst={skills} />
+            </div>
           </Paper>
         </Grid>
       </Grid>

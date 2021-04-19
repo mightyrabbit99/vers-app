@@ -2,7 +2,7 @@ import * as React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 
-import { Employee, Subsector } from "src/kernel";
+import { Employee } from "src/kernel";
 import MyDialog from "src/components/commons/Dialog";
 import EmployeeForm from "src/components/forms/EmployeeForm";
 import EmployeeList from "src/components/lists/EmployeeMainList";
@@ -27,7 +27,6 @@ const useStyles = makeStyles((theme) => ({
 
 interface IEmployeeListWidgetProps {
   lst: { [id: number]: Employee };
-  subsectorLst: { [id: number]: Subsector };
   newEmployee?: Employee;
   feedback?: any;
   edit?: boolean;
@@ -44,7 +43,6 @@ const EmployeeListWidget: React.FC<IEmployeeListWidgetProps> = (
   const classes = useStyles();
   const {
     lst,
-    subsectorLst,
     newEmployee,
     feedback,
     edit = true,
@@ -105,7 +103,6 @@ const EmployeeListWidget: React.FC<IEmployeeListWidgetProps> = (
     >
       <EmployeeList
         lst={lst}
-        subsectorLst={subsectorLst}
         selected={selected}
         selectedOnChange={setSelected}
         onEdit={edit ? handleEditOnClick : undefined}
@@ -130,7 +127,6 @@ const EmployeeListWidget: React.FC<IEmployeeListWidgetProps> = (
               <EmployeeForm
                 data={formData}
                 employeeLst={lst}
-                subsectorLst={subsectorLst}
                 feedback={feedback}
                 onSubmit={handleSubmit}
                 onCancel={handleFormClose}

@@ -5,7 +5,6 @@ import Grid from "@material-ui/core/Grid";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
-import Divider from "@material-ui/core/Divider";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 
@@ -15,10 +14,17 @@ import SkillSimpleSelForm from "./forms/SkillSimpleSelForm";
 import MyDialog from "src/components/commons/Dialog";
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    height: "100%",
+  },
+  item: {
+    height: "100%",
+  },
   ctrlButtons: {
     display: "flex",
     flexDirection: "row-reverse",
     marginLeft: "auto",
+    height: "15%",
     "& > *": {
       margin: theme.spacing(1),
     },
@@ -29,8 +35,10 @@ const useStyles = makeStyles((theme) => ({
   },
   list: {
     height: "100%",
-    overflow: "auto",
-    maxHeight: 300,
+    overflowY: "scroll",
+  },
+  skillLst: {
+    height: "85%",
   },
   form: {},
   formTitle: {
@@ -115,7 +123,7 @@ const EmployeeSkillWidget: React.FC<IEmployeeSkillWidgetProps> = (props) => {
       onClick={(event) => handleListItemClick(event, e.id)}
       key={idx}
     >
-      <ListItemText primary={`${e.firstName}`} />
+      <ListItemText primary={`${e.firstName} ${e.lastName}`} />
     </ListItem>
   );
 
@@ -126,14 +134,13 @@ const EmployeeSkillWidget: React.FC<IEmployeeSkillWidgetProps> = (props) => {
 
   return (
     <React.Fragment>
-      <Grid container spacing={1}>
-        <Grid item xs={3}>
+      <Grid container spacing={1} className={classes.root}>
+        <Grid item xs={3} className={classes.item}>
           <List className={classes.list} aria-label="secondary mailbox folder">
             {Object.values(lst).map(genListItem)}
           </List>
         </Grid>
-        <Divider orientation="vertical" flexItem />
-        <Grid item xs={8}>
+        <Grid item xs={9} className={classes.item}>
           <div className={classes.ctrlButtons}>
             <Button
               variant="contained"
@@ -152,15 +159,17 @@ const EmployeeSkillWidget: React.FC<IEmployeeSkillWidgetProps> = (props) => {
               Delete
             </Button>
           </div>
-          {sel ? (
-            <EmpSkillList
-              item={sel}
-              skillLst={skillLst}
-              onSubmit={handleEmpSubmit}
-              selected={selectedLst}
-              selectedOnChange={setSelectedLst}
-            />
-          ) : null}
+          <div className={classes.skillLst}>
+            {sel ? (
+              <EmpSkillList
+                item={sel}
+                skillLst={skillLst}
+                onSubmit={handleEmpSubmit}
+                selected={selectedLst}
+                selectedOnChange={setSelectedLst}
+              />
+            ) : null}
+          </div>
         </Grid>
       </Grid>
       <MyDialog open={addLstOpen} onClose={() => setAddLstOpen(false)}>

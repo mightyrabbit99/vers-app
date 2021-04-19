@@ -60,7 +60,8 @@ interface EmployeeObj extends ExcelObjT {
   sesaId: string;
   firstName: string;
   lastName: string;
-  subsector: SubsectorObj;
+  subsector: string;
+  department: string;
   joinDate?: Date;
   skills: SkillMatrixObj[];
 }
@@ -137,7 +138,10 @@ const readSectorSheet = (ws: Excel.Worksheet): SectorObj[] => {
     try {
       if (rowIndex === 1 || !checkRow(row)) return;
       const values: CValMap = row.values as Excel.CellValue[];
-      [plant, name] = [1, 2].map((x) => values[x] ? `${values[x]}`.trim() : "");
+      [plant, name] = [1, 2].map((x) =>
+        values[x] ? `${values[x]}`.trim() : ""
+      );
+      if (name.length === 0) return;
       lastPlant = plant.length > 0 ? plant : lastPlant;
       if (!lastPlant) throw new Error("Plant not defined");
       const obj: SectorObj = {
@@ -172,7 +176,9 @@ const readSubsectorSheet = (ws: Excel.Worksheet): SubsectorObj[] => {
         3,
         4,
         5,
-      ].map((x) => values[x] ? `${values[x]}`.trim() : "");
+        6,
+      ].map((x) => (values[x] ? `${values[x]}`.trim() : ""));
+      if (name.length === 0) return;
       if (plant.length > 0 || sector.length > 0) {
         lastSector = {
           _type: ItemType.Sector,
@@ -187,8 +193,8 @@ const readSubsectorSheet = (ws: Excel.Worksheet): SubsectorObj[] => {
         name,
         sector: lastSector,
         unit,
-        cycleTime: parseFloat(cycleTime),
-        efficiency: parseInt(efficiency, 10),
+        cycleTime: isNaN(parseFloat(cycleTime)) ? 0.0 : parseFloat(cycleTime),
+        efficiency: isNaN(parseInt(efficiency, 10)) ? 0 : parseInt(efficiency),
       };
       checkSubsectorObj(obj);
       ans.push(obj);
@@ -213,23 +219,26 @@ const readSkillSheet = (ws: Excel.Worksheet): SkillObj[] => {
       const values: CValMap = row.values as Excel.CellValue[];
       [plant, sector, subsector, name, priority, percentageOfSubsector] = enm(
         6
-      ).map((x) => values[x] ? `${values[x]}`.trim() : "");
+      ).map((x) => (values[x] ? `${values[x]}`.trim() : ""));
+      if (name.length === 0) return;
       if (plant.length > 0 || sector.length > 0) {
         lastSector = {
           _type: ItemType.Sector,
           line: rowIndex,
-          plant: plant.length > 0 ? plant : lastSector?.plant,
-          name: sector.length > 0 ? sector : lastSector?.name,
+          plant: plant.length > 0 ? plant : lastSector.plant,
+          name: sector.length > 0 ? sector : lastSector.name,
         };
       }
       if (subsector.length > 0) {
         lastSubsector = {
           _type: ItemType.Subsector,
           line: rowIndex,
-          name: subsector.length > 0 ? subsector : lastSubsector?.name,
+          name: subsector.length > 0 ? subsector : lastSubsector.name,
           sector: lastSector,
         };
       }
+      if (lastSector === emptySector || lastSubsector === emptySubsector)
+        return;
       let obj: SkillObj = {
         _type: ItemType.Skill,
         line: rowIndex,
@@ -258,7 +267,10 @@ const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
       lastSubsector = emptySubsector;
     for (let i = 13; checkEmpSkillCol(ws.getColumn(i)); i++) {
       let c = ws.getColumn(i);
-      [sector, subsec, name] = [1, 2, 3].map((x) => `${c.values[x]}`.trim());
+      [sector, subsec, name] = [1, 2, 3].map((x) =>
+        c.values[x] ? `${c.values[x]}`.trim() : ""
+      );
+      if (name.length === 0) continue;
       if (sector.length > 0) {
         lastSector = {
           _type: ItemType.Sector,
@@ -291,7 +303,7 @@ const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
     firstName,
     lastName,
     jobCode,
-    sector,
+    department,
     subsector,
     costType,
     contract,
@@ -312,7 +324,7 @@ const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
         firstName,
         lastName,
         jobCode,
-        sector,
+        department,
         subsector,
         costType,
         contract,
@@ -324,6 +336,7 @@ const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
       for (let i = 13; i < values.length; i++) {
         let v = values[i];
         if (!v) continue;
+        if (!skillDict[i]) continue;
         let vs = parseInt(`${v}`.trim());
         if (isNaN(vs) || vs > 4 || vs < 1) continue;
         skills.push({
@@ -337,16 +350,8 @@ const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
         firstName: firstName ? `${firstName}`.trim() : "",
         lastName: lastName ? `${lastName}`.trim() : "",
         sesaId: sesa ? `${sesa}`.trim() : "",
-        subsector: {
-          _type: ItemType.Subsector,
-          line: rowIndex,
-          name: `${subsector}`.trim(),
-          sector: {
-            _type: ItemType.Sector,
-            line: rowIndex,
-            name: `${sector}`.trim(),
-          },
-        },
+        subsector: subsector ? `${subsector}`.trim() : "",
+        department: department ? `${department}`.trim() : "",
         skills,
         joinDate,
       };
@@ -699,7 +704,7 @@ class ExcelObjConverter {
     let f = (obj: SectorObj): Sector => {
       if (!(obj.plant && obj.plant in plantMap)) {
         throw new Error(
-          `Line ${obj.line}: plant ${obj.plant} of sector ${obj.name} not defined`
+          `Line ${obj.line}: Plant "${obj.plant}" of sector "${obj.name}" not defined`
         );
       }
       return st.getNew({
@@ -733,12 +738,15 @@ class ExcelObjConverter {
       let kk = k(obj.sector.name, obj.sector.plant);
       if (!(kk in secMap)) {
         throw new Error(
-          `Line ${obj.line}: Sector ${obj.sector.name} of subsector ${obj.name} not defined`
+          `Line ${obj.line}: Sector "${obj.sector.name}" of subsector "${obj.name}" not defined`
         );
       }
       return st.getNew({
         sector: secMap[kk][0].id,
         name: obj.name,
+        unit: obj.unit,
+        cycleTime: obj.cycleTime,
+        efficiency: obj.efficiency,
       });
     };
     return objs.map(f);
@@ -773,13 +781,15 @@ class ExcelObjConverter {
         obj.subsector.sector.name,
         obj.subsector.sector.plant
       );
-      if (!(kk in secMap)) {
+      if (!(kk in subsecMap)) {
         throw new Error(
-          `Line ${obj.line}: Subsector ${obj.sector.name} of skill ${obj.name} not defined`
+          `Line ${obj.line}: Subsector "${obj.subsector.name}" 
+          (Sector: "${obj.subsector.sector.name}", Plant: "${obj.subsector.sector.plant}") 
+          of skill "${obj.name}" not defined`
         );
       }
       return st.getNew({
-        subsector: subsecMap[obj.sector.name][0].id,
+        subsector: subsecMap[kk][0].id,
         name: obj.name,
       });
     };
@@ -819,9 +829,6 @@ class ExcelObjConverter {
     const st = this.empStore;
     const secMap = this.secStore.getLst((x) => x.plant === this.pId);
     const subsecMap = this.subsecStore.getLst((x) => x.sector in secMap);
-    const subsecMap2 = genMap(subsecMap, (x) =>
-      k(x.name, secMap[x.sector].name)
-    );
     const skillMap = genMap(
       this.skillStore.getLst((x) => x.subsector in subsecMap),
       (x) =>
@@ -832,14 +839,8 @@ class ExcelObjConverter {
         )
     );
     let f = (obj: EmployeeObj): Employee => {
-      let kk = k(obj.subsector.name, obj.subsector.sector.name);
-      if (!(kk in subsecMap2)) {
-        throw new Error(
-          `Line ${obj.line}: Home Location (Subsector) ${obj.homeLocation} of employee ${obj.sesaId} not defined`
-        );
-      }
       return st.getNew({
-        subsector: subsecMap2[kk][0].id,
+        subsector: obj.subsector,
         firstName: obj.firstName,
         lastName: obj.lastName,
         sesaId: obj.sesaId,
@@ -853,7 +854,11 @@ class ExcelObjConverter {
           );
           if (!(kk in skillMap)) {
             throw new Error(
-              `Col ${sk.skill.line}: Skill ${sk.skill.name} not defined`
+              `Col ${sk.skill.line}: Skill "${sk.skill.name}"
+              (Subsector: "${sk.skill.subsector.name}", 
+              Sector: "${sk.skill.subsector.sector.name}", 
+              Plant: "${sk.skill.subsector.sector.plant}")
+              not defined`
             );
           }
           return {
@@ -869,9 +874,6 @@ class ExcelObjConverter {
 
   convEmployeesToObjs = (items: Employee[]): EmployeeObj[] => {
     let f = (item: Employee, idx: number): EmployeeObj => {
-      let ss = this.subsecStore.get(item.subsector);
-      let s = this.secStore.get(ss.sector);
-      let p = this.plantStore.get(s.plant);
       return {
         _type: ItemType.Employee,
         line: idx,
@@ -880,17 +882,7 @@ class ExcelObjConverter {
         sesaId: item.sesaId,
         joinDate: new Date(item.hireDate),
         department: item.department,
-        subsector: {
-          _type: ItemType.Subsector,
-          line: idx,
-          name: ss.name,
-          sector: {
-            _type: ItemType.Sector,
-            line: idx,
-            name: s.name,
-            plant: p.name,
-          },
-        },
+        subsector: item.subsector,
         skills: item.skills.map((x) => {
           let sk = this.skillStore.get(x.skill);
           let suk = this.subsecStore.get(sk.subsector);

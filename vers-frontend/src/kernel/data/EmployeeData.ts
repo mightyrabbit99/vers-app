@@ -10,7 +10,7 @@ interface EmployeeData extends Data {
   sesa_id: string;
   first_name: string;
   last_name: string;
-  subsector: number;
+  subsector: string;
   department: string;
   report_to?: number;
   skills: EmpSkillData[];
@@ -18,7 +18,7 @@ interface EmployeeData extends Data {
   birth_date?: string;
   gender: string;
   hire_date?: string;
-  profile_pic?: string | File;
+  shift: number;
 }
 
 export type { EmployeeData, EmpSkillData };

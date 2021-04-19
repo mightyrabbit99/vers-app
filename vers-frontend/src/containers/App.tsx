@@ -14,10 +14,9 @@ import UserEditPage from "./UserEditPage";
 import PlantPage from "./PlantPage";
 import AccessCtrlPage from "./AccessCtrlPage";
 
-import { getData, getSession, getSettings, getSync } from "src/selectors";
+import { getData, getSession, getSync } from "src/selectors";
 import { initLogin } from "src/slices/session";
 import { clearFeedback } from "src/slices/sync";
-import { setPath } from "src/slices/settings";
 import k from "src/kernel";
 import { reload } from "src/slices/data";
 
@@ -44,19 +43,11 @@ const initNoteState: NoteState = {
   severity: "error",
 };
 
-const BaseRedirect: React.FC = () => {
-  const dispatch = useDispatch();
-  const { path: p } = useSelector(getSettings);
-  dispatch(setPath(""))
-  return <Redirect to='/' />;
-}
-
 const App: React.FC<IAppProps> = (props) => {
   const dispatch = useDispatch();
-  const { authenticated: auth, syncing } = useSelector(getSession);
+  const { authenticated: auth } = useSelector(getSession);
   const { selectedPlantId: pId } = useSelector(getData);
   const { error, feedback, syncing: submitting } = useSelector(getSync);
-  const { path: p } = useSelector(getSettings);
 
   const [noteState, setNoteState] = React.useState<NoteState>(initNoteState);
   React.useEffect(() => {
@@ -95,7 +86,7 @@ const App: React.FC<IAppProps> = (props) => {
 
   k.trigger = () => { dispatch(reload()); };
 
-  if (auth === undefined || syncing) return <SpinningBall />;
+  if (auth === undefined) return <SpinningBall />;
   return (
     <ThemeProvider theme={theme}>
       <Switch>
@@ -136,7 +127,7 @@ const App: React.FC<IAppProps> = (props) => {
         <Route exact path='/signin'>
           <SigninPage />
         </Route>
-        <BaseRedirect />
+        <Redirect to='/' />
       </Switch>
       <Snackbar
         open={noteState.open}
