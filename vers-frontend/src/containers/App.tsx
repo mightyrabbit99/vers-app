@@ -48,7 +48,7 @@ const BaseRedirect: React.FC = () => {
   const dispatch = useDispatch();
   const { path: p } = useSelector(getSettings);
   dispatch(setPath(""))
-  return <Redirect to={p} />;
+  return <Redirect to='/' />;
 }
 
 const App: React.FC<IAppProps> = (props) => {
@@ -99,41 +99,41 @@ const App: React.FC<IAppProps> = (props) => {
   return (
     <ThemeProvider theme={theme}>
       <Switch>
-        <Route exact path={p}>
+        <Route exact path='/'>
           {auth ? (
             pId ? (
-              <Redirect to={`${p}dashboard`} />
+              <Redirect to='/dashboard' />
             ) : (
-              <Redirect to={`${p}plants`} />
+              <Redirect to='/plants' />
             )
           ) : (
-            <Redirect to={`${p}signin`} />
+            <Redirect to='/signin' />
           )}
         </Route>
-        <Route exact path={`${p}dashboard`}>
+        <Route exact path='/dashboard'>
           {auth ? (
             pId ? (
               <DashboardPage />
             ) : (
-              <Redirect to={`${p}plants`} />
+              <Redirect to='/plants' />
             )
           ) : (
-            <Redirect to={p} />
+            <Redirect to='/' />
           )}
         </Route>
-        <Route exact path={`${p}plants`}>
-          {auth ? <PlantPage /> : <Redirect to={p} />}
+        <Route exact path='/plants'>
+          {auth ? <PlantPage /> : <Redirect to='/' />}
         </Route>
-        <Route exact path={`${p}access_ctrl`}>
-          {auth ? <AccessCtrlPage /> : <Redirect to={p}/>}
+        <Route exact path='/access_ctrl'>
+          {auth ? <AccessCtrlPage /> : <Redirect to='/'/>}
         </Route>
-        <Route exact path={`${p}user`}>
-          {auth ? <ProfilePage /> : <Redirect to={p} />}
+        <Route exact path='/user'>
+          {auth ? <ProfilePage /> : <Redirect to='/' />}
         </Route>
-        <Route exact path={`${p}user_edit`}>
-          {auth ? <UserEditPage /> : <Redirect to={p} />}
+        <Route exact path='/user_edit'>
+          {auth ? <UserEditPage /> : <Redirect to='/' />}
         </Route>
-        <Route exact path={`${p}signin`}>
+        <Route exact path='/signin'>
           <SigninPage />
         </Route>
         <BaseRedirect />
