@@ -3,19 +3,20 @@ import * as React from "react";
 import IconButton from "@material-ui/core/IconButton";
 import EditIcon from "@material-ui/icons/Edit";
 
-import { Subsector, Skill } from "src/kernel";
+import { Subsector, Skill, Sector } from "src/kernel";
 import MainList, { Col } from "./MainList";
 
 interface ISkillMainListProps {
   lst: { [id: number]: Skill };
   subsectorLst: { [id: number]: Subsector };
+  sectorLst: { [id: number]: Sector };
   selected?: number[];
   selectedOnChange?: (ids: number[]) => void;
   onEdit?: (id: number) => void;
 }
 
 const SkillMainList: React.FC<ISkillMainListProps> = (props) => {
-  const { lst, subsectorLst, selected, selectedOnChange, onEdit } = props;
+  const { lst, subsectorLst, sectorLst, selected, selectedOnChange, onEdit } = props;
   const cols: Col[] = [
     {
       title: "Name",
@@ -31,14 +32,23 @@ const SkillMainList: React.FC<ISkillMainListProps> = (props) => {
       },
     },
     {
+      title: "Sector",
+      extractor: (p: Skill) => sectorLst[subsectorLst[p.subsector].sector].name,
+      comparator: (p1: Skill, p2: Skill) => {
+        let pp1 = sectorLst[subsectorLst[p1.subsector].sector].name,
+        pp2 = sectorLst[subsectorLst[p2.subsector].sector].name;
+        return pp1 < pp2 ? 1 : pp1 === pp2 ? 0 : -1;
+      }
+    },
+    {
       title: "Priority",
       extractor: (p: Skill) => `${p.priority}`,
       comparator: (p1: Skill, p2: Skill) => p2.priority - p1.priority,
     },
     {
       title: "% of Subsector",
-      extractor: (p: Skill) => `${p.percentageOfSector}`,
-      comparator: (p1: Skill, p2: Skill) => p2.percentageOfSector - p1.percentageOfSector,
+      extractor: (p: Skill) => `${p.percentageOfSubsector}`,
+      comparator: (p1: Skill, p2: Skill) => p2.percentageOfSubsector - p1.percentageOfSubsector,
     },
   ];
 

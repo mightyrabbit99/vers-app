@@ -23,12 +23,16 @@ const useStyles = makeStyles((theme) => ({
   title: {
     height: "15%",
   },
-  form: {},
+  form: {
+    minHeight: 500,
+    height: "80vh",
+    overflow: "hidden",
+  },
   formTitle: {
-    height: "15%",
+    height: "7%",
   },
   formContent: {
-    height: "85%",
+    height: "93%",
   },
 }));
 
@@ -84,22 +88,24 @@ const SkillLevelSelectWidget: React.FC<ISkillLevelSelectWidgetProps> = (
         </Button>
       </div>
       <SkillLevelList lst={selected} onSubmit={handleSubmit} />
-      <MyDialog open={addLstOpen} onClose={() => setAddLstOpen(false)}>
-        <div className={classes.form}>
-          <div className={classes.formTitle}>
-            <Typography
-              className={classes.title}
-              component="h2"
-              variant="h6"
-              color="primary"
-              gutterBottom
-            >
-              Add New Skills
-            </Typography>
-          </div>
-          <div className={classes.formContent}>
-            <SkillSimpleSelForm lst={avail} onSubmit={handleAddSkill} />
-          </div>
+      <MyDialog
+        open={addLstOpen}
+        onClose={() => setAddLstOpen(false)}
+        className={classes.form}
+      >
+        <div className={classes.formTitle}>
+          <Typography
+            className={classes.title}
+            component="h2"
+            variant="h6"
+            color="primary"
+            gutterBottom
+          >
+            Add New Skills
+          </Typography>
+        </div>
+        <div className={classes.formContent}>
+          <SkillSimpleSelForm lst={avail} onSubmit={handleAddSkill} />
         </div>
       </MyDialog>
     </React.Fragment>

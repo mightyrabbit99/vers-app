@@ -6,7 +6,7 @@ interface Skill extends ItemT {
   _type: ItemType.Skill;
   name: string;
   priority: number;
-  percentageOfSector: number;
+  percentageOfSubsector: number;
   subsector: number;
   employees: SkillEmpData[];
   jobs: number[];
@@ -19,7 +19,7 @@ function dataToObj(x: SkillData): Skill {
     _type: ItemType.Skill,
     name: x.name,
     priority: x.priority,
-    percentageOfSector: x.percentage_of_subsector,
+    percentageOfSubsector: x.percentage_of_subsector,
     subsector: x.subsector,
     employees: x.employees,
     jobs: x.jobs,
@@ -33,7 +33,7 @@ function objToData(x: Skill): SkillData {
     id: x.id,
     name: x.name,
     priority: x.priority,
-    percentage_of_subsector: x.percentageOfSector,
+    percentage_of_subsector: x.percentageOfSubsector,
     subsector: x.subsector,
     employees: x.employees,
     jobs: x.jobs,
@@ -45,7 +45,7 @@ const generator = (init?: any): Skill => ({
   id: -1,
   name: "",
   priority: 0,
-  percentageOfSector: 0,
+  percentageOfSubsector: 0,
   subsector: -1,
   employees: [],
   jobs: [],

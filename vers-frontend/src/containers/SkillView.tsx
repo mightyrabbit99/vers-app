@@ -29,7 +29,7 @@ interface ISkillViewProps {}
 const SkillView: React.FC<ISkillViewProps> = (props) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const { skills, newSkill, subsectors } = useSelector(getData);
+  const { skills, newSkill, subsectors, sectors } = useSelector(getData);
   const { feedback } = useSelector(getSync);
   const { user } = useSelector(getSession);
 
@@ -73,6 +73,7 @@ const SkillView: React.FC<ISkillViewProps> = (props) => {
             <SkillListWidget
               lst={skills}
               subsectorLst={subsectors}
+              sectorLst={sectors}
               newSkill={newSkill}
               edit={canEdit()}
               feedback={feedback}

@@ -65,7 +65,7 @@ const EmployeeFF: React.FC<IEmployeeFFProps> = (props) => {
   };
 
   const handleChange = (e: React.ChangeEvent<any>) => {
-    let { name, value, files } = e.target;
+    let { name, value } = e.target;
     if (
       name === "gender" ||
       name === "reportTo"

@@ -8,12 +8,9 @@ import { TransitionProps } from "@material-ui/core/transitions";
 
 
 const useStyles = makeStyles({
-  root: {
-    width: "100%",
-    margin: "auto",
-  },
   content: {
     margin: "auto",
+    height: "100%",
     overflow: "hidden",
   },
 });
@@ -27,13 +24,14 @@ const Transition = React.forwardRef(function Transition(
 
 interface AlertDialogSlideProps {
   open: boolean;
+  className?: any;
   onClose: () => void;
   children: React.ReactNode;
 }
 
 const AlertDialogSlide: React.FC<AlertDialogSlideProps> = (props) => {
   const classes = useStyles();
-  const { children, open, onClose } = props;
+  const { className, children, open, onClose } = props;
 
   return (
     <Dialog
@@ -45,7 +43,7 @@ const AlertDialogSlide: React.FC<AlertDialogSlideProps> = (props) => {
       aria-labelledby="alert-dialog-slide-title"
       aria-describedby="alert-dialog-slide-description"
     >
-      <DialogContent className={classes.content}>{children}</DialogContent>
+      <DialogContent className={className ?? classes.content}>{children}</DialogContent>
     </Dialog>
   );
 };

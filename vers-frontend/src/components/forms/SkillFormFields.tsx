@@ -129,7 +129,7 @@ const SkillFF: React.FC<ISkillFFProps> = (props) => {
             fullWidth
             label="% of Sector"
             variant="filled"
-            {...genActiveProps("percentageOfSector")}
+            {...genActiveProps("percentageOfSubsector")}
             onBlur={numValueSetter}
             type="number"
           />

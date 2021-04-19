@@ -32,7 +32,7 @@ interface SkillObj extends ExcelObjT {
   name: string;
   subsector: string;
   priority: number;
-  percentageOfSector: number;
+  percentageOfSubsector: number;
 }
 
 interface SkillMatrixObj {
@@ -147,7 +147,7 @@ const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
 
 const readSkillSheet = (ws: Excel.Worksheet): SkillObj[] => {
   let ans: SkillObj[] = [];
-  let name, subsector, priority, percentageOfSector;
+  let name, subsector, priority, percentageOfSubsector;
   function checkRow(row: Excel.Row) {
     return !checkRowSomeEmpty([1, 2, 3, 4])(row);
   }
@@ -155,7 +155,7 @@ const readSkillSheet = (ws: Excel.Worksheet): SkillObj[] => {
     try {
       if (rowIndex === 1 || !checkRow(row)) return;
       const values: CValMap = row.values;
-      [name, subsector, priority, percentageOfSector] = [1, 2, 3, 4].map((x) =>
+      [name, subsector, priority, percentageOfSubsector] = [1, 2, 3, 4].map((x) =>
         `${values[x]}`.trim()
       );
 
@@ -165,7 +165,7 @@ const readSkillSheet = (ws: Excel.Worksheet): SkillObj[] => {
         name,
         subsector,
         priority: parseInt(priority, 10),
-        percentageOfSector: parseInt(percentageOfSector, 10),
+        percentageOfSubsector: parseInt(percentageOfSubsector, 10),
       });
     } catch (e) {
       throw new Error(`Error on skill sheet Row ${rowIndex}: ${e}`);
@@ -345,7 +345,7 @@ const skillSheetWriter = (skills: SkillObj[]) => (ws: Excel.Worksheet) => {
     { header: "Name", key: "name", width: 20 },
     { header: "Subsector", key: "subsector" },
     { header: "Priority", key: "priority" },
-    { header: "% of Sector", key: "percentageOfSector" },
+    { header: "% of Sector", key: "percentageOfSubsector" },
   ] as Excel.Column[];
 
   ws.addRows(skills);

@@ -168,7 +168,11 @@ class PlantView(viewsets.ModelViewSet):
 
   def create(self, request, *args, **kwargs):
     if has_create_permission(self.txt, self.request.user):
-      return super().create(request, *args, **kwargs)
+      serializer = self.get_serializer(data=request.data, many=isinstance(request.data,list))
+      serializer.is_valid(raise_exception=True)
+      self.perform_create(serializer)
+      headers = self.get_success_headers(serializer.data)
+      return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     else:
       return Response(status=status.HTTP_403_FORBIDDEN)
 
@@ -208,7 +212,11 @@ class SectorView(viewsets.ModelViewSet):
 
   def create(self, request, *args, **kwargs):
     if has_create_permission(self.txt, self.request.user):
-      return super().create(request, *args, **kwargs)
+      serializer = self.get_serializer(data=request.data, many=isinstance(request.data,list))
+      serializer.is_valid(raise_exception=True)
+      self.perform_create(serializer)
+      headers = self.get_success_headers(serializer.data)
+      return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     else:
       return Response(status=status.HTTP_403_FORBIDDEN)
 
@@ -248,7 +256,11 @@ class SubsectorView(viewsets.ModelViewSet):
 
   def create(self, request, *args, **kwargs):
     if has_create_permission(self.txt, self.request.user):
-      return super().create(request, *args, **kwargs)
+      serializer = self.get_serializer(data=request.data, many=isinstance(request.data,list))
+      serializer.is_valid(raise_exception=True)
+      self.perform_create(serializer)
+      headers = self.get_success_headers(serializer.data)
+      return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     else:
       return Response(status=status.HTTP_403_FORBIDDEN)
 
@@ -288,7 +300,11 @@ class SkillView(viewsets.ModelViewSet):
 
   def create(self, request, *args, **kwargs):
     if has_create_permission(self.txt, self.request.user):
-      return super().create(request, *args, **kwargs)
+      serializer = self.get_serializer(data=request.data, many=isinstance(request.data,list))
+      serializer.is_valid(raise_exception=True)
+      self.perform_create(serializer)
+      headers = self.get_success_headers(serializer.data)
+      return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     else:
       return Response(status=status.HTTP_403_FORBIDDEN)
 
@@ -328,7 +344,11 @@ class EmployeeView(viewsets.ModelViewSet):
 
   def create(self, request, *args, **kwargs):
     if has_create_permission(self.txt, self.request.user):
-      return super().create(request, *args, **kwargs)
+      serializer = self.get_serializer(data=request.data, many=isinstance(request.data,list))
+      serializer.is_valid(raise_exception=True)
+      self.perform_create(serializer)
+      headers = self.get_success_headers(serializer.data)
+      return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     else:
       return Response(status=status.HTTP_403_FORBIDDEN)
 
@@ -354,8 +374,6 @@ class EmployeeView(viewsets.ModelViewSet):
     lg.log_delete(
         data_type=lg.EMPLOYEE,
         user=self.request.user, origin=instance).save()
-    if instance.user:
-      instance.user.delete()
     notify_consumer(lg.DELETE, lg.EMPLOYEE, self.serializer_class(instance).data)
     return super().perform_destroy(instance)
 
@@ -378,7 +396,11 @@ class JobView(viewsets.ModelViewSet):
 
   def create(self, request, *args, **kwargs):
     if has_create_permission(self.txt, self.request.user):
-      return super().create(request, *args, **kwargs)
+      serializer = self.get_serializer(data=request.data, many=isinstance(request.data,list))
+      serializer.is_valid(raise_exception=True)
+      self.perform_create(serializer)
+      headers = self.get_success_headers(serializer.data)
+      return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     else:
       return Response(status=status.HTTP_403_FORBIDDEN)
 
@@ -423,7 +445,11 @@ class ForecastView(viewsets.ModelViewSet):
 
   def create(self, request, *args, **kwargs):
     if has_create_permission(self.txt, self.request.user):
-      return super().create(request, *args, **kwargs)
+      serializer = self.get_serializer(data=request.data, many=isinstance(request.data,list))
+      serializer.is_valid(raise_exception=True)
+      self.perform_create(serializer)
+      headers = self.get_success_headers(serializer.data)
+      return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     else:
       return Response(status=status.HTTP_403_FORBIDDEN)
 

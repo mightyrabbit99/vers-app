@@ -47,7 +47,7 @@ interface SkillObj extends ExcelObjT {
   name: string;
   subsector: SubsectorObj;
   priority?: number;
-  percentageOfSector?: number;
+  percentageOfSubsector?: number;
 }
 
 interface SkillMatrixObj {
@@ -100,6 +100,11 @@ const checkRowSomeEmpty = (idxs: number[]) => (row: Excel.Row) => {
 
 const checkRowAllEmpty = (idxs: number[]) => (row: Excel.Row) => {
   const values: CValMap = row.values as Excel.CellValue[];
+  return idxs.every((x) => !values[x] || `${values[x]}`.trim().length === 0);
+};
+
+const checkColAllEmpty = (idxs: number[]) => (col: Excel.Column) => {
+  const values: CValMap = col.values as Excel.CellValue[];
   return idxs.every((x) => !values[x] || `${values[x]}`.trim().length === 0);
 };
 
@@ -244,8 +249,10 @@ const readSkillSheet = (ws: Excel.Worksheet): SkillObj[] => {
         line: rowIndex,
         name,
         subsector: lastSubsector,
-        priority: parseInt(priority, 10),
-        percentageOfSector: parseInt(percentageOfSubsector, 10),
+        priority: isNaN(parseInt(priority, 10)) ? 1 : parseInt(priority, 10),
+        percentageOfSubsector: isNaN(parseInt(percentageOfSubsector, 10))
+          ? 0
+          : parseInt(percentageOfSubsector, 10),
       };
       checkSkillObj(obj);
       ans.push(obj);
@@ -259,7 +266,7 @@ const readSkillSheet = (ws: Excel.Worksheet): SkillObj[] => {
 const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
   function getSkillDict() {
     function checkEmpSkillCol(c: Excel.Column) {
-      return c.values[3] && `${c.values[3]}`.trim().length > 0;
+      return !checkColAllEmpty([1, 2, 3])(c);
     }
     let sector, subsec, name;
     let skillDict: { [i: number]: SkillObj } = {};
@@ -453,7 +460,7 @@ const skillSheetWriter = (skills: SkillObj[]) => (ws: Excel.Worksheet) => {
     { header: "Name", key: "name", width: 20 },
     { header: "Subsector", key: "subsector" },
     { header: "Priority", key: "priority" },
-    { header: "% of Sector", key: "percentageOfSector" },
+    { header: "% of Sector", key: "percentageOfSubsector" },
   ] as Excel.Column[];
 
   ws.addRows(skills);
@@ -791,6 +798,8 @@ class ExcelObjConverter {
       return st.getNew({
         subsector: subsecMap[kk][0].id,
         name: obj.name,
+        priority: obj.priority,
+        percentageOfSubsector: obj.percentageOfSubsector,
       });
     };
     return objs.map(f);
@@ -816,6 +825,8 @@ class ExcelObjConverter {
             plant: p.name,
           },
         },
+        priority: item.priority,
+        percentageOfSubsector: item.percentageOfSubsector,
       };
     };
     return items.map(f);

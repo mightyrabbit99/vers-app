@@ -1,7 +1,6 @@
 import * as React from "react";
 
 import { makeStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -11,7 +10,14 @@ import Checkbox from "@material-ui/core/Checkbox";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: "inherit",
+    height: "100%",
+  },
+  list: {
+    height: "90%",
+    overflowY: "scroll",
+  },
+  ctrlButtons: {
+    height: "10%",
   },
 }));
 
@@ -45,39 +51,37 @@ function Form<T>(props: FormProps<T>) {
   };
 
   const handleSubmit = () => {
-    onSubmit([...selected].map(x => x.value));
+    onSubmit([...selected].map((x) => x.value));
   };
 
   return (
-    <React.Fragment>
-      <Grid container>
-        <Grid item xs={12}>
-          <List dense className={classes.root}>
-            {lst.map((x, idx) => {
-              const labelId = `checkbox-list-secondary-label-${idx}`;
-              return (
-                <ListItem key={idx} button>
-                  <ListItemText id={labelId} primary={x.name} />
-                  <ListItemSecondaryAction>
-                    <Checkbox
-                      edge="end"
-                      onChange={() => handleSel(x)}
-                      checked={selected.has(x)}
-                      inputProps={{ "aria-labelledby": labelId }}
-                    />
-                  </ListItemSecondaryAction>
-                </ListItem>
-              );
-            })}
-          </List>
-        </Grid>
-        <Grid item xs={12}>
+    <div className={classes.root}>
+      <div className={classes.list}>
+        <List dense>
+          {lst.map((x, idx) => {
+            const labelId = `checkbox-list-secondary-label-${idx}`;
+            return (
+              <ListItem key={idx} button>
+                <ListItemText id={labelId} primary={x.name} />
+                <ListItemSecondaryAction>
+                  <Checkbox
+                    edge="end"
+                    onChange={() => handleSel(x)}
+                    checked={selected.has(x)}
+                    inputProps={{ "aria-labelledby": labelId }}
+                  />
+                </ListItemSecondaryAction>
+              </ListItem>
+            );
+          })}
+        </List>
+      </div>
+      <div className={classes.ctrlButtons}>
         <Button onClick={handleSubmit}>Submit</Button>
-        </Grid>
-      </Grid>
-    </React.Fragment>
+      </div>
+    </div>
   );
-};
+}
 
 export type { Item };
 export default Form;

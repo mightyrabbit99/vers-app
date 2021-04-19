@@ -2,7 +2,7 @@ import * as React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 
-import { Skill, Subsector } from "src/kernel";
+import { Skill, Subsector, Sector } from "src/kernel";
 import SkillMainList from "./lists/SkillMainList";
 import MyDialog from "./commons/Dialog";
 import SkillForm from "./forms/SkillForm";
@@ -45,6 +45,7 @@ const useStyles = makeStyles((theme) => ({
 interface ISkillListWidgetProps {
   lst: { [id: number]: Skill };
   subsectorLst: { [id: number]: Subsector };
+  sectorLst: { [id: number]: Sector };
   newSkill?: Skill;
   feedback?: any;
   edit?: boolean;
@@ -60,6 +61,7 @@ const SkillListWidget: React.FC<ISkillListWidgetProps> = (props) => {
   const {
     lst,
     subsectorLst,
+    sectorLst,
     newSkill,
     feedback,
     edit = true,
@@ -120,6 +122,7 @@ const SkillListWidget: React.FC<ISkillListWidgetProps> = (props) => {
       <SkillMainList
         lst={lst}
         subsectorLst={subsectorLst}
+        sectorLst={sectorLst}
         selected={selected}
         selectedOnChange={setSelected}
         onEdit={edit ? handleEditOnClick : undefined}
