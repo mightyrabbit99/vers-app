@@ -1,23 +1,21 @@
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from django.http import HttpRequest, HttpResponseRedirect
-from django.views.generic import ListView
+
 from django.views import View
+from django.views.generic import ListView
+
+from django.http import HttpRequest, HttpResponseRedirect
 from django.urls import reverse
 from django.shortcuts import render, get_object_or_404, redirect
+
 from django.contrib.auth.models import User
 import django.middleware.csrf as csrf
 
-from rest_framework import status, viewsets, generics
+from rest_framework import status, viewsets, generics, permissions
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser
-from rest_framework import permissions
 
-from . import models
-from . import serializers
-from . import logger as lg
-from . import permissions as my_perms
-from . import utils
+from . import models, serializers, logger as lg, permissions as my_perms
 from .forms import UserCreateForm
 
 # raw data serving
