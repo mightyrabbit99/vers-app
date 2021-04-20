@@ -268,7 +268,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
   owner = serializers.ReadOnlyField(source=OWNER_USERNAME)
   sesa_id = serializers.CharField(validators=[sesa_id_val])
   files = EmployeeFileSerializer(many=True, read_only=True)
-  profile_pic = EmployeeProfilePicSerializer(read_only=True)
+  profile_pic = serializers.ReadOnlyField(source='profile_pic.pic')
 
   def notify(self, typ, res):
     notify_consumer(typ, lg.EMPLOYEE, EmployeeSerializer(res).data)
