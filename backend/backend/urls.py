@@ -27,7 +27,6 @@ urlpatterns = [
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
     path('captcha/', include('captcha.urls')),
     path('vers/', include('vers.urls')),
-    re_path(r'.*', redirect_view),
 ]
 
 # urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

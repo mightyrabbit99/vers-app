@@ -16,6 +16,8 @@ interface Employee extends ItemT {
   gender: string;
   hireDate: string;
   shift: number;
+  profile_pic?: File | string;
+  files?: string[];
 }
 
 function dataToObj(x: EmployeeData): Employee {
@@ -35,6 +37,8 @@ function dataToObj(x: EmployeeData): Employee {
     hireDate: x.hire_date ?? "",
     non_field_errors: x.non_field_errors,
     shift: x.shift,
+    files: x.files,
+    profile_pic: x.profile_pic,
   };
 }
 
@@ -53,6 +57,8 @@ function objToData(x: Employee): EmployeeData {
     gender: x.gender,
     hire_date: x.hireDate === "" ? undefined : x.hireDate,
     shift: x.shift,
+    files: x.files,
+    profile_pic: x.profile_pic instanceof File ? x.profile_pic : undefined,
   };
 }
 
@@ -95,7 +101,7 @@ const generator = (init?: any): Employee => ({
   sesaId: "",
   firstName: "",
   lastName: "",
-  subsector: -1,
+  subsector: "",
   department: "",
   skills: [],
   available: true,

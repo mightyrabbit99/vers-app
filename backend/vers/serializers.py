@@ -260,7 +260,7 @@ class EmployeeFileSerializer(serializers.ModelSerializer):
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
-  skills = EmpSkillMatrixSerializer(many=True)
+  skills = EmpSkillMatrixSerializer(many=True, required=False)
   owner = serializers.ReadOnlyField(source=OWNER_USERNAME)
   sesa_id = serializers.CharField(validators=[sesa_id_val])
   files = EmployeeFileSerializer(many=True, read_only=True)
@@ -280,9 +280,15 @@ class EmployeeSerializer(serializers.ModelSerializer):
         data_type=lg.EMPLOYEE,
         user=self.get_request_user(), data=validated_data)
     validated_data['sesa_id'] = validated_data['sesa_id'].upper()
-    skills_data = validated_data.pop('skills')
+
+    if 'skills_data' in validated_data:
+      skills_data = validated_data.pop('skills')
+    else:
+      skills_data = []
+
     emp = models.Employee(**validated_data)
     emp.save()
+
     # save skills
     for s in skills_data:
       new_emp_skill = models.EmpSkillMatrix(employee=emp, **s)
@@ -297,16 +303,18 @@ class EmployeeSerializer(serializers.ModelSerializer):
     g = lg.log_update(
         data_type=lg.EMPLOYEE,
         user=self.get_request_user(), data=validated_data, origin=instance)
-    validated_data['sesa_id'] = validated_data['sesa_id'].upper()
-    skills_data = validated_data.pop('skills')
 
-    origin_skills = instance.skills.all()
-    for s in origin_skills:
-      s.delete()
-    for s in skills_data:
-      new_emp_skill = models.EmpSkillMatrix(
-          employee=instance, **s)
-      new_emp_skill.save()
+    validated_data['sesa_id'] = validated_data['sesa_id'].upper()
+
+    if 'skills' in validated_data:
+      skills_data = validated_data.pop('skills')
+      origin_skills = instance.skills.all()
+      for s in origin_skills:
+        s.delete()
+      for s in skills_data:
+        new_emp_skill = models.EmpSkillMatrix(
+            employee=instance, **s)
+        new_emp_skill.save()
 
     for (key, value) in validated_data.items():
       setattr(instance, key, value)

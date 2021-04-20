@@ -5,17 +5,19 @@ from django.views.generic import ListView
 from django.views import View
 from django.urls import reverse
 from django.shortcuts import render, get_object_or_404, redirect
-from rest_framework import status, viewsets, generics
-from rest_framework.response import Response
 from django.contrib.auth.models import User
 import django.middleware.csrf as csrf
+
+from rest_framework import status, viewsets, generics
+from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser
+from rest_framework import permissions
 
 from . import models
 from . import serializers
 from . import logger as lg
 from . import permissions as my_perms
 from .forms import UserCreateForm
-from rest_framework import permissions
 
 # raw data serving
 
@@ -336,6 +338,7 @@ class SkillView(viewsets.ModelViewSet):
 
 class EmployeeView(viewsets.ModelViewSet):
   txt = "employee"
+  parser_classes = [MultiPartParser]
   serializer_class = serializers.EmployeeSerializer
   permission_classes = [my_perms.VersPermission1,]
 
@@ -379,6 +382,7 @@ class EmployeeView(viewsets.ModelViewSet):
 
 
 class EmployeeFileView(viewsets.ModelViewSet):
+  parser_classes = [MultiPartParser]
   serializer_class = serializers.EmployeeFileSerializer
   permission_classes = [my_perms.VersPermission1]
 

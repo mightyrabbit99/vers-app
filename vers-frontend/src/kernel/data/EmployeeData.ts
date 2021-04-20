@@ -19,6 +19,14 @@ interface EmployeeData extends Data {
   gender: string;
   hire_date?: string;
   shift: number;
+  files?: string[];
+  profile_pic?: File | string;
 }
 
-export type { EmployeeData, EmpSkillData };
+interface EmpFileData extends Data {
+  emp: number;
+  file: File;
+  typ: 0;
+}
+
+export type { EmployeeData, EmpSkillData, EmpFileData };

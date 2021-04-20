@@ -141,6 +141,7 @@ class Employee(models.Model):
   available = models.BooleanField(default=1)
   hire_date = models.DateField(null=True)
   shift = models.IntegerField(choices=Shift.choices, default=Shift.FIRST)
+  profile_pic = models.ImageField(upload_to='profile_pic', null=True)
 
   owner = models.ForeignKey(
       User, related_name='created_employee', on_delete=models.SET_NULL, null=True)
@@ -153,13 +154,13 @@ class Employee(models.Model):
 
 
 class FileType(models.TextChoices):
-  PROFILE_PIC = 0, "Profile Pic"
+  CERT = 1, "Cert"
 
 
 class EmployeeFile(models.Model):
   file = models.FileField(upload_to=up_path("profile_pic"))
   typ = models.IntegerField(choices=FileType.choices,
-                            default=FileType.PROFILE_PIC)
+                            default=FileType.CERT)
   emp = models.ForeignKey(Employee, related_name="files",
                           on_delete=models.CASCADE, null=True)
 
