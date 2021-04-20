@@ -252,6 +252,10 @@ def sesa_id_val(value):
     raise serializers.ValidationError(
         'This field must start with \'SESA\'')
 
+class EmployeeProfilePicSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = models.EmployeeProfilePic
+    fields = '__all__'
 
 class EmployeeFileSerializer(serializers.ModelSerializer):
   class Meta:
@@ -264,6 +268,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
   owner = serializers.ReadOnlyField(source=OWNER_USERNAME)
   sesa_id = serializers.CharField(validators=[sesa_id_val])
   files = EmployeeFileSerializer(many=True, read_only=True)
+  profile_pic = EmployeeProfilePicSerializer(read_only=True)
 
   def notify(self, typ, res):
     notify_consumer(typ, lg.EMPLOYEE, EmployeeSerializer(res).data)

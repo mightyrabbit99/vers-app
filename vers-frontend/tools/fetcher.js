@@ -32,10 +32,12 @@ async function postJsonData(url = '', data = {}) {
 }
 
 function buildFormData(formData, data, parentKey) {
-  if (data && typeof data === 'object' && !(data instanceof Date) && !(data instanceof File)) {
+  if (data && typeof data === 'object' && !(data instanceof Date) && !(data instanceof File) && !(data instanceof Array)) {
     Object.keys(data).forEach(key => {
       buildFormData(formData, data[key], parentKey ? `${parentKey}[${key}]` : key);
     });
+  } else if (data instanceof Array) {
+    formData.append(parentKey, JSON.stringify(data));
   } else {
     const value = data == null ? '' : data;
 

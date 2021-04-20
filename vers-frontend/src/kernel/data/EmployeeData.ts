@@ -20,7 +20,7 @@ interface EmployeeData extends Data {
   hire_date?: string;
   shift: number;
   files?: string[];
-  profile_pic?: File | string;
+  profile_pic?: string;
 }
 
 interface EmpFileData extends Data {
@@ -29,4 +29,9 @@ interface EmpFileData extends Data {
   typ: 0;
 }
 
-export type { EmployeeData, EmpSkillData, EmpFileData };
+interface EmpProfilePicData extends Data {
+  emp: number;
+  pic: File;
+}
+
+export type { EmployeeData, EmpSkillData, EmpFileData, EmpProfilePicData };

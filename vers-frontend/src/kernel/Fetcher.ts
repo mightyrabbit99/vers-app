@@ -10,6 +10,7 @@ import {
   CalEventData,
   UserData,
   EmpFileData,
+  EmpProfilePicData,
 } from "./data";
 import axios, { AxiosResponse } from "axios";
 
@@ -33,6 +34,7 @@ const secUrl = `${host}${process.env.REACT_APP_REST_API_SECTOR_PATH}/`;
 const subsecUrl = `${host}${process.env.REACT_APP_REST_API_SUBSECTOR_PATH}/`;
 const empUrl = `${host}${process.env.REACT_APP_REST_API_EMP_PATH}/`;
 const empFileUrl = `${host}${process.env.REACT_APP_REST_API_EMP_FILE_PATH}`;
+const empProfilePicUrl = `${host}${process.env.REACT_APP_REST_API_EMP_PROFILE_PIC_PATH}`;
 const skillUrl = `${host}${process.env.REACT_APP_REST_API_SKILL_PATH}/`;
 const jobUrl = `${host}${process.env.REACT_APP_REST_API_JOB_PATH}/`;
 const logUrl = `${host}${process.env.REACT_APP_REST_API_LOG_PATH}/`;
@@ -65,20 +67,16 @@ const getCookie = (name: string) => {
   return cookieValue;
 };
 
-function buildFormData(formData: FormData, data: any, parentKey?: string) {
-  if (data && typeof data === 'object' && !(data instanceof Date) && !(data instanceof File)) {
-    Object.keys(data).forEach(key => {
-      buildFormData(formData, data[key], parentKey ? `${parentKey}[${key}]` : key);
-    });
-  } else {
-    const value = data == null ? '' : data;
-    formData.append(parentKey as string, value);
-  }
-}
-
 function convToFormData(data: any) {
   const formData = new FormData();
-  buildFormData(formData, data);
+  for (let [k, v] of Object.entries(data)) {
+    if (v === undefined) continue;
+    if (typeof v === 'object' && !(data instanceof File)) {
+      formData.append(k, JSON.stringify(v));
+    } else {
+      formData.append(k, v as (string | File));
+    }
+  }
   return formData;
 }
 
@@ -200,7 +198,11 @@ class Fetcher {
   static postEmp = async (
     data: EmployeeData
   ): Promise<Result<EmployeeData>> => {
-    return await axios.post(empUrl, convToFormData(data), Fetcher.getConfig());
+    return await axios.post(empUrl, data, Fetcher.getConfig());
+  };
+
+  static postEmpProfilePic = async (data: EmpProfilePicData) => {
+    return await axios.post(empProfilePicUrl, convToFormData(data), Fetcher.getConfig());
   };
 
   static postSkill = async (data: SkillData): Promise<Result<SkillData>> => {
@@ -242,7 +244,11 @@ class Fetcher {
   };
 
   static putEmp = async (data: EmployeeData): Promise<Result<EmployeeData>> => {
-    return await axios.put(`${empUrl}${data.id}/`, convToFormData(data), Fetcher.getConfig());
+    return await axios.put(`${empUrl}${data.id}/`, data, Fetcher.getConfig());
+  };
+
+  static putEmpProfilePic = async (data: EmpProfilePicData) => {
+    return await axios.put(`${empProfilePicUrl}${data.id}/`, convToFormData(data), Fetcher.getConfig());
   };
 
   static putSkill = async (data: SkillData): Promise<Result<SkillData>> => {
@@ -293,6 +299,10 @@ class Fetcher {
     data: EmployeeData
   ): Promise<Result<EmployeeData>> => {
     return await axios.delete(`${empUrl}${data.id}/`, Fetcher.getConfig());
+  };
+
+  static deleteEmpProfilePic = async (data: EmpProfilePicData) => {
+    return await axios.delete(`${empProfilePicUrl}${data.id}/`, Fetcher.getConfig());
   };
 
   static deletePlant = async (data: PlantData): Promise<Result<PlantData>> => {

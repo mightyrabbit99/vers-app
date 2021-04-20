@@ -124,9 +124,11 @@ class Gender(models.TextChoices):
   MALE = "M", "Male"
   FEMALE = "F", "Female"
 
+
 class Shift(models.IntegerChoices):
   FIRST = 1, "First"
   SECOND = 2, "Second"
+
 
 class Employee(models.Model):
   sesa_id = models.CharField(unique=True, max_length=10)
@@ -141,7 +143,6 @@ class Employee(models.Model):
   available = models.BooleanField(default=1)
   hire_date = models.DateField(null=True)
   shift = models.IntegerField(choices=Shift.choices, default=Shift.FIRST)
-  profile_pic = models.ImageField(upload_to='profile_pic', null=True)
 
   owner = models.ForeignKey(
       User, related_name='created_employee', on_delete=models.SET_NULL, null=True)
@@ -153,12 +154,18 @@ class Employee(models.Model):
     db_table = 'employees'
 
 
+class EmployeeProfilePic(models.Model):
+  pic = models.ImageField(upload_to=up_path("profile_pic"))
+  emp = models.OneToOneField(Employee, related_name="profile_pic",
+                             on_delete=models.CASCADE)
+
+
 class FileType(models.TextChoices):
   CERT = 1, "Cert"
 
 
 class EmployeeFile(models.Model):
-  file = models.FileField(upload_to=up_path("profile_pic"))
+  file = models.FileField(upload_to=up_path("employee_files"))
   typ = models.IntegerField(choices=FileType.choices,
                             default=FileType.CERT)
   emp = models.ForeignKey(Employee, related_name="files",

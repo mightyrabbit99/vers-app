@@ -17,23 +17,24 @@ from . import models
 from . import serializers
 from . import logger as lg
 from . import permissions as my_perms
+from . import utils
 from .forms import UserCreateForm
 
 # raw data serving
 
 
 def new_user_register(request):
-    title = "Create account"
-    if request.method == 'POST':
-        form = UserCreateForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('/')
-    else:
-        form = UserCreateForm()
+  title = "Create account"
+  if request.method == 'POST':
+    form = UserCreateForm(request.POST)
+    if form.is_valid():
+      form.save()
+      return redirect('/')
+  else:
+    form = UserCreateForm()
 
-    context = {'form': form, 'title': title}
-    return render(request, 'registration.html', context=context)
+  context = {'form': form, 'title': title}
+  return render(request, 'registration.html', context=context)
 
 
 class UserDetail(generics.RetrieveUpdateAPIView):
@@ -91,6 +92,7 @@ def get_group(view, user):
   elif view == "forecast":
     return user.vers_user.forecast_group
 
+
 NONE = 3
 USER = 2
 OWNER = 1
@@ -121,7 +123,7 @@ def perform_get_queryset(view, user):
   grp = get_group(view, user)
   if grp == NONE:
     return objects.none()
-  return objects.all() # .filter(owner=user)
+  return objects.all()  # .filter(owner=user)
 
 
 def has_create_permission(view, user):
@@ -170,7 +172,8 @@ class PlantView(viewsets.ModelViewSet):
 
   def create(self, request, *args, **kwargs):
     if has_create_permission(self.txt, self.request.user):
-      serializer = self.get_serializer(data=request.data, many=isinstance(request.data,list))
+      serializer = self.get_serializer(
+          data=request.data, many=isinstance(request.data, list))
       serializer.is_valid(raise_exception=True)
       self.perform_create(serializer)
       headers = self.get_success_headers(serializer.data)
@@ -214,7 +217,8 @@ class SectorView(viewsets.ModelViewSet):
 
   def create(self, request, *args, **kwargs):
     if has_create_permission(self.txt, self.request.user):
-      serializer = self.get_serializer(data=request.data, many=isinstance(request.data,list))
+      serializer = self.get_serializer(
+          data=request.data, many=isinstance(request.data, list))
       serializer.is_valid(raise_exception=True)
       self.perform_create(serializer)
       headers = self.get_success_headers(serializer.data)
@@ -258,7 +262,8 @@ class SubsectorView(viewsets.ModelViewSet):
 
   def create(self, request, *args, **kwargs):
     if has_create_permission(self.txt, self.request.user):
-      serializer = self.get_serializer(data=request.data, many=isinstance(request.data,list))
+      serializer = self.get_serializer(
+          data=request.data, many=isinstance(request.data, list))
       serializer.is_valid(raise_exception=True)
       self.perform_create(serializer)
       headers = self.get_success_headers(serializer.data)
@@ -288,7 +293,8 @@ class SubsectorView(viewsets.ModelViewSet):
     lg.log_delete(
         data_type=lg.SUBSECTOR,
         user=self.request.user, origin=instance).save()
-    notify_consumer(lg.DELETE, lg.SUBSECTOR, self.serializer_class(instance).data)
+    notify_consumer(lg.DELETE, lg.SUBSECTOR,
+                    self.serializer_class(instance).data)
     return super().perform_destroy(instance)
 
 
@@ -302,7 +308,8 @@ class SkillView(viewsets.ModelViewSet):
 
   def create(self, request, *args, **kwargs):
     if has_create_permission(self.txt, self.request.user):
-      serializer = self.get_serializer(data=request.data, many=isinstance(request.data,list))
+      serializer = self.get_serializer(
+          data=request.data, many=isinstance(request.data, list))
       serializer.is_valid(raise_exception=True)
       self.perform_create(serializer)
       headers = self.get_success_headers(serializer.data)
@@ -338,16 +345,17 @@ class SkillView(viewsets.ModelViewSet):
 
 class EmployeeView(viewsets.ModelViewSet):
   txt = "employee"
-  parser_classes = [MultiPartParser]
+  #parser_classes = [utils.MultiPartJsonParser]
   serializer_class = serializers.EmployeeSerializer
-  permission_classes = [my_perms.VersPermission1,]
+  permission_classes = [my_perms.VersPermission1, ]
 
   def get_queryset(self):
     return perform_get_queryset(self.txt, self.request.user)
 
   def create(self, request, *args, **kwargs):
     if has_create_permission(self.txt, self.request.user):
-      serializer = self.get_serializer(data=request.data, many=isinstance(request.data,list))
+      serializer = self.get_serializer(
+          data=request.data, many=isinstance(request.data, list))
       serializer.is_valid(raise_exception=True)
       self.perform_create(serializer)
       headers = self.get_success_headers(serializer.data)
@@ -377,7 +385,8 @@ class EmployeeView(viewsets.ModelViewSet):
     lg.log_delete(
         data_type=lg.EMPLOYEE,
         user=self.request.user, origin=instance).save()
-    notify_consumer(lg.DELETE, lg.EMPLOYEE, self.serializer_class(instance).data)
+    notify_consumer(lg.DELETE, lg.EMPLOYEE,
+                    self.serializer_class(instance).data)
     return super().perform_destroy(instance)
 
 
@@ -388,6 +397,26 @@ class EmployeeFileView(viewsets.ModelViewSet):
 
   def get_queryset(self):
     return models.EmployeeFile.objects.all()
+
+  def create(self, request, *args, **kwargs):
+    if has_create_permission(self.txt, self.request.user):
+      serializer = self.get_serializer(
+          data=request.data, many=isinstance(request.data, list))
+      serializer.is_valid(raise_exception=True)
+      self.perform_create(serializer)
+      headers = self.get_success_headers(serializer.data)
+      return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    else:
+      return Response(status=status.HTTP_403_FORBIDDEN)
+
+
+class EmployeeProfilePicView(viewsets.ModelViewSet):
+  parser_classes = [MultiPartParser]
+  serializer_class = serializers.EmployeeProfilePicSerializer
+  permission_class = [my_perms.VersPermission1]
+
+  def get_queryset(self):
+    return models.EmployeeProfilePic.objects.all()
 
 
 class JobView(viewsets.ModelViewSet):
@@ -400,7 +429,8 @@ class JobView(viewsets.ModelViewSet):
 
   def create(self, request, *args, **kwargs):
     if has_create_permission(self.txt, self.request.user):
-      serializer = self.get_serializer(data=request.data, many=isinstance(request.data,list))
+      serializer = self.get_serializer(
+          data=request.data, many=isinstance(request.data, list))
       serializer.is_valid(raise_exception=True)
       self.perform_create(serializer)
       headers = self.get_success_headers(serializer.data)
@@ -449,7 +479,8 @@ class ForecastView(viewsets.ModelViewSet):
 
   def create(self, request, *args, **kwargs):
     if has_create_permission(self.txt, self.request.user):
-      serializer = self.get_serializer(data=request.data, many=isinstance(request.data,list))
+      serializer = self.get_serializer(
+          data=request.data, many=isinstance(request.data, list))
       serializer.is_valid(raise_exception=True)
       self.perform_create(serializer)
       headers = self.get_success_headers(serializer.data)
@@ -479,7 +510,8 @@ class ForecastView(viewsets.ModelViewSet):
     lg.log_delete(
         data_type=lg.FORECAST,
         user=self.request.user, origin=instance).save()
-    notify_consumer(lg.DELETE, lg.FORECAST, self.serializer_class(instance).data)
+    notify_consumer(lg.DELETE, lg.FORECAST,
+                    self.serializer_class(instance).data)
     return super().perform_destroy(instance)
 
 
@@ -495,12 +527,13 @@ class CalEventView(viewsets.ModelViewSet):
       return super().update(request, *args, **kwargs)
     else:
       return Response(status=status.HTTP_403_FORBIDDEN)
-  
+
   def perform_destroy(self, instance):
     lg.log_delete(
         data_type=lg.CAL_EVENT,
         user=self.request.user, origin=instance).save()
-    notify_consumer(lg.DELETE, lg.CAL_EVENT, self.serializer_class(instance).data)
+    notify_consumer(lg.DELETE, lg.CAL_EVENT,
+                    self.serializer_class(instance).data)
     return super().perform_destroy(instance)
 
 
@@ -517,7 +550,7 @@ class UserView(viewsets.ModelViewSet):
       return super().update(request, *args, **kwargs)
     else:
       return Response(status=status.HTTP_403_FORBIDDEN)
-  
+
   def create(self, request):
     return Response(status=status.HTTP_404_NOT_FOUND)
 

@@ -16,7 +16,7 @@ interface Employee extends ItemT {
   gender: string;
   hireDate: string;
   shift: number;
-  profile_pic?: File | string;
+  profile_pic?: string;
   files?: string[];
 }
 
@@ -58,7 +58,6 @@ function objToData(x: Employee): EmployeeData {
     hire_date: x.hireDate === "" ? undefined : x.hireDate,
     shift: x.shift,
     files: x.files,
-    profile_pic: x.profile_pic instanceof File ? x.profile_pic : undefined,
   };
 }
 
