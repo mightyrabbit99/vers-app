@@ -23,7 +23,7 @@ const useStyles = makeStyles((themes) => ({
 }));
 
 interface IEmpSkillListProps {
-  item: Employee;
+  item?: Employee;
   skillLst: { [id: number]: Skill };
   selected?: number[];
   onSubmit?: (e: Employee) => void;
@@ -34,13 +34,13 @@ const EmpSkillList: React.FC<IEmpSkillListProps> = (props) => {
   const classes = useStyles();
   const { item, skillLst, selected = [], onSubmit, selectedOnChange } = props;
 
-  const [empSkills, setEmpSkills] = React.useState(item.skills);
+  const [empSkills, setEmpSkills] = React.useState<EmpSkillData[]>([]);
   const [selectedIds, setSelectedIds] = React.useState<number[]>([]);
   React.useEffect(() => {
     setSelectedIds(selected ?? []);
   }, [selected]);
   React.useEffect(() => {
-    setEmpSkills(item.skills);
+    setEmpSkills(item?.skills ?? []);
   }, [item]);
 
   const handleSelectAll = (e: React.ChangeEvent<any>) => {
@@ -72,10 +72,10 @@ const EmpSkillList: React.FC<IEmpSkillListProps> = (props) => {
   const genSkillTableRow = (x: EmpSkillData, idx: number) => {
     const handleChange = (e: React.ChangeEvent<any>) => {
       const { value } = e.target;
-      const newSkills = [...item.skills];
+      const newSkills = [...item!.skills];
       newSkills[idx] = { ...newSkills[idx], level: value };
       const newEmp: Employee = {
-        ...item,
+        ...item!,
         skills: newSkills,
       };
       setEmpSkills(newSkills);

@@ -2,14 +2,12 @@ import * as React from "react";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 
 import { Employee, Skill } from "src/kernel";
 import EmpSkillList from "./lists/EmpSkillSelList";
+import EmployeeSimpleList from "./lists/EmployeeSimpleList";
 import SkillSimpleSelForm from "./forms/SkillSimpleSelForm";
 import MyDialog from "src/components/commons/Dialog";
 
@@ -76,7 +74,7 @@ const EmployeeSkillWidget: React.FC<IEmployeeSkillWidgetProps> = (props) => {
     setAvailSkills(newAvailSkills);
   }, [sel, skillLst]);
 
-  const handleListItemClick = (event: React.ChangeEvent<any>, i: number) => {
+  const handleListItemClick = (i: number) => {
     setSel(lst[i]);
     setSelectedLst([]);
   };
@@ -116,17 +114,6 @@ const EmployeeSkillWidget: React.FC<IEmployeeSkillWidgetProps> = (props) => {
     onSubmit && onSubmit(newEmp);
   };
 
-  const genListItem = (e: Employee, idx: number) => (
-    <ListItem
-      button
-      selected={sel && sel.id === e.id}
-      onClick={(event) => handleListItemClick(event, e.id)}
-      key={idx}
-    >
-      <ListItemText primary={`${e.firstName} ${e.lastName}`} />
-    </ListItem>
-  );
-
   const handleEmpSubmit = (e: Employee) => {
     setSel(e);
     onSubmit && onSubmit(e);
@@ -135,12 +122,17 @@ const EmployeeSkillWidget: React.FC<IEmployeeSkillWidgetProps> = (props) => {
   return (
     <React.Fragment>
       <Grid container spacing={1} className={classes.root}>
-        <Grid item xs={3} className={classes.item}>
-          <List className={classes.list} aria-label="secondary mailbox folder">
-            {Object.values(lst).map(genListItem)}
-          </List>
+        <Grid item xs={4} className={classes.item}>
+          <EmployeeSimpleList
+            height={380}
+            width={300}
+            itemSize={46}
+            lst={lst}
+            sel={sel}
+            handleListItemClick={handleListItemClick}
+          />
         </Grid>
-        <Grid item xs={9} className={classes.item}>
+        <Grid item xs={8} className={classes.item}>
           <div className={classes.ctrlButtons}>
             <Button
               variant="contained"

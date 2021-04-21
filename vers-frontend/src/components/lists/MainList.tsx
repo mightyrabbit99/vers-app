@@ -21,6 +21,7 @@ interface Col {
   title?: string;
   extractor: (item: Item) => string | React.ReactNode;
   comparator?: (i1: Item, i2: Item) => number;
+  style?: any;
 }
 
 interface IMainListStyles {

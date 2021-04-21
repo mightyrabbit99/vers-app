@@ -51,6 +51,7 @@ import { selPlant } from "src/slices/data";
 import { getData, getSession, getSync } from "src/selectors";
 import { AccessLevel, ItemType } from "src/kernel";
 import { initViewState, ViewContext } from "src/contexts";
+import TestPage from "./TestPage";
 
 
 function Copyright() {
@@ -413,7 +414,7 @@ const Dashboard: React.FC = () => {
       case DashboardView.Employee:
         return <EmployeeView />;
       case DashboardView.Job:
-        return <JobView />;
+        return <TestPage />;
       case DashboardView.Forecast:
         return <ForecastView />;
       case DashboardView.ChangeLog:

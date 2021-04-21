@@ -4,7 +4,7 @@ import IconButton from "@material-ui/core/IconButton";
 import EditIcon from "@material-ui/icons/Edit";
 
 import { Subsector, Employee } from "src/kernel";
-import MainList, { Col } from "./MainList";
+import MainList, { Col } from "./MainList3";
 
 interface IEmployeeMainListProps {
   lst: { [id: number]: Employee };
@@ -22,18 +22,27 @@ const EmployeeMainList: React.FC<IEmployeeMainListProps> = (props) => {
       title: "Name",
       extractor: (p: Employee) => getName(p),
       comparator: (p1: Employee, p2: Employee) =>
-        p1.name < p2.name ? 1 : p1.name === p2.name ? 0 : -1,
-    },
+        p1.firstName < p2.firstName ? 1 : p1.firstName === p2.firstName ? 0 : -1,
+      style: {
+        width: 300,
+      },
+     },
     {
       title: "Department",
       extractor: (p: Employee) => p.department,
       comparator: (p1: Employee, p2: Employee) =>
         p1.department < p2.department ? 1 : p1.department === p2.department ? 0 : -1,
+      style: {
+        width: 150,
+      },
     },
     {
       title: "Home Location",
       extractor: (p: Employee) => p.subsector,
       comparator: (p1: Employee, p2: Employee) => p1.subsector < p2.subsector ? 1 : p1.subsector === p2.subsector ? 0 : -1,
+      style: {
+        width: 200,
+      },
     },
     {
       title: "Report to",
@@ -53,6 +62,9 @@ const EmployeeMainList: React.FC<IEmployeeMainListProps> = (props) => {
           pp2 = lst[p2.reportTo].name;
         return pp1 < pp2 ? 1 : pp1 === pp2 ? 0 : -1;
       },
+      style: {
+        width: 200,
+      },
     },
   ];
 
@@ -63,6 +75,9 @@ const EmployeeMainList: React.FC<IEmployeeMainListProps> = (props) => {
           <EditIcon />
         </IconButton>
       ),
+      style: {
+        width: 50,
+      },
     });
   }
 

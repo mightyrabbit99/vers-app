@@ -1,198 +1,53 @@
-import React from "react";
-import clsx from "clsx";
-import {
-  createStyles,
-  Theme,
-  withStyles,
-  WithStyles,
-} from "@material-ui/core/styles";
-import TableCell from "@material-ui/core/TableCell";
+import * as React from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import TableContainer from "@material-ui/core/TableContainer";
+import Table, { Size, Padding } from "@material-ui/core/Table";
+import TableHead from "@material-ui/core/TableHead";
+import TableBody from "@material-ui/core/TableBody";
+import TableRow from "@material-ui/core/TableRow";
+import TableCell, { TableCellProps } from "@material-ui/core/TableCell";
 import TableSortLabel from "@material-ui/core/TableSortLabel";
-import Paper from "@material-ui/core/Paper";
 import Checkbox from "@material-ui/core/Checkbox";
-import {
-  AutoSizer,
-  Column,
-  Table,
-  TableCellRenderer,
-  TableHeaderProps,
-} from "react-virtualized";
+import { FixedSizeList as List } from "react-window";
+import AutoSizer from "react-virtualized-auto-sizer";
+import clsx from "clsx";
 
-declare module "@material-ui/core/styles/withStyles" {
-  // Augment the BaseCSSProperties so that we can control jss-rtl
-  interface BaseCSSProperties {
-    /*
-     * Used to control if the rule-set should be affected by rtl transformation
-     */
-    flip?: boolean;
-  }
-}
-
-const styles = (theme: Theme) =>
-  createStyles({
-    flexContainer: {
-      display: "flex",
-      alignItems: "center",
-      boxSizing: "border-box",
-    },
-    table: {
-      // temporary right-to-left patch, waiting for
-      // https://github.com/bvaughn/react-virtualized/issues/454
-      "& .ReactVirtualized__Table__headerRow": {
-        flip: false,
-        paddingRight: theme.direction === "rtl" ? "0 !important" : undefined,
-      },
-    },
-    tableRow: {
-      cursor: "pointer",
-    },
-    tableRowHover: {
-      "&:hover": {
-        backgroundColor: theme.palette.grey[200],
-      },
-    },
-    tableCell: {
-      flex: 1,
-    },
-    noClick: {
-      cursor: "initial",
-    },
-  });
+const useStyles = makeStyles((theme) => ({
+  root: {
+    height: "100%",
+    width: "100%",
+  },
+  tableHead: {
+    height: "15%",
+    width: "100%",
+  },
+  tableBody: {
+    height: "85%",
+    width: "100%",
+  },
+  row: {
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "nowrap",
+    alignItems: "center",
+    boxSizing: "border-box",
+    minWidth: "100%",
+    width: "100%",
+  },
+  headerRow: {},
+  cell: {
+    //display: "block",
+    flexGrow: 0,
+    flexShrink: 0,
+  },
+  expandingCell: {},
+  column: {},
+}));
 
 enum SortDirection {
   ASC = "asc",
   DES = "desc",
 }
-
-interface ColumnData {
-  dataKey: string;
-  label?: any;
-  numeric?: boolean;
-  width: number;
-}
-
-interface Row {
-  index: number;
-}
-
-interface MuiVirtualizedTableProps extends WithStyles<typeof styles> {
-  columns: ColumnData[];
-  headerHeight?: number;
-  onRowClick?: () => void;
-  rowCount: number;
-  rowGetter: (row: Row) => any;
-  rowHeight?: number;
-}
-
-class MuiVirtualizedTable extends React.PureComponent<MuiVirtualizedTableProps> {
-  static defaultProps = {
-    headerHeight: 48,
-    rowHeight: 48,
-  };
-
-  getRowClassName = ({ index }: Row) => {
-    const { classes, onRowClick } = this.props;
-
-    return clsx(classes.tableRow, classes.flexContainer, {
-      [classes.tableRowHover]: index !== -1 && onRowClick != null,
-    });
-  };
-
-  cellRenderer: TableCellRenderer = ({ cellData, columnIndex }) => {
-    const { columns, classes, rowHeight, onRowClick } = this.props;
-    return (
-      <TableCell
-        component="div"
-        className={clsx(classes.tableCell, classes.flexContainer, {
-          [classes.noClick]: onRowClick == null,
-        })}
-        variant="body"
-        style={{ height: rowHeight }}
-        align={
-          (columnIndex != null && columns[columnIndex].numeric) || false
-            ? "right"
-            : "left"
-        }
-      >
-        {cellData}
-      </TableCell>
-    );
-  };
-
-  headerRenderer = ({
-    label,
-    columnIndex,
-  }: TableHeaderProps & { columnIndex: number }) => {
-    const { headerHeight, columns, classes } = this.props;
-
-    return (
-      <TableCell
-        component="div"
-        className={clsx(
-          classes.tableCell,
-          classes.flexContainer,
-          classes.noClick
-        )}
-        variant="head"
-        style={{ height: headerHeight }}
-        align={columns[columnIndex].numeric || false ? "right" : "left"}
-      >
-        <span>{label}</span>
-      </TableCell>
-    );
-  };
-
-  render() {
-    const {
-      classes,
-      columns,
-      rowHeight,
-      headerHeight,
-      ...tableProps
-    } = this.props;
-    return (
-      <AutoSizer>
-        {({ height, width }) => (
-          <Table
-            height={height}
-            width={width}
-            rowHeight={rowHeight!}
-            gridStyle={{
-              direction: "inherit",
-            }}
-            headerHeight={headerHeight!}
-            className={classes.table}
-            {...tableProps}
-            rowClassName={this.getRowClassName}
-            stickyHeader
-          >
-            {columns.map(({ dataKey, ...other }, index) => {
-              return (
-                <Column
-                  key={dataKey}
-                  headerRenderer={(headerProps) =>
-                    this.headerRenderer({
-                      ...headerProps,
-                      columnIndex: index,
-                    })
-                  }
-                  className={classes.flexContainer}
-                  cellRenderer={this.cellRenderer}
-                  dataKey={dataKey}
-                  {...other}
-                />
-              );
-            })}
-          </Table>
-        )}
-      </AutoSizer>
-    );
-  }
-}
-
-const VirtualizedTable = withStyles(styles)(MuiVirtualizedTable);
-
-// ---
 
 interface IMainListStyles {
   minWidth?: any;
@@ -205,6 +60,7 @@ interface Col {
   title?: string;
   extractor: (item: Item) => string | React.ReactNode;
   comparator?: (i1: Item, i2: Item) => number;
+  style?: any;
 }
 
 interface IMainListProps extends IMainListStyles {
@@ -212,11 +68,44 @@ interface IMainListProps extends IMainListStyles {
   lst: Item[];
   cols: Col[];
   selected?: number[];
+  size?: Size;
+  padding?: Padding;
   selectedOnChange?: (ids: number[]) => void;
 }
 
+const ROW_HEIGHT = 48;
+
+const TableHCell: React.FC<TableCellProps & { style?: any }> = (props) => {
+  const { style, ...restProps } = props;
+  return <TableCell 
+    component="div" 
+    variant="head" 
+    width={style?.width}
+    style={{
+      flexBasis: style?.width || false,
+      height: ROW_HEIGHT
+    }}
+    {...restProps} 
+  />;
+};
+
+const TableBCell: React.FC<TableCellProps & { style?: any }> = (props) => {
+  const { style, ...restProps } = props;
+  return <TableCell 
+    component="div" 
+    variant="body" 
+    width={style?.width}
+    style={{
+      flexBasis: style?.width || false,
+      height: ROW_HEIGHT
+    }}
+    {...restProps} 
+  />;
+};
+
 const ItemMainList: React.FC<IMainListProps> = (props) => {
-  const { lst: l, cols, selected, selectedOnChange } = props;
+  const classes = useStyles();
+  const { lst: l, cols, selected, size, padding, selectedOnChange } = props;
   const [selectedIds, setSelectedIds] = React.useState<number[]>(
     selected ?? []
   );
@@ -235,26 +124,18 @@ const ItemMainList: React.FC<IMainListProps> = (props) => {
     selectedOnChange && selectedOnChange(newSelectedIds);
   };
 
-  const getRow = (i: number) => {
-    const item = lst[i];
-    return cols.reduce(
-      (prev, curr) => {
-        if (curr.title) {
-          prev[curr.title] = curr.extractor(item);
-        }
-        return prev;
-      },
-      {
-        __check: (
-          <Checkbox
-            checked={selectedIds.includes(item.id)}
-            onChange={(e) => handleSelectOne(e, item.id)}
-            value="true"
-          />
-        ),
-      } as { [title: string]: any }
-    );
+  const handleSelectAll = (e: React.ChangeEvent<any>) => {
+    let newSelectedIds: number[];
+
+    if (e.target.checked) {
+      newSelectedIds = lst.map((emp) => emp.id);
+    } else {
+      newSelectedIds = [];
+    }
+    setSelectedIds(newSelectedIds);
+    selectedOnChange && selectedOnChange(newSelectedIds);
   };
+
   const [sortCol, setSortCol] = React.useState<number>();
   const [sortDire, setSortDire] = React.useState<SortDirection>(
     SortDirection.ASC
@@ -290,38 +171,133 @@ const ItemMainList: React.FC<IMainListProps> = (props) => {
     }
   };
 
-  const columns: ColumnData[] = cols.map((x, idx) => ({
-    label: x.comparator ? (
-      <TableSortLabel
-        active={sortCol === idx}
-        direction={
-          sortCol === undefined || sortCol !== idx
-            ? SortDirection.ASC
-            : sortDire
-        }
-        onClick={createSortHandler(idx)}
-      >
-        <b>{x.title}</b>
-      </TableSortLabel>
-    ) : (
-      <b>{x.title}</b>
-    ),
-    dataKey: x.title ?? "",
-    width: 200,
-  }));
-  columns.unshift({
-    dataKey: "__check",
-    width: 200,
-  });
+  const Row = React.useCallback(
+    ({ index: idx, style }) => {
+      const item = lst[idx];
+      return (
+        <TableRow
+          hover
+          component="div"
+          key={idx}
+          selected={selectedIds.includes(item.id)}
+          style={style}
+        >
+          {selected ? (
+            <TableBCell
+              padding="checkbox"
+              className={clsx(
+                classes.cell,
+                classes.column
+              )}
+            >
+              <Checkbox
+                checked={selectedIds.includes(item.id)}
+                onChange={(e) => handleSelectOne(e, item.id)}
+                value="true"
+              />
+            </TableBCell>
+          ) : null}
+          {cols.map((x, idx) => {
+            return x.title ? (
+              <TableBCell 
+                key={idx}
+                style={x.style}
+                className={clsx(
+                  classes.cell,
+                  classes.column,
+                  !x.style?.width && classes.expandingCell
+                )}
+              >
+                {x.extractor(item)}
+              </TableBCell>
+            ) : (
+              <TableBCell
+                padding="checkbox"
+                key={idx}
+                align={idx === cols.length - 1 ? "right" : "left"}
+                style={x.style}
+                className={clsx(
+                  classes.cell,
+                  classes.column,
+                  !x.style?.width && classes.expandingCell
+                )}
+              >
+                {x.extractor(item)}
+              </TableBCell>
+            );
+          })}
+        </TableRow>
+      );
+    },
+    [lst, selected, selectedIds, cols]
+  );
 
   return (
-    <Paper style={{ height: 400, width: "100%" }}>
-      <VirtualizedTable
-        rowCount={lst.length}
-        rowGetter={({ index }) => getRow(index)}
-        columns={columns}
-      />
-    </Paper>
+    <Table component="div" className={classes.root}>
+      <TableHead className={classes.tableHead}>
+        <TableRow
+          component="div"
+          className={clsx(classes.row, classes.headerRow)}
+        >
+          {selected ? (
+            <TableHCell padding="checkbox">
+              <Checkbox
+                checked={selectedIds.length === lst.length}
+                color="primary"
+                indeterminate={
+                  selectedIds.length > 0 && selectedIds.length < lst.length
+                }
+                disabled={lst.length === 0}
+                onChange={handleSelectAll}
+              />
+            </TableHCell>
+          ) : null}
+          {cols.map((x, idx) => {
+            return x.title ? (
+              <TableHCell
+                key={idx}
+                style={x.style}
+                sortDirection={false}
+                className={clsx(classes.cell, !x.style?.width && classes.expandingCell)}
+              >
+                {x.comparator ? (
+                  <TableSortLabel
+                    active={sortCol === idx}
+                    direction={
+                      sortCol === undefined || sortCol !== idx
+                        ? SortDirection.ASC
+                        : sortDire
+                    }
+                    onClick={createSortHandler(idx)}
+                  >
+                    <b>{x.title}</b>
+                  </TableSortLabel>
+                ) : (
+                  <b>{x.title}</b>
+                )}
+              </TableHCell>
+            ) : (
+              <TableHCell padding="checkbox" key={idx} />
+            );
+          })}
+        </TableRow>
+      </TableHead>
+      <TableBody className={classes.tableBody}>
+        <AutoSizer>
+          {({ height, width }) => (
+            <List
+              className="List"
+              height={height}
+              itemCount={l.length}
+              itemSize={60}
+              width={width}
+            >
+              {Row}
+            </List>
+          )}
+        </AutoSizer>
+      </TableBody>
+    </Table>
   );
 };
 

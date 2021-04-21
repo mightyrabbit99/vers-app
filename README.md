@@ -82,8 +82,12 @@ npm run build
 * axios
 
 ### Components
-* @material-ui
+* @material-ui/core
+* @material-ui/lab
 * react-big-calendar
+* react-vitualized
+* react-window
+* react-virtualized-auto-sizer
 
 ### Data Processing
 * exceljs
