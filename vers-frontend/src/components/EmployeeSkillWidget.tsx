@@ -38,7 +38,10 @@ const useStyles = makeStyles((theme) => ({
   skillLst: {
     height: "85%",
   },
-  form: {},
+  form: {
+    height: "65vh",
+    minHeight: 500,
+  },
   formTitle: {
     height: "15%",
   },

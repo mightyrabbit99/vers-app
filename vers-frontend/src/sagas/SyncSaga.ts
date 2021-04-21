@@ -117,7 +117,6 @@ function* syncSaga() {
     takeLatest(modify.type, putItem),
     takeLatest(erase.type, deleteItem),
     takeLatest(submitExcel.type, submitExcelData),
-    takeLatest(submitSuccess.type, reloadData),
   ]);
 }
 
