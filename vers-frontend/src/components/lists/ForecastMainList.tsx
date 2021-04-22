@@ -10,6 +10,7 @@ import ReplayIcon from "@material-ui/icons/Replay";
 import { Forecast } from "src/kernel";
 import MainList, { Col } from "./MainList";
 import { ThemeProvider } from "@material-ui/styles";
+import NumTextField from "../commons/NumTextField";
 
 const themeOptions: ThemeOptions = {
   palette: {
@@ -69,29 +70,32 @@ const ForecastMainList: React.FC<IForecastMainListProps> = (props) => {
 
   const [state, setState] = React.useState<IForecastMainListState>(initState);
   const { chgLst, stateLst } = state;
-  const setChgLst = (lst: number[]) =>
-    setState({
-      ...state,
-      chgLst: lst,
-    });
 
   React.useEffect(
     () =>
       setState((state) => ({
         chgLst: state.chgLst.filter((x) => x in lst),
-        stateLst: Object.fromEntries(
-          Object.entries(lst).filter(([x, y]) => !state.chgLst.includes(y.id))
-        ),
+        stateLst: {
+          ...state.stateLst,
+          ...Object.fromEntries(
+            Object.entries(lst).filter(([x, y]) => !state.chgLst.includes(y.id))
+          ),
+        },
       })),
     [lst]
   );
 
-  const handleForecastChg = (n: number, p: Forecast) => (
-    e: React.ChangeEvent<any>
-  ) => {
-    let { value } = e.target;
+  const handleForecastChg = (p: Forecast) => () => {
+    setState((state) => ({
+      ...state,
+      chgLst: state.chgLst.includes(p.id)
+        ? state.chgLst
+        : [...state.chgLst, p.id],
+    }));
+  };
+
+  const handleForecastRealChg = (n: number, p: Forecast) => (value: number) => {
     let i = p.forecasts.findIndex((x) => x.n === n);
-    if (value !== "" && !/^([0-9]*[.])?[0-9]*$/.test(value)) return;
     let newForecasts = [...p.forecasts];
     if (i === -1) {
       newForecasts.push({ n, val: value });
@@ -102,40 +106,33 @@ const ForecastMainList: React.FC<IForecastMainListProps> = (props) => {
         val: value,
       };
     }
-    setState({
+    setState((state) => ({
       stateLst: {
-        ...stateLst,
+        ...state.stateLst,
         [p.id]: {
           ...p,
           forecasts: newForecasts,
         },
       },
-      chgLst: chgLst.includes(p.id) ? chgLst : [...chgLst, p.id],
-    });
-  };
-
-  const handleForecastRealChg = (n: number, p: Forecast) => (
-    e: React.ChangeEvent<any>
-  ) => {
-    let { value } = e.target;
-    if (value === "") {
-      e.target.value = 0.0;
-    } else {
-      e.target.value = parseFloat(value);
-    }
-    handleForecastChg(n, p)(e);
+      chgLst: state.chgLst.includes(p.id)
+        ? state.chgLst
+        : [...state.chgLst, p.id],
+    }));
   };
 
   const handleForecastSubmit = (p: Forecast) => () => {
-    setChgLst([...chgLst.filter((x) => x !== p.id)]);
+    setState((state) => ({
+      ...state,
+      chgLst: [...state.chgLst.filter((x) => x !== p.id)],
+    }));
     onSubmit(p);
   };
 
   const handleForecastReset = (p: Forecast) => () => {
-    setState({
-      chgLst: [...chgLst.filter((x) => x !== p.id)],
-      stateLst: { ...stateLst, [p.id]: lst[p.id] },
-    });
+    setState((state) => ({
+      chgLst: [...state.chgLst.filter((x) => x !== p.id)],
+      stateLst: { ...state.stateLst, [p.id]: lst[p.id] },
+    }));
   };
 
   const getForecastVal = (n: number, p: Forecast) => {
@@ -143,11 +140,14 @@ const ForecastMainList: React.FC<IForecastMainListProps> = (props) => {
     return i === -1 ? "" : p.forecasts[i].val;
   };
 
-  const ctrlDisabled = (p: Forecast) => {
-    return !chgLst.includes(p.id);
-  };
+  const ctrlDisabled = React.useCallback(
+    (p: Forecast) => {
+      return !chgLst.includes(p.id);
+    },
+    [chgLst]
+  );
 
-  const cols: Col[] = [
+  const genCols = () => [
     {
       title: "On",
       extractor: (p: Forecast) => {
@@ -158,11 +158,11 @@ const ForecastMainList: React.FC<IForecastMainListProps> = (props) => {
     ...fNLst.map((x) => ({
       title: `n + ${x}`,
       extractor: (p: Forecast) => (
-        <TextField
+        <NumTextField
           className={classes.field}
           value={getForecastVal(x, p)}
-          onChange={handleForecastChg(x, p)}
-          onBlur={handleForecastRealChg(x, p)}
+          onChange={handleForecastRealChg(x, p)}
+          onEdit={handleForecastChg(p)}
         />
       ),
     })),
@@ -196,7 +196,7 @@ const ForecastMainList: React.FC<IForecastMainListProps> = (props) => {
         lst={Object.values(stateLst).sort(
           (a, b) => Date.parse(a.on) - Date.parse(b.on)
         )}
-        cols={cols}
+        cols={genCols()}
         selected={selected}
         selectedOnChange={selectedOnChange}
         minWidth={950}

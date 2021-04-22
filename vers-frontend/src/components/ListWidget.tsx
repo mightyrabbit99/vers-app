@@ -14,6 +14,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row",
     height: "15%",
+    maxHeight: 60,
   },
   ctrlButtons: {
     display: "flex",
