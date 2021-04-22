@@ -84,50 +84,51 @@ const App: React.FC<IAppProps> = (props) => {
     dispatch(initLogin());
   }, [dispatch]);
 
-  k.trigger = () => { dispatch(reload()); };
+  k.trigger = () => {
+    dispatch(reload());
+  };
 
   if (auth === undefined) return <SpinningBall />;
   return (
     <ThemeProvider theme={theme}>
       <Switch>
-        <Route exact path='/'>
+        <Route exact path="/">
           {auth ? (
             pId ? (
-              <Redirect to='/dashboard' />
+              <Redirect to="/dashboard" />
             ) : (
-              <Redirect to='/plants' />
+              <Redirect to="/plants" />
             )
           ) : (
-            <Redirect to='/signin' />
+            <Redirect to="/signin" />
           )}
         </Route>
-        <Route exact path='/dashboard'>
+        <Route exact path="/dashboard">
           {auth ? (
             pId ? (
               <DashboardPage />
             ) : (
-              <Redirect to='/plants' />
+              <Redirect to="/plants" />
             )
           ) : (
-            <Redirect to='/' />
+            <Redirect to="/" />
           )}
         </Route>
-        <Route exact path='/plants'>
-          {auth ? <PlantPage /> : <Redirect to='/' />}
+        <Route exact path="/plants">
+          {auth ? <PlantPage /> : <Redirect to="/" />}
         </Route>
-        <Route exact path='/access_ctrl'>
-          {auth ? <AccessCtrlPage /> : <Redirect to='/'/>}
+        <Route exact path="/access_ctrl">
+          {auth ? <AccessCtrlPage /> : <Redirect to="/" />}
         </Route>
-        <Route exact path='/user'>
-          {auth ? <ProfilePage /> : <Redirect to='/' />}
+        <Route exact path="/user">
+          {auth ? <ProfilePage /> : <Redirect to="/" />}
         </Route>
-        <Route exact path='/user_edit'>
-          {auth ? <UserEditPage /> : <Redirect to='/' />}
+        <Route exact path="/user_edit">
+          {auth ? <UserEditPage /> : <Redirect to="/" />}
         </Route>
-        <Route exact path='/signin'>
-          <SigninPage />
+        <Route exact path="/signin">
+          {auth ? <Redirect to="/" /> : <SigninPage />}
         </Route>
-        <Redirect to='/' />
       </Switch>
       <Snackbar
         open={noteState.open}

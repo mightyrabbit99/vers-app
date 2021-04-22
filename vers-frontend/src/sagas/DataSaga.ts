@@ -42,7 +42,7 @@ function* reloadData() {
     newJob,
     newForecast,
     newCalEvent;
-
+  let kk = k;
   let { selectedPlantId: p } = yield select(getData);
   plants = k.plantStore.getLst();
   newPlant = k.plantStore.getNew();
