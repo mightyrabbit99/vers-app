@@ -1,5 +1,5 @@
 import * as React from "react";
-
+import clsx from "clsx";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import Slide from "@material-ui/core/Slide";
@@ -11,7 +11,7 @@ const useStyles = makeStyles({
   content: {
     margin: "auto",
     height: "100%",
-    overflow: "hidden",
+    overflowY: "scroll",
   },
 });
 
@@ -43,7 +43,7 @@ const AlertDialogSlide: React.FC<AlertDialogSlideProps> = (props) => {
       aria-labelledby="alert-dialog-slide-title"
       aria-describedby="alert-dialog-slide-description"
     >
-      <DialogContent className={className ?? classes.content}>{children}</DialogContent>
+      <DialogContent className={clsx(className, classes.content)}>{children}</DialogContent>
     </Dialog>
   );
 };

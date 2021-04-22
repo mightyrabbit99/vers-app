@@ -5,7 +5,7 @@ interface INumTextFieldProps {
   className?: any;
   value?: number | "";
   onEdit?: () => void;
-  onChange: (val: number) => void;
+  onChange?: (val: number) => void;
 }
 
 const NumTextField: React.FunctionComponent<INumTextFieldProps> = (props) => {
@@ -26,7 +26,7 @@ const NumTextField: React.FunctionComponent<INumTextFieldProps> = (props) => {
     let value = parseInt(val, 10);
     if (isNaN(value)) value = 0;
     setVal(`${value}`);
-    onChange(value);
+    onChange && onChange(value);
   };
 
   return (

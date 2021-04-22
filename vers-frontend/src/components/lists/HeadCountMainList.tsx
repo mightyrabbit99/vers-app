@@ -1,15 +1,35 @@
 import * as React from "react";
+import { makeStyles } from "@material-ui/core/styles";
 
-import { Subsector, Skill } from "src/kernel";
+import { Subsector, Skill, Employee } from "src/kernel";
+import MyDialog from "src/components/commons/Dialog";
 import MainList, { Col } from "./MainList";
+import EmpSkillDispList from "./EmployeeSkillDispList";
+
+const useStyles = makeStyles((theme) => ({
+  empSkillLst: {
+    height: "100%",
+  },
+}));
 
 interface IHeadcountMainListProps {
   lst: { [id: number]: Skill };
   subsectorLst: { [id: number]: Subsector };
+  employeeLst?: { [id: number]: Employee };
 }
 
 const HeadcountMainList: React.FC<IHeadcountMainListProps> = (props) => {
-  const { lst, subsectorLst } = props;
+  const classes = useStyles();
+  const { lst, subsectorLst, employeeLst } = props;
+
+  const [empSkillLstOpen, setEmpSkillLstOpen] = React.useState(false);
+  const [emps, setEmps] = React.useState<Employee[]>([]);
+
+  const showSkillEmps = (p: Skill) => {
+    setEmps(p.employees.map(x => employeeLst![x.employee]));
+    setEmpSkillLstOpen(true);
+  }
+
   const cols: Col[] = [
     {
       title: "Subsector",
@@ -29,7 +49,12 @@ const HeadcountMainList: React.FC<IHeadcountMainListProps> = (props) => {
     },
     {
       title: "Employee #",
-      extractor: (p: Skill) => p.employees.length,
+      extractor: (p: Skill) =>
+        employeeLst && p.employees.length > 0 ? (
+          <p onClick={() => showSkillEmps(p)}>{p.employees.length}</p>
+        ) : (
+          p.employees.length
+        ),
       comparator: (p1: Skill, p2: Skill) =>
         p1.employees.length - p2.employees.length,
     },
@@ -60,7 +85,18 @@ const HeadcountMainList: React.FC<IHeadcountMainListProps> = (props) => {
     },
   ];
 
-  return <MainList lst={Object.values(lst)} cols={cols} />;
+  return (
+    <React.Fragment>
+      <MainList lst={Object.values(lst)} cols={cols} />
+      <MyDialog
+        open={empSkillLstOpen}
+        onClose={() => setEmpSkillLstOpen(false)}
+        className={classes.empSkillLst}
+      >
+        <EmpSkillDispList lst={emps} skills={lst} />
+      </MyDialog>
+    </React.Fragment>
+  );
 };
 
 export default HeadcountMainList;

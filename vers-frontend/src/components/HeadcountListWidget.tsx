@@ -12,7 +12,14 @@ import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import SettingsIcon from "@material-ui/icons/Settings";
 
-import k, { Skill, Subsector, Forecast, CalEvent, CalcVars } from "src/kernel";
+import k, {
+  Skill,
+  Subsector,
+  Forecast,
+  CalEvent,
+  CalcVars,
+  Employee,
+} from "src/kernel";
 import MyDialog from "src/components/commons/Dialog";
 import HeadcountMainList from "./lists/HeadcountMainList";
 import CalcVarsForm from "./forms/CalcVarsForm";
@@ -45,6 +52,7 @@ interface IHeadcountListWidgetProps {
   subsectors: { [id: number]: Subsector };
   forecasts: { [id: number]: Forecast };
   calEvents: { [id: number]: CalEvent };
+  employees?: { [id: number]: Employee };
 }
 
 type DisplaceMap = { [month: string]: { [n: number]: number } };
@@ -61,13 +69,13 @@ interface IHeadcountListWidgetState {
   // display
   selectedMonth?: string;
   selectedForecast?: number;
-  skillLst: Skill[];
+  skillLst: { [id: number]: Skill }; // headcound calculated
   formOpen: boolean;
 }
 
 const initState: IHeadcountListWidgetState = {
   displaces: {},
-  skillLst: [],
+  skillLst: {},
   formOpen: false,
   formData: k.getVars(),
 };
@@ -114,7 +122,7 @@ function reducer(
 }
 
 const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
-  const { skills, subsectors, forecasts } = props;
+  const { skills, subsectors, forecasts, employees } = props;
   const classes = useStyles(props);
 
   const [state, dispatch] = React.useReducer(reducer, initState);
@@ -152,32 +160,37 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
     let isCancelled = false;
     let f = async () => {
       let data = k.cal.getDaysLeftInMonth(new Date(mo));
-      if (!isCancelled) dispatch({
-        type: "setAvailDaysInMonth",
-        data
-      });
-    }
+      if (!isCancelled)
+        dispatch({
+          type: "setAvailDaysInMonth",
+          data,
+        });
+    };
     f();
     return () => {
       isCancelled = true;
-    }
+    };
   }, [state.selectedMonth]);
 
   const genSkillLst = React.useCallback(
     async (vars?: CalcVars, forecastVal?: number, selectedMonth?: string) => {
-      let skillLst = Object.values(skills);
       if (vars) k.setVars(vars);
-      if (forecastVal !== undefined && selectedMonth)
-        skillLst = skillLst.map((x) => ({
-          ...x,
-          headcount: k.calcHeadcountReq(
-            x,
-            subsectors[x.subsector],
-            forecastVal ?? 0,
-            selectedMonth
-          ),
-        }));
-      return skillLst;
+      return Object.fromEntries(
+        Object.entries(skills).map(([kk, v]) => [
+          kk,
+          {
+            ...v,
+            headcount: selectedMonth
+              ? k.calcHeadcountReq(
+                  v,
+                  subsectors[v.subsector],
+                  forecastVal ?? 0,
+                  selectedMonth
+                )
+              : 0,
+          },
+        ])
+      );
     },
     [skills, subsectors]
   );
@@ -293,7 +306,11 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
           </Grid>
         </Grid>
         <Grid item xs={12}>
-          <HeadcountMainList lst={state.skillLst} subsectorLst={subsectors} />
+          <HeadcountMainList
+            lst={state.skillLst}
+            subsectorLst={subsectors}
+            employeeLst={employees}
+          />
         </Grid>
       </Grid>
       <MyDialog open={state.formOpen} onClose={() => setFormOpen(false)}>
