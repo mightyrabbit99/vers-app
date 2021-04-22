@@ -3,7 +3,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import createMuiTheme, {
   ThemeOptions,
 } from "@material-ui/core/styles/createMuiTheme";
-import TextField from "@material-ui/core/TextField";
 import IconButton from "@material-ui/core/IconButton";
 import SaveIcon from "@material-ui/icons/Save";
 import ReplayIcon from "@material-ui/icons/Replay";
@@ -147,13 +146,15 @@ const ForecastMainList: React.FC<IForecastMainListProps> = (props) => {
     [chgLst]
   );
 
-  const genCols = () => [
+  const cols: Col[] = [
     {
       title: "On",
       extractor: (p: Forecast) => {
         let d = new Date(p.on);
         return `${d.getFullYear()} - ${d.getMonth() + 1}`;
       },
+      comparator: (p1: Forecast, p2: Forecast) =>
+        Date.parse(p1.on) - Date.parse(p2.on),
     },
     ...fNLst.map((x) => ({
       title: `n + ${x}`,
@@ -196,7 +197,7 @@ const ForecastMainList: React.FC<IForecastMainListProps> = (props) => {
         lst={Object.values(stateLst).sort(
           (a, b) => Date.parse(a.on) - Date.parse(b.on)
         )}
-        cols={genCols()}
+        cols={cols}
         selected={selected}
         selectedOnChange={selectedOnChange}
         minWidth={950}

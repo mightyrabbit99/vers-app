@@ -4,6 +4,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
+import CloudUpload from "@material-ui/icons/CloudUpload";
 
 import { Employee, Skill } from "src/kernel";
 import EmpSkillList from "./lists/EmpSkillSelList";
@@ -26,6 +28,10 @@ const useStyles = makeStyles((theme) => ({
     "& > *": {
       margin: theme.spacing(1),
     },
+  },
+  buttonIcon: {
+    width: 23,
+    heiht: 23,
   },
   title: {},
   content: {
@@ -122,6 +128,23 @@ const EmployeeSkillWidget: React.FC<IEmployeeSkillWidgetProps> = (props) => {
     onSubmit && onSubmit(e);
   };
 
+  const [uploadFileOpen, setUploadFileOpen] = React.useState(false);
+  const uploadFileOnClick = (e: React.ChangeEvent<any>) => {
+    setUploadFileOpen(true);
+  };
+
+  const uploadFileOnClose = () => {
+    
+  }
+
+  const handleFileUpload = (e: React.ChangeEvent<any>) => {
+
+  }
+
+  const handleFileSubmit = () => {
+
+  }
+
   return (
     <React.Fragment>
       <Grid container spacing={1} className={classes.root}>
@@ -137,6 +160,9 @@ const EmployeeSkillWidget: React.FC<IEmployeeSkillWidgetProps> = (props) => {
         </Grid>
         <Grid item xs={8} className={classes.item}>
           <div className={classes.ctrlButtons}>
+            <IconButton onClick={uploadFileOnClick}>
+              <CloudUpload className={classes.buttonIcon} />
+            </IconButton>
             <Button
               variant="contained"
               color="primary"
@@ -182,6 +208,38 @@ const EmployeeSkillWidget: React.FC<IEmployeeSkillWidgetProps> = (props) => {
           </div>
           <div className={classes.formContent}>
             <SkillSimpleSelForm lst={availSkills} onSubmit={handleAddSkill} />
+          </div>
+        </div>
+      </MyDialog>
+      <MyDialog open={uploadFileOpen} onClose={() => setUploadFileOpen(false)}>
+        <div className={classes.form}>
+          <div className={classes.formTitle}>
+            <Typography
+              className={classes.title}
+              component="h2"
+              variant="h6"
+              color="primary"
+              gutterBottom
+            >
+              Upload Files
+            </Typography>
+          </div>
+          <div className={classes.formContent}>
+            {sel?.files?.map((x) => (
+              <p>{x}</p>
+            ))}"
+            <form noValidate autoComplete="off">
+              <input
+                type="file"
+                name="file"
+                onChange={handleFileUpload}
+                hidden
+              />
+            </form>
+            <div className={classes.ctrlButtons}>
+              <Button onClick={handleFileSubmit}>Submit</Button>
+              <Button onClick={uploadFileOnClose}>Cancel</Button>
+            </div>
           </div>
         </div>
       </MyDialog>

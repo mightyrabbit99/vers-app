@@ -435,7 +435,7 @@ const employeeSheetWriter = (emps: EmployeeObj[]) => (ws: Excel.Worksheet) => {
     { header: "Sesa Id", key: "sesaId" },
     { header: "First Name", key: "firstName" },
     { header: "Last Name", key: "lastName" },
-    { header: "Home Location", key: "homeLocation" },
+    { header: "Home Location", key: "subsector" },
     { header: "Department", key: "department" },
     ...[...skillSet].map((x) => ({ header: x, key: x })),
   ] as Excel.Column[];
