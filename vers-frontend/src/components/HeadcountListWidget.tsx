@@ -8,6 +8,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import Box from "@material-ui/core/Box";
+import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import SettingsIcon from "@material-ui/icons/Settings";
@@ -25,12 +26,26 @@ import HeadcountMainList from "./lists/HeadcountMainList";
 import CalcVarsForm from "./forms/CalcVarsForm";
 
 const useStyles = makeStyles((theme) => ({
-  root: {},
+  root: {
+    height: "100%",
+  },
   ctrlPanel: {
     width: "inherit",
+    height: "20%",
+  },
+  content: {
+    height: "80%",
+  },
+  searchBar: {
+    maxWidth: 250,
+    marginLeft: "auto",
+    marginRight: "auto",
   },
   formControl: {
     width: "inherit",
+  },
+  settingsIcon: {
+    marginLeft: "auto",
   },
   title: {
     height: "15%",
@@ -242,77 +257,81 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
     setFormOpen(false);
   };
 
+  const genHeader = () => {
+    return (
+      <Grid container spacing={1}>
+        <Grid item xs={2}>
+          <FormControl className={classes.formControl}>
+            <InputLabel id="demo-simple-select-label">Month</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              fullWidth
+              value={state.selectedMonth ?? ""}
+              disabled={_.isEmpty(state.displaces)}
+              onClick={handleSelMonth}
+            >
+              {Object.keys(state.displaces).map((x, idx) => (
+                <MenuItem key={idx} value={x}>
+                  {x.slice(0, 7)}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={4}>
+          <Box component="span" m={1}>
+            <Typography variant="body2">
+              {`Working Days: ${state.availDaysInMonth ?? ""}`}
+            </Typography>
+          </Box>
+        </Grid>
+        <Grid item xs={1}>
+          <FormControl className={classes.formControl}>
+            <InputLabel id="demo-simple-select-label">Forecast</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              fullWidth
+              disabled={
+                !(state.selectedMonth && state.selectedMonth in state.displaces)
+              }
+              value={state.selectedForecast ?? ""}
+              onClick={handleSetForecast}
+            >
+              {genForecastMenuItem()}
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={4}>
+          <Box component="span" m={1}>
+            <Typography variant="body2">
+              {`Forecast Value: ${state.forecastVal ?? ""}`}
+            </Typography>
+          </Box>
+        </Grid>
+        <Grid item xs={1}>
+          <IconButton
+            className={classes.settingsIcon}
+            onClick={() => setFormOpen(true)}
+          >
+            <SettingsIcon />
+          </IconButton>
+        </Grid>
+      </Grid>
+    );
+  };
+
   return (
     <React.Fragment>
-      <Grid container className={classes.root}>
-        <Grid item xs={12}>
-          <Grid container className={classes.ctrlPanel}>
-            <Grid item xs={2}>
-              <FormControl className={classes.formControl}>
-                <InputLabel id="demo-simple-select-label">Month</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  fullWidth
-                  value={state.selectedMonth ?? ""}
-                  disabled={_.isEmpty(state.displaces)}
-                  onClick={handleSelMonth}
-                >
-                  {Object.keys(state.displaces).map((x, idx) => (
-                    <MenuItem key={idx} value={x}>
-                      {x.slice(0, 7)}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={3}>
-              <Box component="span" m={1}>
-                <Typography variant="body2">
-                  {`Working Days: ${state.availDaysInMonth ?? ""}`}
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={2}>
-              <FormControl className={classes.formControl}>
-                <InputLabel id="demo-simple-select-label">Forecast</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  fullWidth
-                  disabled={
-                    !(
-                      state.selectedMonth &&
-                      state.selectedMonth in state.displaces
-                    )
-                  }
-                  value={state.selectedForecast ?? ""}
-                  onClick={handleSetForecast}
-                >
-                  {genForecastMenuItem()}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={4}>
-              <Box component="span" m={1}>
-                <Typography variant="body2">
-                  {`Forecast Value: ${state.forecastVal ?? ""}`}
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={1}>
-              <IconButton onClick={() => setFormOpen(true)}>
-                <SettingsIcon />
-              </IconButton>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid item xs={12}>
+      <div className={classes.root}>
+        <div className={classes.ctrlPanel}>{genHeader()}</div>
+        <div className={classes.content}>
           <HeadcountMainList
             lst={state.skillLst}
             subsectorLst={subsectors}
             employeeLst={employees}
           />
-        </Grid>
-      </Grid>
+        </div>
+      </div>
       <MyDialog open={state.formOpen} onClose={() => setFormOpen(false)}>
         <div className={classes.form}>
           <div className={classes.formTitle}>

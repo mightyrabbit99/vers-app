@@ -42,8 +42,8 @@ interface IMainListProps extends IMainListStyles {
 
 const useStyles = makeStyles<Theme, IMainListStyles>((themes) => ({
   content: {
-    height: (props) => props.height ?? "inherit",
-    width: (props) => props.width ?? "inherit",
+    height: (props) => props.height ?? "100%",
+    width: (props) => props.width ?? "100%",
     minWidth: (props) => props.minWidth,
   },
 }));

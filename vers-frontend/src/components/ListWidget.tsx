@@ -86,7 +86,7 @@ const ListWidget: React.FC<IListWidgetProps> = (props) => {
   const handleSearchBarChange = (e: React.ChangeEvent<any>) => {
     let { value } = e.target;
     searchOnChange!(value);
-  }
+  };
 
   const [excelFormOpen, setExcelFormOpen] = React.useState(false);
   const uploadOnClick = () => {
