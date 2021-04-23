@@ -8,6 +8,7 @@ import SubsectorForm from "src/components/forms/SubsectorForm";
 import SubsectorList from "src/components/lists/SubsectorMainList";
 import ListWidget from "./ListWidget";
 import { subsectorExcelUrl } from "src/kernel/Fetcher";
+import { toRegExp } from "src/utils/tools";
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -39,12 +40,10 @@ interface ISubsectorListWidgetProps {
   downloadExcel?: () => void;
 }
 
-const SubsectorListWidget: React.FC<ISubsectorListWidgetProps> = (
-  props
-) => {
+const SubsectorListWidget: React.FC<ISubsectorListWidgetProps> = (props) => {
   const classes = useStyles();
   const {
-    lst,
+    lst: l,
     sectorLst,
     newSubsector,
     feedback,
@@ -55,6 +54,18 @@ const SubsectorListWidget: React.FC<ISubsectorListWidgetProps> = (
     uploadExcel,
     downloadExcel,
   } = props;
+
+  const [lst, setLst] = React.useState(l);
+  React.useEffect(() => {
+    setLst(l);
+  }, [l]);
+
+  const handleFilter = (term: string) => {
+    const reg = toRegExp(term);
+    setLst(
+      Object.fromEntries(Object.entries(l).filter(([x, y]) => reg.test(y.name)))
+    );
+  };
 
   const [selected, setSelected] = React.useState<number[]>([]);
   React.useEffect(() => {
@@ -68,7 +79,7 @@ const SubsectorListWidget: React.FC<ISubsectorListWidgetProps> = (
   const [formOpen, setFormOpen] = React.useState(false);
   const [formData, setFormData] = React.useState<Subsector>();
   React.useEffect(() => {
-    setFormData(formData => formData ?? newSubsector);
+    setFormData((formData) => formData ?? newSubsector);
   }, [newSubsector]);
   React.useEffect(() => {
     setFormOpen(!!feedback);
@@ -102,6 +113,7 @@ const SubsectorListWidget: React.FC<ISubsectorListWidgetProps> = (
       deleteOnClick={handleDeleteOnClick}
       downloadExcel={downloadExcel}
       uploadExcel={uploadExcel}
+      searchOnChange={handleFilter}
       excelTemplateUrl={subsectorExcelUrl}
     >
       <SubsectorList

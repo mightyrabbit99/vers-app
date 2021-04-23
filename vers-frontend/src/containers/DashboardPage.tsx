@@ -491,7 +491,7 @@ const Dashboard: React.FC = () => {
             <ViewContext.Provider value={viewState}>
               {genView()}
             </ViewContext.Provider>
-            <Box pt={4}>
+            <Box pt={1}>
               <Copyright />
             </Box>
           </Container>

@@ -1,4 +1,4 @@
-import { EmployeeData, EmpSkillData } from "./data";
+import { EmpFileData, EmployeeData, EmpSkillData } from "./data";
 import Fetcher from "./Fetcher";
 import store, { ItemT, ItemType } from "./Store";
 
@@ -17,7 +17,7 @@ interface Employee extends ItemT {
   hireDate: string;
   shift: number;
   profile_pic?: string;
-  files?: string[];
+  files?: EmpFileData[];
 }
 
 function dataToObj(x: EmployeeData): Employee {

@@ -43,7 +43,7 @@ const SkillMainList: React.FC<ISkillMainListProps> = (props) => {
         return pp1 < pp2 ? 1 : pp1 === pp2 ? 0 : -1;
       },
       style: {
-        width: 150,
+        width: 130,
       },
     },
     {
@@ -55,7 +55,7 @@ const SkillMainList: React.FC<ISkillMainListProps> = (props) => {
         return pp1 < pp2 ? 1 : pp1 === pp2 ? 0 : -1;
       },
       style: {
-        width: 100,
+        width: 120,
       },
     },
     {
@@ -63,7 +63,7 @@ const SkillMainList: React.FC<ISkillMainListProps> = (props) => {
       extractor: (p: Skill) => `${p.priority}`,
       comparator: (p1: Skill, p2: Skill) => p2.priority - p1.priority,
       style: {
-        width: 100,
+        width: 120,
       },
     },
     {
@@ -72,7 +72,7 @@ const SkillMainList: React.FC<ISkillMainListProps> = (props) => {
       comparator: (p1: Skill, p2: Skill) =>
         p2.percentageOfSubsector - p1.percentageOfSubsector,
       style: {
-        width: 100,
+        width: 120,
       },
     },
   ];

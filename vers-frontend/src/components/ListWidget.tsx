@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
+import TextField from "@material-ui/core/TextField";
 import CloudUpload from "@material-ui/icons/CloudUpload";
 import CloudDownload from "@material-ui/icons/CloudDownload";
 
@@ -16,6 +17,11 @@ const useStyles = makeStyles((theme) => ({
     height: "15%",
     maxHeight: 60,
   },
+  searchBar: {
+    maxWidth: 250,
+    minWidth: 200,
+    marginLeft: "auto",
+  },
   ctrlButtons: {
     display: "flex",
     flexDirection: "row",
@@ -28,9 +34,7 @@ const useStyles = makeStyles((theme) => ({
     width: 23,
     heiht: 23,
   },
-  title: {
-    
-  },
+  title: {},
   content: {
     height: "100%",
     width: "100%",
@@ -57,6 +61,7 @@ interface IListWidgetProps {
   deleteOnClick?: () => void;
   downloadExcel?: () => void;
   uploadExcel?: (file: File) => void;
+  searchOnChange?: (term: string) => void;
   excelFeedback?: any;
   excelTemplateUrl?: string;
   children: React.ReactNode;
@@ -72,10 +77,16 @@ const ListWidget: React.FC<IListWidgetProps> = (props) => {
     createOnClick,
     downloadExcel,
     uploadExcel,
+    searchOnChange,
     excelFeedback,
     excelTemplateUrl,
     children,
   } = props;
+
+  const handleSearchBarChange = (e: React.ChangeEvent<any>) => {
+    let { value } = e.target;
+    searchOnChange!(value);
+  }
 
   const [excelFormOpen, setExcelFormOpen] = React.useState(false);
   const uploadOnClick = () => {
@@ -103,15 +114,24 @@ const ListWidget: React.FC<IListWidgetProps> = (props) => {
         >
           {title}
         </Typography>
+        {searchOnChange ? (
+          <TextField
+            className={classes.searchBar}
+            label="Search"
+            type="search"
+            fullWidth
+            onChange={handleSearchBarChange}
+          />
+        ) : null}
         <div className={classes.ctrlButtons}>
           {downloadExcel ? (
             <IconButton onClick={downloadExcel}>
-              <CloudDownload className={classes.buttonIcon}/>
+              <CloudDownload className={classes.buttonIcon} />
             </IconButton>
           ) : null}
           {uploadExcel ? (
             <IconButton onClick={uploadOnClick}>
-              <CloudUpload className={classes.buttonIcon}/>
+              <CloudUpload className={classes.buttonIcon} />
             </IconButton>
           ) : null}
           <Button

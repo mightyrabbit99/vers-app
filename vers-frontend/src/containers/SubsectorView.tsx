@@ -2,8 +2,6 @@ import * as React from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { makeStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 
@@ -20,7 +18,8 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     overflow: "hide",
     flexDirection: "column",
-    height: 500,
+    height: "74vh",
+    minHeight: 400,
   },
 }));
 
@@ -67,24 +66,20 @@ const SectorView: React.FC<ISectorViewProps> = (props) => {
 
   return (
     <React.Fragment>
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <Paper className={classes.list}>
-            <SubsectorListWidget
-              lst={subsectors}
-              sectorLst={sectors}
-              newSubsector={newSubsector}
-              feedback={feedback}
-              edit={canEdit()}
-              onSubmit={handleSubmit}
-              onDelete={handleDelete}
-              onReset={handleReset}
-              uploadExcel={handleUploadExcel}
-              downloadExcel={handleExcelDownloadClick}
-            />
-          </Paper>
-        </Grid>
-      </Grid>
+      <div className={classes.list}>
+        <SubsectorListWidget
+          lst={subsectors}
+          sectorLst={sectors}
+          newSubsector={newSubsector}
+          feedback={feedback}
+          edit={canEdit()}
+          onSubmit={handleSubmit}
+          onDelete={handleDelete}
+          onReset={handleReset}
+          uploadExcel={handleUploadExcel}
+          downloadExcel={handleExcelDownloadClick}
+        />
+      </div>
       <Snackbar open={fbOpen} autoHideDuration={6000} onClose={handleFbClose}>
         <Alert onClose={handleFbClose} severity={"error"}>
           {"Upload failed"}

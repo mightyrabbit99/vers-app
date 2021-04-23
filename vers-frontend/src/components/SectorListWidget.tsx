@@ -9,6 +9,7 @@ import SectorList from "src/components/lists/SectorMainList";
 
 import ListWidget from "src/components/ListWidget";
 import { sectorExcelUrl } from "src/kernel/Fetcher";
+import { toRegExp } from "src/utils/tools";
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -36,12 +37,10 @@ interface ISectorListWidgetProps {
   downloadExcel?: () => void;
 }
 
-const SectorListWidget: React.FC<ISectorListWidgetProps> = (
-  props
-) => {
+const SectorListWidget: React.FC<ISectorListWidgetProps> = (props) => {
   const classes = useStyles();
   const {
-    lst,
+    lst: l,
     plantLst,
     newSector,
     feedback,
@@ -52,6 +51,18 @@ const SectorListWidget: React.FC<ISectorListWidgetProps> = (
     uploadExcel,
     downloadExcel,
   } = props;
+
+  const [lst, setLst] = React.useState(l);
+  React.useEffect(() => {
+    setLst(l);
+  }, [l]);
+
+  const handleFilter = (term: string) => {
+    const reg = toRegExp(term);
+    setLst(
+      Object.fromEntries(Object.entries(l).filter(([x, y]) => reg.test(y.name)))
+    );
+  };
 
   const [selected, setSelected] = React.useState<number[]>([]);
   React.useEffect(() => {
@@ -65,7 +76,7 @@ const SectorListWidget: React.FC<ISectorListWidgetProps> = (
   const [formOpen, setFormOpen] = React.useState(false);
   const [formData, setFormData] = React.useState<Sector>();
   React.useEffect(() => {
-    setFormData(formData => formData ?? newSector);
+    setFormData((formData) => formData ?? newSector);
   }, [newSector]);
   React.useEffect(() => {
     setFormOpen(!!feedback);
@@ -88,7 +99,7 @@ const SectorListWidget: React.FC<ISectorListWidgetProps> = (
     setFormData(newSector);
     setFormOpen(true);
   };
-  
+
   return (
     <ListWidget
       title="Sectors"
@@ -98,6 +109,7 @@ const SectorListWidget: React.FC<ISectorListWidgetProps> = (
       deleteOnClick={handleDeleteOnClick}
       uploadExcel={uploadExcel}
       downloadExcel={downloadExcel}
+      searchOnChange={handleFilter}
       excelTemplateUrl={sectorExcelUrl}
     >
       <SectorList

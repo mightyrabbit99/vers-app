@@ -10,6 +10,7 @@ import Typography from "@material-ui/core/Typography";
 
 import EmployeeListWidget from "src/components/EmployeeListWidget";
 import EmployeeSkillWidget from "src/components/EmployeeSkillWidget";
+import EmployeeFileWidget from "src/components/EmployeeFileWidget";
 
 import { getData, getSession, getSync } from "src/selectors";
 import { delData, downloadExcel, saveData } from "src/slices/data";
@@ -118,6 +119,26 @@ const EmployeeView: React.FC<IEmployeeViewProps> = (props) => {
                 lst={employees}
                 skillLst={skills}
                 onSubmit={canEdit() ? handleSubmit : undefined}
+              />
+            </div>
+          </Paper>
+        </Grid>
+        <Grid item xs={12}>
+          <Paper className={classes.list}>
+            <div className={classes.header}>
+              <Typography
+                className={classes.title}
+                component="h2"
+                variant="h6"
+                color="primary"
+                gutterBottom
+              >
+                Files
+              </Typography>
+            </div>
+            <div className={classes.content}>
+              <EmployeeFileWidget
+                lst={employees}
               />
             </div>
           </Paper>

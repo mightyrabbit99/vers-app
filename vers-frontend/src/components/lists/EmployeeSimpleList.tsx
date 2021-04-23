@@ -1,9 +1,11 @@
 import * as React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import { Employee } from "src/kernel";
+import { FixedSizeList, ListChildComponentProps } from "react-window";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
-import { FixedSizeList, ListChildComponentProps } from "react-window";
+import TextField from "@material-ui/core/TextField";
+
+import { Employee } from "src/kernel";
+import { toRegExp } from "src/utils/tools";
 
 interface IEmpSimpleListStyle {
   height: number;
@@ -17,6 +19,8 @@ interface IEmpSimpleListProps extends IEmpSimpleListStyle {
   handleListItemClick: (i: number) => void;
 }
 
+const SEARCH_BAR_HEIGHT = 50;
+
 const EmpSimpleList: React.FunctionComponent<IEmpSimpleListProps> = (props) => {
   const { lst: l, sel, handleListItemClick, height, width, itemSize } = props;
 
@@ -24,6 +28,16 @@ const EmpSimpleList: React.FunctionComponent<IEmpSimpleListProps> = (props) => {
   React.useEffect(() => {
     setLst(Object.values(l));
   }, [l]);
+
+  const handleSearch = (e: React.ChangeEvent<any>) => {
+    const { value } = e.target;
+    const reg = toRegExp(value);
+    setLst(
+      Object.values(l).filter(
+        (x) => reg.test(x.firstName) || reg.test(x.lastName)
+      )
+    );
+  };
 
   const renderRow = (props: ListChildComponentProps) => {
     const { index, style } = props;
@@ -41,14 +55,25 @@ const EmpSimpleList: React.FunctionComponent<IEmpSimpleListProps> = (props) => {
   };
 
   return (
-    <FixedSizeList
-      height={height}
-      width={width}
-      itemSize={itemSize}
-      itemCount={lst.length}
-    >
-      {renderRow}
-    </FixedSizeList>
+    <React.Fragment>
+      <TextField
+        fullWidth
+        label="Search"
+        type="search"
+        style={{
+          height: SEARCH_BAR_HEIGHT,
+        }}
+        onChange={handleSearch}
+      />
+      <FixedSizeList
+        height={height - SEARCH_BAR_HEIGHT}
+        width={width}
+        itemSize={itemSize}
+        itemCount={lst.length}
+      >
+        {renderRow}
+      </FixedSizeList>
+    </React.Fragment>
   );
 };
 

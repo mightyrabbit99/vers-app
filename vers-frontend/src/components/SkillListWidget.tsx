@@ -8,6 +8,7 @@ import MyDialog from "./commons/Dialog";
 import SkillForm from "./forms/SkillForm";
 import ListWidget from "./ListWidget";
 import { skillExcelUrl } from "src/kernel/Fetcher";
+import { toRegExp } from "src/utils/tools";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -71,6 +72,7 @@ const SkillListWidget: React.FC<ISkillListWidgetProps> = (props) => {
     uploadExcel,
     downloadExcel,
   } = props;
+
 
   const [selected, setSelected] = React.useState<number[]>([]);
   React.useEffect(() => {

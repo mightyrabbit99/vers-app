@@ -6,6 +6,12 @@ interface EmpSkillData {
   desc: string;
 }
 
+interface EmpFileData extends Data {
+  emp: number;
+  file: File | string;
+  typ: 0;
+}
+
 interface EmployeeData extends Data {
   sesa_id: string;
   first_name: string;
@@ -19,14 +25,8 @@ interface EmployeeData extends Data {
   gender: string;
   hire_date?: string;
   shift: number;
-  files?: string[];
+  files?: EmpFileData[];
   profile_pic?: string;
-}
-
-interface EmpFileData extends Data {
-  emp: number;
-  file: File;
-  typ: 0;
 }
 
 interface EmpProfilePicData extends Data {

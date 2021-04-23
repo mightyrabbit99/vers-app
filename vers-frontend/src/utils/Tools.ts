@@ -7,6 +7,11 @@ export function filterRangeInPlace<T>(arr: T[], pred: (x: T) => boolean) {
   }
 }
 
+export function toRegExp(str: string) {
+  str = str.replace(".", "\\.").replace("*", "\\*").replace("$", "\\$").replace("^", "\\^");
+  return new RegExp(str);
+}
+
 export interface CalE<T> {
   range: [Date, Date];
   data: T;
