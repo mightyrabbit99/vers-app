@@ -39,6 +39,8 @@ urlpatterns = [
     path('api/log/', views.LogList.as_view(), name='logs'),
     path('api/log/delete', views.DeleteAllLogView.as_view(),
          name='logs_delete_all'),
+    path('api/cal_event/delete', views.DeleteAllCalEventView.as_view(),
+         name='cal_event_delete_all'),
 
     path('user_modify/', views.UserDetail.as_view()),
     path('user_register/', views.new_user_register, name='register'),

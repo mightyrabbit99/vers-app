@@ -10,6 +10,7 @@ interface EmpFileData extends Data {
   emp: number;
   file: File | string;
   typ: 0;
+  name: string;
 }
 
 interface EmployeeData extends Data {
