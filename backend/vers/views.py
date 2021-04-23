@@ -571,6 +571,15 @@ class IndexView(View):
     return render(request, 'index.html', {})
 
 
+class DeleteAllLogView(View):
+  def delete(self, request: HttpRequest, *args, **kwargs):
+    if request.user.is_authenticated:
+      models.Log.objects.all().delete()
+      return Response(status=status.HTTP_200_OK)
+    else:
+      return Response(status=status.HTTP_403_FORBIDDEN)
+
+
 def main_list(_model, _template_name, _paginate_by=100):
   class MainList(ListView):
     model = _model

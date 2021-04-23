@@ -6,3 +6,4 @@ files
 env
 static
 *.zip
+*.xlsx

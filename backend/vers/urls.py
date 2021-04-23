@@ -30,13 +30,16 @@ router.register(r'forecast', views.ForecastView, 'forecast')
 router.register(r'cal_event', views.CalEventView, 'events')
 router.register(r'user', views.UserView, 'user')
 router.register(r'emp_files', views.EmployeeFileView, 'employee_files')
-router.register(r'emp_profile_pic', views.EmployeeProfilePicView, 'employee_profile_pic')
+router.register(r'emp_profile_pic',
+                views.EmployeeProfilePicView, 'employee_profile_pic')
 
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
     path('api/', include(router.urls)),
     path('api/log/', views.LogList.as_view(), name='logs'),
-    
+    path('api/log/delete', views.DeleteAllLogView.as_view(),
+         name='logs_delete_all'),
+
     path('user_modify/', views.UserDetail.as_view()),
     path('user_register/', views.new_user_register, name='register'),
     path('reset_user/', views.IndexView.as_view(), name='reset_user'),
