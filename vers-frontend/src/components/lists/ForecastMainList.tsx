@@ -1,4 +1,5 @@
 import * as React from "react";
+import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import createMuiTheme, {
   ThemeOptions,
@@ -38,6 +39,15 @@ const useStyles = makeStyles((theme) => ({
   field: {
     paddingLeft: 2,
     paddingRight: 2,
+    width: 40,
+    height: 20,
+  },
+  highlight: {
+    color: "red",
+  },
+  ctrlButton: {
+    width: 20,
+    height: 20,
   },
 }));
 
@@ -46,7 +56,7 @@ type FL = { [id: number]: Forecast };
 interface IForecastMainListProps {
   lst: FL;
   fNLst?: number[];
-  onSubmit: (f: Forecast) => void;
+  onSubmit: (...f: Forecast[]) => void;
   selected?: number[];
   selectedOnChange?: (ids: number[]) => void;
 }
@@ -85,12 +95,14 @@ const ForecastMainList: React.FC<IForecastMainListProps> = (props) => {
   );
 
   const handleForecastChg = (p: Forecast) => () => {
-    setState((state) => ({
-      ...state,
-      chgLst: state.chgLst.includes(p.id)
-        ? state.chgLst
-        : [...state.chgLst, p.id],
-    }));
+    setState((state) =>
+      state.chgLst.includes(p.id)
+        ? state
+        : {
+            ...state,
+            chgLst: [...state.chgLst, p.id],
+          }
+    );
   };
 
   const handleForecastRealChg = (n: number, p: Forecast) => (value: number) => {
@@ -127,6 +139,11 @@ const ForecastMainList: React.FC<IForecastMainListProps> = (props) => {
     onSubmit(p);
   };
 
+  const handleForecastSubmitAll = () => {
+    setState((state) => ({ ...state, chgLst: [] }));
+    onSubmit(...chgLst.map((x) => state.stateLst[x]));
+  };
+
   const handleForecastReset = (p: Forecast) => () => {
     setState((state) => ({
       chgLst: [...state.chgLst.filter((x) => x !== p.id)],
@@ -134,9 +151,20 @@ const ForecastMainList: React.FC<IForecastMainListProps> = (props) => {
     }));
   };
 
+  const handleForecastResetAll = () => {
+    setState({
+      chgLst: [],
+      stateLst: lst,
+    });
+  };
+
   const getForecastVal = (n: number, p: Forecast) => {
     let i = p.forecasts.findIndex((x) => x.n === n);
-    return i === -1 ? "" : p.forecasts[i].val;
+    return i === -1 ? 0 : p.forecasts[i].val;
+  };
+
+  const getOriginForecastVal = (n: number, p: Forecast) => {
+    return getForecastVal(n, lst[p.id]);
   };
 
   const ctrlDisabled = React.useCallback(
@@ -151,43 +179,85 @@ const ForecastMainList: React.FC<IForecastMainListProps> = (props) => {
       title: "On",
       extractor: (p: Forecast) => {
         let d = new Date(p.on);
-        return `${d.getFullYear()} - ${d.getMonth() + 1}`;
+        return `${d.getMonth() + 1}/${d.getFullYear()}`;
       },
       comparator: (p1: Forecast, p2: Forecast) =>
         Date.parse(p1.on) - Date.parse(p2.on),
+      style: {
+        width: 50,
+      },
     },
     ...fNLst.map((x) => ({
-      title: `n + ${x}`,
+      title: `n+${x}`,
       extractor: (p: Forecast) => (
         <NumTextField
-          className={classes.field}
+          className={clsx(
+            classes.field,
+            chgLst.includes(p.id) &&
+              getOriginForecastVal(x, p) !== getForecastVal(x, p)
+              ? classes.highlight
+              : null
+          )}
           value={getForecastVal(x, p)}
           onChange={handleForecastRealChg(x, p)}
           onEdit={handleForecastChg(p)}
         />
       ),
+      comparator: (p1: Forecast, p2: Forecast) =>
+        getForecastVal(x, p1) - getForecastVal(x, p2),
+      style: {
+        width: 60,
+      },
     })),
     {
+      title: (
+        <IconButton
+          disabled={state.chgLst.length === 0}
+          onClick={handleForecastResetAll}
+          color="primary"
+          className={classes.ctrlButton}
+        >
+          <ReplayIcon />
+        </IconButton>
+      ),
       extractor: (p: Forecast) => (
         <IconButton
           disabled={ctrlDisabled(p)}
           onClick={handleForecastReset(p)}
           color="primary"
+          className={classes.ctrlButton}
         >
           <ReplayIcon />
         </IconButton>
       ),
+      style: {
+        width: 50,
+      },
     },
     {
+      title: (
+        <IconButton
+          disabled={state.chgLst.length === 0}
+          onClick={handleForecastSubmitAll}
+          color="primary"
+          className={classes.ctrlButton}
+        >
+          <SaveIcon />
+        </IconButton>
+      ),
       extractor: (p: Forecast) => (
         <IconButton
           disabled={ctrlDisabled(p)}
           onClick={handleForecastSubmit(p)}
           color="primary"
+          className={classes.ctrlButton}
         >
           <SaveIcon />
         </IconButton>
       ),
+      style: {
+        width: 50,
+      },
     },
   ];
 

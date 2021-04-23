@@ -1,5 +1,9 @@
 import * as React from "react";
-import TextField from "@material-ui/core/TextField";
+
+enum Mode {
+  EDIT,
+  VIEW,
+}
 
 interface INumTextFieldProps {
   className?: any;
@@ -18,24 +22,48 @@ const NumTextField: React.FunctionComponent<INumTextFieldProps> = (props) => {
   const handleChange = (e: React.ChangeEvent<any>) => {
     let { value } = e.target;
     if (value !== "" && !/^([0-9]*[.])?[0-9]*$/.test(value)) return;
+    if (value === val) return;
     setVal(value);
     onEdit && onEdit();
   };
 
-  const handleRealChange = (e: React.ChangeEvent<any>) => {
-    let value = parseInt(val, 10);
-    if (isNaN(value)) value = 0;
-    setVal(`${value}`);
-    onChange && onChange(value);
+  const [mod, setMod] = React.useState<Mode>(Mode.VIEW);
+  const txtRef = React.useRef<HTMLInputElement>(null);
+  React.useEffect(() => {
+    if (mod === Mode.EDIT) txtRef.current?.focus();
+  }, [mod]);
+
+  const handleClick = () => {
+    setMod(Mode.EDIT);
+  };
+
+  const handleBlur = (e: React.ChangeEvent<any>) => {
+    setMod(Mode.VIEW);
+    let val2 = parseInt(val, 10);
+    if (val2 === value) return;
+    if (isNaN(val2)) val2 = 0;
+    setVal(`${val2}`);
+    onChange && onChange(val2);
   };
 
   return (
-    <TextField
-      className={className}
-      value={val}
-      onChange={handleChange}
-      onBlur={handleRealChange}
-    />
+    <div className={className}>
+      {mod === Mode.VIEW ? (
+        <p onClick={handleClick}>{val}</p>
+      ) : (
+        <input
+          ref={txtRef}
+          value={val}
+          style={{
+            width: "100%",
+            height: "100%",
+            fontSize: 9,
+          }}
+          onChange={handleChange}
+          onBlur={handleBlur}
+        />
+      )}
+    </div>
   );
 };
 

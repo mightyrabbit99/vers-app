@@ -18,7 +18,8 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     display: "flex",
     flexDirection: "column",
-    height: "70vh",
+    height: "74vh",
+    minHeight: 400,
   },
 }));
 
@@ -30,7 +31,7 @@ const ForecastView: React.FC<IForecastViewProps> = (props) => {
   const { forecasts, newForecast } = useSelector(getData);
   const { feedback } = useSelector(getSync);
 
-  const handleForecastSubmit = (f: Forecast) => {
+  const handleForecastSubmit = (...f: Forecast[]) => {
     dispatch(saveData(f));
   };
 
@@ -61,23 +62,19 @@ const ForecastView: React.FC<IForecastViewProps> = (props) => {
 
   return (
     <React.Fragment>
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <Paper className={classes.widget}>
-            <ForecastListWidget
-              title="Forecast"
-              lst={forecasts}
-              newForecast={newForecast}
-              feedback={feedback}
-              onSubmit={handleForecastSubmit}
-              onDelete={handleForecastDelete}
-              onReset={handleReset}
-              uploadExcel={handleUploadExcel}
-              downloadExcel={handleExcelDownloadClick}
-            />
-          </Paper>
-        </Grid>
-      </Grid>
+      <div className={classes.widget}>
+        <ForecastListWidget
+          title="Forecast"
+          lst={forecasts}
+          newForecast={newForecast}
+          feedback={feedback}
+          onSubmit={handleForecastSubmit}
+          onDelete={handleForecastDelete}
+          onReset={handleReset}
+          uploadExcel={handleUploadExcel}
+          downloadExcel={handleExcelDownloadClick}
+        />
+      </div>
       <Snackbar open={fbOpen} autoHideDuration={6000} onClose={handleFbClose}>
         <Alert onClose={handleFbClose} severity={"error"}>
           {"Upload failed"}

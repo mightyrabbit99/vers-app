@@ -8,7 +8,6 @@ import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import Box from "@material-ui/core/Box";
-import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import SettingsIcon from "@material-ui/icons/Settings";
@@ -270,11 +269,13 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
               disabled={_.isEmpty(state.displaces)}
               onClick={handleSelMonth}
             >
-              {Object.keys(state.displaces).map((x, idx) => (
-                <MenuItem key={idx} value={x}>
-                  {x.slice(0, 7)}
-                </MenuItem>
-              ))}
+              {Object.keys(state.displaces)
+                .sort((a, b) => Date.parse(a) - Date.parse(b))
+                .map((x, idx) => (
+                  <MenuItem key={idx} value={x}>
+                    {x.slice(0, 7)}
+                  </MenuItem>
+                ))}
             </Select>
           </FormControl>
         </Grid>

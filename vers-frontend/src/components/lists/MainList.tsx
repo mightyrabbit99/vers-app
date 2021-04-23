@@ -18,7 +18,7 @@ enum SortDirection {
 }
 
 interface Col {
-  title?: string;
+  title?: React.ReactNode;
   extractor: (item: Item) => string | React.ReactNode;
   comparator?: (i1: Item, i2: Item) => number;
   style?: any;
@@ -104,7 +104,9 @@ const ItemMainList: React.FC<IMainListProps> = (props) => {
       setSortCol(colIdx);
       setSortDire(SortDirection.ASC);
     } else {
-      setSortDire((d) => (d === SortDirection.ASC ? SortDirection.DES : SortDirection.ASC));
+      setSortDire((d) =>
+        d === SortDirection.ASC ? SortDirection.DES : SortDirection.ASC
+      );
     }
   };
 
@@ -156,10 +158,12 @@ const ItemMainList: React.FC<IMainListProps> = (props) => {
                       }
                       onClick={createSortHandler(idx)}
                     >
-                      <b>{x.title}</b>
+                      {typeof x.title === "string" ? <b>{x.title}</b> : x.title}
                     </TableSortLabel>
-                  ) : (
+                  ) : typeof x.title === "string" ? (
                     <b>{x.title}</b>
+                  ) : (
+                    x.title
                   )}
                 </TableCell>
               ) : (

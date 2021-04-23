@@ -34,7 +34,7 @@ interface IForecastListWidgetProps {
   newForecast?: Forecast;
   edit?: boolean;
   feedback?: any;
-  onSubmit: (f: Forecast) => void;
+  onSubmit: (...f: Forecast[]) => void;
   onDelete: (...f: Forecast[]) => void;
   onReset: () => void;
   uploadExcel?: (file: File) => void;
@@ -78,8 +78,8 @@ const ForecastListWidget: React.FC<IForecastListWidgetProps> = (
     setFormOpen(!!feedback);
   }, [feedback]);
 
-  const handleSubmit = (data: Forecast) => {
-    onSubmit(data);
+  const handleSubmit = (...data: Forecast[]) => {
+    onSubmit(...data);
     setFormOpen(false);
   };
 

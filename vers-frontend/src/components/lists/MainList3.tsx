@@ -49,6 +49,7 @@ interface IMainListProps extends IMainListStyles {
   selected?: number[];
   selectedOnChange?: (ids: number[]) => void;
   onRowClick?: () => void;
+  [k: string]: any;
 }
 
 const useStyles = makeStyles<Theme, IMainListStyles>((theme) => ({

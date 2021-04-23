@@ -8,6 +8,7 @@ import Button from "@material-ui/core/Button";
 import { Employee } from "src/kernel";
 import EmployeeSimpleList from "./lists/EmployeeSimpleList";
 import MyDialog from "src/components/commons/Dialog";
+import EmpFileList from "./lists/EmpFileList";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,13 +38,10 @@ const useStyles = makeStyles((theme) => ({
     height: "100%",
     overflowY: "scroll",
   },
-  skillLst: {
+  fileLst: {
     height: "85%",
   },
-  form: {
-    height: "65vh",
-    minHeight: 500,
-  },
+  form: {},
   formTitle: {
     height: "15%",
   },
@@ -119,7 +117,9 @@ const EmpFileWidget: React.FunctionComponent<IEmpFileWidgetProps> = (props) => {
               Delete
             </Button>
           </div>
-          <div className={classes.skillLst}></div>
+          <div className={classes.fileLst}>
+            {sel ? <EmpFileList item={sel} /> : null}
+          </div>
         </Grid>
       </Grid>
       <MyDialog open={addLstOpen} onClose={uploadFileOnClose}>
@@ -136,16 +136,11 @@ const EmpFileWidget: React.FunctionComponent<IEmpFileWidgetProps> = (props) => {
             </Typography>
           </div>
           <div className={classes.formContent}>
-            {sel?.files?.map((x) => (
-              <p>{x.file}</p>
-            ))}
-            "
             <form noValidate autoComplete="off">
               <input
                 type="file"
                 name="file"
                 onChange={handleFileUpload}
-                hidden
               />
             </form>
             <div className={classes.ctrlButtons}>

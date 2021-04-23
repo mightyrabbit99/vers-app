@@ -4,21 +4,14 @@ import { useSelector, useDispatch } from "react-redux";
 import { Theme, makeStyles } from "@material-ui/core/styles";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import Accordion from "@material-ui/core/Accordion";
-import AccordionSummary from "@material-ui/core/AccordionSummary";
-import AccordionDetails from "@material-ui/core/AccordionDetails";
 import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import DeleteIcon from "@material-ui/icons/Delete";
 
-import { Log, MyLog, LogType, DataType } from "src/kernel";
+import { Log, LogType, DataType } from "src/kernel";
 import { getData } from "src/selectors";
 import { clearMyLog } from "src/slices/data";
-import clsx from "clsx";
+import MyLogListWidget from "src/components/MyLogListWidget";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -31,16 +24,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     flexDirection: "column",
     height: "70vh",
   },
-  title: {
-    height: "15%",
-  },
-  topBar: {
-    display: "flex",
-    flexDirection: "row",
-  },
-  rightItem: {
-    marginLeft: "auto",
-  },
   content: {
     height: "85%",
     overflowY: "scroll",
@@ -48,12 +31,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   heading: {
     fontSize: theme.typography.pxToRem(15),
     fontWeight: theme.typography.fontWeightRegular,
-  },
-  myLogItem: {
-    width: "99%",
-  },
-  myLogItemError: {
-    color: "red",
   },
 }));
 
@@ -111,60 +88,8 @@ const ChangeLogView: React.FC = () => {
   const classes = useStyles();
   const { logs, personalLogs } = useSelector(getData);
 
-  const genDetail = (x: any) => {
-    let iden = myGetIden(x.data);
-    return `${x.success ? "Success" : "Failed"}: ${x.data._type} "${iden}" ${
-      x.statusText
-    }`;
-  };
-
-  const genFailDetail = (x: any) => {
-    let err_lst = Object.entries(x).filter(
-      (x) => x[0] !== "_type" && x[1] instanceof Array
-    ) as [string, string[]][];
-    return err_lst
-      .map((x) => x[1].map((y) => `${x[0]}: ${y}`))
-      .reduce((prev, curr) => `${prev}\n${curr}`, "");
-  };
-
   const handleDeleteMyLog = () => {
     dispatch(clearMyLog());
-  };
-
-  const genMyLogCard = (log: MyLog, idx: number) => {
-    return (
-      <Accordion key={idx} className={classes.myLogItem}>
-        <AccordionSummary
-          aria-controls="panel1a-content"
-          id="panel1a-header"
-          expandIcon={<ExpandMoreIcon />}
-        >
-          <Typography
-            className={clsx(
-              classes.heading,
-              log.vals.some((x) => !x.success) ? classes.myLogItemError : null
-            )}
-          >
-            {log.desc}
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <List>
-            {log.vals.map((x, idx) => {
-              return (
-                <ListItem key={idx}>
-                  <ListItemText
-                    className={!x.success ? classes.myLogItemError : undefined}
-                    primary={genDetail(x)}
-                    secondary={x.success ? undefined : genFailDetail(x)}
-                  />
-                </ListItem>
-              );
-            })}
-          </List>
-        </AccordionDetails>
-      </Accordion>
-    );
   };
 
   const genLogCard = (log: Log, idx: number) => {
@@ -179,25 +104,7 @@ const ChangeLogView: React.FC = () => {
     <Grid container spacing={3}>
       <Grid item xs={12}>
         <Paper className={classes.widget}>
-          <div className={classes.topBar}>
-            <Typography
-              component="h2"
-              variant="h6"
-              color="primary"
-              gutterBottom
-            >
-              My Changes
-            </Typography>
-            <IconButton
-              className={classes.rightItem}
-              onClick={handleDeleteMyLog}
-            >
-              <DeleteIcon />
-            </IconButton>
-          </div>
-          <div className={classes.content}>
-            {personalLogs.map(genMyLogCard)}
-          </div>
+          <MyLogListWidget lst={personalLogs} onDelete={handleDeleteMyLog}/>
         </Paper>
       </Grid>
       <Grid item xs={12}>
