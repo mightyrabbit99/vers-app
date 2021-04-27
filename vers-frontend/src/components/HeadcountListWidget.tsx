@@ -242,7 +242,7 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
     let lst = Object.entries(state.displaces[state.selectedMonth ?? ""]);
     return lst.map((x, idx) => (
       <MenuItem key={idx} value={x[0]}>
-        {`-${x[0]}`}
+        {`${-x[0]}`}
       </MenuItem>
     ));
   };

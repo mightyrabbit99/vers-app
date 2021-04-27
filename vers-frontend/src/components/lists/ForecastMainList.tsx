@@ -187,6 +187,28 @@ const ForecastMainList: React.FC<IForecastMainListProps> = (props) => {
         width: 50,
       },
     },
+    {
+      title: "Act.",
+      extractor: (p: Forecast) => (
+        <NumTextField
+          className={clsx(
+            classes.field,
+            chgLst.includes(p.id) &&
+              getOriginForecastVal(0, p) !== getForecastVal(0, p)
+              ? classes.highlight
+              : null
+          )}
+          value={getForecastVal(0, p)}
+          onChange={handleForecastRealChg(0, p)}
+          onEdit={handleForecastChg(p)}
+        />
+      ),
+      comparator: (p1: Forecast, p2: Forecast) =>
+        getForecastVal(0, p1) - getForecastVal(0, p2),
+      style: {
+        width: 60,
+      },
+    },
     ...fNLst.map((x) => ({
       title: `n+${x}`,
       extractor: (p: Forecast) => (

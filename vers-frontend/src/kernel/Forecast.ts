@@ -74,8 +74,8 @@ const generator = (init?: Forecast): Forecast => {
     id: -1,
     _type: ItemType.Forecast,
     on: init?.on ?? "",
-    forecasts: [...new Array(12).keys()]
-      .map((x, idx) => idx + 1)
+    forecasts: [...new Array(13).keys()]
+      .map((x, idx) => idx)
       .map((x) => ({
         n: x,
         val: forecasts[x] ?? 0.0,
