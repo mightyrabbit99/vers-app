@@ -410,7 +410,7 @@ const readForecastSheet = (ws: Excel.Worksheet): ForecastObj[] => {
   ws.eachRow((row, rowIndex) => {
     if (rowIndex === 1 || !checkRow(row)) return;
     const values: CValMap = row.values as Excel.CellValue[];
-    [on, ...forecasts] = [...Array(13).keys()]
+    [on, ...forecasts] = [...Array(14).keys()]
       .map((x) => x + 1)
       .map((x) => `${values[x]}`.trim());
     ans.push({
@@ -418,7 +418,7 @@ const readForecastSheet = (ws: Excel.Worksheet): ForecastObj[] => {
       line: rowIndex,
       on: Date.parse(on),
       forecasts: forecasts.map((x, idx) => ({
-        n: idx + 1,
+        n: idx,
         val: isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10),
       })),
     });
@@ -514,6 +514,7 @@ const forecastSheetWriter = (forecasts: ForecastObj[]) => (
   let zwoelf = [...Array(12).keys()].map((x) => x + 1);
   ws.columns = [
     { header: "On", key: "on" },
+    { header: "Actual", key: 0 },
     ...zwoelf.map((x) => ({ header: `n + ${x}`, key: x })),
   ] as Excel.Column[];
 
