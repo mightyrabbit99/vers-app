@@ -53,15 +53,21 @@ const SectorListWidget: React.FC<ISectorListWidgetProps> = (props) => {
   } = props;
 
   const [lst, setLst] = React.useState(l);
+  const [searchTerm, setSearchTerm] = React.useState("");
   React.useEffect(() => {
-    setLst(l);
-  }, [l]);
+    if (searchTerm === "") {
+      setLst(l);
+    } else {
+      const reg = toRegExp(searchTerm);
+      setLst(
+        Object.fromEntries(Object.entries(l).filter(([x, y]) => reg.test(y.name)))
+      );
+    }
+    
+  }, [l, searchTerm]);
 
   const handleFilter = (term: string) => {
-    const reg = toRegExp(term);
-    setLst(
-      Object.fromEntries(Object.entries(l).filter(([x, y]) => reg.test(y.name)))
-    );
+    setSearchTerm(term);
   };
 
   const [selected, setSelected] = React.useState<number[]>([]);

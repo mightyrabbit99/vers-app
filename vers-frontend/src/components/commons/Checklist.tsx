@@ -7,17 +7,26 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import Checkbox from "@material-ui/core/Checkbox";
+import TextField from "@material-ui/core/TextField";
+import { toRegExp } from "src/utils/tools";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "100%",
+    width: "100%",
+  },
+  searchBar: {
+    height: "10%",
+    width: "100%",
   },
   list: {
-    height: "90%",
+    height: "80%",
+    width: "100%",
     overflowY: "scroll",
   },
   ctrlButtons: {
     height: "10%",
+    width: "100%",
   },
 }));
 
@@ -33,12 +42,28 @@ interface FormProps<T> {
 
 function Form<T>(props: FormProps<T>) {
   const classes = useStyles();
-  const { lst, onSubmit } = props;
+  const { lst: l, onSubmit } = props;
+
+  const [lst, setLst] = React.useState(l);
+  const [searchTerm, setSearchTerm] = React.useState("");
+  React.useEffect(() => {
+    if (searchTerm === "") {
+      setLst(l);
+    } else {
+      const reg = toRegExp(searchTerm);
+      setLst(l.filter((x) => reg.test(x.name)));
+    }
+  }, [l, searchTerm]);
+
+  const handleSearchBarChange = (e: React.ChangeEvent<any>) => {
+    const { value } = e.target;
+    setSearchTerm(value);
+  };
 
   const [selected, setSelected] = React.useState<Set<Item<T>>>(new Set());
   React.useEffect(() => {
     setSelected(new Set());
-  }, [lst]);
+  }, [l]);
 
   const handleSel = (e: Item<T>) => {
     let newSelected = new Set(selected);
@@ -56,6 +81,15 @@ function Form<T>(props: FormProps<T>) {
 
   return (
     <div className={classes.root}>
+      <div className={classes.searchBar}>
+        <TextField
+          className={classes.searchBar}
+          label="Search"
+          type="search"
+          fullWidth
+          onChange={handleSearchBarChange}
+        />
+      </div>
       <div className={classes.list}>
         <List dense>
           {lst.map((x, idx) => {

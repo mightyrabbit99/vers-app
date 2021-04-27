@@ -255,6 +255,7 @@ const ItemMainList: React.FC<IMainListProps> = (props) => {
 
   const checkerRenderer: TableCellRenderer = ({ rowIndex }) => {
     const item = lst[rowIndex];
+    if (item === undefined) return null;
     return (
       <TableCell
         padding="checkbox"
@@ -277,6 +278,7 @@ const ItemMainList: React.FC<IMainListProps> = (props) => {
 
   const cellRenderer = (col: Col, { rowIndex }: TableCellProps) => {
     const item = lst[rowIndex];
+    if (item === undefined) return null;
     if (!col.title) {
       return (
         <TableCell
@@ -328,7 +330,7 @@ const ItemMainList: React.FC<IMainListProps> = (props) => {
           headerHeight={headerHeight!}
           className={classes.table}
           rowCount={l.length}
-          rowGetter={({ index }) => lst[index]}
+          rowGetter={({ index }) => lst[index] ?? {}}
           rowClassName={getRowClassName}
         >
           {selected ? (

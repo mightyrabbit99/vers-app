@@ -60,7 +60,7 @@ interface ISkillListWidgetProps {
 const SkillListWidget: React.FC<ISkillListWidgetProps> = (props) => {
   const classes = useStyles();
   const {
-    lst,
+    lst: l,
     subsectorLst,
     sectorLst,
     newSkill,
@@ -73,6 +73,23 @@ const SkillListWidget: React.FC<ISkillListWidgetProps> = (props) => {
     downloadExcel,
   } = props;
 
+  const [lst, setLst] = React.useState(l);
+  const [searchTerm, setSearchTerm] = React.useState("");
+  React.useEffect(() => {
+    if (searchTerm === "") {
+      setLst(l);
+    } else {
+      const reg = toRegExp(searchTerm);
+      setLst(
+        Object.fromEntries(Object.entries(l).filter(([x, y]) => reg.test(y.name)))
+      );
+    }
+    
+  }, [l, searchTerm]);
+
+  const handleFilter = (term: string) => {
+    setSearchTerm(term);
+  };
 
   const [selected, setSelected] = React.useState<number[]>([]);
   React.useEffect(() => {
@@ -119,6 +136,7 @@ const SkillListWidget: React.FC<ISkillListWidgetProps> = (props) => {
       deleteOnClick={handleDeleteOnClick}
       downloadExcel={downloadExcel}
       uploadExcel={uploadExcel}
+      searchOnChange={handleFilter}
       excelTemplateUrl={skillExcelUrl}
     >
       <SkillMainList

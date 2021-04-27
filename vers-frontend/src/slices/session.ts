@@ -20,6 +20,7 @@ const sessionSlice = createSlice({
     initLogin: (state) => {},
     login: (state, { payload }: PayloadAction<any>) => {
       state.syncing = true;
+      state.authenticated = undefined;
     },
     loginSuccess: (state, { payload }: PayloadAction<any>) => {
       state.syncing = false;

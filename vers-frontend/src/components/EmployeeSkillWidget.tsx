@@ -45,12 +45,14 @@ const useStyles = makeStyles((theme) => ({
   form: {
     height: "65vh",
     minHeight: 500,
+    width: "45vw",
+    minWidth: 400,
   },
   formTitle: {
-    height: "15%",
+    height: "7%",
   },
   formContent: {
-    height: "85%",
+    height: "93%",
   },
 }));
 

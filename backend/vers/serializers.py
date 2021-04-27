@@ -286,7 +286,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
         user=self.get_request_user(), data=validated_data)
     validated_data['sesa_id'] = validated_data['sesa_id'].upper()
 
-    if 'skills_data' in validated_data:
+    if 'skills' in validated_data:
       skills_data = validated_data.pop('skills')
     else:
       skills_data = []

@@ -20,9 +20,6 @@ const useStyles = makeStyles((theme) => ({
       margin: theme.spacing(1),
     },
   },
-  title: {
-    height: "15%",
-  },
   form: {
     minHeight: 500,
     height: "80vh",
@@ -95,7 +92,6 @@ const SkillLevelSelectWidget: React.FC<ISkillLevelSelectWidgetProps> = (
       >
         <div className={classes.formTitle}>
           <Typography
-            className={classes.title}
             component="h2"
             variant="h6"
             color="primary"

@@ -8,6 +8,7 @@ import EmployeeForm from "src/components/forms/EmployeeForm";
 import EmployeeList from "src/components/lists/EmployeeMainList";
 import ListWidget from "./ListWidget";
 import { empExcelUrl } from "src/kernel/Fetcher";
+import { toRegExp } from "src/utils/tools";
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -42,7 +43,7 @@ const EmployeeListWidget: React.FC<IEmployeeListWidgetProps> = (
 ) => {
   const classes = useStyles();
   const {
-    lst,
+    lst: l,
     newEmployee,
     feedback,
     edit = true,
@@ -52,6 +53,24 @@ const EmployeeListWidget: React.FC<IEmployeeListWidgetProps> = (
     uploadExcel,
     downloadExcel,
   } = props;
+
+  const [lst, setLst] = React.useState(l);
+  const [searchTerm, setSearchTerm] = React.useState("");
+  React.useEffect(() => {
+    if (searchTerm === "") {
+      setLst(l);
+    } else {
+      const reg = toRegExp(searchTerm);
+      setLst(
+        Object.fromEntries(Object.entries(l).filter(([x, y]) => reg.test(y.firstName) || reg.test(y.lastName)))
+      );
+    }
+    
+  }, [l, searchTerm]);
+
+  const handleFilter = (term: string) => {
+    setSearchTerm(term);
+  };
 
   const [selected, setSelected] = React.useState<number[]>([]);
   React.useEffect(() => {
@@ -99,6 +118,7 @@ const EmployeeListWidget: React.FC<IEmployeeListWidgetProps> = (
       deleteOnClick={handleDeleteOnClick}
       downloadExcel={downloadExcel}
       uploadExcel={uploadExcel}
+      searchOnChange={handleFilter}
       excelTemplateUrl={empExcelUrl}
     >
       <EmployeeList
