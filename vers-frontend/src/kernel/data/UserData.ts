@@ -14,7 +14,6 @@ interface UserData extends Data {
     plant_group: AccessLevel;
     sector_group: AccessLevel;
     subsector_group: AccessLevel;
-    department_group: AccessLevel;
     employee_group: AccessLevel;
     job_group: AccessLevel;
     skill_group: AccessLevel;

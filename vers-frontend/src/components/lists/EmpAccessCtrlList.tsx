@@ -1,11 +1,6 @@
 import * as React from "react";
 
-import Table from "@material-ui/core/Table";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import TableCell from "@material-ui/core/TableCell";
-import TableBody from "@material-ui/core/TableBody";
+import MainList, { Col } from "./MainList3";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -13,132 +8,133 @@ import Checkbox from "@material-ui/core/Checkbox";
 
 import { AccessLevel, User } from "src/kernel";
 
-
 interface IUserAccessCtrlListProps {
   lst: { [id: number]: User };
   onSubmit?: (e: User) => void;
   editSuper?: boolean;
 }
-const getName = (p: User) => p.username;
+type VersUserK = keyof User["vers_user"];
 
-const UserAccessCtrlList: React.FC<IUserAccessCtrlListProps> = (
-  props
-) => {
+const UserAccessCtrlList: React.FC<IUserAccessCtrlListProps> = (props) => {
   const { lst, onSubmit, editSuper = false } = props;
 
-  const empLst = Object.values(lst);
-
-  const genTableRow = (user: User, idx: number) => {
-    const vers_user = user.vers_user;
-    type VersUserIndex = keyof typeof vers_user;
-    function isValidName(value: string): value is VersUserIndex {
-      return value in vers_user;
-    }
-    function getVal(name: string) {
-      return isValidName(name) ? vers_user[name] : "";
-    }
-
-    const genSelector = (name: string) => {
-      const val = getVal(name);
-      const handleChange = (e: React.ChangeEvent<any>) => {
-        const { name, value } = e.target;
-        const newEmp: User = {
-            ...user,
-            vers_user: {
-              ...user.vers_user,
-              [name]: value,
-            },
-          };
-        onSubmit && onSubmit(newEmp);
-      };
-      return (
-        <FormControl>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            name={name}
-            value={val}
-            onChange={handleChange}
-            disabled={!onSubmit || user.is_superuser}
-          >
-            <MenuItem value={AccessLevel.NONE}>None</MenuItem>
-            <MenuItem value={AccessLevel.EDIT}>Edit</MenuItem>
-            <MenuItem value={AccessLevel.VIEW}>View</MenuItem>
-          </Select>
-        </FormControl>
-      );
-    };
-
-    const handleSuperuserChange = (e: React.ChangeEvent<any>) => {
-      const { checked } = e.target;
+  const genSelector = (user: User, name: VersUserK) => {
+    const vers_user = user.vers_user ?? {};
+    const val = name in vers_user ? vers_user[name] : "";
+    const handleChange = (e: React.ChangeEvent<any>) => {
+      const { name, value } = e.target;
       const newEmp: User = {
         ...user,
-        is_superuser: checked,
         vers_user: {
           ...user.vers_user,
+          [name]: value,
         },
       };
       onSubmit && onSubmit(newEmp);
     };
-
     return (
-      <TableRow hover key={idx}>
-        <TableCell>{getName(user)}</TableCell>
-        {editSuper ? (
-          <TableCell padding="checkbox">
-            <Checkbox
-              name="is_superuser"
-              checked={user.is_superuser}
-              onChange={handleSuperuserChange}
-            />
-          </TableCell>
-        ) : null}
-        <TableCell>{genSelector("plant_group")}</TableCell>
-        <TableCell>{genSelector("sector_group")}</TableCell>
-        <TableCell>{genSelector("subsector_group")}</TableCell>
-        <TableCell>{genSelector("department_group")}</TableCell>
-        <TableCell>{genSelector("skill_group")}</TableCell>
-        <TableCell>{genSelector("job_group")}</TableCell>
-      </TableRow>
+      <FormControl>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          name={name}
+          value={val}
+          onChange={handleChange}
+          disabled={!onSubmit || user.is_superuser}
+        >
+          <MenuItem value={AccessLevel.NONE}>None</MenuItem>
+          <MenuItem value={AccessLevel.EDIT}>Edit</MenuItem>
+          <MenuItem value={AccessLevel.VIEW}>View</MenuItem>
+        </Select>
+      </FormControl>
     );
   };
 
+  const cols: Col[] = [
+    {
+      title: "Username",
+      extractor: (p: User) => p.username,
+      comparator: (p1: User, p2: User) =>
+        p1.username < p2.username ? 1 : p1.username === p2.username ? 0 : -1,
+      style: {
+        width: 50,
+      },
+    },
+    {
+      title: "Plant",
+      extractor: (p: User) => genSelector(p, "plant_group"),
+      style: {
+        width: 50,
+      },
+    },
+    {
+      title: "Sector",
+      extractor: (p: User) => genSelector(p, "sector_group"),
+      style: {
+        width: 50,
+      },
+    },
+    {
+      title: "Subsector",
+      extractor: (p: User) => genSelector(p, "subsector_group"),
+      style: {
+        width: 50,
+      },
+    },
+    {
+      title: "Employee",
+      extractor: (p: User) => genSelector(p, "employee_group"),
+      style: {
+        width: 50,
+      },
+    },
+    {
+      title: "Forecast",
+      extractor: (p: User) => genSelector(p, "forecast_group"),
+      style: {
+        width: 50,
+      },
+    },
+  ];
+
+  if (editSuper) {
+    cols.splice(1, 0, {
+      title: "Super",
+      extractor: (p: User) => {
+        const handleSuperuserChange = (e: React.ChangeEvent<any>) => {
+          const { checked } = e.target;
+          const newEmp: User = {
+            ...p,
+            is_superuser: checked,
+            vers_user: {
+              ...p.vers_user,
+            },
+          };
+          onSubmit && onSubmit(newEmp);
+        };
+
+        return (
+          <Checkbox
+            name="is_superuser"
+            checked={p.is_superuser}
+            onChange={handleSuperuserChange}
+          />
+        );
+      },
+      style: {
+        width: 50,
+      },
+    });
+  }
+
   return (
-    <TableContainer>
-      <Table stickyHeader>
-        <TableHead>
-          <TableRow>
-            <TableCell>
-              <b>User</b>
-            </TableCell>
-            {editSuper ? (
-              <TableCell padding="checkbox">
-                <b>Superuser</b>
-              </TableCell>
-            ) : null}
-            <TableCell>
-              <b>Plant</b>
-            </TableCell>
-            <TableCell>
-              <b>Sector</b>
-            </TableCell>
-            <TableCell>
-              <b>Subsector</b>
-            </TableCell>
-            <TableCell>
-              <b>Department</b>
-            </TableCell>
-            <TableCell>
-              <b>Skill</b>
-            </TableCell>
-            <TableCell>
-              <b>Job</b>
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>{empLst.filter(x => x.vers_user).map(genTableRow)}</TableBody>
-      </Table>
-    </TableContainer>
+    <MainList
+      lst={Object.values(lst)}
+      cols={cols}
+      minWidth={950}
+      size="small"
+      padding="none"
+    />
   );
 };
 
