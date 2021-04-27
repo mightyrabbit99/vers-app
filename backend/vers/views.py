@@ -18,9 +18,6 @@ from rest_framework.parsers import MultiPartParser
 from . import models, serializers, logger as lg, permissions as my_perms
 from .forms import UserCreateForm
 
-# raw data serving
-
-
 def new_user_register(request):
   title = "Create account"
   if request.method == 'POST':
@@ -604,7 +601,9 @@ class UserView(viewsets.ModelViewSet):
 
   def update(self, request, *args, **kwargs):
     if has_update_permission(self.txt, self.request.user):
-      return super().update(request, *args, **kwargs)
+      res = super().update(request, *args, **kwargs)
+      self.notify(lg.DELETE, res.data)
+      return res
     else:
       return Response(status=status.HTTP_403_FORBIDDEN)
 

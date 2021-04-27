@@ -1,5 +1,3 @@
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
 from typing import Set
 from rest_framework import serializers
 import datetime
@@ -83,20 +81,6 @@ class UserSerializer2(serializers.ModelSerializer):
 OWNER_USERNAME = 'owner.username'
 
 
-def notify_consumer(typ, data_type, data):
-  channel_layer = get_channel_layer()
-  event = {
-      "type": "update_store",
-      "payload": {
-          "data_type": data_type,
-          "action": typ,
-          "content": data
-      }
-  }
-  async_to_sync(channel_layer.group_send)(
-      "main", event)
-
-
 class UserSerializer3(serializers.ModelSerializer):
   username = serializers.CharField(read_only=True)
   vers_user = VersUserSerializer(many=False)
@@ -108,9 +92,6 @@ class UserSerializer3(serializers.ModelSerializer):
       user = request.user
     return user
 
-  def notify(self, typ, res):
-    notify_consumer(typ, lg.USER, UserSerializer3(res).data)
-
   def update(self, instance, validated_data):
     vers_user_data = validated_data.pop('vers_user')
     for (key, value) in vers_user_data.items():
@@ -120,7 +101,6 @@ class UserSerializer3(serializers.ModelSerializer):
     lg.log_update(
         data_type=lg.USER,
         user=self.get_request_user(), data=validated_data, origin=instance).save()
-    self.notify(lg.UPDATE, instance)
     return instance
 
   class Meta:
