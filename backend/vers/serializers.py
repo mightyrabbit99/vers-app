@@ -133,9 +133,6 @@ class PlantSerializer(serializers.ModelSerializer):
   sectors = serializers.PrimaryKeyRelatedField(
       many=True, read_only=True)
 
-  def notify(self, typ, res):
-    notify_consumer(typ, lg.PLANT, PlantSerializer(res).data)
-
   def get_request_user(self):
     user = None
     request = self.context.get("request")
@@ -144,19 +141,19 @@ class PlantSerializer(serializers.ModelSerializer):
     return user
 
   def create(self, validated_data):
-    lg.log_create(
-        data_type=lg.PLANT,
-        user=self.get_request_user(), data=validated_data).save()
     res = super().create(validated_data)
-    self.notify(lg.CREATE, res)
+    g = lg.log_create(
+        data_type=lg.PLANT,
+        user=self.get_request_user(), data=validated_data)
+    g.save()
     return res
 
   def update(self, instance, validated_data):
-    lg.log_update(
-        data_type=lg.PLANT,
-        user=self.get_request_user(), data=validated_data, origin=instance).save()
     res = super().update(instance, validated_data)
-    self.notify(lg.UPDATE, res)
+    g = lg.log_update(
+        data_type=lg.PLANT,
+        user=self.get_request_user(), data=validated_data, origin=instance)
+    g.save()
     return res
 
   class Meta:
@@ -169,9 +166,6 @@ class SectorSerializer(serializers.ModelSerializer):
   subsectors = serializers.PrimaryKeyRelatedField(
       many=True, read_only=True)
 
-  def notify(self, typ, res):
-    notify_consumer(typ, lg.SECTOR, SectorSerializer(res).data)
-
   def get_request_user(self):
     user = None
     request = self.context.get("request")
@@ -180,19 +174,19 @@ class SectorSerializer(serializers.ModelSerializer):
     return user
 
   def create(self, validated_data):
-    lg.log_create(
-        data_type=lg.SECTOR,
-        user=self.get_request_user(), data=validated_data).save()
     res = super().create(validated_data)
-    self.notify(lg.CREATE, res)
+    g = lg.log_create(
+        data_type=lg.SECTOR,
+        user=self.get_request_user(), data=validated_data)
+    g.save()
     return res
 
   def update(self, instance, validated_data):
-    lg.log_update(
-        data_type=lg.SECTOR,
-        user=self.get_request_user(), data=validated_data, origin=instance).save()
     res = super().update(instance, validated_data)
-    self.notify(lg.UPDATE, res)
+    g = lg.log_update(
+        data_type=lg.SECTOR,
+        user=self.get_request_user(), data=validated_data, origin=instance)
+    g.save()
     return res
 
   class Meta:
@@ -207,9 +201,6 @@ class SubsectorSerializer(serializers.ModelSerializer):
   jobs = serializers.PrimaryKeyRelatedField(
       many=True, read_only=True)
 
-  def notify(self, typ, res):
-    notify_consumer(typ, lg.SUBSECTOR, SubsectorSerializer(res).data)
-
   def get_request_user(self):
     user = None
     request = self.context.get("request")
@@ -218,19 +209,19 @@ class SubsectorSerializer(serializers.ModelSerializer):
     return user
 
   def create(self, validated_data):
-    lg.log_create(
-        data_type=lg.SUBSECTOR,
-        user=self.get_request_user(), data=validated_data).save()
     res = super().create(validated_data)
-    self.notify(lg.CREATE, res)
+    g = lg.log_create(
+        data_type=lg.SUBSECTOR,
+        user=self.get_request_user(), data=validated_data)
+    g.save()
     return res
 
   def update(self, instance, validated_data):
-    lg.log_update(
-        data_type=lg.SUBSECTOR,
-        user=self.get_request_user(), data=validated_data, origin=instance).save()
     res = super().update(instance, validated_data)
-    self.notify(lg.UPDATE, res)
+    g = lg.log_update(
+        data_type=lg.SUBSECTOR,
+        user=self.get_request_user(), data=validated_data, origin=instance)
+    g.save()
     return res
 
   class Meta:
@@ -252,10 +243,12 @@ def sesa_id_val(value):
     raise serializers.ValidationError(
         'This field must start with \'SESA\'')
 
+
 class EmployeeProfilePicSerializer(serializers.ModelSerializer):
   class Meta:
     model = models.EmployeeProfilePic
     fields = '__all__'
+
 
 class EmployeeFileSerializer(serializers.ModelSerializer):
   class Meta:
@@ -269,9 +262,6 @@ class EmployeeSerializer(serializers.ModelSerializer):
   sesa_id = serializers.CharField(validators=[sesa_id_val])
   files = EmployeeFileSerializer(many=True, read_only=True)
   profile_pic = serializers.ReadOnlyField(source='profile_pic.pic')
-
-  def notify(self, typ, res):
-    notify_consumer(typ, lg.EMPLOYEE, EmployeeSerializer(res).data)
 
   def get_request_user(self):
     user = None
@@ -300,7 +290,6 @@ class EmployeeSerializer(serializers.ModelSerializer):
       new_emp_skill.save()
 
     g.save()
-    self.notify(lg.CREATE, emp)
     return emp
 
   def update(self, instance, validated_data):
@@ -326,7 +315,6 @@ class EmployeeSerializer(serializers.ModelSerializer):
     instance.save()
 
     g.save()
-    self.notify(lg.UPDATE, instance)
     return instance
 
   class Meta:
@@ -349,9 +337,6 @@ class JobSkillMatrixSerializer(serializers.ModelSerializer):
 class JobSerializer(serializers.ModelSerializer):
   skills_required = JobSkillMatrixSerializer(many=True)
   owner = serializers.ReadOnlyField(source=OWNER_USERNAME)
-
-  def notify(self, typ, res):
-    notify_consumer(typ, lg.JOB, JobSerializer(res).data)
 
   def get_request_user(self):
     user = None
@@ -377,7 +362,6 @@ class JobSerializer(serializers.ModelSerializer):
       job_skill.save()
 
     g.save()
-    self.notify(lg.CREATE, job)
     return job
 
   def update(self, instance, validated_data):
@@ -402,7 +386,6 @@ class JobSerializer(serializers.ModelSerializer):
       setattr(instance, key, value)
     instance.save()
     g.save()
-    self.notify(lg.UPDATE, instance)
     return instance
 
   class Meta:
@@ -420,9 +403,6 @@ class SkillSerializer(serializers.ModelSerializer):
   jobs = JobSkillMatrixSerializer(many=True, read_only=True)
   employees = EmpSkillMatrixSerializer2(many=True, read_only=True)
 
-  def notify(self, typ, res):
-    notify_consumer(typ, lg.SKILL, SkillSerializer(res).data)
-
   def get_request_user(self):
     user = None
     request = self.context.get("request")
@@ -431,21 +411,19 @@ class SkillSerializer(serializers.ModelSerializer):
     return user
 
   def create(self, validated_data):
+    res = super().create(validated_data)
     g = lg.log_create(
         data_type=lg.SKILL,
         user=self.get_request_user(), data=validated_data)
     g.save()
-    res = super().create(validated_data)
-    self.notify(lg.CREATE, res)
     return res
 
   def update(self, instance, validated_data):
+    res = super().update(instance, validated_data)
     g = lg.log_update(
         data_type=lg.SKILL,
         user=self.get_request_user(), data=validated_data, origin=instance)
     g.save()
-    res = super().update(instance, validated_data)
-    self.notify(lg.UPDATE, res)
     return res
 
   class Meta:
@@ -468,9 +446,6 @@ class ForecastSerializer(serializers.ModelSerializer):
 class ForecastPackSerializer(serializers.ModelSerializer):
   on = serializers.DateField()
   forecasts = ForecastSerializer(many=True)
-
-  def notify(self, typ, res):
-    notify_consumer(typ, lg.FORECAST, ForecastPackSerializer(res).data)
 
   def get_request_user(self):
     user = None
@@ -496,7 +471,6 @@ class ForecastPackSerializer(serializers.ModelSerializer):
       new_f.save()
 
     g.save()
-    self.notify(lg.CREATE, new_fc)
     return new_fc
 
   def update(self, instance, validated_data):
@@ -528,7 +502,6 @@ class ForecastPackSerializer(serializers.ModelSerializer):
 
     g.save()
     res = super().update(instance, validated_data)
-    self.notify(lg.UPDATE, res)
     return res
 
   class Meta:
@@ -547,9 +520,6 @@ class CalEventSerializer(serializers.ModelSerializer):
       user = request.user
     return user
 
-  def notify(self, typ, res):
-    notify_consumer(typ, lg.CAL_EVENT, CalEventSerializer(res).data)
-
   def validate(self, attrs):
     start: datetime.date = attrs.get('start')
     end: datetime.date = attrs.get('end')
@@ -561,17 +531,20 @@ class CalEventSerializer(serializers.ModelSerializer):
     return super().validate(attrs)
 
   def create(self, validated_data):
-    new_cal = super().create(validated_data)
-    self.notify(lg.CREATE, new_cal)
-    return new_cal
+    res = super().create(validated_data)
+    g = lg.log_create(
+        data_type=lg.CAL_EVENT,
+        user=self.get_request_user(), data=validated_data)
+    g.save()
+    return res
 
   def update(self, instance, validated_data):
-    instance = super().update(instance, validated_data)
-    self.notify(lg.UPDATE, instance)
-    lg.log_update(
+    res = super().update(instance, validated_data)
+    g = lg.log_update(
         data_type=lg.CAL_EVENT,
-        user=self.get_request_user(), data=validated_data, origin=instance).save()
-    return instance
+        user=self.get_request_user(), data=validated_data, origin=instance)
+    g.save()
+    return res
 
   class Meta:
     model = models.CalEvent

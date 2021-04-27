@@ -89,7 +89,8 @@ def get_group(view, user):
     return user.vers_user.job_group
   elif view == "forecast":
     return user.vers_user.forecast_group
-
+  else:
+    return None
 
 NONE = 3
 USER = 2
@@ -165,6 +166,9 @@ class PlantView(viewsets.ModelViewSet):
   txt = "plant"
   serializer_class = serializers.PlantSerializer
 
+  def notify(self, typ, res):
+    notify_consumer(typ, lg.PLANT, res)
+
   def get_queryset(self):
     return perform_get_queryset(self.txt, self.request.user)
 
@@ -174,6 +178,7 @@ class PlantView(viewsets.ModelViewSet):
           data=request.data, many=isinstance(request.data, list))
       serializer.is_valid(raise_exception=True)
       self.perform_create(serializer)
+      self.notify(lg.CREATE, serializer.data)
       headers = self.get_success_headers(serializer.data)
       return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     else:
@@ -187,7 +192,9 @@ class PlantView(viewsets.ModelViewSet):
 
   def update(self, request, *args, **kwargs):
     if has_update_permission(self.txt, self.request.user):
-      return super().update(request, *args, **kwargs)
+      res = super().update(request, *args, **kwargs)
+      self.notify(lg.UPDATE, res.data)
+      return res
     else:
       return Response(status=status.HTTP_403_FORBIDDEN)
 
@@ -201,7 +208,7 @@ class PlantView(viewsets.ModelViewSet):
     lg.log_delete(
         data_type=lg.PLANT,
         user=self.request.user, origin=instance).save()
-    notify_consumer(lg.DELETE, lg.PLANT, self.serializer_class(instance).data)
+    self.notify(lg.DELETE, self.serializer_class(instance).data)
     return super().perform_destroy(instance)
 
 
@@ -209,6 +216,9 @@ class SectorView(viewsets.ModelViewSet):
   txt = "sector"
   serializer_class = serializers.SectorSerializer
   permission_classes = [my_perms.VersPermission1]
+
+  def notify(self, typ, res):
+    notify_consumer(typ, lg.SECTOR, res)
 
   def get_queryset(self):
     return perform_get_queryset(self.txt, self.request.user)
@@ -219,6 +229,7 @@ class SectorView(viewsets.ModelViewSet):
           data=request.data, many=isinstance(request.data, list))
       serializer.is_valid(raise_exception=True)
       self.perform_create(serializer)
+      self.notify(lg.CREATE, serializer.data)
       headers = self.get_success_headers(serializer.data)
       return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     else:
@@ -232,7 +243,9 @@ class SectorView(viewsets.ModelViewSet):
 
   def update(self, request, *args, **kwargs):
     if has_update_permission(self.txt, self.request.user):
-      return super().update(request, *args, **kwargs)
+      res = super().update(request, *args, **kwargs)
+      self.notify(lg.UPDATE, res.data)
+      return res
     else:
       return Response(status=status.HTTP_403_FORBIDDEN)
 
@@ -246,7 +259,7 @@ class SectorView(viewsets.ModelViewSet):
     lg.log_delete(
         data_type=lg.SECTOR,
         user=self.request.user, origin=instance).save()
-    notify_consumer(lg.DELETE, lg.SECTOR, self.serializer_class(instance).data)
+    self.notify(lg.DELETE, self.serializer_class(instance).data)
     return super().perform_destroy(instance)
 
 
@@ -254,6 +267,9 @@ class SubsectorView(viewsets.ModelViewSet):
   txt = "subsector"
   serializer_class = serializers.SubsectorSerializer
   permission_classes = [my_perms.VersPermission1]
+
+  def notify(self, typ, res):
+    notify_consumer(typ, lg.SUBSECTOR, res)
 
   def get_queryset(self):
     return perform_get_queryset(self.txt, self.request.user)
@@ -264,6 +280,7 @@ class SubsectorView(viewsets.ModelViewSet):
           data=request.data, many=isinstance(request.data, list))
       serializer.is_valid(raise_exception=True)
       self.perform_create(serializer)
+      self.notify(lg.CREATE, serializer.data)
       headers = self.get_success_headers(serializer.data)
       return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     else:
@@ -277,7 +294,9 @@ class SubsectorView(viewsets.ModelViewSet):
 
   def update(self, request, *args, **kwargs):
     if has_update_permission(self.txt, self.request.user):
-      return super().update(request, *args, **kwargs)
+      res = super().update(request, *args, **kwargs)
+      self.notify(lg.UPDATE, res.data)
+      return res
     else:
       return Response(status=status.HTTP_403_FORBIDDEN)
 
@@ -291,8 +310,7 @@ class SubsectorView(viewsets.ModelViewSet):
     lg.log_delete(
         data_type=lg.SUBSECTOR,
         user=self.request.user, origin=instance).save()
-    notify_consumer(lg.DELETE, lg.SUBSECTOR,
-                    self.serializer_class(instance).data)
+    self.notify(lg.DELETE, self.serializer_class(instance).data)
     return super().perform_destroy(instance)
 
 
@@ -300,6 +318,9 @@ class SkillView(viewsets.ModelViewSet):
   txt = "skill"
   serializer_class = serializers.SkillSerializer
   permission_classes = [my_perms.VersPermission1]
+
+  def notify(self, typ, res):
+    notify_consumer(typ, lg.SKILL, res)
 
   def get_queryset(self):
     return perform_get_queryset(self.txt, self.request.user)
@@ -310,6 +331,7 @@ class SkillView(viewsets.ModelViewSet):
           data=request.data, many=isinstance(request.data, list))
       serializer.is_valid(raise_exception=True)
       self.perform_create(serializer)
+      self.notify(lg.CREATE, serializer.data)
       headers = self.get_success_headers(serializer.data)
       return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     else:
@@ -323,7 +345,9 @@ class SkillView(viewsets.ModelViewSet):
 
   def update(self, request, *args, **kwargs):
     if has_update_permission(self.txt, self.request.user):
-      return super().update(request, *args, **kwargs)
+      res = super().update(request, *args, **kwargs)
+      self.notify(lg.UPDATE, res.data)
+      return res
     else:
       return Response(status=status.HTTP_403_FORBIDDEN)
 
@@ -337,7 +361,7 @@ class SkillView(viewsets.ModelViewSet):
     lg.log_delete(
         data_type=lg.SKILL,
         user=self.request.user, origin=instance).save()
-    notify_consumer(lg.DELETE, lg.SKILL, self.serializer_class(instance).data)
+    self.notify(lg.DELETE, self.serializer_class(instance).data)
     return super().perform_destroy(instance)
 
 
@@ -345,7 +369,10 @@ class EmployeeView(viewsets.ModelViewSet):
   txt = "employee"
   #parser_classes = [utils.MultiPartJsonParser]
   serializer_class = serializers.EmployeeSerializer
-  permission_classes = [my_perms.VersPermission1, ]
+  permission_classes = [my_perms.VersPermission1,]
+
+  def notify(self, typ, res):
+    notify_consumer(typ, lg.EMPLOYEE, res)
 
   def get_queryset(self):
     return perform_get_queryset(self.txt, self.request.user)
@@ -356,6 +383,7 @@ class EmployeeView(viewsets.ModelViewSet):
           data=request.data, many=isinstance(request.data, list))
       serializer.is_valid(raise_exception=True)
       self.perform_create(serializer)
+      self.notify(lg.CREATE, serializer.data)
       headers = self.get_success_headers(serializer.data)
       return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     else:
@@ -369,7 +397,9 @@ class EmployeeView(viewsets.ModelViewSet):
 
   def update(self, request, *args, **kwargs):
     if has_update_permission(self.txt, self.request.user):
-      return super().update(request, *args, **kwargs)
+      res = super().update(request, *args, **kwargs)
+      self.notify(lg.UPDATE, res.data)
+      return res
     else:
       return Response(status=status.HTTP_403_FORBIDDEN)
 
@@ -383,8 +413,7 @@ class EmployeeView(viewsets.ModelViewSet):
     lg.log_delete(
         data_type=lg.EMPLOYEE,
         user=self.request.user, origin=instance).save()
-    notify_consumer(lg.DELETE, lg.EMPLOYEE,
-                    self.serializer_class(instance).data)
+    self.notify(lg.DELETE, self.serializer_class(instance).data)
     return super().perform_destroy(instance)
 
 
@@ -422,6 +451,9 @@ class JobView(viewsets.ModelViewSet):
   serializer_class = serializers.JobSerializer
   permission_classes = [my_perms.VersPermission1]
 
+  def notify(self, typ, res):
+    notify_consumer(typ, lg.JOB, res)
+
   def get_queryset(self):
     return perform_get_queryset(self.txt, self.request.user)
 
@@ -431,6 +463,7 @@ class JobView(viewsets.ModelViewSet):
           data=request.data, many=isinstance(request.data, list))
       serializer.is_valid(raise_exception=True)
       self.perform_create(serializer)
+      self.notify(lg.CREATE, serializer.data)
       headers = self.get_success_headers(serializer.data)
       return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     else:
@@ -444,7 +477,9 @@ class JobView(viewsets.ModelViewSet):
 
   def update(self, request, *args, **kwargs):
     if has_update_permission(self.txt, self.request.user):
-      return super().update(request, *args, **kwargs)
+      res = super().update(request, *args, **kwargs)
+      self.notify(lg.UPDATE, res.data)
+      return res
     else:
       return Response(status=status.HTTP_403_FORBIDDEN)
 
@@ -458,7 +493,7 @@ class JobView(viewsets.ModelViewSet):
     lg.log_delete(
         data_type=lg.JOB,
         user=self.request.user, origin=instance).save()
-    notify_consumer(lg.DELETE, lg.JOB, self.serializer_class(instance).data)
+    self.notify(lg.DELETE, self.serializer_class(instance).data)
     return super().perform_destroy(instance)
 
 
@@ -472,6 +507,9 @@ class ForecastView(viewsets.ModelViewSet):
   txt = "forecast"
   serializer_class = serializers.ForecastPackSerializer
 
+  def notify(self, typ, res):
+    notify_consumer(typ, lg.FORECAST, res)
+
   def get_queryset(self):
     return perform_get_queryset(self.txt, self.request.user)
 
@@ -481,6 +519,7 @@ class ForecastView(viewsets.ModelViewSet):
           data=request.data, many=isinstance(request.data, list))
       serializer.is_valid(raise_exception=True)
       self.perform_create(serializer)
+      self.notify(lg.CREATE, serializer.data)
       headers = self.get_success_headers(serializer.data)
       return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     else:
@@ -494,7 +533,9 @@ class ForecastView(viewsets.ModelViewSet):
 
   def update(self, request, *args, **kwargs):
     if has_update_permission(self.txt, self.request.user):
-      return super().update(request, *args, **kwargs)
+      res = super().update(request, *args, **kwargs)
+      self.notify(lg.UPDATE, res.data)
+      return res
     else:
       return Response(status=status.HTTP_403_FORBIDDEN)
 
@@ -508,8 +549,7 @@ class ForecastView(viewsets.ModelViewSet):
     lg.log_delete(
         data_type=lg.FORECAST,
         user=self.request.user, origin=instance).save()
-    notify_consumer(lg.DELETE, lg.FORECAST,
-                    self.serializer_class(instance).data)
+    self.notify(lg.DELETE, self.serializer_class(instance).data)
     return super().perform_destroy(instance)
 
 
@@ -517,12 +557,29 @@ class CalEventView(viewsets.ModelViewSet):
   txt = 'cal'
   serializer_class = serializers.CalEventSerializer
 
+  def notify(self, typ, res):
+    notify_consumer(typ, lg.CAL_EVENT, res)
+
   def get_queryset(self):
     return models.CalEvent.objects.all()
+  
+  def create(self, request, *args, **kwargs):
+    if has_create_permission(self.txt, self.request.user):
+      serializer = self.get_serializer(
+          data=request.data, many=isinstance(request.data, list))
+      serializer.is_valid(raise_exception=True)
+      self.perform_create(serializer)
+      self.notify(lg.CREATE, serializer.data)
+      headers = self.get_success_headers(serializer.data)
+      return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    else:
+      return Response(status=status.HTTP_403_FORBIDDEN)
 
   def update(self, request, *args, **kwargs):
     if has_update_permission(self.txt, self.request.user):
-      return super().update(request, *args, **kwargs)
+      res = super().update(request, *args, **kwargs)
+      self.notify(lg.UPDATE, res.data)
+      return res
     else:
       return Response(status=status.HTTP_403_FORBIDDEN)
 
@@ -530,8 +587,7 @@ class CalEventView(viewsets.ModelViewSet):
     lg.log_delete(
         data_type=lg.CAL_EVENT,
         user=self.request.user, origin=instance).save()
-    notify_consumer(lg.DELETE, lg.CAL_EVENT,
-                    self.serializer_class(instance).data)
+    self.notify(lg.DELETE, self.serializer_class(instance).data)
     return super().perform_destroy(instance)
 
 
@@ -539,6 +595,9 @@ class UserView(viewsets.ModelViewSet):
   txt = 'user'
   serializer_class = serializers.UserSerializer3
   model = User
+
+  def notify(self, typ, res):
+    notify_consumer(typ, lg.USER, res)
 
   def get_queryset(self):
     return perform_get_queryset(self.txt, self.request.user)
@@ -556,7 +615,7 @@ class UserView(viewsets.ModelViewSet):
     lg.log_delete(
         data_type=lg.USER,
         user=self.request.user, origin=instance).save()
-    notify_consumer(lg.DELETE, lg.USER, self.serializer_class(instance).data)
+    self.notify(lg.DELETE, self.serializer_class(instance).data)
     return super().perform_destroy(instance)
 
 
