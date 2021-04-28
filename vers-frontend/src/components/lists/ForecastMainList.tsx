@@ -37,9 +37,9 @@ const theme = createMuiTheme(themeOptions);
 
 const useStyles = makeStyles((theme) => ({
   field: {
-    paddingLeft: 2,
-    paddingRight: 2,
-    width: 40,
+    paddingLeft: 1,
+    paddingRight: 1,
+    width: 45,
     height: 20,
   },
   highlight: {

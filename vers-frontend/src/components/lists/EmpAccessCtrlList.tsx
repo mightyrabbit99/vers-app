@@ -131,9 +131,6 @@ const UserAccessCtrlList: React.FC<IUserAccessCtrlListProps> = (props) => {
     <MainList
       lst={Object.values(lst)}
       cols={cols}
-      minWidth={950}
-      size="small"
-      padding="none"
     />
   );
 };

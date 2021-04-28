@@ -13,7 +13,15 @@ interface ISkillMainListProps {
   selected?: number[];
   selectedOnChange?: (ids: number[]) => void;
   onEdit?: (id: number) => void;
+  width?: number;
 }
+
+const W_name = 350;
+const W_subsector = 130;
+const W_sector = 120;
+const W_priority = 120;
+const W_percentage = 120;
+const W_edit = 50;
 
 const SkillMainList: React.FC<ISkillMainListProps> = (props) => {
   const {
@@ -23,7 +31,9 @@ const SkillMainList: React.FC<ISkillMainListProps> = (props) => {
     selected,
     selectedOnChange,
     onEdit,
+    width,
   } = props;
+
   const cols: Col[] = [
     {
       title: "Name",
@@ -31,7 +41,7 @@ const SkillMainList: React.FC<ISkillMainListProps> = (props) => {
       comparator: (p1: Skill, p2: Skill) =>
         p1.name < p2.name ? 1 : p1.name === p2.name ? 0 : -1,
       style: {
-        width: 350,
+        width: W_name,
       },
     },
     {
@@ -43,7 +53,7 @@ const SkillMainList: React.FC<ISkillMainListProps> = (props) => {
         return pp1 < pp2 ? 1 : pp1 === pp2 ? 0 : -1;
       },
       style: {
-        width: 130,
+        width: W_subsector,
       },
     },
     {
@@ -55,7 +65,7 @@ const SkillMainList: React.FC<ISkillMainListProps> = (props) => {
         return pp1 < pp2 ? 1 : pp1 === pp2 ? 0 : -1;
       },
       style: {
-        width: 120,
+        width: W_sector,
       },
     },
     {
@@ -63,7 +73,7 @@ const SkillMainList: React.FC<ISkillMainListProps> = (props) => {
       extractor: (p: Skill) => `${p.priority}`,
       comparator: (p1: Skill, p2: Skill) => p2.priority - p1.priority,
       style: {
-        width: 120,
+        width: W_priority,
       },
     },
     {
@@ -72,7 +82,7 @@ const SkillMainList: React.FC<ISkillMainListProps> = (props) => {
       comparator: (p1: Skill, p2: Skill) =>
         p2.percentageOfSubsector - p1.percentageOfSubsector,
       style: {
-        width: 120,
+        width: W_percentage,
       },
     },
   ];
@@ -85,7 +95,7 @@ const SkillMainList: React.FC<ISkillMainListProps> = (props) => {
         </IconButton>
       ),
       style: {
-        width: 50,
+        width: W_edit,
       },
     });
   }
@@ -96,6 +106,7 @@ const SkillMainList: React.FC<ISkillMainListProps> = (props) => {
       cols={cols}
       selected={selected}
       selectedOnChange={selectedOnChange}
+      width={width}
     />
   );
 };

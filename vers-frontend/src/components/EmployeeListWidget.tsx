@@ -9,6 +9,7 @@ import EmployeeList from "src/components/lists/EmployeeMainList";
 import ListWidget from "./ListWidget";
 import { empExcelUrl } from "src/kernel/Fetcher";
 import { toRegExp } from "src/utils/tools";
+import { ViewContext } from "src/contexts";
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -38,9 +39,7 @@ interface IEmployeeListWidgetProps {
   downloadExcel?: () => void;
 }
 
-const EmployeeListWidget: React.FC<IEmployeeListWidgetProps> = (
-  props
-) => {
+const EmployeeListWidget: React.FC<IEmployeeListWidgetProps> = (props) => {
   const classes = useStyles();
   const {
     lst: l,
@@ -62,10 +61,13 @@ const EmployeeListWidget: React.FC<IEmployeeListWidgetProps> = (
     } else {
       const reg = toRegExp(searchTerm);
       setLst(
-        Object.fromEntries(Object.entries(l).filter(([x, y]) => reg.test(y.firstName) || reg.test(y.lastName)))
+        Object.fromEntries(
+          Object.entries(l).filter(
+            ([x, y]) => reg.test(y.firstName) || reg.test(y.lastName)
+          )
+        )
       );
     }
-    
   }, [l, searchTerm]);
 
   const handleFilter = (term: string) => {
@@ -84,7 +86,7 @@ const EmployeeListWidget: React.FC<IEmployeeListWidgetProps> = (
   const [formOpen, setFormOpen] = React.useState(false);
   const [formData, setFormData] = React.useState<Employee>();
   React.useEffect(() => {
-    setFormData(formData => formData ?? newEmployee);
+    setFormData((formData) => formData ?? newEmployee);
   }, [newEmployee]);
   React.useEffect(() => {
     setFormOpen(!!feedback);
@@ -121,12 +123,19 @@ const EmployeeListWidget: React.FC<IEmployeeListWidgetProps> = (
       searchOnChange={handleFilter}
       excelTemplateUrl={empExcelUrl}
     >
-      <EmployeeList
-        lst={lst}
-        selected={selected}
-        selectedOnChange={setSelected}
-        onEdit={edit ? handleEditOnClick : undefined}
-      />
+      <ViewContext.Consumer>
+        {({ viewWidth }) => {
+          return (
+            <EmployeeList
+              lst={lst}
+              selected={selected}
+              selectedOnChange={setSelected}
+              onEdit={edit ? handleEditOnClick : undefined}
+              width={viewWidth}
+            />
+          );
+        }}
+      </ViewContext.Consumer>
       <MyDialog open={formOpen} onClose={handleFormClose}>
         <div className={classes.form}>
           <div className={classes.formTitle}>

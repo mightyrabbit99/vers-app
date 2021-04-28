@@ -49,7 +49,8 @@ interface IMainListProps extends IMainListStyles {
   selected?: number[];
   selectedOnChange?: (ids: number[]) => void;
   onRowClick?: () => void;
-  [k: string]: any;
+  width?: number;
+  styles?: any;
 }
 
 const useStyles = makeStyles<Theme, IMainListStyles>((theme) => ({
@@ -93,10 +94,12 @@ const ItemMainList: React.FC<IMainListProps> = (props) => {
     selected,
     selectedOnChange = (lst) => {},
     onRowClick,
-    ...styles
+    width,
+    styles
   } = props;
+
   const classes = useStyles(styles);
-  const { headerHeight = 48, rowHeight = 48 } = styles;
+  const { headerHeight = 48, rowHeight = 48 } = styles ?? {};
 
   const [lst, setLst] = React.useState<Item[]>([]);
   const [selectedIds, setSelectedIds] = React.useState<number[]>(
@@ -317,6 +320,8 @@ const ItemMainList: React.FC<IMainListProps> = (props) => {
     });
   };
 
+  const totalWidth = cols.reduce((p, c) => p + c.style.width, 0);
+  const calcWidth = (w: number) => width && w < width * w / totalWidth ? width * w / totalWidth : w;
   return (
     <AutoSizer className={classes.root}>
       {({ height, width }) => (
@@ -349,7 +354,7 @@ const ItemMainList: React.FC<IMainListProps> = (props) => {
                 headerRenderer={(headerProps) => headerRenderer(x, idx)}
                 className={classes.flexContainer}
                 cellRenderer={(props) => cellRenderer(x, props)}
-                {...x.style}
+                width={calcWidth(x.style.width)}
                 dataKey={""}
                 key={""}
               />

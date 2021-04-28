@@ -9,6 +9,7 @@ import SkillForm from "./forms/SkillForm";
 import ListWidget from "./ListWidget";
 import { skillExcelUrl } from "src/kernel/Fetcher";
 import { toRegExp } from "src/utils/tools";
+import { ViewContext } from "src/contexts";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -81,10 +82,11 @@ const SkillListWidget: React.FC<ISkillListWidgetProps> = (props) => {
     } else {
       const reg = toRegExp(searchTerm);
       setLst(
-        Object.fromEntries(Object.entries(l).filter(([x, y]) => reg.test(y.name)))
+        Object.fromEntries(
+          Object.entries(l).filter(([x, y]) => reg.test(y.name))
+        )
       );
     }
-    
   }, [l, searchTerm]);
 
   const handleFilter = (term: string) => {
@@ -103,7 +105,7 @@ const SkillListWidget: React.FC<ISkillListWidgetProps> = (props) => {
   const [formOpen, setFormOpen] = React.useState(false);
   const [formData, setFormData] = React.useState<Skill>();
   React.useEffect(() => {
-    setFormData(formData => formData ?? newSkill);
+    setFormData((formData) => formData ?? newSkill);
   }, [newSkill]);
   React.useEffect(() => {
     setFormOpen(!!feedback);
@@ -139,14 +141,21 @@ const SkillListWidget: React.FC<ISkillListWidgetProps> = (props) => {
       searchOnChange={handleFilter}
       excelTemplateUrl={skillExcelUrl}
     >
-      <SkillMainList
-        lst={lst}
-        subsectorLst={subsectorLst}
-        sectorLst={sectorLst}
-        selected={selected}
-        selectedOnChange={setSelected}
-        onEdit={edit ? handleEditOnClick : undefined}
-      />
+      <ViewContext.Consumer>
+        {({ viewWidth }) => {
+          return (
+            <SkillMainList
+              lst={lst}
+              subsectorLst={subsectorLst}
+              sectorLst={sectorLst}
+              selected={selected}
+              selectedOnChange={setSelected}
+              onEdit={edit ? handleEditOnClick : undefined}
+              width={viewWidth}
+            />
+          );
+        }}
+      </ViewContext.Consumer>
       <MyDialog open={formOpen} onClose={handleFormClose}>
         <div className={classes.form}>
           <div className={classes.formTitle}>

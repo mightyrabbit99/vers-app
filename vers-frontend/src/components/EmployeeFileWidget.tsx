@@ -52,11 +52,12 @@ const useStyles = makeStyles((theme) => ({
 
 interface IEmpFileWidgetProps {
   lst: { [id: number]: Employee };
+  onSubmit?: () => void;
 }
 
 const EmpFileWidget: React.FunctionComponent<IEmpFileWidgetProps> = (props) => {
   const classes = useStyles();
-  const { lst } = props;
+  const { lst, onSubmit } = props;
 
   const [sel, setSel] = React.useState<Employee>();
   const [selectedLst, setSelectedLst] = React.useState<number[]>([]);
@@ -103,7 +104,7 @@ const EmpFileWidget: React.FunctionComponent<IEmpFileWidgetProps> = (props) => {
             <Button
               variant="contained"
               color="primary"
-              disabled={!sel}
+              disabled={!sel || selectedLst.length === 0 || !onSubmit}
               onClick={uploadFileOnClick}
             >
               Add
@@ -111,14 +112,20 @@ const EmpFileWidget: React.FunctionComponent<IEmpFileWidgetProps> = (props) => {
             <Button
               variant="contained"
               color="primary"
-              disabled={!sel}
+              disabled={!sel || selectedLst.length === 0 || !onSubmit}
               onClick={handleDeleteOnClick}
             >
               Delete
             </Button>
           </div>
           <div className={classes.fileLst}>
-            {sel ? <EmpFileList item={sel} /> : null}
+            {sel ? (
+              <EmpFileList
+                item={sel}
+                selected={selectedLst}
+                selectedOnChange={setSelectedLst}
+              />
+            ) : null}
           </div>
         </Grid>
       </Grid>
@@ -137,11 +144,7 @@ const EmpFileWidget: React.FunctionComponent<IEmpFileWidgetProps> = (props) => {
           </div>
           <div className={classes.formContent}>
             <form noValidate autoComplete="off">
-              <input
-                type="file"
-                name="file"
-                onChange={handleFileUpload}
-              />
+              <input type="file" name="file" onChange={handleFileUpload} />
             </form>
             <div className={classes.ctrlButtons}>
               <Button onClick={handleFileSubmit}>Submit</Button>

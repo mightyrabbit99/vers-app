@@ -11,12 +11,13 @@ interface IEmployeeMainListProps {
   selected?: number[];
   selectedOnChange?: (ids: number[]) => void;
   onEdit?: (id: number) => void;
+  width?: number;
 }
 
 const getName = (p: Employee) => `${p.firstName}, ${p.lastName}`;
 
 const EmployeeMainList: React.FC<IEmployeeMainListProps> = (props) => {
-  const { lst, selected, selectedOnChange, onEdit } = props;
+  const { lst, selected, selectedOnChange, onEdit, width } = props;
   const cols: Col[] = [
     {
       title: "Name",
@@ -86,6 +87,7 @@ const EmployeeMainList: React.FC<IEmployeeMainListProps> = (props) => {
       lst={Object.values(lst)}
       cols={cols}
       selected={selected}
+      width={width}
       selectedOnChange={selectedOnChange}
     />
   );
