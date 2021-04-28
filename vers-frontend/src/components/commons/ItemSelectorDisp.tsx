@@ -19,9 +19,6 @@ interface IItemSelectorDispStyle {
 const SEARCH_BAR_HEIGHT = 50;
 const IS = 46;
 
-const calcAmt = (x: number, min: any, scale = 1) =>
-  min === undefined ? x * scale : x * scale < min ? min : x * scale;
-
 const useStyles = makeStyles<Theme, IItemSelectorDispStyle>((theme) => ({
   root: {
     height: (props) => props.height,
@@ -48,7 +45,7 @@ interface IItemSelectorDispProps {
   lst: Item[];
   labelExtractor: (item: Item) => string;
   handleListItemClick?: (item: Item) => void;
-  children: React.ReactNode | ((item?: Item) => React.ReactNode);
+  children: ((item?: Item) => React.ReactNode);
   style: IItemSelectorDispStyle;
 }
 
