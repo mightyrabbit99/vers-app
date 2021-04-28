@@ -39,7 +39,6 @@ import SectorView from "./SectorView";
 import SubsectorView from "./SubsectorView";
 import SkillView from "./SkillView";
 import EmployeeView from "./EmployeeView";
-import JobView from "./JobView";
 import ForecastView from "./ForecastView";
 import ChangeLogView from "./ChangeLogView";
 import CalendarView from "./CalendarView";

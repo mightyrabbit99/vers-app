@@ -14,7 +14,6 @@ const useStyles = makeStyles((theme) => ({
 const TestPage: React.FC = () => {
   const classes = useStyles();
   const { skills } = useSelector(getData);
-  const [selected, setSelected] = React.useState<number[]>([]);
   return (
     <div className={classes.root}>
       <SkillSimpleSelForm lst={Object.values(skills)} onSubmit={() => {}}/>

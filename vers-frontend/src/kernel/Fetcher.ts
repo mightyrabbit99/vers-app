@@ -38,6 +38,7 @@ const empProfilePicUrl = `${host}${process.env.REACT_APP_REST_API_EMP_PROFILE_PI
 const skillUrl = `${host}${process.env.REACT_APP_REST_API_SKILL_PATH}/`;
 const jobUrl = `${host}${process.env.REACT_APP_REST_API_JOB_PATH}/`;
 const logUrl = `${host}${process.env.REACT_APP_REST_API_LOG_PATH}/`;
+const logDelUrl = `${host}${process.env.REACT_APP_REST_API_LOG_DELETE_PATH}/`;
 const forecastUrl = `${host}${process.env.REACT_APP_REST_API_FORECAST_PATH}/`;
 const calEventUrl = `${host}${process.env.REACT_APP_REST_API_CAL_EVENT_PATH}/`;
 const allUserUrl = `${host}${process.env.REACT_APP_REST_API_USER_PATH}/`;
@@ -205,6 +206,10 @@ class Fetcher {
     return await axios.post(empProfilePicUrl, convToFormData(data), Fetcher.getConfig());
   };
 
+  static postEmpFile = async (data: EmpFileData) => {
+    return await axios.post(empFileUrl, convToFormData(data), Fetcher.getConfig());
+  };
+
   static postSkill = async (data: SkillData): Promise<Result<SkillData>> => {
     return await axios.post(skillUrl, data, Fetcher.getConfig());
   };
@@ -245,6 +250,10 @@ class Fetcher {
 
   static putEmp = async (data: EmployeeData): Promise<Result<EmployeeData>> => {
     return await axios.put(`${empUrl}${data.id}/`, data, Fetcher.getConfig());
+  };
+
+  static putEmpFile = async (data: EmpFileData) => {
+    return await axios.put(`${empFileUrl}${data.id}/`, convToFormData(data), Fetcher.getConfig());
   };
 
   static putEmpProfilePic = async (data: EmpProfilePicData) => {
@@ -345,6 +354,14 @@ class Fetcher {
 
   static deleteUser = async (data: UserData): Promise<Result<UserData>> => {
     return await axios.delete(`${allUserUrl}${data.id}/`, Fetcher.getConfig());
+  };
+
+  static deleteEmpFile = async (data: EmpFileData) => {
+    return await axios.delete(`${empFileUrl}${data.id}/`, Fetcher.getConfig());
+  };
+
+  static deleteAllLog = async () => {
+    return await axios.delete(logDelUrl, Fetcher.getConfig());
   };
 }
 

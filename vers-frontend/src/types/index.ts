@@ -25,6 +25,11 @@ export interface FetchDataAction {
 
 export interface ReloadDataAction {
   type: typeof reload.type;
+  payload?: boolean;
+}
+
+export interface ReloadData2Action {
+  type: typeof reload.type;
   payload?: number;
 }
 

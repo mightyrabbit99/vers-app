@@ -85,7 +85,7 @@ const App: React.FC<IAppProps> = (props) => {
   }, [dispatch]);
 
   k.trigger = () => {
-    dispatch(reload());
+    dispatch(reload(false));
   };
 
   if (auth === undefined) return <SpinningBall />;

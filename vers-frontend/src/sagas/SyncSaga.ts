@@ -106,10 +106,6 @@ function* submitExcelData({ payload }: SubmitExcelAction) {
   }
 }
 
-function* reloadData() {
-  yield put(reload());
-}
-
 function* syncSaga() {
   yield all([
     takeLatest(fetchData.type, fetchDatas),

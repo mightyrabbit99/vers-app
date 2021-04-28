@@ -3,11 +3,20 @@ import { makeStyles } from "@material-ui/core/styles";
 import List from "@material-ui/core/List";
 import Typography from "@material-ui/core/Typography";
 import ListItem from "@material-ui/core/ListItem";
+import IconButton from "@material-ui/core/IconButton";
 
+import DeleteIcon from "@material-ui/icons/Delete";
 import { Log, LogType, DataType } from "src/kernel";
 
 
 const useStyles = makeStyles((theme) => ({
+  topBar: {
+    display: "flex",
+    flexDirection: "row",
+  },
+  rightItem: {
+    marginLeft: "auto",
+  },
   content: {
     height: "85%",
     overflowY: "scroll",
@@ -67,14 +76,14 @@ const genDescStr = (log: Log) => {
         return "";
     }
   };
-  return `${genActionStr(log.type)} ${genDataTypeStr(
+  return `[${log.timestamp.substr(0, 10)}, ${log.timestamp.substr(11, 8)}] ${genActionStr(log.type)} ${genDataTypeStr(
     log.dataType
   )} "${myGetIden(log.desc.original ?? log.desc.data)}"`;
 };
 
 const LogListWidget: React.FunctionComponent<ILogListWidgetProps> = (props) => {
   const classes = useStyles();
-  const { lst } = props;
+  const { lst, onDelete } = props;
 
   const genLogCard = (log: Log, idx: number) => {
     return (
@@ -86,9 +95,16 @@ const LogListWidget: React.FunctionComponent<ILogListWidgetProps> = (props) => {
 
   return (
     <React.Fragment>
-      <Typography component="h2" variant="h6" color="primary" gutterBottom>
-        All Changes
-      </Typography>
+      <div className={classes.topBar}>
+        <Typography component="h2" variant="h6" color="primary" gutterBottom>
+          All Changes
+        </Typography>
+        {onDelete ? (
+          <IconButton className={classes.rightItem} onClick={onDelete}>
+            <DeleteIcon />
+          </IconButton>
+        ) : null}
+      </div>
       <List className={classes.content}>
         {Object.values(lst).map(genLogCard)}
       </List>

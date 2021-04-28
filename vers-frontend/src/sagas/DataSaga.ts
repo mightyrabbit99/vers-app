@@ -12,18 +12,20 @@ import {
   selPlant,
   downloadExcel,
   clearMyLog,
+  clearLog,
 } from "src/slices/data";
 import { createNew, modify, erase } from "src/slices/sync";
 import {
   SaveDataAction,
   DeleteDataAction,
   ReloadDataAction,
+  ReloadData2Action,
   DownloadExcelAction,
 } from "src/types";
 import k, { Sector, Subsector } from "src/kernel";
 import { getData } from "src/selectors";
 
-function* reloadData() {
+function* reloadData({ payload }: ReloadDataAction) {
   let plants,
     sectors: { [id: number]: Sector },
     subsectors: { [id: number]: Subsector },
@@ -42,7 +44,6 @@ function* reloadData() {
     newJob,
     newForecast,
     newCalEvent;
-  let kk = k;
   let { selectedPlantId: p } = yield select(getData);
   plants = k.plantStore.getLst();
   newPlant = k.plantStore.getNew();
@@ -99,11 +100,13 @@ function* reloadData() {
     })
   );
   yield put(calculate());
-  yield put(reloadSuccess());
+  if (payload === undefined || payload) {
+    yield put(reloadSuccess());
+  }
 }
 
-function* selectPlant({ payload: p }: ReloadDataAction) {
-  yield p && put(reload());
+function* selectPlant({ payload: p }: ReloadData2Action) {
+  yield p && put(reload(true));
 }
 
 function* calculateDatas() {
@@ -135,7 +138,11 @@ function* downExcel({ payload }: DownloadExcelAction) {
 }
 
 function delPersonalLogs() {
-  k.clearLog();
+  k.clearMyLog();
+}
+
+function delLogs() {
+  k.delAllLog();
 }
 
 function* dataSaga() {
@@ -147,6 +154,7 @@ function* dataSaga() {
     takeLatest(delData.type, delDataCascadeThenCalculate),
     takeLatest(downloadExcel.type, downExcel),
     takeLatest(clearMyLog.type, delPersonalLogs),
+    takeLatest(clearLog.type, delLogs),
   ]);
 }
 

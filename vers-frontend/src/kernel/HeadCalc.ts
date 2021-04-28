@@ -9,7 +9,6 @@ export interface CalcVars {
   noTeaBreak: number;
   noLunchBreak: number;
   absentism: number;
-  [k: string]: number;
 }
 
 const initVars: CalcVars = {

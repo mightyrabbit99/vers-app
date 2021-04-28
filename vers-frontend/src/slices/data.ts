@@ -68,8 +68,8 @@ const dataSlice = createSlice({
       state.personalLogs = payload.personalLogs ?? [];
       state.users = payload.users ?? {};
     },
-    reload: (state) => {
-      state.loading = true;
+    reload: (state, { payload }: PayloadAction<undefined | boolean>) => {
+      state.loading = payload === undefined || payload;
     },
     reloadSuccess: (state) => {
       state.loading = false;
@@ -127,6 +127,9 @@ const dataSlice = createSlice({
     clearMyLog: (state) => {
       state.personalLogs = [];
     },
+    clearLog: (state) => {
+      state.logs = {};
+    },
     downloadExcel: (
       state,
       { payload }: PayloadAction<{ type: ItemType; items?: Item[] }>
@@ -149,6 +152,7 @@ export const {
   selPlant,
   downloadExcel,
   clearMyLog,
+  clearLog,
 } = dataSlice.actions;
 
 export default dataSlice.reducer;

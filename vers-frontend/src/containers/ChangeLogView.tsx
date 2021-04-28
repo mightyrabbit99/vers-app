@@ -6,7 +6,7 @@ import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 
 import { getData } from "src/selectors";
-import { clearMyLog } from "src/slices/data";
+import { clearLog, clearMyLog } from "src/slices/data";
 import MyLogListWidget from "src/components/MyLogListWidget";
 import LogListWidget from "src/components/LogListWidget";
 
@@ -32,6 +32,10 @@ const ChangeLogView: React.FC = () => {
     dispatch(clearMyLog());
   };
 
+  const handleDeleteLog = () => {
+    dispatch(clearLog());
+  };
+
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
@@ -41,7 +45,7 @@ const ChangeLogView: React.FC = () => {
       </Grid>
       <Grid item xs={12}>
         <Paper className={classes.widget}>
-          <LogListWidget lst={Object.values(logs)} />
+          <LogListWidget lst={Object.values(logs)} onDelete={handleDeleteLog} />
         </Paper>
       </Grid>
     </Grid>

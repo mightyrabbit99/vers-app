@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 import django.middleware.csrf as csrf
 
 from rest_framework import status, viewsets, generics, permissions
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser
 
@@ -629,7 +630,7 @@ class IndexView(View):
     return render(request, 'index.html', {})
 
 
-class DeleteAllLogView(View):
+class DeleteAllLogView(APIView):
   def delete(self, request: HttpRequest, *args, **kwargs):
     if request.user.is_authenticated:
       models.Log.objects.all().delete()
@@ -638,7 +639,7 @@ class DeleteAllLogView(View):
       return Response(status=status.HTTP_403_FORBIDDEN)
 
 
-class DeleteAllCalEventView(View):
+class DeleteAllCalEventView(APIView):
   def delete(self, request: HttpRequest, *args, **kwargs):
     if request.user.is_authenticated:
       models.CalEvent.objects.all().delete()

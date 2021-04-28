@@ -240,7 +240,7 @@ class Kernel {
     setMyLog(this.personalLogs);
   };
 
-  clearLog = () => {
+  clearMyLog = () => {
     this.personalLogs = [];
     setMyLog([]);
   };
@@ -539,6 +539,8 @@ class Kernel {
     let workingDays = month ? this.cal.getDaysLeftInMonth(new Date(month)) : 27;
     return this.calc.calcHeadcountReq(skill, subsec, forecast, workingDays);
   };
+
+  delAllLog = Fetcher.deleteAllLog;
 }
 
 export type { Item, Kernel };

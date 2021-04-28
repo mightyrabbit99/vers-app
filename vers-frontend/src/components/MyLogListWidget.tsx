@@ -56,7 +56,7 @@ const myGetIden = (data: any) => {
   );
 };
 
-const genFailDetail = (x: any) => {
+const genFailDetail = (x: MyLog["vals"][0]) => {
   let err_lst = Object.entries(x).filter(
     (x) => x[0] !== "_type" && x[1] instanceof Array
   ) as [string, string[]][];
@@ -65,7 +65,7 @@ const genFailDetail = (x: any) => {
     .reduce((prev, curr) => `${prev}\n${curr}`, "");
 };
 
-const genDetail = (x: any) => {
+const genDetail = (x: MyLog["vals"][0]) => {
   let iden = myGetIden(x.data);
   return `${x.success ? "Success" : "Failed"}: ${x.data._type} "${iden}" ${
     x.statusText
@@ -77,6 +77,7 @@ const LogListWidget: React.FunctionComponent<ILogListWidgetProps> = (props) => {
   const { lst, onDelete } = props;
 
   const genMyLogCard = (log: MyLog, idx: number) => {
+    const timestamp = new Date(log.time).toISOString();
     return (
       <Accordion key={idx} className={classes.myLogItem}>
         <AccordionSummary
@@ -90,7 +91,7 @@ const LogListWidget: React.FunctionComponent<ILogListWidgetProps> = (props) => {
               log.vals.some((x) => !x.success) ? classes.myLogItemError : null
             )}
           >
-            {log.desc}
+            {`[${timestamp.substr(0, 10)}, ${timestamp.substr(11, 8)}] ${log.desc}`}
           </Typography>
         </AccordionSummary>
         <AccordionDetails>

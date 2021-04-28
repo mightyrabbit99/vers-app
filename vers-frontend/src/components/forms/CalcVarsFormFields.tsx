@@ -28,7 +28,7 @@ const SectorFF: React.FC<ICalcVarsFFProps> = (props) => {
   const handleChange = (e: React.ChangeEvent<any>) => {
     let { name, value } = e.target;
 
-    data[name] = value;
+    data[name as keyof CalcVars] = value;
     setFeedback({ ...feedback, [name]: undefined });
     onChange ? onChange(data) : setState({ ...state, [name]: value });
   };
@@ -36,7 +36,7 @@ const SectorFF: React.FC<ICalcVarsFFProps> = (props) => {
   const handleIntChange = (e: React.ChangeEvent<any>) => {
     let { name, value } = e.target;
     if (!/^\d*$/.test(value)) return;
-    data[name] = value;
+    data[name as keyof CalcVars] = value;
     setFeedback({ ...feedback, [name]: undefined });
     onChange ? onChange(data) : setState({ ...state, [name]: value });
   };
@@ -49,7 +49,7 @@ const SectorFF: React.FC<ICalcVarsFFProps> = (props) => {
     let { name, value } = e.target;
     let num = parseFloat(value);
     value = isNaN(num) ? 0 : num;
-    data[name] = value;
+    data[name as keyof CalcVars] = value;
     onChange ? onChange(data) : setState({ ...state, [name]: value });
   };
 
@@ -58,7 +58,7 @@ const SectorFF: React.FC<ICalcVarsFFProps> = (props) => {
     hC: (e: React.ChangeEvent<any>) => void = handleChange
   ) => ({
     name,
-    value: state[name],
+    value: state[name as keyof CalcVars],
     onChange: hC,
     error: getFeedback(name) !== "",
     helperText: getFeedback(name),
