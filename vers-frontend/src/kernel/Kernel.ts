@@ -121,6 +121,11 @@ class Kernel {
               (x) => x.employee !== data.id
             );
           }
+          for (let s of data.skills) {
+            if (oData!.skills.includes(s)) continue;
+            let skill = this.skillStore.get(s.skill);
+            skill.employees.push({...s, employee: data.id });
+          }
           break;
       }
     });

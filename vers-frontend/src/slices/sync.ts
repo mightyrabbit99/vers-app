@@ -25,7 +25,7 @@ const syncSlice = createSlice({
       state.syncing = false;
       state.error = payload;
     },
-    submitSuccess: (state, { payload }: PayloadAction<Result | undefined>) => {
+    submitSuccess: (state, { payload }: PayloadAction<Result<any> | undefined>) => {
       state.syncing = false;
       state.feedback = payload?.data;
     },

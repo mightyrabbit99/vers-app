@@ -40,7 +40,7 @@ function* fetchDatas({ payload }: FetchDataAction) {
 
 function* postItemThenSave({ payload }: CreateNewAction) {
   try {
-    const feedback: Result = yield k.saveNew(payload);
+    const feedback: Result<any> = yield k.saveNew(payload);
     if (feedback.success) {
       yield put(submitSuccess(undefined));
     } else {
@@ -56,7 +56,7 @@ function* putItem({ payload }: ModifyAction) {
     payload = [payload];
   }
   try {
-    let res: Result = { success: true, statusText: "", data: {} };
+    let res: Result<any> = { success: true, statusText: "", data: {} };
     for (let p of payload) {
       res = yield k.save(p);
       if (!res.success) {
@@ -75,7 +75,7 @@ function* deleteItem({ payload }: EraseAction) {
     payload = [payload];
   }
   try {
-    let res: Result = { success: true, statusText: "", data: {} };
+    let res: Result<any> = { success: true, statusText: "", data: {} };
     for (let p of payload) {
       res = yield k.del(p);
       if (!res.success) {
@@ -93,7 +93,7 @@ function* submitExcelData({ payload }: SubmitExcelAction) {
   let { selectedPlantId: pId } = yield select(getData);
   let { type, data } = payload;
   k.setPid(pId);
-  let res: Result[] = [];
+  let res: Result<any>[] = [];
   try {
     res = yield k.submitExcel(type, data);
   } catch (e) {

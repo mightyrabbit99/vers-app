@@ -1,6 +1,6 @@
 import { all, put, takeLatest } from "redux-saga/effects";
 import { push } from 'connected-react-router'; 
-import k, { Result } from "src/kernel";
+import k, { Result, User } from "src/kernel";
 import {
   initLogin,
   login,
@@ -14,7 +14,7 @@ import { EditUserAction, LoginAction } from "src/types";
 
 function* init() {
   if (k.isLoggedIn()) {
-    let res: Result = yield k.getUser();
+    let res: Result<User> = yield k.getUser();
     if (res.success) {
       yield put(fetchData());
       yield put(_setAuthenticated({ authenticated: true, user: res.data }));
@@ -33,9 +33,9 @@ function logoutThenUpdatePermission() {
 }
 
 function* loginThenUpdatePermission({ payload }: LoginAction) {
-  const feedback: Result = yield k.login(payload.username, payload.password, payload.remember);
+  const feedback: Result<any> = yield k.login(payload.username, payload.password, payload.remember);
   if (feedback.success) {
-    let res: Result = yield k.getUser();
+    let res: Result<User> = yield k.getUser();
     yield put(_setAuthenticated({ authenticated: true, user: res.data }));
     yield put(loginSuccess(undefined));
     yield put(fetchData());
@@ -45,7 +45,7 @@ function* loginThenUpdatePermission({ payload }: LoginAction) {
 }
 
 function* editUser({ payload }: EditUserAction) {
-  const feedback: Result = yield k.editUser(payload.username, payload.password);
+  const feedback: Result<any> = yield k.editUser(payload.username, payload.password);
   if (feedback.success) {
     yield put(_setAuthenticated({ authenticated: false }));
     yield put(loginSuccess(undefined));
