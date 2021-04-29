@@ -6,10 +6,11 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 
 import { Employee, Skill } from "src/kernel";
-import EmpSkillList from "./lists/EmpSkillSelList";
+import EmpSkillList from "./lists/EmpSkillSelList2";
 import EmployeeSimpleList from "./lists/EmployeeSimpleList";
 import SkillSimpleSelForm from "./forms/SkillSimpleSelForm";
 import MyDialog from "src/components/commons/Dialog";
+import { ViewContext } from "src/contexts";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -166,15 +167,20 @@ const EmployeeSkillWidget: React.FC<IEmployeeSkillWidgetProps> = (props) => {
             </Button>
           </div>
           <div className={classes.skillLst}>
-            {sel ? (
-              <EmpSkillList
-                item={sel}
-                skillLst={skillLst}
-                onSubmit={handleEmpSubmit}
-                selected={selectedLst}
-                selectedOnChange={setSelectedLst}
-              />
-            ) : null}
+            <ViewContext.Consumer>
+              {({ viewWidth }) => {
+                return sel ? (
+                  <EmpSkillList
+                    item={sel}
+                    skillLst={skillLst}
+                    onSubmit={handleEmpSubmit}
+                    width={viewWidth * 11 / 20}
+                    selected={selectedLst}
+                    selectedOnChange={setSelectedLst}
+                  />
+                ) : null;
+              }}
+            </ViewContext.Consumer>
           </div>
         </Grid>
       </Grid>

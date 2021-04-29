@@ -1,25 +1,40 @@
 import * as React from "react";
 import { useSelector } from "react-redux";
-import ForecastActualG from "src/components/graphs/ForecastActualGraph";
+import { makeStyles } from "@material-ui/core/styles";
+
+import ViewTab, { TabPage } from "src/components/commons/ViewTab";
+
+import GraphForecastWidget from "src/components/GraphForecastWidget";
 import { getData } from "src/selectors";
+
+const useStyles = makeStyles((theme) => ({
+  page: {
+    padding: theme.spacing(2),
+    display: "flex",
+    overflow: "hide",
+    flexDirection: "column",
+    height: "85vh",
+  },
+}));
 
 interface IGraphViewProps {}
 
 const GraphView: React.FC<IGraphViewProps> = (props) => {
+  const classes = useStyles();
   const { forecasts } = useSelector(getData);
 
-  const getMonths = () => {
-    const months = Object.values(forecasts).map((x) => new Date(x.on));
-    months.sort((a: Date, b: Date) => a < b ? -1 : a === b ? 0 : 1);
-    const defMonth = [1, 2, 3].map((x) => {
-      let t = new Date();
-      t.setMonth(t.getMonth() - x);
-      return t;
-    });
-    return months.length >= 3 ? months.slice(-6, -1) : defMonth;
-  };
+  const pages: TabPage[] = [
+    {
+      name: "Forecasts",
+      node: (
+        <div className={classes.page}>
+          <GraphForecastWidget forecasts={forecasts} />
+        </div>
+      ),
+    },
+  ];
 
-  return <ForecastActualG forecasts={forecasts} months={getMonths()} title="Forecasts" />;
+  return <ViewTab pages={pages} />;
 };
 
 export default GraphView;

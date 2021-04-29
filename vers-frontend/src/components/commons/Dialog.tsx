@@ -11,7 +11,7 @@ const useStyles = makeStyles({
   content: {
     margin: "auto",
     height: "100%",
-    overflowY: "scroll",
+    overflowY: "hidden",
   },
 });
 
