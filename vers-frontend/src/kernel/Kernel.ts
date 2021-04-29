@@ -4,7 +4,7 @@ import JobStore, { Job } from "./Job";
 import PlantStore, { Plant } from "./Plant";
 import SectorStore, { Sector } from "./Sector";
 import SkillStore, { Skill } from "./Skill";
-import { Store, ItemType, Result as SubmitResult } from "./Store";
+import { Store, ItemType, Result, Activity, DataAction } from "./Store";
 import SubsectorStore, { Subsector } from "./Subsector";
 import ForecastStore, { Forecast } from "./Forecast";
 import LogStore, { DataType, Log } from "./Log";
@@ -25,13 +25,9 @@ import UserStore, { User } from "./User";
 import HeadCalc, { CalcVars } from "./HeadCalc";
 import { Cal } from "src/utils/tools";
 
-const epsTi = 500;
+type SubmitResult<T> = Result<Partial<T>>;
 
-enum DataAction {
-  CREATE_NEW = 0,
-  EDIT = 1,
-  DELETE = 2,
-}
+const epsTi = 500;
 
 type Item =
   | Plant
@@ -101,7 +97,34 @@ class Kernel {
       this.forecastStore,
       this.calEventStore
     );
+    this.init();
   }
+
+  private init = () => {
+    this.empStore.registerAfterTrigger((a: Activity<Employee>) => {
+      let data = a.res.data;
+      let oData = a.original;
+      switch (a.typ) {
+        case DataAction.DELETE:
+          for (let s of data.skills) {
+            let skill = this.skillStore.get(s.skill);
+            skill.employees = skill.employees.filter(
+              (x) => x.employee !== data.id
+            );
+          }
+          break;
+        case DataAction.EDIT:
+          for (let s of oData!.skills) {
+            if (data.skills.includes(s)) continue;
+            let skill = this.skillStore.get(s.skill);
+            skill.employees = skill.employees.filter(
+              (x) => x.employee !== data.id
+            );
+          }
+          break;
+      }
+    });
+  };
 
   private getStore = (t: DataType) => {
     switch (t) {
@@ -151,6 +174,29 @@ class Kernel {
       case ItemType.User:
         return this.userStore;
     }
+  };
+
+  private _log = (desc: string, ...data: SubmitResult<Item>[]) => {
+    let sanitized = data.map((x) =>
+      x.success
+        ? x
+        : {
+            success: x.success,
+            statusText: x.statusText,
+            data: {
+              name: x.data.name,
+              firstName: x.data.firstName,
+              lastName: x.data.lastName,
+              on: x.data.on,
+              title: x.data.title,
+            },
+          }
+    );
+    this.personalLogs = [
+      ...this.personalLogs,
+      { desc, time: Date.now(), vals: sanitized },
+    ];
+    setMyLog(this.personalLogs);
   };
 
   trigger = () => {};
@@ -217,29 +263,6 @@ class Kernel {
     );
   };
 
-  private _log = (desc: string, ...data: SubmitResult[]) => {
-    let sanitized = data.map((x) =>
-      x.success
-        ? x
-        : {
-            success: x.success,
-            statusText: x.statusText,
-            data: {
-              name: x.data.name,
-              firstName: x.data.firstName,
-              lastName: x.data.lastName,
-              on: x.data.on,
-              title: x.data.title,
-            },
-          }
-    );
-    this.personalLogs = [
-      ...this.personalLogs,
-      { desc, time: Date.now(), vals: sanitized },
-    ];
-    setMyLog(this.personalLogs);
-  };
-
   clearMyLog = () => {
     this.personalLogs = [];
     setMyLog([]);
@@ -278,7 +301,7 @@ class Kernel {
     return a;
   };
 
-  private _save = async (t: Item): Promise<SubmitResult> => {
+  private _save = async (t: Item): Promise<SubmitResult<Item>> => {
     switch (t._type) {
       case ItemType.Plant:
         return await this.plantStore.submit(t as Plant);
@@ -303,7 +326,7 @@ class Kernel {
     }
   };
 
-  save = async (t: Item): Promise<SubmitResult> => {
+  save = async (t: Item): Promise<SubmitResult<Item>> => {
     let a = await this._save(t);
     this._log("Save", a);
     if (!this.soc) {
@@ -313,7 +336,7 @@ class Kernel {
     return a;
   };
 
-  private _del = async (t: Item): Promise<SubmitResult> => {
+  private _del = async (t: Item): Promise<SubmitResult<Item>> => {
     switch (t._type) {
       case ItemType.Plant:
         return await this.plantStore.remove(t as Plant);
@@ -422,13 +445,13 @@ class Kernel {
   };
 
   isLoggedIn = Fetcher.isLoggedIn;
-  getUser = async (): Promise<SubmitResult> => {
+  getUser = async (): Promise<SubmitResult<User>> => {
     try {
       let res = await Fetcher.getUser();
       this.registerSocket();
       return { success: true, statusText: "", data: res.data };
     } catch (e) {
-      return { success: false, statusText: "", data: null };
+      return { success: false, statusText: "", data: {} };
     }
   };
 
@@ -450,29 +473,41 @@ class Kernel {
     let conv = this.objConverter;
     switch (type) {
       case ItemType.Sector:
-        return await Promise.all(conv
-          .convObjsToSectors(data as SectorObj[])
-          .map(this.secStore.submitOrNew));
+        return await Promise.all(
+          conv
+            .convObjsToSectors(data as SectorObj[])
+            .map(this.secStore.submitOrNew)
+        );
       case ItemType.Subsector:
-        return await Promise.all(conv
-          .convObjsToSubsectors(data as SubsectorObj[])
-          .map(this.subsecStore.submitOrNew));
+        return await Promise.all(
+          conv
+            .convObjsToSubsectors(data as SubsectorObj[])
+            .map(this.subsecStore.submitOrNew)
+        );
       case ItemType.Skill:
-        return await Promise.all(conv
-          .convObjsToSkills(data as SkillObj[])
-          .map(this.skillStore.submitOrNew));
+        return await Promise.all(
+          conv
+            .convObjsToSkills(data as SkillObj[])
+            .map(this.skillStore.submitOrNew)
+        );
       case ItemType.Employee:
-        return await Promise.all(conv
-          .convObjsToEmployees(data as EmployeeObj[])
-          .map(this.empStore.submitOrNew));
+        return await Promise.all(
+          conv
+            .convObjsToEmployees(data as EmployeeObj[])
+            .map(this.empStore.submitOrNew)
+        );
       case ItemType.Forecast:
-        return await Promise.all(conv
-          .convObjsToForecasts(data as ForecastObj[])
-          .map(this.forecastStore.submitOrNew));
+        return await Promise.all(
+          conv
+            .convObjsToForecasts(data as ForecastObj[])
+            .map(this.forecastStore.submitOrNew)
+        );
       case ItemType.CalEvent:
-        return await Promise.all(conv
-          .convObjsToCalEvents(data as CalEventObj[])
-          .map(this.calEventStore.submitOrNew));
+        return await Promise.all(
+          conv
+            .convObjsToCalEvents(data as CalEventObj[])
+            .map(this.calEventStore.submitOrNew)
+        );
       default:
         return [];
     }
@@ -486,7 +521,7 @@ class Kernel {
       this.trigger();
     }
     return res;
-  }
+  };
 
   getExcel = (type: ItemType, items?: Item[]) => {
     let conv = this.objConverter;

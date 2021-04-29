@@ -20,10 +20,22 @@ interface ItemT {
   [str: string]: any;
 }
 
-interface Result {
+interface Result<T> {
   success: boolean;
   statusText: string;
-  data: any;
+  data: T;
+}
+
+enum DataAction {
+  CREATE_NEW = 0,
+  EDIT = 1,
+  DELETE = 2,
+}
+
+interface Activity<T> {
+  typ: DataAction;
+  original?: T;
+  res: Result<T>;
 }
 
 interface Store<T extends ItemT> {
@@ -41,17 +53,22 @@ interface Store<T extends ItemT> {
   forEach: (f: (t: any) => any) => void;
 
   // server
-  submit: (t: T) => Promise<Result>;
-  submitNew: (t: T) => Promise<Result>;
-  submitOrNew: (t: T) => Promise<Result>;
-  remove: (t: T) => Promise<Result>;
+  submit: (t: T) => Promise<Result<T>>;
+  submitNew: (t: T) => Promise<Result<T>>;
+  submitOrNew: (t: T) => Promise<Result<T>>;
+  remove: (t: T) => Promise<Result<Partial<T>>>;
+
+  // activity trigger
+  registerBeforeTrigger: (f: (a: Activity<T>) => any) => void;
+  registerAfterTrigger: (f: (a: Activity<T>) => any) => void;
+  clearTriggers: () => void;
 }
 
 function store<T extends ItemT>(
   get: () => Promise<T[]>,
-  post: (t: T) => Promise<Result>,
-  put: (t: T) => Promise<Result>,
-  del: (t: T) => Promise<Result>,
+  post: (t: T) => Promise<Result<T>>,
+  put: (t: T) => Promise<Result<T>>,
+  del: (t: T) => Promise<Result<T>>,
   generator: (init?: any) => T,
   dataToObj: (data: any) => T,
   hasher?: (t: T) => string
@@ -59,6 +76,8 @@ function store<T extends ItemT>(
   return class implements Store<T> {
     private store: { [id: number]: T } = {};
     private hStore: { [k: string]: T } = {};
+    private beforeTriggers: ((a: Activity<T>) => any)[] = [];
+    private afterTriggers: ((a: Activity<T>) => any)[] = [];
 
     private getNewId = () => {
       return Object.keys(this.store)
@@ -101,7 +120,7 @@ function store<T extends ItemT>(
 
     forEach = (f: (t: T) => any) => {
       Object.values(this.store).forEach(f);
-    }
+    };
 
     get = (id: number) => this.store[id];
 
@@ -118,16 +137,32 @@ function store<T extends ItemT>(
     };
 
     submitNew = async (t: T) => {
+      this.beforeTriggers.forEach((f) =>
+        f({
+          typ: DataAction.CREATE_NEW,
+          res: { success: false, statusText: "", data: t },
+        })
+      );
       const res = await post(t);
-      console.log(res);
       res.success && this.add(res.data);
+      this.afterTriggers.forEach((f) => f({ typ: DataAction.CREATE_NEW, res }));
       return res;
     };
 
     submit = async (t: T) => {
+      let original = this.get(t.id);
+      this.beforeTriggers.forEach((f) =>
+        f({
+          typ: DataAction.EDIT,
+          original,
+          res: { success: false, statusText: "", data: t },
+        })
+      );
       const res = await put(t);
-      console.log(res);
       res.success && this.add(res.data);
+      this.afterTriggers.forEach((f) =>
+        f({ typ: DataAction.EDIT, original, res })
+      );
       return res;
     };
 
@@ -143,13 +178,37 @@ function store<T extends ItemT>(
     };
 
     remove = async (t: T) => {
+      let original = this.get(t.id);
+      this.beforeTriggers.forEach((f) =>
+        f({
+          typ: DataAction.DELETE,
+          original,
+          res: { success: false, statusText: "", data: t },
+        })
+      );
       const res = await del(t);
       res.success && this.erase(t);
+      this.afterTriggers.forEach((f) =>
+        f({ typ: DataAction.DELETE, original, res })
+      );
       return res;
+    };
+
+    registerBeforeTrigger = (f: (a: Activity<T>) => any) => {
+      this.beforeTriggers.push(f);
+    };
+
+    registerAfterTrigger = (f: (a: Activity<T>) => any) => {
+      this.afterTriggers.push(f);
+    };
+
+    clearTriggers = () => {
+      this.beforeTriggers = [];
+      this.afterTriggers = [];
     };
   };
 }
 
-export type { ItemT, Store, Result };
-export { ItemType };
+export type { ItemT, Store, Result, Activity };
+export { ItemType, DataAction };
 export default store;

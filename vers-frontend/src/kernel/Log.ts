@@ -59,7 +59,7 @@ const del = async (t: Log) => {
   return {
     success: res.status === 204,
     statusText: "",
-    data: {},
+    data: t,
   };
 };
 

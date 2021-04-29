@@ -91,7 +91,7 @@ const put = async (t: Employee) => {
 
 const del = async (t: Employee) => {
   let res = await Fetcher.deleteEmp(objToData(t));
-  return { success: res.status === 204, statusText: res.statusText, data: {} };
+  return { success: res.status === 204, statusText: res.statusText, data: t };
 };
 
 const generator = (init?: any): Employee => ({

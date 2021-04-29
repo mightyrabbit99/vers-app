@@ -50,7 +50,7 @@ const post = async (t: User) => {
   return {
     success: false,
     statusText: "",
-    data: null,
+    data: t,
   };
 };
 
@@ -71,7 +71,7 @@ const put = async (t: User) => {
 
 const del = async (t: User) => {
   let res = await Fetcher.deleteUser(objToData(t));
-  return { success: res.status === 204, statusText: res.statusText, data: {} };
+  return { success: res.status === 204, statusText: res.statusText, data: t };
 };
 
 const UserStore = store<User>(get, post, put, del, generator, dataToObj);

@@ -72,7 +72,7 @@ const put = async (t: CalEvent) => {
 
 const del = async (t: CalEvent) => {
   let res = await Fetcher.deleteCalEvent(objToData(t));
-  return { success: res.status === 204, statusText: res.statusText, data: {} };
+  return { success: res.status === 204, statusText: res.statusText, data: t };
 };
 
 const hasher = (t: CalEvent) => t.name;

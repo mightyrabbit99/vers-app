@@ -5,7 +5,7 @@ import { getData } from "src/selectors";
 
 interface IGraphViewProps {}
 
-const GraphView: React.FunctionComponent<IGraphViewProps> = (props) => {
+const GraphView: React.FC<IGraphViewProps> = (props) => {
   const { forecasts } = useSelector(getData);
 
   const getMonths = () => {

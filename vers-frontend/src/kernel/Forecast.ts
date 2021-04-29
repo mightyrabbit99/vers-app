@@ -61,7 +61,7 @@ const put = async (t: Forecast) => {
 
 const del = async (t: Forecast) => {
   let res = await Fetcher.deleteForecast(objToData(t));
-  return { success: res.status === 204, statusText: res.statusText, data: {} };
+  return { success: res.status === 204, statusText: res.statusText, data: t };
 };
 
 const generator = (init?: Forecast): Forecast => {

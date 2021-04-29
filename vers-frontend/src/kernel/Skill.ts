@@ -82,7 +82,7 @@ const put = async (t: Skill) => {
 
 const del = async (t: Skill) => {
   let res = await Fetcher.deleteSkill(objToData(t));
-  return { success: res.status === 204, statusText: res.statusText, data: {} };
+  return { success: res.status === 204, statusText: res.statusText, data: t };
 };
 
 const hasher = (t: Skill) => `${t.name.trim().toLowerCase()}\n${t.subsector}`;

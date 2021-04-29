@@ -15,7 +15,7 @@ const colors = [
   "rgba(117, 210, 50, 1)",
 ];
 
-const ForecastActualG: React.FunctionComponent<IForecastActualGProps> = (
+const ForecastActualG: React.FC<IForecastActualGProps> = (
   props
 ) => {
   const { title, forecasts, months, offsets = [1, 2, 3] } = props;
