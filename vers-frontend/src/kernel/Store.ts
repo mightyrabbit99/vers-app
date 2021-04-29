@@ -46,8 +46,8 @@ interface Store<T extends ItemT> {
   getNew: (init?: Partial<T>) => T;
 
   // local storage
-  add: (t: any) => void;
-  erase: (t: any) => void;
+  add: (t: T) => void;
+  erase: (t: T) => void;
   addData: (d: any) => void;
   eraseData: (d: any) => void;
   forEach: (f: (t: any) => any) => void;

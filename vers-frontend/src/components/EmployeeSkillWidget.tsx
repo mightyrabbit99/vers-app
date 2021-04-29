@@ -65,6 +65,8 @@ interface IEmployeeSkillWidgetProps {
 const EmployeeSkillWidget: React.FC<IEmployeeSkillWidgetProps> = (props) => {
   const classes = useStyles();
   const { lst, skillLst, onSubmit } = props;
+
+  const [searchStr, setSearchStr] = React.useState("");
   const [sel, setSel] = React.useState<Employee>();
   React.useEffect(() => {
     setSel((sel) => (sel && sel.id in lst ? lst[sel.id] : undefined));
@@ -125,6 +127,7 @@ const EmployeeSkillWidget: React.FC<IEmployeeSkillWidgetProps> = (props) => {
 
   const handleEmpSubmit = (e: Employee) => {
     setSel(e);
+    setSearchStr("");
     onSubmit && onSubmit(e);
   };
 
@@ -138,6 +141,8 @@ const EmployeeSkillWidget: React.FC<IEmployeeSkillWidgetProps> = (props) => {
             itemSize={46}
             lst={lst}
             sel={sel}
+            searchStr={searchStr}
+            searchStrOnChange={setSearchStr}
             handleListItemClick={handleListItemClick}
           />
         </Grid>

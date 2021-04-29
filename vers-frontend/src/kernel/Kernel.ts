@@ -108,23 +108,28 @@ class Kernel {
         case DataAction.DELETE:
           for (let s of data.skills) {
             let skill = this.skillStore.get(s.skill);
-            skill.employees = skill.employees.filter(
-              (x) => x.employee !== data.id
-            );
+            this.skillStore.add({
+              ...skill,
+              employees: skill.employees.filter((x) => x.employee !== data.id),
+            });
           }
           break;
         case DataAction.EDIT:
           for (let s of oData!.skills) {
             if (data.skills.includes(s)) continue;
             let skill = this.skillStore.get(s.skill);
-            skill.employees = skill.employees.filter(
-              (x) => x.employee !== data.id
-            );
+            this.skillStore.add({
+              ...skill,
+              employees: skill.employees.filter((x) => x.employee !== data.id),
+            });
           }
           for (let s of data.skills) {
             if (oData!.skills.includes(s)) continue;
             let skill = this.skillStore.get(s.skill);
-            skill.employees.push({...s, employee: data.id });
+            this.skillStore.add({
+              ...skill,
+              employees: [...skill.employees, { ...s, employee: data.id }],
+            });
           }
           break;
       }
