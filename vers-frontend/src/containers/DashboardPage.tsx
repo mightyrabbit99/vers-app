@@ -50,7 +50,7 @@ import { selPlant } from "src/slices/data";
 import { getData, getSession, getSync } from "src/selectors";
 import { AccessLevel, ItemType } from "src/kernel";
 import { initViewState, ViewContext } from "src/contexts";
-import TestPage from "./TestPage";
+import GraphView from "./GraphView";
 
 
 function Copyright() {
@@ -168,7 +168,7 @@ enum DashboardView {
   Subsector,
   Skill,
   Employee,
-  Job,
+  Graph,
   Forecast,
   ChangeLog,
   Calendar,
@@ -187,7 +187,7 @@ function getItemType(i: DashboardView) {
       return ItemType.Skill;
     case DashboardView.Employee:
       return ItemType.Employee;
-    case DashboardView.Job:
+    case DashboardView.Graph:
       return ItemType.Job;
     case DashboardView.Forecast:
       return ItemType.Forecast;
@@ -283,7 +283,7 @@ const Dashboard: React.FC = () => {
         return user?.vers_user.skill_group === AccessLevel.NONE;
       case DashboardView.Employee:
         return user?.vers_user.employee_group === AccessLevel.NONE;
-      case DashboardView.Job:
+      case DashboardView.Graph:
         return user?.vers_user.job_group === AccessLevel.NONE;
       case DashboardView.ChangeLog:
       case DashboardView.Calendar:
@@ -339,17 +339,6 @@ const Dashboard: React.FC = () => {
         </ListItemIcon>
         <ListItemText primary="Employees" />
       </ListItem>
-      <ListItem
-        button
-        disabled={cannotView(DashboardView.Job)}
-        selected={currView === DashboardView.Job}
-        onClick={handleListClick(DashboardView.Job)}
-      >
-        <ListItemIcon>
-          <DashboardIcon />
-        </ListItemIcon>
-        <ListItemText primary="Jobs" />
-      </ListItem>
     </div>
   );
 
@@ -376,6 +365,17 @@ const Dashboard: React.FC = () => {
           <LayersIcon />
         </ListItemIcon>
         <ListItemText primary="Forecasts" />
+      </ListItem>
+      <ListItem
+        button
+        disabled={cannotView(DashboardView.Graph)}
+        selected={currView === DashboardView.Graph}
+        onClick={handleListClick(DashboardView.Graph)}
+      >
+        <ListItemIcon>
+          <DashboardIcon />
+        </ListItemIcon>
+        <ListItemText primary="Graphs" />
       </ListItem>
       <ListItem
         button
@@ -412,8 +412,8 @@ const Dashboard: React.FC = () => {
         return <SkillView />;
       case DashboardView.Employee:
         return <EmployeeView />;
-      case DashboardView.Job:
-        return <TestPage />;
+      case DashboardView.Graph:
+        return <GraphView />;
       case DashboardView.Forecast:
         return <ForecastView />;
       case DashboardView.ChangeLog:
