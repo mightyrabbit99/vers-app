@@ -30,10 +30,10 @@ const useStyles = makeStyles((theme) => ({
   },
   ctrlPanel: {
     width: "inherit",
-    height: "20%",
+    height: "15%",
   },
   content: {
-    height: "80%",
+    height: "85%",
   },
   searchBar: {
     maxWidth: 250,

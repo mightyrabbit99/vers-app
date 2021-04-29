@@ -65,7 +65,7 @@ interface IGraphForecastWidgetProps {
   forecasts: { [id: number]: Forecast };
 }
 
-const GraphForecastWidget: React.FunctionComponent<IGraphForecastWidgetProps> = (
+const GraphForecastWidget: React.FC<IGraphForecastWidgetProps> = (
   props
 ) => {
   const classes = useStyles();
@@ -77,7 +77,10 @@ const GraphForecastWidget: React.FunctionComponent<IGraphForecastWidgetProps> = 
   }, [forecasts]);
 
   const [formOpen, setFormOpen] = React.useState(false);
-  const [formData, setFormData] = React.useState<GraphSettings>();
+  const [formData, setFormData] = React.useState<GraphSettings>({
+    range: [new Date("2020-01-01"), new Date("2020-12-01")],
+    offset: 1,
+  });
 
   const handleChange = (data: GraphSettings) => {
     setFormData(data);

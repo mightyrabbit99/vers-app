@@ -64,7 +64,7 @@ const CustomToolbar: React.FC<ToolbarProps> = (props) => {
   );
 };
 
-const MyCalendar: React.FunctionComponent<IMyCalendarProps> = (props) => {
+const MyCalendar: React.FC<IMyCalendarProps> = (props) => {
   const { events, date, onSelectEvent, onSelectDate, style } = props;
   const classes = useStyles(props);
 

@@ -14,7 +14,7 @@ interface IEmpFileListProps {
   width?: number;
 }
 
-const EmpFileList: React.FunctionComponent<IEmpFileListProps> = (props) => {
+const EmpFileList: React.FC<IEmpFileListProps> = (props) => {
   const { item, selected, selectedOnChange } = props;
   const cols: Col[] = [
     {

@@ -32,6 +32,14 @@ const GraphView: React.FC<IGraphViewProps> = (props) => {
         </div>
       ),
     },
+    {
+      name: "Headcount",
+      node: (
+        <div className={classes.page}>
+          Will be here soon
+        </div>
+      ),
+    },
   ];
 
   return <ViewTab pages={pages} />;

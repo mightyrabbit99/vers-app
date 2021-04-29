@@ -8,7 +8,7 @@ import EmpSkillDispList from "./EmployeeSkillDispList";
 
 const useStyles = makeStyles((theme) => ({
   empSkillLst: {
-    height: "100%",
+    height: 500,
   },
 }));
 
@@ -48,7 +48,7 @@ const HeadcountMainList: React.FC<IHeadcountMainListProps> = (props) => {
         p1.name < p2.name ? 1 : p1.name === p2.name ? 0 : -1,
     },
     {
-      title: "Employee #",
+      title: "Emp #",
       extractor: (p: Skill) =>
         employeeLst && p.employees.length > 0 ? (
           <p onClick={() => showSkillEmps(p)}>{p.employees.length}</p>

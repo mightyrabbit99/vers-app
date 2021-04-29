@@ -72,7 +72,7 @@ const genDetail = (x: MyLog["vals"][0]) => {
   }`;
 };
 
-const LogListWidget: React.FunctionComponent<ILogListWidgetProps> = (props) => {
+const LogListWidget: React.FC<ILogListWidgetProps> = (props) => {
   const classes = useStyles();
   const { lst, onDelete } = props;
 

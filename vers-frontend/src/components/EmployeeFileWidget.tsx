@@ -55,7 +55,7 @@ interface IEmpFileWidgetProps {
   onSubmit?: () => void;
 }
 
-const EmpFileWidget: React.FunctionComponent<IEmpFileWidgetProps> = (props) => {
+const EmpFileWidget: React.FC<IEmpFileWidgetProps> = (props) => {
   const classes = useStyles();
   const { lst, onSubmit } = props;
 

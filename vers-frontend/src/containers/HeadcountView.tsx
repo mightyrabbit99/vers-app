@@ -6,14 +6,14 @@ import { getData } from "src/selectors";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: "74vh",
-    minHeight: 400,
+    height: "80vh",
+    minHeight: 430,
   },
 }));
 
 interface IHeadcountViewProps {}
 
-const HeadcountView: React.FunctionComponent<IHeadcountViewProps> = (props) => {
+const HeadcountView: React.FC<IHeadcountViewProps> = (props) => {
   const classes = useStyles();
   const { skills, subsectors, forecasts, calEvents, employees } = useSelector(
     getData

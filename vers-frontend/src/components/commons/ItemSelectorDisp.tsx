@@ -49,7 +49,7 @@ interface IItemSelectorDispProps {
   style: IItemSelectorDispStyle;
 }
 
-const ItemSelectorDisp: React.FunctionComponent<IItemSelectorDispProps> = (
+const ItemSelectorDisp: React.FC<IItemSelectorDispProps> = (
   props
 ) => {
   const {

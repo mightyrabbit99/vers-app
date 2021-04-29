@@ -81,7 +81,7 @@ const genDescStr = (log: Log) => {
   )} "${myGetIden(log.desc.original ?? log.desc.data)}"`;
 };
 
-const LogListWidget: React.FunctionComponent<ILogListWidgetProps> = (props) => {
+const LogListWidget: React.FC<ILogListWidgetProps> = (props) => {
   const classes = useStyles();
   const { lst, onDelete } = props;
 

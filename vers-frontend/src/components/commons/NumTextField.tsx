@@ -12,7 +12,7 @@ interface INumTextFieldProps {
   onChange?: (val: number) => void;
 }
 
-const NumTextField: React.FunctionComponent<INumTextFieldProps> = (props) => {
+const NumTextField: React.FC<INumTextFieldProps> = (props) => {
   const { value = 0, onChange, onEdit, className } = props;
   const [val, setVal] = React.useState<string>(value === "" ? "0" : `${value}`);
   React.useEffect(() => {

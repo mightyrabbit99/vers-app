@@ -23,7 +23,7 @@ interface IEmpSimpleListProps extends IEmpSimpleListStyle {
 
 const SEARCH_BAR_HEIGHT = 50;
 
-const EmpSimpleList: React.FunctionComponent<IEmpSimpleListProps> = (props) => {
+const EmpSimpleList: React.FC<IEmpSimpleListProps> = (props) => {
   const {
     lst: l,
     sel,
