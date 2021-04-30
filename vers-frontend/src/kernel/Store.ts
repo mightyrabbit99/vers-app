@@ -85,17 +85,31 @@ function store<T extends ItemT>(
         .reduce((pr, cu) => Math.max(pr, cu), -1);
     };
 
+    private clearAll = () => {
+      this.store = {};
+      this.hStore = {};
+    };
+
+    private preAction = (action: DataAction, t: T, original?: T) => {
+      this.beforeTriggers.forEach((f) =>
+        f({
+          typ: action,
+          original,
+          res: { success: false, statusText: "", data: t },
+        })
+      );
+    };
+
+    private postAction = (action: DataAction, res: Result<T>, original?: T) => {
+      this.afterTriggers.forEach((f) => f({ typ: action, original, res }));
+    };
+
     static generator = generator;
 
     refresh = async () => {
       this.clearAll();
       let lst = await get();
       lst.forEach(this.add);
-    };
-
-    private clearAll = () => {
-      this.store = {};
-      this.hStore = {};
     };
 
     add = (t: T) => {
@@ -137,32 +151,19 @@ function store<T extends ItemT>(
     };
 
     submitNew = async (t: T) => {
-      this.beforeTriggers.forEach((f) =>
-        f({
-          typ: DataAction.CREATE_NEW,
-          res: { success: false, statusText: "", data: t },
-        })
-      );
+      this.preAction(DataAction.CREATE_NEW, t);
       const res = await post(t);
       res.success && this.add(res.data);
-      this.afterTriggers.forEach((f) => f({ typ: DataAction.CREATE_NEW, res }));
+      this.postAction(DataAction.CREATE_NEW, res);
       return res;
     };
 
     submit = async (t: T) => {
       let original = this.get(t.id);
-      this.beforeTriggers.forEach((f) =>
-        f({
-          typ: DataAction.EDIT,
-          original,
-          res: { success: false, statusText: "", data: t },
-        })
-      );
+      this.preAction(DataAction.EDIT, t, original);
       const res = await put(t);
       res.success && this.add(res.data);
-      this.afterTriggers.forEach((f) =>
-        f({ typ: DataAction.EDIT, original, res })
-      );
+      this.postAction(DataAction.EDIT, res, original);
       return res;
     };
 
@@ -179,18 +180,10 @@ function store<T extends ItemT>(
 
     remove = async (t: T) => {
       let original = this.get(t.id);
-      this.beforeTriggers.forEach((f) =>
-        f({
-          typ: DataAction.DELETE,
-          original,
-          res: { success: false, statusText: "", data: t },
-        })
-      );
+      this.preAction(DataAction.DELETE, t, original);
       const res = await del(t);
       res.success && this.erase(t);
-      this.afterTriggers.forEach((f) =>
-        f({ typ: DataAction.DELETE, original, res })
-      );
+      this.postAction(DataAction.DELETE, res, original);
       return res;
     };
 
