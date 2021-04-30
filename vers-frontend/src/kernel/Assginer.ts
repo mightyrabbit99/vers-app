@@ -37,6 +37,7 @@ class GenericHeuristic implements Heuristic {
 
 interface Assessor {
   getScore: (assign: Assignment) => number;
+  getDiff: (assign1: Assignment, assign2: Assignment) => number;
 }
 
 class MinTrainingsAssessor implements Assessor {
@@ -58,6 +59,10 @@ class MinTrainingsAssessor implements Assessor {
     }
     return ([...req.keys()].length - ans) * jobs.size - c;
   };
+
+  getDiff = (assign1: Assignment, assign2: Assignment) => {
+    return 0;
+  }
 }
 
 class Assigner {
