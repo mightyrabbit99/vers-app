@@ -60,9 +60,31 @@ class MinTrainingsAssessor implements Assessor {
     return ([...req.keys()].length - ans) * jobs.size - c;
   };
 
+  private calcNotFullyAssignedJobs = (assign: Assignment) => {
+    return [...this.env.jobs].filter((x) => {
+      let req = this.env.req.get(x) ?? 0;
+      let ass = assign.get(x) ?? 0;
+      return req > ass;
+    });
+  };
+
+  private calcUnassignedEmpNo = (assign: Assignment) => {
+    let assignedEmp = [...assign.values()].reduce((pr, cu) => {
+      cu.forEach(pr.add);
+      return pr;
+    }, new Set());
+    return this.env.emps.size - assignedEmp.size;
+  };
+
   getDiff = (assign1: Assignment, assign2: Assignment) => {
-    return 0;
-  }
+    let un1 = this.calcUnassignedEmpNo(assign1);
+    let un2 = this.calcUnassignedEmpNo(assign2);
+    if (un1 !== un2) return un1 - un2;
+    return (
+      this.calcNotFullyAssignedJobs(assign1).length -
+      this.calcNotFullyAssignedJobs(assign2).length
+    );
+  };
 }
 
 class Assigner {
