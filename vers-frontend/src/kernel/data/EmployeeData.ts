@@ -8,9 +8,8 @@ interface EmpSkillData {
 
 interface EmpFileData extends Data {
   emp: number;
-  file: File | string;
-  typ: 0;
   name: string;
+  file: File | string;
 }
 
 interface EmployeeData extends Data {

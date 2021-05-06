@@ -5,7 +5,7 @@ enum ItemType {
   Job = "Job",
   Employee = "Employee",
   Skill = "Skill",
-  EmpSkill = "EmpSkill",
+  EmpFile = "EmpFile",
   Log = "Log",
   Forecast = "Forecast",
   CalEvent = "CalEvent",
@@ -70,7 +70,7 @@ function store<T extends ItemT>(
   put: (t: T) => Promise<Result<T>>,
   del: (t: T) => Promise<Result<T>>,
   generator: (init?: any) => T,
-  dataToObj: (data: any) => T,
+  dataToObj: (data: any) => T = (x: any) => x as T,
   hasher?: (t: T) => string
 ) {
   return class implements Store<T> {

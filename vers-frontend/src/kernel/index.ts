@@ -9,6 +9,7 @@ export * from "./Employee";
 export * from "./Store";
 export * from "./Job";
 export * from "./Log";
+export * from "./EmpFile";
 export * from "./Forecast";
 export * from "./CalEvent";
 export * from "./User";

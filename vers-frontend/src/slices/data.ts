@@ -84,6 +84,8 @@ const dataSlice = createSlice({
     calculateSuccess: (state) => {
       state.calculating = false;
     },
+    saveData: (state, { payload }: PayloadAction<Item | Item[]>) => {},
+    delData: (state, { payload }: PayloadAction<Item | Item[]>) => {},
     _saveData: (state, { payload }: PayloadAction<Item | Item[]>) => {
       if (!(payload instanceof Array)) {
         payload = [payload];
@@ -98,8 +100,6 @@ const dataSlice = createSlice({
         }
       }
     },
-    saveData: (state, { payload }: PayloadAction<Item | Item[]>) => {},
-    delData: (state, { payload }: PayloadAction<Item | Item[]>) => {},
     _delData: (state, { payload }: PayloadAction<Item | Item[]>) => {
       if (!(payload instanceof Array)) {
         payload = [payload];

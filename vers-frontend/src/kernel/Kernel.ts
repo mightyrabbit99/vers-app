@@ -9,6 +9,7 @@ import SubsectorStore, { Subsector } from "./Subsector";
 import ForecastStore, { Forecast } from "./Forecast";
 import LogStore, { DataType, Log } from "./Log";
 import CalEventStore, { CalEvent } from "./CalEvent";
+import EmpFileStore, { EmpFile } from "./EmpFile";
 import { MyLog } from "./types";
 
 import ExcelProcessor3, {
@@ -28,7 +29,7 @@ import Assigner, { AssignerEnv, Heuristic } from "./Assigner";
 
 type SubmitResult<T> = Result<Partial<T>>;
 
-const epsTi = 500;
+const epsTi = 300;
 
 type Item =
   | Plant
@@ -40,7 +41,8 @@ type Item =
   | Job
   | CalEvent
   | Log
-  | User;
+  | User
+  | EmpFile;
 
 const getMyLog = (): MyLog[] => {
   let s = localStorage.getItem("MyLog");
@@ -71,6 +73,7 @@ class Kernel {
   calEventStore: Store<CalEvent>;
   userStore: Store<User>;
   personalLogs: MyLog[];
+  empFileStore: Store<EmpFile>;
   calc: HeadCalc;
   cal: Cal<number>;
   objConverter: ExcelObjConverter;
@@ -87,6 +90,7 @@ class Kernel {
     this.calEventStore = new CalEventStore();
     this.userStore = new UserStore();
     this.personalLogs = getMyLog();
+    this.empFileStore = new EmpFileStore();
     this.calc = new HeadCalc();
     this.cal = new Cal();
     this.objConverter = new ExcelObjConverter(
@@ -132,6 +136,24 @@ class Kernel {
               employees: [...skill.employees, { ...s, employee: data.id }],
             });
           }
+          break;
+      }
+    });
+    this.empFileStore.registerAfterTrigger((a: Activity<EmpFile>) => {
+      let data = a.res.data;
+      let emp = this.empStore.get(data.emp);
+      switch(a.typ) {
+        case DataAction.CREATE_NEW:
+          this.empStore.add({
+            ...emp,
+            files: [...emp.files ?? [], data],
+          });
+          break;
+        case DataAction.DELETE:
+          this.empStore.add({
+            ...emp,
+            files: emp.files?.filter(x => x.id !== data.id),
+          });
           break;
       }
     });
@@ -297,6 +319,8 @@ class Kernel {
         return await this.forecastStore.submitNew(t as Forecast);
       case ItemType.CalEvent:
         return await this.calEventStore.submitNew(t as CalEvent);
+      case ItemType.EmpFile:
+        return await this.empFileStore.submitNew(t as EmpFile);
       default:
         return { success: false, statusText: "", data: {} };
     }
@@ -369,6 +393,8 @@ class Kernel {
         return await this.calEventStore.remove(t as CalEvent);
       case ItemType.User:
         return await this.userStore.remove(t as User);
+      case ItemType.EmpFile:
+        return await this.empFileStore.remove(t as EmpFile);
       default:
         return { success: false, statusText: "", data: {} };
     }
@@ -602,7 +628,7 @@ class Kernel {
     let h = new (class implements Heuristic {
       getScore = (j: number, e?: number) => {
         return 1 / (thiss.skillStore.get(j).employees.length + 1);
-      }
+      };
     })();
     return new Assigner(env).getHeuristicAssignment(h);
   };

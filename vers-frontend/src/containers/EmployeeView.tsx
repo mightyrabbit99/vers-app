@@ -15,7 +15,7 @@ import EmployeeFileWidget from "src/components/EmployeeFileWidget";
 import { getData, getSession, getSync } from "src/selectors";
 import { delData, downloadExcel, saveData } from "src/slices/data";
 import { clearFeedback, submitExcel } from "src/slices/sync";
-import { Employee, ItemType } from "src/kernel";
+import { Employee, ItemType, EmpFile } from "src/kernel";
 import ExcelProcessor3 from "src/kernel/ExcelProcessor3";
 
 const useStyles = makeStyles((theme) => ({
@@ -44,11 +44,7 @@ interface IEmployeeViewProps {}
 const EmployeeView: React.FC<IEmployeeViewProps> = (props) => {
   const dispatch = useDispatch();
   const classes = useStyles();
-  const {
-    employees,
-    skills,
-    newEmployee,
-  } = useSelector(getData);
+  const { employees, skills, newEmployee } = useSelector(getData);
   const { feedback } = useSelector(getSync);
   const { user } = useSelector(getSession);
 
@@ -81,6 +77,24 @@ const EmployeeView: React.FC<IEmployeeViewProps> = (props) => {
 
   const handleExcelDownloadClick = async () => {
     dispatch(downloadExcel({ type: ItemType.Employee }));
+  };
+
+  const handleFileSubmit = (p: EmpFile) => {
+    dispatch(saveData(p));
+  };
+
+  const handleFileDelete = (...fileId: number[]) => {
+    dispatch(
+      delData(
+        fileId.map((x) => ({
+          _type: ItemType.EmpFile,
+          file: "",
+          id: x,
+          name: "",
+          emp: -1,
+        }))
+      )
+    );
   };
 
   return (
@@ -139,6 +153,8 @@ const EmployeeView: React.FC<IEmployeeViewProps> = (props) => {
             <div className={classes.content}>
               <EmployeeFileWidget
                 lst={employees}
+                onSubmit={handleFileSubmit}
+                onDelete={handleFileDelete}
               />
             </div>
           </Paper>

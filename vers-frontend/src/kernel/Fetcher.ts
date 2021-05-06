@@ -33,7 +33,7 @@ const plantUrl = `${host}${process.env.REACT_APP_REST_API_PLANT_PATH}/`;
 const secUrl = `${host}${process.env.REACT_APP_REST_API_SECTOR_PATH}/`;
 const subsecUrl = `${host}${process.env.REACT_APP_REST_API_SUBSECTOR_PATH}/`;
 const empUrl = `${host}${process.env.REACT_APP_REST_API_EMP_PATH}/`;
-const empFileUrl = `${host}${process.env.REACT_APP_REST_API_EMP_FILE_PATH}`;
+const empFileUrl = `${host}${process.env.REACT_APP_REST_API_EMP_FILE_PATH}/`;
 const empProfilePicUrl = `${host}${process.env.REACT_APP_REST_API_EMP_PROFILE_PIC_PATH}`;
 const skillUrl = `${host}${process.env.REACT_APP_REST_API_SKILL_PATH}/`;
 const jobUrl = `${host}${process.env.REACT_APP_REST_API_JOB_PATH}/`;
@@ -72,10 +72,10 @@ function convToFormData(data: any) {
   const formData = new FormData();
   for (let [k, v] of Object.entries(data)) {
     if (v === undefined) continue;
-    if (typeof v === 'object' && !(data instanceof File)) {
+    if (typeof v === "object" && !(v instanceof File)) {
       formData.append(k, JSON.stringify(v));
     } else {
-      formData.append(k, v as (string | File));
+      formData.append(k, v as string | File);
     }
   }
   return formData;
@@ -110,8 +110,8 @@ class Fetcher {
     }
   };
 
-  private static getConfig = () => {
-    let headers: { [s: string]: any } = {};
+  private static getConfig = (initHeaders?: any) => {
+    let headers: { [s: string]: any } = { ...initHeaders };
     let csrf = getCookie("csrftoken");
     csrf && (headers["X-CSRFToken"] = csrf);
     Fetcher.token && (headers["Authorization"] = `Token ${Fetcher.token}`);
@@ -203,11 +203,19 @@ class Fetcher {
   };
 
   static postEmpProfilePic = async (data: EmpProfilePicData) => {
-    return await axios.post(empProfilePicUrl, convToFormData(data), Fetcher.getConfig());
+    return await axios.post(
+      empProfilePicUrl,
+      convToFormData(data),
+      Fetcher.getConfig()
+    );
   };
 
   static postEmpFile = async (data: EmpFileData) => {
-    return await axios.post(empFileUrl, convToFormData(data), Fetcher.getConfig());
+    return await axios.post(
+      empFileUrl,
+      convToFormData(data),
+      Fetcher.getConfig({ "Content-Type": "multipart/form-data" })
+    );
   };
 
   static postSkill = async (data: SkillData): Promise<Result<SkillData>> => {
@@ -253,11 +261,19 @@ class Fetcher {
   };
 
   static putEmpFile = async (data: EmpFileData) => {
-    return await axios.put(`${empFileUrl}${data.id}/`, convToFormData(data), Fetcher.getConfig());
+    return await axios.put(
+      `${empFileUrl}${data.id}/`,
+      convToFormData(data),
+      Fetcher.getConfig({ "Content-Type": "multipart/form-data" })
+    );
   };
 
   static putEmpProfilePic = async (data: EmpProfilePicData) => {
-    return await axios.put(`${empProfilePicUrl}${data.id}/`, convToFormData(data), Fetcher.getConfig());
+    return await axios.put(
+      `${empProfilePicUrl}${data.id}/`,
+      convToFormData(data),
+      Fetcher.getConfig()
+    );
   };
 
   static putSkill = async (data: SkillData): Promise<Result<SkillData>> => {
@@ -311,7 +327,10 @@ class Fetcher {
   };
 
   static deleteEmpProfilePic = async (data: EmpProfilePicData) => {
-    return await axios.delete(`${empProfilePicUrl}${data.id}/`, Fetcher.getConfig());
+    return await axios.delete(
+      `${empProfilePicUrl}${data.id}/`,
+      Fetcher.getConfig()
+    );
   };
 
   static deletePlant = async (data: PlantData): Promise<Result<PlantData>> => {

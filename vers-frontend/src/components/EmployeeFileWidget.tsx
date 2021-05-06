@@ -5,10 +5,11 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 
-import { Employee } from "src/kernel";
+import { Employee, EmpFile } from "src/kernel";
 import EmployeeSimpleList from "./lists/EmployeeSimpleList";
 import MyDialog from "src/components/commons/Dialog";
 import EmpFileList from "./lists/EmpFileList";
+import EmpFileForm from "./forms/EmpFileForm";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -52,12 +53,13 @@ const useStyles = makeStyles((theme) => ({
 
 interface IEmpFileWidgetProps {
   lst: { [id: number]: Employee };
-  onSubmit?: () => void;
+  onSubmit?: (p: EmpFile) => void;
+  onDelete?: (...fileId: number[]) => void;
 }
 
 const EmpFileWidget: React.FC<IEmpFileWidgetProps> = (props) => {
   const classes = useStyles();
-  const { lst, onSubmit } = props;
+  const { lst, onSubmit, onDelete } = props;
 
   const [sel, setSel] = React.useState<Employee>();
   const [selectedLst, setSelectedLst] = React.useState<number[]>([]);
@@ -69,20 +71,20 @@ const EmpFileWidget: React.FC<IEmpFileWidgetProps> = (props) => {
     setSelectedLst([]);
   };
 
-  const handleDeleteOnClick = () => {};
+  const handleDeleteOnClick = () => {
+    onDelete && onDelete(...selectedLst);
+    setSelectedLst([]);
+  };
 
   const [addLstOpen, setAddLstOpen] = React.useState(false);
-  const uploadFileOnClick = (e: React.ChangeEvent<any>) => {
-    setAddLstOpen(true);
-  };
 
   const uploadFileOnClose = () => {
     setAddLstOpen(false);
   };
 
-  const handleFileUpload = () => {};
-
-  const handleFileSubmit = () => {
+  const handleFileSubmit = (p: EmpFile) => {
+    p.emp = sel?.id ?? -1;
+    onSubmit && onSubmit(p);
     uploadFileOnClose();
   };
 
@@ -104,8 +106,8 @@ const EmpFileWidget: React.FC<IEmpFileWidgetProps> = (props) => {
             <Button
               variant="contained"
               color="primary"
-              disabled={!sel || selectedLst.length === 0 || !onSubmit}
-              onClick={uploadFileOnClick}
+              disabled={!sel}
+              onClick={() => setAddLstOpen(true)}
             >
               Add
             </Button>
@@ -143,13 +145,7 @@ const EmpFileWidget: React.FC<IEmpFileWidgetProps> = (props) => {
             </Typography>
           </div>
           <div className={classes.formContent}>
-            <form noValidate autoComplete="off">
-              <input type="file" name="file" onChange={handleFileUpload} />
-            </form>
-            <div className={classes.ctrlButtons}>
-              <Button onClick={handleFileSubmit}>Submit</Button>
-              <Button onClick={uploadFileOnClose}>Cancel</Button>
-            </div>
+            <EmpFileForm onSubmit={handleFileSubmit}/>
           </div>
         </div>
       </MyDialog>

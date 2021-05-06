@@ -416,6 +416,7 @@ class EmployeeView(viewsets.ModelViewSet):
 
 
 class EmployeeFileView(viewsets.ModelViewSet):
+  txt = 'employee_file'
   parser_classes = [MultiPartParser]
   serializer_class = serializers.EmployeeFileSerializer
   permission_classes = [my_perms.VersPermission1]
