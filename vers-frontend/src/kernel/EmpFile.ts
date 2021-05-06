@@ -4,7 +4,6 @@ import store, { ItemType } from "./Store";
 
 interface EmpFile extends EmpFileData {
   _type: ItemType.EmpFile;
-  [s: string]: any;
 }
 
 const dataToObj = (data: EmpFileData): EmpFile => ({

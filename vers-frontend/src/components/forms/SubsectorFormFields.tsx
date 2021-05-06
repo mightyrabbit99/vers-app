@@ -43,16 +43,16 @@ const SubsectorFF: React.FC<ISubsectorFFProps> = (props) => {
       value = choices[name].choices[value].value;
     }
 
-    data[name] = value;
-    setFeedback({ ...feedback, [name]: undefined });
+    data[name as keyof Subsector] = value as never;
+    setFeedback(feedback ? { ...feedback, [name]: undefined } : undefined);
     onChange ? onChange(data) : setState({ ...state, [name]: value });
   };
 
-  const getFeedback = (name: string) => {
-    return feedback[name] ?? "";
+  const getFeedback = (name: keyof Subsector) => {
+    return (feedback && name in feedback) ? feedback[name] : "";
   };
 
-  const getDataProp = (name: string) => {
+  const getDataProp = (name: keyof Subsector) => {
     if (name === "sector") {
       return choices[name].init === -1 ? "" : choices[name].init;
     }
@@ -63,17 +63,17 @@ const SubsectorFF: React.FC<ISubsectorFFProps> = (props) => {
     let { name, value } = e.target;
     let num = parseFloat(value);
     value = isNaN(num) ? 0 : num;
-    data[name] = value;
+    data[name as keyof Subsector] = value as never;
     onChange ? onChange(data) : setState({ ...state, [name]: value });
   };
 
-  const genProps = (name: string) => ({
+  const genProps = (name: keyof Subsector) => ({
     name,
     value: getDataProp(name),
     onChange: handleChange,
   });
 
-  const genActiveProps = (name: string) => ({
+  const genActiveProps = (name: keyof Subsector) => ({
     ...genProps(name),
     error: getFeedback(name) !== "",
     helperText: getFeedback(name),

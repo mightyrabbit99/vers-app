@@ -2,7 +2,7 @@ import * as React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 
-import { Employee } from "src/kernel";
+import { Employee, Feedback } from "src/kernel";
 import MyDialog from "src/components/commons/Dialog";
 import EmployeeForm from "src/components/forms/EmployeeForm";
 import EmployeeList from "src/components/lists/EmployeeMainList";
@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 interface IEmployeeListWidgetProps {
   lst: { [id: number]: Employee };
   newEmployee?: Employee;
-  feedback?: any;
+  feedback?: Feedback<Employee>;
   edit?: boolean;
   onSubmit: (p: Employee) => void;
   onDelete: (...ps: Employee[]) => void;

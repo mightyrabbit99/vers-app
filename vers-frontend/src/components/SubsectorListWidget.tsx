@@ -2,7 +2,7 @@ import * as React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 
-import { Sector, Subsector } from "src/kernel";
+import { Sector, Subsector, Feedback } from "src/kernel";
 import MyDialog from "src/components/commons/Dialog";
 import SubsectorForm from "src/components/forms/SubsectorForm";
 import SubsectorList from "src/components/lists/SubsectorMainList";
@@ -31,7 +31,7 @@ interface ISubsectorListWidgetProps {
   lst: { [id: number]: Subsector };
   sectorLst: { [id: number]: Sector };
   newSubsector?: Subsector;
-  feedback?: any;
+  feedback?: Feedback<Subsector>;
   edit?: boolean;
   onSubmit: (p: Subsector) => void;
   onDelete: (...ps: Subsector[]) => void;

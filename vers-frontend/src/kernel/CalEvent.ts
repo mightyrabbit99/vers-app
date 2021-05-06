@@ -75,7 +75,7 @@ const del = async (t: CalEvent) => {
   return { success: res.status === 204, statusText: res.statusText, data: t };
 };
 
-const hasher = (t: CalEvent) => t.name;
+const hasher = (t: CalEvent) => t.title;
 
 const CalEventStore = store<CalEvent>(get, post, put, del, generator, dataToObj, hasher);
 

@@ -1,12 +1,12 @@
 import * as React from "react";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
-import { Job, Subsector } from "src/kernel";
+import { Job, Subsector, Feedback } from "src/kernel";
 import JobFormFields, { JobFormChoices } from "./JobFormFields";
 
 interface IJobFormProps {
   data: Job;
-  feedback?: any;
+  feedback?: Feedback<Job>;
   subsectorLst: { [id: number]: Subsector };
   onSubmit: (job: Job) => void;
   onChange?: (job: Job) => void;
@@ -23,7 +23,7 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
         name: x.name,
         value: x.id,
       })),
-      init: subsectors.findIndex((x) => x.id === data.sector),
+      init: subsectors.findIndex((x) => x.id === data.subsector),
     },
   };
 

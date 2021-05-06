@@ -59,8 +59,8 @@ const EmployeeMainList: React.FC<IEmployeeMainListProps> = (props) => {
             return -1;
           }
         }
-        let pp1 = lst[p1.reportTo].name,
-          pp2 = lst[p2.reportTo].name;
+        let pp1 = lst[p1.reportTo].firstName,
+          pp2 = lst[p2.reportTo].firstName;
         return pp1 < pp2 ? 1 : pp1 === pp2 ? 0 : -1;
       },
       style: {

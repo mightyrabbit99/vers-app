@@ -170,7 +170,7 @@ class EmployeeFile(models.Model):
                             default=FileType.CERT)
   emp = models.ForeignKey(Employee, related_name="files",
                           on_delete=models.CASCADE, null=True)
-  name = models.CharField(max_length=100, blank=True, unique=True)
+  name = models.CharField(max_length=100, blank=False, unique=True)
 
   class Meta:
     db_table = "employee_files"

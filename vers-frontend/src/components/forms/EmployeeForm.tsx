@@ -1,12 +1,13 @@
 import * as React from "react";
 
-import { Grid, Button } from "@material-ui/core";
-import { Employee } from "src/kernel";
+import Grid from "@material-ui/core/Grid";
+import Button from "@material-ui/core/Button";
+import { Employee, Feedback } from "src/kernel";
 import EmployeeFormFields, { EmployeeFormChoices } from "./EmployeeFormFields";
 
 interface IEmployeeFormProps {
   data: Employee;
-  feedback?: any;
+  feedback?: Feedback<Employee>;
   employeeLst: { [id: number]: Employee };
   onSubmit: (p: Employee) => void;
   onChange?: (p: Employee) => void;

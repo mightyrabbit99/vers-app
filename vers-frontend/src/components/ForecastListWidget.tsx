@@ -3,7 +3,7 @@ import * as React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 
-import { Forecast } from "src/kernel";
+import { Forecast, Feedback } from "src/kernel";
 import ForecastMainList from "./lists/ForecastMainList";
 import ListWidget from "./ListWidget";
 import MyDialog from "src/components/commons/Dialog";
@@ -33,7 +33,7 @@ interface IForecastListWidgetProps {
   fNLst?: number[];
   newForecast?: Forecast;
   edit?: boolean;
-  feedback?: any;
+  feedback?: Feedback<Forecast>;
   onSubmit: (...f: Forecast[]) => void;
   onDelete: (...f: Forecast[]) => void;
   onReset: () => void;

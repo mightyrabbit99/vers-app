@@ -43,20 +43,20 @@ const SectorFF: React.FC<ISectorFFProps> = (props) => {
       value = choices[name].choices[value].value;
     }
 
-    data[name] = value;
-    setFeedback({ ...feedback, [name]: undefined });
+    data[name as keyof Sector] = value as never;
+    setFeedback(feedback ? { ...feedback, [name]: undefined } : undefined);
     onChange ? onChange(data) : setState({ ...state, [name]: value });
   };
 
-  const getFeedback = (name: string) => {
-    return feedback[name] ?? "";
+  const getFeedback = (name: keyof Sector) => {
+    return (feedback && name in feedback) ? feedback[name] : "";
   };
 
   const getDataIdx = (name: string) => {
     return choices[name].init === -1 ? "" : choices[name].init;
   };
 
-  const genActiveProps = (name: string) => ({
+  const genActiveProps = (name: keyof Sector) => ({
     name,
     value: state[name],
     onChange: handleChange,

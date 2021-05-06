@@ -29,7 +29,7 @@ const SectorFF: React.FC<ICalcVarsFFProps> = (props) => {
     let { name, value } = e.target;
 
     data[name as keyof CalcVars] = value;
-    setFeedback({ ...feedback, [name]: undefined });
+    setFeedback(feedback ? { ...feedback, [name]: undefined } : undefined);
     onChange ? onChange(data) : setState({ ...state, [name]: value });
   };
 
@@ -37,7 +37,7 @@ const SectorFF: React.FC<ICalcVarsFFProps> = (props) => {
     let { name, value } = e.target;
     if (!/^\d*$/.test(value)) return;
     data[name as keyof CalcVars] = value;
-    setFeedback({ ...feedback, [name]: undefined });
+    setFeedback(feedback ? { ...feedback, [name]: undefined } : undefined);
     onChange ? onChange(data) : setState({ ...state, [name]: value });
   };
 

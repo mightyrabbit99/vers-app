@@ -1,12 +1,13 @@
 import * as React from "react";
 
-import { Grid, Button } from "@material-ui/core";
-import { Skill, Subsector } from "src/kernel";
+import Grid from "@material-ui/core/Grid";
+import Button from "@material-ui/core/Button";
+import { Skill, Subsector, Feedback } from "src/kernel";
 import SkillFormFields, { SkillFormChoices } from "./SkillFormFields";
 
 interface ISkillFormProps {
   data: Skill;
-  feedback?: any;
+  feedback?: Feedback<Skill>;
   subsectorLst: { [id: number]: Subsector };
   onSubmit: (p: Skill) => void;
   onChange?: (p: Skill) => void;

@@ -11,12 +11,19 @@ import {
   CalEvent,
   Item,
   User,
+  Feedback,
 } from "src/kernel";
 import { UserData } from "src/kernel/data/UserData";
 import { Forecast } from "src/kernel/Forecast";
 import { delData, saveData, reload } from "src/slices/data";
 import { changeUserDetail, login } from "src/slices/session";
-import { createNew, erase, fetchData, modify, submitExcel } from "src/slices/sync";
+import {
+  createNew,
+  erase,
+  fetchData,
+  modify,
+  submitExcel,
+} from "src/slices/sync";
 
 export interface FetchDataAction {
   type: typeof fetchData.type;
@@ -55,7 +62,7 @@ export interface SaveDataAction {
 
 export interface DownloadExcelAction {
   type: typeof saveData.type;
-  payload: { type: ItemType, items?: Item[] };
+  payload: { type: ItemType; items?: Item[] };
 }
 
 export interface SubmitExcelAction {
@@ -127,7 +134,7 @@ export interface DataState {
 export interface SyncState {
   syncing: boolean;
   fetching: boolean;
-  feedback?: any;
+  feedback?: Feedback<Item>;
   error?: MyError;
 }
 

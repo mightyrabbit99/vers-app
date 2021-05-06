@@ -1,6 +1,7 @@
 import * as React from "react";
 
-import { Grid, Button } from "@material-ui/core";
+import Grid from "@material-ui/core/Grid";
+import Button from "@material-ui/core/Button";
 import { CalcVars } from "src/kernel";
 import CalcVarsFormFields from "./CalcVarsFormFields";
 

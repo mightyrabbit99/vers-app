@@ -1,12 +1,13 @@
 import * as React from "react";
 
-import { Grid, Button } from "@material-ui/core";
-import { Sector, Plant } from "src/kernel";
+import Grid from "@material-ui/core/Grid";
+import Button from "@material-ui/core/Button";
+import { Sector, Plant, Feedback } from "src/kernel";
 import SectorFormFields, { SectorFormChoices } from "./SectorFormFields";
 
 interface ISectorFormProps {
   data: Sector;
-  feedback?: any;
+  feedback?: Feedback<Sector>;
   plantLst: { [id: number]: Plant };
   onSubmit: (p: Sector) => void;
   onChange?: (p: Sector) => void;

@@ -54,7 +54,7 @@ const SignInForm: React.FC<FormProps> = (props) => {
   }, [fb]);
 
   const getFeedback = (name: string) => {
-    return feedback[name] ?? "";
+    return (feedback && name in feedback) ? feedback[name] : "";
   };
 
   const handleChange = (e: React.ChangeEvent<any>) => {
@@ -63,7 +63,7 @@ const SignInForm: React.FC<FormProps> = (props) => {
     if (name === "remember") {
       value = checked;
     }
-    setFeedback({ ...feedback, [name]: undefined });
+    setFeedback(feedback ? { ...feedback, [name]: undefined } : undefined);
     setData({ ...data, [name]: value });
   };
 

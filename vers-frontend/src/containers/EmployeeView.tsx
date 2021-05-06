@@ -15,7 +15,7 @@ import EmployeeFileWidget from "src/components/EmployeeFileWidget";
 import { getData, getSession, getSync } from "src/selectors";
 import { delData, downloadExcel, saveData } from "src/slices/data";
 import { clearFeedback, submitExcel } from "src/slices/sync";
-import { Employee, ItemType, EmpFile } from "src/kernel";
+import { Employee, ItemType, EmpFile, Feedback } from "src/kernel";
 import ExcelProcessor3 from "src/kernel/ExcelProcessor3";
 
 const useStyles = makeStyles((theme) => ({
@@ -105,7 +105,7 @@ const EmployeeView: React.FC<IEmployeeViewProps> = (props) => {
             <EmployeeListWidget
               lst={employees}
               newEmployee={newEmployee}
-              feedback={feedback}
+              feedback={feedback as Feedback<Employee>}
               edit={canEdit()}
               onSubmit={handleSubmit}
               onDelete={handleDelete}

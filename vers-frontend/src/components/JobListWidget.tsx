@@ -2,7 +2,7 @@ import * as React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 
-import { Job, Subsector } from "src/kernel";
+import { Job, Subsector, Feedback } from "src/kernel";
 import JobList from "src/components/lists/JobMainList";
 import JobForm from "src/components/forms/JobForm";
 import MyDialog from "src/components/commons/Dialog";
@@ -27,7 +27,7 @@ interface IJobListWidgetProps {
   lst: { [id: number]: Job };
   subsectorLst: { [id: number]: Subsector };
   newJob?: Job;
-  feedback?: any;
+  feedback?: Feedback<Job>;
   edit?: boolean;
   onSubmit: (p: Job) => void;
   onDelete: (...ps: Job[]) => void;

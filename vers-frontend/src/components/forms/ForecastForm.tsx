@@ -3,11 +3,11 @@ import * as React from "react";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
-import { Forecast } from "src/kernel";
+import { Forecast, Feedback } from "src/kernel";
 
 interface IForecastFormProps {
   data: Forecast;
-  feedback?: any;
+  feedback?: Feedback<Forecast>;
   onSubmit: (p: Forecast) => void;
   onChange?: (p: Forecast) => void;
   onCancel?: () => void;
@@ -45,7 +45,7 @@ const ForecastForm: React.FC<IForecastFormProps> = (props) => {
           name="on"
           value={state.on.substr(0, 7)}
           onChange={handleChange}
-          error={feedback?.on}
+          error={!!feedback?.on}
           type="month"
           InputLabelProps={{
             shrink: true,

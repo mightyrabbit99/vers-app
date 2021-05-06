@@ -8,7 +8,7 @@ import ForecastListWidget from "src/components/ForecastListWidget";
 import { getData, getSync } from "src/selectors";
 import { delData, saveData, downloadExcel } from "src/slices/data";
 import { clearFeedback, submitExcel } from "src/slices/sync";
-import { Forecast, ItemType } from "src/kernel";
+import { Forecast, ItemType, Feedback } from "src/kernel";
 import ExcelProcessor3 from "src/kernel/ExcelProcessor3";
 
 const useStyles = makeStyles((theme) => ({
@@ -65,7 +65,7 @@ const ForecastView: React.FC<IForecastViewProps> = (props) => {
           title="Forecast"
           lst={forecasts}
           newForecast={newForecast}
-          feedback={feedback}
+          feedback={feedback as Feedback<Forecast>}
           onSubmit={handleForecastSubmit}
           onDelete={handleForecastDelete}
           onReset={handleReset}

@@ -2,7 +2,7 @@ import * as React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 
-import { Plant, Sector } from "src/kernel";
+import { Plant, Sector, Feedback } from "src/kernel";
 import MyDialog from "src/components/commons/Dialog";
 import SectorForm from "src/components/forms/SectorForm";
 import SectorList from "src/components/lists/SectorMainList";
@@ -28,7 +28,7 @@ interface ISectorListWidgetProps {
   lst: { [id: number]: Sector };
   plantLst: { [id: number]: Plant };
   newSector?: Sector;
-  feedback?: any;
+  feedback?: Feedback<Sector>;
   edit?: boolean;
   onSubmit: (p: Sector) => void;
   onDelete: (...ps: Sector[]) => void;

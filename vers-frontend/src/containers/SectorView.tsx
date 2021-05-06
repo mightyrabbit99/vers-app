@@ -9,7 +9,7 @@ import ExcelProcessor3 from "src/kernel/ExcelProcessor3";
 import SectorListWidget from "../components/SectorListWidget";
 import { getData, getSync, getSession } from "src/selectors";
 import { delData, downloadExcel, saveData } from "src/slices/data";
-import { ItemType, Sector } from "src/kernel";
+import { ItemType, Sector, Feedback } from "src/kernel";
 import { clearFeedback, submitExcel } from "src/slices/sync";
 
 const useStyles = makeStyles((theme) => ({
@@ -81,7 +81,7 @@ const SectorView: React.FC<ISectorViewProps> = (props) => {
           lst={sectors}
           plantLst={plants}
           newSector={newSector}
-          feedback={feedback}
+          feedback={feedback as Feedback<Sector>}
           edit={canEdit()}
           onSubmit={handleSubmit}
           onDelete={handleDelete}

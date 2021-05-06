@@ -10,7 +10,7 @@ import JobSkillWidget from "src/components/JobSkillWidget";
 import JobEmpAssignWidget from "src/components/JobEmpAssignWidget";
 import { getData, getSync, getSession } from "src/selectors";
 import { delData, saveData } from "src/slices/data";
-import { Job } from "src/kernel";
+import { Job, Feedback } from "src/kernel";
 import { clearFeedback } from "src/slices/sync";
 
 const useStyles = makeStyles((theme) => ({
@@ -52,7 +52,7 @@ const JobView: React.FC<IJobViewProps> = (props) => {
           <JobListWidget
             lst={jobs}
             newJob={newJob}
-            feedback={feedback}
+            feedback={feedback as Feedback<Job>}
             subsectorLst={subsectors}
             edit={canEdit()}
             onSubmit={handleSubmit}

@@ -69,7 +69,6 @@ const generator = (init?: any): Log => ({
   type: LogType.CREATE,
   user: -1,
   dataType: DataType.EMPLOYEE,
-  changeId: -1,
   timestamp: "",
   desc: {},
 });

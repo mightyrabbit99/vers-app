@@ -16,7 +16,7 @@ import MyDialog from "src/components/commons/Dialog";
 import { getData, getSync } from "src/selectors";
 import { delData, downloadExcel, saveData } from "src/slices/data";
 import { clearFeedback, submitExcel } from "src/slices/sync";
-import { CalEvent, ItemType } from "src/kernel";
+import { CalEvent, ItemType, Feedback } from "src/kernel";
 import ExcelProcessor3 from "src/kernel/ExcelProcessor3";
 import ExcelUploadForm from "src/components/forms/ExcelUploadForm";
 import { calExcelUrl } from "src/kernel/Fetcher";
@@ -204,7 +204,7 @@ const CalendarView: React.FC<ICalendarViewProps> = () => {
             {formData ? (
               <CalEventForm
                 data={formData}
-                feedback={feedback}
+                feedback={feedback as Feedback<CalEvent>}
                 onSubmit={handleSubmit}
                 onCancel={handleFormClose}
               />

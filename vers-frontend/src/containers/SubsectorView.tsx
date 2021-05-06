@@ -8,7 +8,7 @@ import Alert from "@material-ui/lab/Alert";
 import SubsectorListWidget from "../components/SubsectorListWidget";
 import { getData, getSync, getSession } from "src/selectors";
 import { delData, downloadExcel, saveData } from "src/slices/data";
-import { Subsector, ItemType } from "src/kernel";
+import { Subsector, ItemType, Feedback } from "src/kernel";
 import { clearFeedback, submitExcel } from "src/slices/sync";
 import ExcelProcessor3 from "src/kernel/ExcelProcessor3";
 
@@ -71,7 +71,7 @@ const SectorView: React.FC<ISectorViewProps> = (props) => {
           lst={subsectors}
           sectorLst={sectors}
           newSubsector={newSubsector}
-          feedback={feedback}
+          feedback={feedback as Feedback<Subsector>}
           edit={canEdit()}
           onSubmit={handleSubmit}
           onDelete={handleDelete}

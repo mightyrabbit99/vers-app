@@ -1,12 +1,13 @@
 import * as React from "react";
 
-import { Grid, Button } from "@material-ui/core";
-import { Plant } from "src/kernel";
+import Grid from "@material-ui/core/Grid";
+import Button from "@material-ui/core/Button";
+import { Plant, Feedback } from "src/kernel";
 import PlantFormFields from "./PlantFormFields";
 
 interface IPlantFormProps {
   data: Plant;
-  feedback?: any;
+  feedback?: Feedback<Plant>;
   onSubmit: (p: Plant) => void;
   onChange?: (p: Plant) => void;
   onCancel?: () => void;

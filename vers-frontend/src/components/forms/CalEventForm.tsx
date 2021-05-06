@@ -1,12 +1,13 @@
 import * as React from "react";
 
-import { Grid, Button } from "@material-ui/core";
-import { CalEvent } from "src/kernel";
+import Grid from "@material-ui/core/Grid";
+import Button from "@material-ui/core/Button";
+import { CalEvent, Feedback } from "src/kernel";
 import CalEventFormFields from "./CalEventFormFields";
 
 interface ICalEventFormProps {
   data: CalEvent;
-  feedback?: any;
+  feedback?: Feedback<CalEvent>;
   onSubmit: (p: CalEvent) => void;
   onChange?: (p: CalEvent) => void;
   onCancel?: () => void;

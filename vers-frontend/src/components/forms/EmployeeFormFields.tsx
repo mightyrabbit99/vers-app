@@ -13,7 +13,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import Radio from "@material-ui/core/Radio";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
-import { Employee } from "src/kernel";
+import { Employee, Feedback } from "src/kernel";
 import { commonFormFieldStyles, FormChoiceField, FormChoices } from "./types";
 
 const useStyles = makeStyles((theme) => ({
@@ -42,7 +42,7 @@ interface EmployeeFormChoices extends FormChoices {
 interface IEmployeeFFProps {
   data: Employee;
   choices: EmployeeFormChoices;
-  feedback?: any;
+  feedback?: Feedback<Employee>;
   onChange?: (data: Employee) => void;
 }
 
@@ -50,17 +50,17 @@ const EmployeeFF: React.FC<IEmployeeFFProps> = (props) => {
   const classes = useStyles();
   const { data, choices, feedback: fb, onChange } = props;
   const [state, setState] = React.useState(data);
-  const [feedback, setFeedback] = React.useState(fb ?? {});
+  const [feedback, setFeedback] = React.useState<Feedback<Employee>>();
   React.useEffect(() => {
-    setFeedback(fb ?? {});
+    setFeedback(fb);
   }, [fb]);
   React.useEffect(() => {
     setState(data);
   }, [data]);
 
-  const chg = (name: string, value: any) => {
-    data[name] = value;
-    setFeedback({ ...feedback, [name]: undefined });
+  const chg = (name: keyof Employee, value: Employee[keyof Employee]) => {
+    data[name] = value as never;
+    setFeedback(feedback ? { ...feedback, [name]: undefined } : undefined);
     onChange ? onChange(data) : setState({ ...state, [name]: value });
   };
 
@@ -77,11 +77,11 @@ const EmployeeFF: React.FC<IEmployeeFFProps> = (props) => {
     chg(name, value);
   };
 
-  const getFeedback = (name: string) => {
-    return feedback[name] ?? "";
+  const getFeedback = (name: keyof Employee) => {
+    return (feedback && name in feedback) ? feedback[name] : "";
   };
 
-  const getDataProp = (name: string) => {
+  const getDataProp = (name: keyof Employee) => {
     if (
       name === "gender" ||
       name === "reportTo"
@@ -91,13 +91,13 @@ const EmployeeFF: React.FC<IEmployeeFFProps> = (props) => {
     return state[name];
   };
 
-  const genActiveProps = (name: string) => ({
+  const genActiveProps = (name: keyof Employee) => ({
     name,
     value: getDataProp(name),
     onChange: handleChange,
   });
 
-  const genProps = (name: string) => ({
+  const genProps = (name: keyof Employee) => ({
     ...genActiveProps(name),
     helperText: getFeedback(name),
     error: getFeedback(name) !== "",

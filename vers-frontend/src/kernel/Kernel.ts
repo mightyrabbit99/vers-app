@@ -69,21 +69,15 @@ class MyLogger implements Logger<Item> {
   flush = () => {
     let sanitized = this.lst
       .map((x) => x.res)
-      .map((x) =>
-        x.success
-          ? x
-          : {
-              success: x.success,
-              statusText: x.statusText,
-              data: {
-                name: x.data.name,
-                firstName: x.data.firstName,
-                lastName: x.data.lastName,
-                on: x.data.on,
-                title: x.data.title,
-              },
-            }
-      );
+      .map((x) => ({
+        success: x.success,
+        statusText: x.statusText,
+        data: Object.fromEntries(
+          Object.entries(x.data).filter(
+            ([k, v]) => typeof v === "string" || typeof v === "number"
+          )
+        ),
+      }));
     this.lst = [];
     return sanitized;
   };

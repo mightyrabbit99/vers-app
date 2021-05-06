@@ -8,7 +8,7 @@ import Alert from "@material-ui/lab/Alert";
 import SkillListWidget from "../components/SkillListWidget";
 import { getData, getSync, getSession } from "src/selectors";
 import { delData, downloadExcel, saveData } from "src/slices/data";
-import { Skill, ItemType } from "src/kernel";
+import { Skill, ItemType, Feedback } from "src/kernel";
 import { clearFeedback, submitExcel } from "src/slices/sync";
 import ExcelProcessor3 from "src/kernel/ExcelProcessor3";
 
@@ -73,7 +73,7 @@ const SkillView: React.FC<ISkillViewProps> = (props) => {
           sectorLst={sectors}
           newSkill={newSkill}
           edit={canEdit()}
-          feedback={feedback}
+          feedback={feedback as Feedback<Skill>}
           onSubmit={handleSubmit}
           onDelete={handleDelete}
           onReset={handleReset}

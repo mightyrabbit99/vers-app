@@ -118,7 +118,7 @@ const dataSlice = createSlice({
       }
       for (let p of payload) {
         const { type, id, prop, val } = p;
-        selLst(type, state)[id][prop] = val;
+        (selLst(type, state) as any)[id][prop] = val;
       }
     },
     selPlant: (state, { payload }: PayloadAction<number | undefined>) => {

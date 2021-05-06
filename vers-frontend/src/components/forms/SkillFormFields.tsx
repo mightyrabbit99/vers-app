@@ -34,13 +34,13 @@ const SkillFF: React.FC<ISkillFFProps> = (props) => {
     setState(data);
   }, [data]);
 
-  const chg = (name: string, value: any) => {
-    data[name] = value;
+  const chg = (name: keyof Skill, value: Skill[keyof Skill]) => {
+    data[name] = value as never;
     setFeedback({...feedback, [name]: undefined});
     onChange ? onChange(data) : setState({ ...state, [name]: value });
   };
 
-  const getDataProp = (name: string) => {
+  const getDataProp = (name: keyof Skill) => {
     if (name === "subsector") {
       return choices[name].init === -1 ? "" : choices[name].init;
     }
@@ -59,8 +59,8 @@ const SkillFF: React.FC<ISkillFFProps> = (props) => {
     chg(name, value);
   };
 
-  const getFeedback = (name: string) => {
-    return feedback[name] ?? "";
+  const getFeedback = (name: keyof Skill) => {
+    return (feedback && name in feedback) ? feedback[name] : "";
   };
 
   const getDataIdx = (name: string) => {
@@ -74,7 +74,7 @@ const SkillFF: React.FC<ISkillFFProps> = (props) => {
     chg(name, value);
   };
 
-  const genActiveProps = (name: string) => ({
+  const genActiveProps = (name: keyof Skill) => ({
     name,
     value: getDataProp(name),
     onChange: handleChange,

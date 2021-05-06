@@ -1,14 +1,13 @@
 import * as React from "react";
-import {
-  makeStyles,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Grid,
-} from "@material-ui/core";
-import { Job } from "src/kernel";
+import { makeStyles } from "@material-ui/core/styles";
+import TextField from "@material-ui/core/TextField";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import Grid from "@material-ui/core/Grid";
+
+import { Job, Feedback } from "src/kernel";
 import { commonFormFieldStyles, FormChoiceField, FormChoices } from "./types";
 
 const useStyles = makeStyles(commonFormFieldStyles);
@@ -20,7 +19,7 @@ interface JobFormChoices extends FormChoices {
 interface IJobFFProps {
   data: Job;
   choices: JobFormChoices;
-  feedback?: any;
+  feedback?: Feedback<Job>;
   onChange?: (data: Job) => void;
 }
 
@@ -28,17 +27,17 @@ const JobFF: React.FC<IJobFFProps> = (props) => {
   const classes = useStyles();
   const { data, choices, feedback: fb, onChange } = props;
   const [state, setState] = React.useState(data);
-  const [feedback, setFeedback] = React.useState(fb ?? {});
+  const [feedback, setFeedback] = React.useState<Feedback<Job>>();
   React.useEffect(() => {
-    setFeedback(fb ?? {});
+    setFeedback(fb);
   }, [fb]);
   React.useEffect(() => {
     setState(data);
   }, [data]);
 
-  const chg = (name: string, value: any) => {
-    data[name] = value;
-    setFeedback({...feedback, [name]: undefined});
+  const chg = (name: keyof Job, value: any) => {
+    data[name] = value as never;
+    setFeedback(feedback ? { ...feedback, [name]: undefined } : undefined);
     onChange ? onChange(data) : setState({ ...state, [name]: value });
   };
 
@@ -54,8 +53,8 @@ const JobFF: React.FC<IJobFFProps> = (props) => {
     chg(name, value);
   };
 
-  const getFeedback = (name: string) => {
-    return feedback[name] ?? "";
+  const getFeedback = (name: keyof Job) => {
+    return (feedback && name in feedback) ? feedback[name] : "";
   };
 
   const getDataIdx = (name: string) => {
@@ -69,7 +68,7 @@ const JobFF: React.FC<IJobFFProps> = (props) => {
     chg(name, value);
   };
 
-  const genActiveProps = (name: string) => ({
+  const genActiveProps = (name: keyof Job) => ({
     name,
     value: state[name],
     onChange: handleChange,

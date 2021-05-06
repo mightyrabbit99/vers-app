@@ -2,7 +2,7 @@ import * as React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 
-import { Skill, Subsector, Sector } from "src/kernel";
+import { Skill, Subsector, Sector, Feedback } from "src/kernel";
 import SkillMainList from "./lists/SkillMainList";
 import MyDialog from "./commons/Dialog";
 import SkillForm from "./forms/SkillForm";
@@ -49,7 +49,7 @@ interface ISkillListWidgetProps {
   subsectorLst: { [id: number]: Subsector };
   sectorLst: { [id: number]: Sector };
   newSkill?: Skill;
-  feedback?: any;
+  feedback?: Feedback<Skill>;
   edit?: boolean;
   onSubmit: (s: Skill) => void;
   onDelete: (...s: Skill[]) => void;

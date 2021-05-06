@@ -1,6 +1,8 @@
 import * as React from "react";
-import { makeStyles, TextField } from "@material-ui/core";
-import { Plant } from "src/kernel";
+import { makeStyles } from "@material-ui/core/styles";
+import TextField from "@material-ui/core/TextField";
+
+import { Plant, Feedback } from "src/kernel";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -12,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
 
 interface IPlantFFProps {
   data: Plant;
-  feedback?: any;
+  feedback?: Feedback<Plant>;
   onChange?: (data: Plant) => void;
 }
 
@@ -20,9 +22,9 @@ const PlantFF: React.FC<IPlantFFProps> = (props) => {
   const classes = useStyles();
   const { data, feedback: fb, onChange } = props;
   const [state, setState] = React.useState(data);
-  const [feedback, setFeedback] = React.useState(fb ?? {});
+  const [feedback, setFeedback] = React.useState<Feedback<Plant>>();
   React.useEffect(() => {
-    setFeedback(fb ?? {});
+    setFeedback(fb);
   }, [fb]);
   React.useEffect(() => {
     setState(data);
@@ -30,16 +32,16 @@ const PlantFF: React.FC<IPlantFFProps> = (props) => {
 
   const handleChange = (e: React.ChangeEvent<any>) => {
     const { name, value } = e.target;
-    data[name] = value;
-    setFeedback({...feedback, [name]: undefined});
+    data[name as keyof Plant] = value as never;
+    setFeedback(feedback ? {...feedback, [name]: undefined} : undefined);
     onChange ? onChange(data) : setState({...state, [name]: value});
   };
 
-  const getFeedback = (name: string) => {
-    return feedback[name] ?? "";
+  const getFeedback = (name: keyof Plant) => {
+    return (feedback && name in feedback) ? feedback[name] : "";
   };
 
-  const genActiveProps = (name: string) => ({
+  const genActiveProps = (name: keyof Plant) => ({
     name,
     value: state[name],
     onChange: handleChange,

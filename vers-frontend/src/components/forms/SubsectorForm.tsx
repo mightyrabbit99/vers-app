@@ -1,14 +1,15 @@
 import * as React from "react";
 
-import { Grid, Button } from "@material-ui/core";
-import { Subsector, Sector } from "src/kernel";
+import Grid from "@material-ui/core/Grid";
+import Button from "@material-ui/core/Button";
+import { Subsector, Sector, Feedback } from "src/kernel";
 import SubsectorFormFields, {
   SubsectorFormChoices,
 } from "./SubsectorFormFields";
 
 interface ISubsectorFormProps {
   data: Subsector;
-  feedback?: any;
+  feedback?: Feedback<Subsector>;
   sectorLst: { [id: number]: Sector };
   onSubmit: (p: Subsector) => void;
   onChange?: (p: Subsector) => void;
