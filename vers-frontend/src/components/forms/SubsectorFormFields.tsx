@@ -49,7 +49,7 @@ const SubsectorFF: React.FC<ISubsectorFFProps> = (props) => {
   };
 
   const getFeedback = (name: keyof Subsector) => {
-    return (feedback && name in feedback) ? feedback[name] : "";
+    return (feedback && name in feedback) ? feedback[name] ?? "" : "";
   };
 
   const getDataProp = (name: keyof Subsector) => {

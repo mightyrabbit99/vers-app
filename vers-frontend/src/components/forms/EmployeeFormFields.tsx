@@ -78,7 +78,7 @@ const EmployeeFF: React.FC<IEmployeeFFProps> = (props) => {
   };
 
   const getFeedback = (name: keyof Employee) => {
-    return (feedback && name in feedback) ? feedback[name] : "";
+    return (feedback && name in feedback) ? feedback[name] ?? "" : "";
   };
 
   const getDataProp = (name: keyof Employee) => {

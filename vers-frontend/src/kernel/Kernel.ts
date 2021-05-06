@@ -155,6 +155,7 @@ class Kernel {
       }
     });
     this.skillStore.registerAfterTrigger((a: Activity<Skill>) => {
+      if (!a.res.success) return;
       let data = a.res.data;
       switch (a.typ) {
         case DataAction.DELETE:
@@ -169,6 +170,7 @@ class Kernel {
       }
     });
     this.empStore.registerAfterTrigger((a: Activity<Employee>) => {
+      if (!a.res.success) return;
       let data = a.res.data;
       let oData = a.original;
       switch (a.typ) {
@@ -202,6 +204,7 @@ class Kernel {
       }
     });
     this.empFileStore.registerAfterTrigger((a: Activity<EmpFile>) => {
+      if (!a.res.success) return;
       let data = a.res.data;
       let emp = this.empStore.get(data.emp);
       switch (a.typ) {

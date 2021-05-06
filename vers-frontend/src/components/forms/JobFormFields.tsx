@@ -54,7 +54,7 @@ const JobFF: React.FC<IJobFFProps> = (props) => {
   };
 
   const getFeedback = (name: keyof Job) => {
-    return (feedback && name in feedback) ? feedback[name] : "";
+    return (feedback && name in feedback) ? feedback[name] ?? "" : "";
   };
 
   const getDataIdx = (name: string) => {

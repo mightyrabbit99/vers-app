@@ -83,18 +83,8 @@ const EmployeeView: React.FC<IEmployeeViewProps> = (props) => {
     dispatch(saveData(p));
   };
 
-  const handleFileDelete = (...fileId: number[]) => {
-    dispatch(
-      delData(
-        fileId.map((x) => ({
-          _type: ItemType.EmpFile,
-          file: "",
-          id: x,
-          name: "",
-          emp: -1,
-        }))
-      )
-    );
+  const handleFileDelete = (...files: EmpFile[]) => {
+    dispatch(delData(files));
   };
 
   return (
@@ -153,6 +143,7 @@ const EmployeeView: React.FC<IEmployeeViewProps> = (props) => {
             <div className={classes.content}>
               <EmployeeFileWidget
                 lst={employees}
+                feedback={feedback as Feedback<EmpFile>}
                 onSubmit={handleFileSubmit}
                 onDelete={handleFileDelete}
               />

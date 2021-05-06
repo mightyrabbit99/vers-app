@@ -60,7 +60,7 @@ const SkillFF: React.FC<ISkillFFProps> = (props) => {
   };
 
   const getFeedback = (name: keyof Skill) => {
-    return (feedback && name in feedback) ? feedback[name] : "";
+    return (feedback && name in feedback) ? feedback[name] ?? "" : "";
   };
 
   const getDataIdx = (name: string) => {

@@ -2,7 +2,7 @@ import * as React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 
-import { Employee, Feedback } from "src/kernel";
+import { Employee, Feedback, ItemType } from "src/kernel";
 import MyDialog from "src/components/commons/Dialog";
 import EmployeeForm from "src/components/forms/EmployeeForm";
 import EmployeeList from "src/components/lists/EmployeeMainList";
@@ -89,7 +89,7 @@ const EmployeeListWidget: React.FC<IEmployeeListWidgetProps> = (props) => {
     setFormData((formData) => formData ?? newEmployee);
   }, [newEmployee]);
   React.useEffect(() => {
-    setFormOpen(!!feedback);
+    setFormOpen(!!feedback && feedback._type === ItemType.Employee);
   }, [feedback]);
 
   const handleSubmit = (data: Employee) => {

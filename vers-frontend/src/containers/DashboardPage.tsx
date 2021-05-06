@@ -236,13 +236,13 @@ const Dashboard: React.FC = () => {
 
   const handleListClick = (i: DashboardView) => () => {
     if (currView === i) return;
+    dispatch(clearFeedback());
     localStorage.setItem("lastDashboardView", `${i}`);
     if (getItemType(i) === ItemType.Log) dispatch(fetchData(ItemType.Log));
     setCurrView(i);
   };
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    dispatch(clearFeedback());
     setSettingsAnchorEl(event.currentTarget);
   };
 

@@ -49,7 +49,7 @@ const SectorFF: React.FC<ISectorFFProps> = (props) => {
   };
 
   const getFeedback = (name: keyof Sector) => {
-    return (feedback && name in feedback) ? feedback[name] : "";
+    return (feedback && name in feedback) ? feedback[name] ?? "" : "";
   };
 
   const getDataIdx = (name: string) => {

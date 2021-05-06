@@ -53,7 +53,7 @@ const SignInForm: React.FC<FormProps> = (props) => {
   }, [fb]);
 
   const getFeedback = (name: string) => {
-    return (feedback && name in feedback) ? feedback[name] : "";
+    return (feedback && name in feedback) ? feedback[name] ?? "" : "";
   };
 
   const handleChange = (e: React.ChangeEvent<any>) => {

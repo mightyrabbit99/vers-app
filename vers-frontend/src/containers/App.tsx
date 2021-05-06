@@ -71,7 +71,7 @@ const App: React.FC<IAppProps> = (props) => {
             message: "Success",
             severity: "success",
           }
-        : s
+        : { ...s, ready: false }
     );
   }, [feedback, submitting, error]);
 

@@ -42,7 +42,7 @@ const EmpFileForm: React.FC<IEmpFileFormProps> = (props) => {
   };
 
   const getFeedback = (name: keyof EmpFile) => {
-    return (feedback && name in feedback) ? feedback[name] : "";
+    return (feedback && name in feedback) ? feedback[name] ?? "" : "";
   };
 
   const genActiveProps = (name: keyof EmpFile) => ({
@@ -56,10 +56,10 @@ const EmpFileForm: React.FC<IEmpFileFormProps> = (props) => {
   return (
     <Grid container spacing={1} key={key}>
       <Grid item xs={12}>
+        <TextField label="Name" variant="outlined" {...genActiveProps("name")} />
         <form noValidate autoComplete="off">
           <input type="file" name="file" onChange={handleFileUpload} />
         </form>
-        <TextField label="Name" variant="outlined" {...genActiveProps("name")} />
       </Grid>
       <Grid item xs={12}>
         {onCancel ? <Button onClick={onCancel}>Cancel</Button> : null}

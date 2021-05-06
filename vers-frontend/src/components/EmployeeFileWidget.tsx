@@ -5,7 +5,7 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 
-import { Employee, EmpFile } from "src/kernel";
+import { Employee, EmpFile, Feedback, ItemType } from "src/kernel";
 import EmployeeSimpleList from "./lists/EmployeeSimpleList";
 import MyDialog from "src/components/commons/Dialog";
 import EmpFileList from "./lists/EmpFileList";
@@ -53,13 +53,14 @@ const useStyles = makeStyles((theme) => ({
 
 interface IEmpFileWidgetProps {
   lst: { [id: number]: Employee };
+  feedback?: Feedback<EmpFile>;
   onSubmit?: (p: EmpFile) => void;
-  onDelete?: (...fileId: number[]) => void;
+  onDelete?: (...p: EmpFile[]) => void;
 }
 
 const EmpFileWidget: React.FC<IEmpFileWidgetProps> = (props) => {
   const classes = useStyles();
-  const { lst, onSubmit, onDelete } = props;
+  const { lst, feedback, onSubmit, onDelete } = props;
 
   const [sel, setSel] = React.useState<Employee>();
   const [selectedLst, setSelectedLst] = React.useState<number[]>([]);
@@ -72,11 +73,26 @@ const EmpFileWidget: React.FC<IEmpFileWidgetProps> = (props) => {
   };
 
   const handleDeleteOnClick = () => {
-    onDelete && onDelete(...selectedLst);
+    onDelete &&
+      onDelete(
+        ...selectedLst.map((x) => {
+          let e: EmpFile = {
+            id: x,
+            emp: sel?.id ?? -1,
+            _type: ItemType.EmpFile,
+            name: "",
+            file: "",
+          };
+          return e;
+        })
+      );
     setSelectedLst([]);
   };
 
   const [addLstOpen, setAddLstOpen] = React.useState(false);
+  React.useEffect(() => {
+    setAddLstOpen(!!feedback && feedback._type === ItemType.EmpFile);
+  }, [feedback]);
 
   const uploadFileOnClose = () => {
     setAddLstOpen(false);
@@ -145,7 +161,7 @@ const EmpFileWidget: React.FC<IEmpFileWidgetProps> = (props) => {
             </Typography>
           </div>
           <div className={classes.formContent}>
-            <EmpFileForm onSubmit={handleFileSubmit}/>
+            <EmpFileForm onSubmit={handleFileSubmit} feedback={feedback} />
           </div>
         </div>
       </MyDialog>
