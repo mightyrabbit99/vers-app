@@ -4,7 +4,7 @@ import JobStore, { Job } from "./Job";
 import PlantStore, { Plant } from "./Plant";
 import SectorStore, { Sector } from "./Sector";
 import SkillStore, { Skill } from "./Skill";
-import { Store, ItemType, Result, Activity, DataAction } from "./Store";
+import { Store, ItemType, Result, Activity, DataAction, Logger } from "./Store";
 import SubsectorStore, { Subsector } from "./Subsector";
 import ForecastStore, { Forecast } from "./Forecast";
 import LogStore, { DataType, Log } from "./Log";
@@ -60,6 +60,35 @@ const setMyLog = (lst: MyLog[]) => {
   localStorage.setItem("MyLog", JSON.stringify(lst));
 };
 
+class MyLogger implements Logger<Item> {
+  private lst: Activity<Item>[] = [];
+  record = (a: Activity<Item>) => {
+    this.lst.push(a);
+  };
+
+  flush = () => {
+    let sanitized = this.lst
+      .map((x) => x.res)
+      .map((x) =>
+        x.success
+          ? x
+          : {
+              success: x.success,
+              statusText: x.statusText,
+              data: {
+                name: x.data.name,
+                firstName: x.data.firstName,
+                lastName: x.data.lastName,
+                on: x.data.on,
+                title: x.data.title,
+              },
+            }
+      );
+    this.lst = [];
+    return sanitized;
+  };
+}
+
 class Kernel {
   soc: WebSocket | undefined;
   plantStore: Store<Plant>;
@@ -77,20 +106,21 @@ class Kernel {
   calc: HeadCalc;
   cal: Cal<number>;
   objConverter: ExcelObjConverter;
+  logger: MyLogger = new MyLogger();
 
   constructor() {
-    this.plantStore = new PlantStore();
-    this.secStore = new SectorStore();
-    this.subsecStore = new SubsectorStore();
-    this.skillStore = new SkillStore();
-    this.empStore = new EmployeeStore();
-    this.jobStore = new JobStore();
-    this.forecastStore = new ForecastStore();
+    this.plantStore = new PlantStore(this.logger);
+    this.secStore = new SectorStore(this.logger);
+    this.subsecStore = new SubsectorStore(this.logger);
+    this.skillStore = new SkillStore(this.logger);
+    this.empStore = new EmployeeStore(this.logger);
+    this.jobStore = new JobStore(this.logger);
+    this.forecastStore = new ForecastStore(this.logger);
     this.logStore = new LogStore();
-    this.calEventStore = new CalEventStore();
-    this.userStore = new UserStore();
+    this.calEventStore = new CalEventStore(this.logger);
+    this.userStore = new UserStore(this.logger);
     this.personalLogs = getMyLog();
-    this.empFileStore = new EmpFileStore();
+    this.empFileStore = new EmpFileStore(this.logger);
     this.calc = new HeadCalc();
     this.cal = new Cal();
     this.objConverter = new ExcelObjConverter(
@@ -106,6 +136,44 @@ class Kernel {
   }
 
   private init = () => {
+    this.plantStore.registerBeforeTrigger((a: Activity<Plant>) => {
+      let data = a.res.data;
+      switch (a.typ) {
+        case DataAction.DELETE:
+          for (let s of data.sectors) this.secStore.remove(s);
+          break;
+      }
+    });
+    this.secStore.registerBeforeTrigger((a: Activity<Sector>) => {
+      let data = a.res.data;
+      switch (a.typ) {
+        case DataAction.DELETE:
+          for (let s of data.subsectors) this.subsecStore.remove(s);
+          break;
+      }
+    });
+    this.subsecStore.registerBeforeTrigger((a: Activity<Subsector>) => {
+      let data = a.res.data;
+      switch (a.typ) {
+        case DataAction.DELETE:
+          for (let s of data.skills) this.skillStore.remove(s);
+          break;
+      }
+    });
+    this.skillStore.registerAfterTrigger((a: Activity<Skill>) => {
+      let data = a.res.data;
+      switch (a.typ) {
+        case DataAction.DELETE:
+          for (let e of data.employees) {
+            let emp = this.empStore.get(e.employee);
+            this.empStore.add({
+              ...emp,
+              skills: emp.skills.filter((x) => x.skill !== data.id),
+            });
+          }
+          break;
+      }
+    });
     this.empStore.registerAfterTrigger((a: Activity<Employee>) => {
       let data = a.res.data;
       let oData = a.original;
@@ -142,17 +210,17 @@ class Kernel {
     this.empFileStore.registerAfterTrigger((a: Activity<EmpFile>) => {
       let data = a.res.data;
       let emp = this.empStore.get(data.emp);
-      switch(a.typ) {
+      switch (a.typ) {
         case DataAction.CREATE_NEW:
           this.empStore.add({
             ...emp,
-            files: [...emp.files ?? [], data],
+            files: [...(emp.files ?? []), data],
           });
           break;
         case DataAction.DELETE:
           this.empStore.add({
             ...emp,
-            files: emp.files?.filter(x => x.id !== data.id),
+            files: emp.files?.filter((x) => x.id !== data.id),
           });
           break;
       }
@@ -181,6 +249,8 @@ class Kernel {
         return this.logStore;
       case DataType.USER:
         return this.userStore;
+      case DataType.EMP_FILE:
+        return this.empFileStore;
     }
   };
 
@@ -209,22 +279,8 @@ class Kernel {
     }
   };
 
-  private _log = (desc: string, ...data: SubmitResult<Item>[]) => {
-    let sanitized = data.map((x) =>
-      x.success
-        ? x
-        : {
-            success: x.success,
-            statusText: x.statusText,
-            data: {
-              name: x.data.name,
-              firstName: x.data.firstName,
-              lastName: x.data.lastName,
-              on: x.data.on,
-              title: x.data.title,
-            },
-          }
-    );
+  private _log = (desc: string) => {
+    let sanitized = this.logger.flush();
     this.personalLogs = [
       ...this.personalLogs,
       { desc, time: Date.now(), vals: sanitized },
@@ -328,7 +384,7 @@ class Kernel {
 
   saveNew = async (t: Item) => {
     let a = await this._saveNew(t);
-    this._log("Create", a);
+    this._log("Create");
     if (!this.soc) {
       this.refresh();
       this.trigger();
@@ -363,7 +419,7 @@ class Kernel {
 
   save = async (t: Item): Promise<SubmitResult<Item>> => {
     let a = await this._save(t);
-    this._log("Save", a);
+    this._log("Save");
     if (!this.soc) {
       this.refresh();
       this.trigger();
@@ -400,66 +456,14 @@ class Kernel {
     }
   };
 
-  private calcCascadeChanges = (payload: Item) => {
-    let mods: Item[] = [],
-      dels: Item[] = [];
-    let sectors = this.secStore.getLst();
-    let subsectors = this.subsecStore.getLst();
-    let employees = this.empStore.getLst();
-    let skills = this.skillStore.getLst();
-    let jobs = this.jobStore.getLst();
-    function cascadeDel(p: Item) {
-      dels.push(p);
-      switch (p._type) {
-        case ItemType.Plant:
-          (p as Plant).sectors.map((x) => sectors[x]).forEach(cascadeDel);
-          break;
-        case ItemType.Sector:
-          (p as Sector).subsectors
-            .map((x) => subsectors[x])
-            .forEach(cascadeDel);
-          break;
-        case ItemType.Subsector:
-          (p as Subsector).skills.map((x) => skills[x]).forEach(cascadeDel);
-          (p as Subsector).jobs.map((x) => jobs[x]).forEach(cascadeDel);
-          break;
-      }
-    }
-    function cascadeMod2(p: Item) {
-      mods.push(p);
-    }
-
-    function cascadeMod(p: Item) {
-      switch (p._type) {
-        case ItemType.Skill:
-          (p as Skill).employees
-            .map((x) => employees[x.employee])
-            .forEach((x) =>
-              cascadeMod2({
-                ...x,
-                skills: x.skills.filter((y) => y.skill !== p.id),
-              })
-            );
-      }
-    }
-    cascadeDel(payload);
-    cascadeMod(payload);
-    mods.reverse();
-    dels.reverse();
-    return [mods, dels];
-  };
-
   del = async (t: Item) => {
-    let [mods, dels] = this.calcCascadeChanges(t);
-    let logs = [];
-    logs.push(...(await Promise.all(mods.map((x) => this._save(x)))));
-    logs.push(...(await Promise.all(dels.map((x) => this._del(x)))));
-    this._log("Delete", ...logs);
+    let a = await this._del(t);
+    this._log("Delete");
     if (!this.soc) {
       this.refresh();
       this.trigger();
     }
-    return { success: logs.every((x) => x.success) };
+    return a;
   };
 
   login = async (
@@ -552,7 +556,7 @@ class Kernel {
 
   submitExcel = async (type: ItemType, data: ExcelObj[]) => {
     let res = await this._submitExcel(type, data);
-    this._log(`Submit Excel for ${type}`, ...res);
+    this._log(`Submit Excel for ${type}`);
     if (!this.soc) {
       this.refresh();
       this.trigger();

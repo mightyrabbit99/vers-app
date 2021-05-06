@@ -15,6 +15,7 @@ FORECAST = DataType.FORECAST
 CAL_EVENT = DataType.CAL_EVENT
 LOG = DataType.LOG
 USER = DataType.USER
+EMP_FILE = DataType.EMP_FILE
 
 
 def gen_log_data(origin, data_type=None, namespace=None):

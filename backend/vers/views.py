@@ -421,6 +421,9 @@ class EmployeeFileView(viewsets.ModelViewSet):
   serializer_class = serializers.EmployeeFileSerializer
   permission_classes = [my_perms.VersPermission1]
 
+  def notify(self, typ, res):
+    notify_consumer(typ, lg.EMP_FILE, res)
+
   def get_queryset(self):
     return models.EmployeeFile.objects.all()
 
@@ -431,6 +434,7 @@ class EmployeeFileView(viewsets.ModelViewSet):
       serializer.is_valid(raise_exception=True)
       self.perform_create(serializer)
       headers = self.get_success_headers(serializer.data)
+      self.notify(lg.CREATE, serializer.data)
       return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     else:
       return Response(status=status.HTTP_403_FORBIDDEN)

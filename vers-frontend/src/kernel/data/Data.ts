@@ -14,6 +14,7 @@ enum DataType {
   CALEVENT = 7,
   LOG = 8,
   USER = 9,
+  EMP_FILE = 10,
 }
 
 export type { Data };

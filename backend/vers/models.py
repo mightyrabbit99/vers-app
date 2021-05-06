@@ -19,6 +19,7 @@ class DataType(models.IntegerChoices):
   CAL_EVENT = 7, 'CAL EVENT'
   LOG = 8, 'LOG'
   USER = 9, 'USER'
+  EMP_FILE = 10, 'EMP_FILE'
 
 
 class PermissionGroupChoices(models.IntegerChoices):

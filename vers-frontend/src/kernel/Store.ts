@@ -38,6 +38,14 @@ interface Activity<T> {
   res: Result<T>;
 }
 
+interface Logger<T> {
+  record: (a: Activity<T>) => void;
+}
+
+class GenericLogger<T> implements Logger<T> {
+  record = (a: Activity<T>) => {};
+}
+
 interface Store<T extends ItemT> {
   // retrieval
   refresh: () => Promise<void>;
@@ -47,7 +55,7 @@ interface Store<T extends ItemT> {
 
   // local storage
   add: (t: T) => void;
-  erase: (t: T) => void;
+  erase: (t: T | number) => void;
   addData: (d: any) => void;
   eraseData: (d: any) => void;
   forEach: (f: (t: any) => any) => void;
@@ -56,7 +64,7 @@ interface Store<T extends ItemT> {
   submit: (t: T) => Promise<Result<T>>;
   submitNew: (t: T) => Promise<Result<T>>;
   submitOrNew: (t: T) => Promise<Result<T>>;
-  remove: (t: T) => Promise<Result<Partial<T>>>;
+  remove: (t: T | number) => Promise<Result<Partial<T>>>;
 
   // activity trigger
   registerBeforeTrigger: (f: (a: Activity<T>) => any) => void;
@@ -74,10 +82,15 @@ function store<T extends ItemT>(
   hasher?: (t: T) => string
 ) {
   return class implements Store<T> {
+    private logger: Logger<T>;
     private store: { [id: number]: T } = {};
     private hStore: { [k: string]: T } = {};
     private beforeTriggers: ((a: Activity<T>) => any)[] = [];
     private afterTriggers: ((a: Activity<T>) => any)[] = [];
+
+    constructor(logger: Logger<T> = new GenericLogger<T>()) {
+      this.logger = logger;
+    }
 
     private getNewId = () => {
       return Object.keys(this.store)
@@ -101,6 +114,7 @@ function store<T extends ItemT>(
     };
 
     private postAction = (action: DataAction, res: Result<T>, original?: T) => {
+      this.logger.record({ typ: action, original, res });
       this.afterTriggers.forEach((f) => f({ typ: action, original, res }));
     };
 
@@ -118,7 +132,8 @@ function store<T extends ItemT>(
       hasher && (this.hStore[hasher(t)] = t);
     };
 
-    erase = (t: T) => {
+    erase = (tt: T | number) => {
+      let t = typeof tt === "number" ? this.get(tt) : tt;
       if (t.id === -1) return;
       delete this.store[t.id];
       hasher && delete this.hStore[hasher(t)];
@@ -178,7 +193,8 @@ function store<T extends ItemT>(
       }
     };
 
-    remove = async (t: T) => {
+    remove = async (tt: T | number) => {
+      let t: T = typeof tt === "number" ? this.get(tt) : tt;
       let original = this.get(t.id);
       this.preAction(DataAction.DELETE, t, original);
       const res = await del(t);
@@ -202,6 +218,6 @@ function store<T extends ItemT>(
   };
 }
 
-export type { ItemT, Store, Result, Activity };
+export type { ItemT, Store, Result, Activity, Logger };
 export { ItemType, DataAction };
 export default store;
