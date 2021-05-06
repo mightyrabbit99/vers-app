@@ -197,7 +197,6 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
             headcount: selectedMonth
               ? k.calcHeadcountReq(
                   v,
-                  subsectors[v.subsector],
                   forecastVal ?? 0,
                   selectedMonth
                 )
@@ -206,7 +205,7 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
         ])
       );
     },
-    [skills, subsectors]
+    [skills]
   );
 
   React.useEffect(() => {

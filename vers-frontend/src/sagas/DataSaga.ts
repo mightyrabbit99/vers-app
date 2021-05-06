@@ -75,7 +75,6 @@ function* reloadData({ payload }: ReloadDataAction) {
   logs = k.logStore.getLst();
   let personalLogs = k.personalLogs;
   users = k.userStore.getLst();
-
   yield put(
     _reload({
       plants,

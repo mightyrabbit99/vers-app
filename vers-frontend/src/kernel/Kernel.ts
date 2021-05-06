@@ -24,6 +24,7 @@ import ExcelProcessor3, {
 import UserStore, { User } from "./User";
 import HeadCalc, { CalcVars } from "./HeadCalc";
 import { Cal } from "src/utils/tools";
+import Assigner, { AssignerEnv, Heuristic } from "./Assigner";
 
 type SubmitResult<T> = Result<Partial<T>>;
 
@@ -575,17 +576,36 @@ class Kernel {
 
   getVars = () => this.calc.getVars();
 
-  calcHeadcountReq = (
-    skill: Skill,
-    subsec: Subsector,
-    forecast: number,
-    month?: string
-  ) => {
+  calcHeadcountReq = (skill: Skill, forecast: number, month?: string) => {
     let workingDays = month ? this.cal.getDaysLeftInMonth(new Date(month)) : 27;
-    return this.calc.calcHeadcountReq(skill, subsec, forecast, workingDays);
+    return this.calc.calcHeadcountReq(
+      skill,
+      this.subsecStore.get(skill.subsector),
+      forecast,
+      workingDays
+    );
   };
 
   delAllLog = Fetcher.deleteAllLog;
+
+  genAssignment = (forecast: number, month?: string) => {
+    let env = new AssignerEnv();
+    let sArr = Object.values(this.skillStore.getLst());
+    for (let s of sArr) {
+      env.setJobReq(
+        s.id,
+        this.calcHeadcountReq(s, forecast, month),
+        s.employees.map((x) => x.employee)
+      );
+    }
+    let thiss = this;
+    let h = new (class implements Heuristic {
+      getScore = (j: number, e?: number) => {
+        return 1 / (thiss.skillStore.get(j).employees.length + 1);
+      }
+    })();
+    return new Assigner(env).getHeuristicAssignment(h);
+  };
 }
 
 export type { Item, Kernel };
