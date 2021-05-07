@@ -33,7 +33,7 @@ const SkillView: React.FC<ISkillViewProps> = (props) => {
   const { user } = useSelector(getSession);
 
   const canEdit = () => {
-    return user?.is_superuser ? true : user?.vers_user.skill_group === 1;
+    return user?.is_superuser ? true : user?.vers_user && user?.vers_user.skill_group === 1;
   };
 
   const handleSubmit = (data: Skill) => {

@@ -23,7 +23,7 @@ import {
   DownloadExcelAction,
 } from "src/types";
 import k, { Sector, Subsector } from "src/kernel";
-import { getData } from "src/selectors";
+import { getData, getSession } from "src/selectors";
 
 function* reloadData({ payload }: ReloadDataAction) {
   let plants,
@@ -75,6 +75,10 @@ function* reloadData({ payload }: ReloadDataAction) {
   logs = k.logStore.getLst();
   let personalLogs = k.personalLogs;
   users = k.userStore.getLst();
+  const { user } = yield select(getSession);
+  if (user) {
+    users = Object.fromEntries(Object.entries(users).filter(([x, y]) => y.id !== user.id));
+  }
   yield put(
     _reload({
       plants,

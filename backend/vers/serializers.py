@@ -49,7 +49,7 @@ class UserSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = User
-    fields = ['username', "password",
+    fields = ['id', 'username', "password",
               'vers_user', 'is_superuser', 'is_active']
 
 
@@ -94,9 +94,14 @@ class UserSerializer3(serializers.ModelSerializer):
 
   def update(self, instance, validated_data):
     vers_user_data = validated_data.pop('vers_user')
-    for (key, value) in vers_user_data.items():
-      setattr(instance.vers_user, key, value)
-    instance.vers_user.save()
+    if hasattr(instance, 'vers_user'):
+      for (key, value) in vers_user_data.items():
+        setattr(instance.vers_user, key, value)
+      instance.vers_user.save()
+    else:
+      vers_user = models.VersUser(**vers_user_data)
+      vers_user.user = instance 
+      vers_user.save()
     instance = super().update(instance, validated_data)
     lg.log_update(
         data_type=lg.USER,

@@ -90,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
 interface IPlantPageProps {}
 
 const canCrete = (user?: UserData) => {
-  return user?.is_superuser || user?.vers_user.plant_group === AccessLevel.EDIT;
+  return user?.is_superuser || (user?.vers_user && user?.vers_user.plant_group === AccessLevel.EDIT);
 };
 
 const PlantPage: React.FC<IPlantPageProps> = (props) => {

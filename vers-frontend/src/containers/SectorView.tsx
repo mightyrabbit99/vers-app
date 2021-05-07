@@ -42,7 +42,7 @@ const SectorView: React.FC<ISectorViewProps> = (props) => {
   const { feedback } = useSelector(getSync);
   const { user } = useSelector(getSession);
   const canEdit = () => {
-    return user?.is_superuser ? true : user?.vers_user.sector_group === 1;
+    return user?.is_superuser ? true : user?.vers_user && user?.vers_user.sector_group === 1;
   };
 
   const handleSubmit = (data: Sector) => {
