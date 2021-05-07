@@ -77,7 +77,9 @@ const LogListWidget: React.FC<ILogListWidgetProps> = (props) => {
   const { lst, onDelete } = props;
 
   const genMyLogCard = (log: MyLog, idx: number) => {
-    const timestamp = new Date(log.time).toISOString();
+    const timestamp = new Date(log.time);
+    let dateStr = timestamp.toLocaleDateString("my-MS");
+    let timeStr = timestamp.toLocaleTimeString("my-MS");
     return (
       <Accordion key={idx} className={classes.myLogItem}>
         <AccordionSummary
@@ -91,7 +93,7 @@ const LogListWidget: React.FC<ILogListWidgetProps> = (props) => {
               log.vals.some((x) => !x.success) ? classes.myLogItemError : null
             )}
           >
-            {`[${timestamp.substr(0, 10)}, ${timestamp.substr(11, 8)}] ${log.desc}`}
+            {`[${dateStr}, ${timeStr}] ${log.desc}`}
           </Typography>
         </AccordionSummary>
         <AccordionDetails>

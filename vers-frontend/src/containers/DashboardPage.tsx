@@ -518,7 +518,7 @@ const Dashboard: React.FC = () => {
           <MenuItem onClick={handleViewAccessCtrl}>Access Control</MenuItem>
         ) : null}
       </Menu>
-      <Backdrop className={classes.backdrop} open={loading || syncing}>
+      <Backdrop className={classes.backdrop} open={loading}>
         <CircularProgress color="inherit" />
       </Backdrop>
     </React.Fragment>

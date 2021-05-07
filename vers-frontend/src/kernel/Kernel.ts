@@ -280,7 +280,7 @@ class Kernel {
     let sanitized = this.logger.flush();
     this.personalLogs = [
       ...this.personalLogs,
-      { desc, time: Date.now(), vals: sanitized },
+      { desc, time: new Date().getTime(), vals: sanitized },
     ];
     setMyLog(this.personalLogs);
   };

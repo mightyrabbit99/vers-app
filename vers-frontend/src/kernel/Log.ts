@@ -8,7 +8,7 @@ interface Log extends ItemT {
   type: LogType;
   user: number;
   dataType: DataType;
-  timestamp: string;
+  timestamp: Date;
   desc: {
     original?: any;
     data?: any;
@@ -23,7 +23,7 @@ function dataToObj(x: LogData): Log {
     type: x.type,
     user: x.user,
     dataType: x.data_type,
-    timestamp: x.timestamp,
+    timestamp: new Date(x.timestamp),
     desc: x.desc,
     non_field_errors: x.non_field_errors,
   };
@@ -35,7 +35,7 @@ function objToData(x: Log): LogData {
     type: x.type,
     user: x.user,
     data_type: x.dataType,
-    timestamp: x.timestamp,
+    timestamp: '',
     desc: x.desc,
   };
 }
@@ -69,7 +69,7 @@ const generator = (init?: any): Log => ({
   type: LogType.CREATE,
   user: -1,
   dataType: DataType.EMPLOYEE,
-  timestamp: "",
+  timestamp: new Date(),
   desc: {},
 });
 
