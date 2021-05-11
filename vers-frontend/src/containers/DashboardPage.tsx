@@ -47,7 +47,7 @@ import HeadcountView from "./HeadcountView";
 import { clearFeedback, fetchData } from "src/slices/sync";
 import { logout } from "src/slices/session";
 import { selPlant } from "src/slices/data";
-import { getData, getSession, getSync } from "src/selectors";
+import { getData, getSession } from "src/selectors";
 import { AccessLevel, ItemType } from "src/kernel";
 import { initViewState, ViewContext } from "src/contexts";
 import GraphView from "./GraphView";
@@ -202,7 +202,6 @@ const Dashboard: React.FC = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { selectedPlantId: pId, plants, loading } = useSelector(getData);
-  const { syncing } = useSelector(getSync);
   const { user } = useSelector(getSession);
 
   const classes = useStyles();
