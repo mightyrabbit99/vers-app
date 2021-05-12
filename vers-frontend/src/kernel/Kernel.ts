@@ -29,7 +29,7 @@ import Assigner, { AssignerEnv, Heuristic } from "./Assigner";
 
 type SubmitResult<T> = Result<Partial<T>>;
 
-const epsTi = 300;
+const epsTi = 150;
 
 type Item =
   | Plant
@@ -130,31 +130,31 @@ class Kernel {
   }
 
   private init = () => {
-    this.plantStore.registerBeforeTrigger((a: Activity<Plant>) => {
+    this.plantStore.registerAfterNativeTrigger((a: Activity<Plant>) => {
       let data = a.res.data;
       switch (a.typ) {
         case DataAction.DELETE:
-          for (let s of data.sectors) this.secStore.remove(s);
+          for (let s of data.sectors) this.secStore.erase(s);
           break;
       }
     });
-    this.secStore.registerBeforeTrigger((a: Activity<Sector>) => {
+    this.secStore.registerAfterNativeTrigger((a: Activity<Sector>) => {
       let data = a.res.data;
       switch (a.typ) {
         case DataAction.DELETE:
-          for (let s of data.subsectors) this.subsecStore.remove(s);
+          for (let s of data.subsectors) this.subsecStore.erase(s);
           break;
       }
     });
-    this.subsecStore.registerBeforeTrigger((a: Activity<Subsector>) => {
+    this.subsecStore.registerAfterNativeTrigger((a: Activity<Subsector>) => {
       let data = a.res.data;
       switch (a.typ) {
         case DataAction.DELETE:
-          for (let s of data.skills) this.skillStore.remove(s);
+          for (let s of data.skills) this.skillStore.erase(s);
           break;
       }
     });
-    this.skillStore.registerAfterTrigger((a: Activity<Skill>) => {
+    this.skillStore.registerAfterNativeTrigger((a: Activity<Skill>) => {
       if (!a.res.success) return;
       let data = a.res.data;
       switch (a.typ) {
@@ -169,7 +169,7 @@ class Kernel {
           break;
       }
     });
-    this.empStore.registerAfterTrigger((a: Activity<Employee>) => {
+    this.empStore.registerAfterNativeTrigger((a: Activity<Employee>) => {
       if (!a.res.success) return;
       let data = a.res.data;
       let oData = a.original;

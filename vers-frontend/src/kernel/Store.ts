@@ -31,11 +31,15 @@ enum DataAction {
   DELETE = 2,
 }
 
+type NativeDataAction = DataAction;
+
 interface Activity<T> {
   typ: DataAction;
   original?: T;
   res: Result<T>;
 }
+
+type NativeActivity<T> = Activity<T>;
 
 interface Logger<T> {
   record: (a: Activity<T>) => void;
@@ -68,6 +72,8 @@ interface Store<T extends ItemT> {
   // activity trigger
   registerBeforeTrigger: (f: (a: Activity<T>) => any) => void;
   registerAfterTrigger: (f: (a: Activity<T>) => any) => void;
+  registerBeforeNativeTrigger: (f: (a: Activity<T>) => any) => void;
+  registerAfterNativeTrigger: (f: (a: Activity<T>) => any) => void;
   clearTriggers: () => void;
 }
 
@@ -86,6 +92,8 @@ function store<T extends ItemT>(
     private hStore: { [k: string]: T } = {};
     private beforeTriggers: ((a: Activity<T>) => any)[] = [];
     private afterTriggers: ((a: Activity<T>) => any)[] = [];
+    private beforeNativeTriggers: ((a: NativeActivity<T>) => any)[] = [];
+    private afterNativeTriggers: ((a: NativeActivity<T>) => any)[] = [];
 
     constructor(logger: Logger<T> = new GenericLogger<T>()) {
       this.logger = logger;
@@ -100,6 +108,30 @@ function store<T extends ItemT>(
     private clearAll = () => {
       this.store = {};
       this.hStore = {};
+    };
+
+    private preNativeAction = (
+      action: NativeDataAction,
+      t: T,
+      original?: T
+    ) => {
+      this.beforeNativeTriggers.forEach((f) =>
+        f({
+          typ: action,
+          original,
+          res: { success: false, statusText: "", data: t },
+        })
+      );
+    };
+
+    private postNativeAction = (action: DataAction, t: T, original?: T) => {
+      this.afterNativeTriggers.forEach((f) =>
+        f({
+          typ: action,
+          original,
+          res: { success: true, statusText: "", data: t },
+        })
+      );
     };
 
     private preAction = (action: DataAction, t: T, original?: T) => {
@@ -127,14 +159,27 @@ function store<T extends ItemT>(
 
     add = (t: T) => {
       if (t.id === -1) t.id = this.getNewId();
+      let origin = this.store[t.id];
+      this.preNativeAction(
+        origin ? DataAction.EDIT : DataAction.CREATE_NEW,
+        t,
+        origin
+      );
       this.store[t.id] = t;
+      this.postNativeAction(
+        origin ? DataAction.EDIT : DataAction.CREATE_NEW,
+        t,
+        origin
+      );
       hasher && (this.hStore[hasher(t)] = t);
     };
 
     erase = (tt: T | number) => {
       let t = typeof tt === "number" ? this.get(tt) : tt;
-      if (t.id === -1) return;
+      if (t.id === -1 || !(t.id in this.store)) return;
+      this.preNativeAction(DataAction.DELETE, t);
       delete this.store[t.id];
+      this.postNativeAction(DataAction.DELETE, t);
       hasher && delete this.hStore[hasher(t)];
     };
 
@@ -208,6 +253,14 @@ function store<T extends ItemT>(
 
     registerAfterTrigger = (f: (a: Activity<T>) => any) => {
       this.afterTriggers.push(f);
+    };
+
+    registerBeforeNativeTrigger = (f: (a: NativeActivity<T>) => any) => {
+      this.beforeNativeTriggers.push(f);
+    };
+
+    registerAfterNativeTrigger = (f: (a: NativeActivity<T>) => any) => {
+      this.afterNativeTriggers.push(f);
     };
 
     clearTriggers = () => {
