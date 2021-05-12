@@ -5,7 +5,7 @@ import store, { ItemT, ItemType } from "./Store";
 interface Log extends ItemT {
   _type: ItemType.Log;
   success?: boolean;
-  type: LogType;
+  typ: LogType;
   user: number;
   dataType: DataType;
   timestamp: Date;
@@ -20,7 +20,7 @@ function dataToObj(x: LogData): Log {
     id: x.id,
     _type: ItemType.Log,
     success: true,
-    type: x.type,
+    typ: x.typ,
     user: x.user,
     dataType: x.data_type,
     timestamp: new Date(x.timestamp),
@@ -32,7 +32,7 @@ function dataToObj(x: LogData): Log {
 function objToData(x: Log): LogData {
   return {
     id: x.id,
-    type: x.type,
+    typ: x.typ,
     user: x.user,
     data_type: x.dataType,
     timestamp: '',
@@ -66,7 +66,7 @@ const del = async (t: Log) => {
 const generator = (init?: any): Log => ({
   _type: ItemType.Log,
   id: -1,
-  type: LogType.CREATE,
+  typ: LogType.CREATE,
   user: -1,
   dataType: DataType.EMPLOYEE,
   timestamp: new Date(),

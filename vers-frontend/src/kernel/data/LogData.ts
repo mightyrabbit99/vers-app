@@ -7,7 +7,7 @@ enum LogType {
 }
 
 interface LogData extends Data {
-  type: LogType;
+  typ: LogType;
   data_type: DataType;
   user: number;
   timestamp: string;

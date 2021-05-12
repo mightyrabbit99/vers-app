@@ -238,7 +238,7 @@ class TypeChoices(models.IntegerChoices):
 
 
 class Log(models.Model):
-  type = models.IntegerField(choices=TypeChoices.choices)
+  typ = models.IntegerField(choices=TypeChoices.choices)
   data_type = models.IntegerField(choices=DataType.choices)
   user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
   timestamp = models.DateTimeField(auto_now=True)
@@ -247,9 +247,13 @@ class Log(models.Model):
   class Meta:
     db_table = 'logs'
 
+class ForecastTypChoices(models.IntegerChoices):
+  INBOUND = 0, 'INBOUND'
+  OUTBOUND = 1, 'OUTBOUND'
 
 class ForecastPack(models.Model):
   on = models.DateField(unique=True)
+  typ = models.IntegerField(choices=ForecastTypChoices.choices, default=ForecastTypChoices.INBOUND)
   owner = models.ForeignKey(
       User, related_name='forecasts', on_delete=models.SET_NULL, null=True)
 

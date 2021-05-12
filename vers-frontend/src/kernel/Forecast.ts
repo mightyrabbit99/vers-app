@@ -1,10 +1,11 @@
-import { ForecastData, FData } from "./data";
+import { ForecastData, FData, ForecastType } from "./data";
 import store, { ItemT, ItemType } from "./Store";
 import Fetcher from "./Fetcher";
 
 interface Forecast extends ItemT {
   _type: ItemType.Forecast;
   on: string;
+  typ: ForecastType;
   forecasts: FData[];
 }
 
@@ -73,6 +74,7 @@ const generator = (init?: Forecast): Forecast => {
   return {
     id: -1,
     _type: ItemType.Forecast,
+    typ: init?.typ ?? ForecastType.INBOUND,
     on: init?.on ?? "",
     forecasts: [...new Array(13).keys()]
       .map((x, idx) => idx)

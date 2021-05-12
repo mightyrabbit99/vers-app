@@ -78,7 +78,7 @@ const genDescStr = (log: Log) => {
   };
   let dateStr = log.timestamp.toLocaleDateString("my-MS");
   let timeStr = log.timestamp.toLocaleTimeString("my-MS");
-  return `[${dateStr}, ${timeStr}] ${genActionStr(log.type)} ${genDataTypeStr(
+  return `[${dateStr}, ${timeStr}] ${genActionStr(log.typ)} ${genDataTypeStr(
     log.dataType
   )} "${myGetIden(log.desc.original ?? log.desc.data)}"`;
 };
