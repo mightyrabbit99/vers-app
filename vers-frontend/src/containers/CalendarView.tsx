@@ -85,7 +85,7 @@ const CalendarView: React.FC<ICalendarViewProps> = () => {
 
   const handleFormClose = () => {
     setFormOpen(false);
-    dispatch(clearFeedback());
+    feedback && dispatch(clearFeedback());
   };
 
   let [fbOpen, setFbOpen] = React.useState(false);
@@ -116,7 +116,7 @@ const CalendarView: React.FC<ICalendarViewProps> = () => {
 
   const handleExcelFormClose = () => {
     setExcelFormOpen(false);
-    dispatch(clearFeedback());
+    feedback && dispatch(clearFeedback());
   };
 
   const handleSelectEvent = (e: Event) => {

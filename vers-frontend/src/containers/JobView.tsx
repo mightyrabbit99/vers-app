@@ -42,7 +42,7 @@ const JobView: React.FC<IJobViewProps> = (props) => {
     dispatch(delData(data));
   };
   const handleReset = () => {
-    dispatch(clearFeedback());
+    feedback && dispatch(clearFeedback());
   };
 
   return (

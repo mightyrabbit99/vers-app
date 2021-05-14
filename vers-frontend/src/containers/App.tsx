@@ -76,7 +76,7 @@ const App: React.FC<IAppProps> = (props) => {
   }, [feedback, submitting, error]);
 
   const handleClose = () => {
-    dispatch(clearFeedback());
+    feedback && feedback && dispatch(clearFeedback());
     setNoteState({ ...noteState, open: false });
   };
 

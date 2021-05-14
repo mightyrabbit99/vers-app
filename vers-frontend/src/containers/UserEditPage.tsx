@@ -12,7 +12,7 @@ const UserEdit: React.FC<IUserEditProps> = (props) => {
   const { user, feedback } = useSelector(getSession);
   React.useEffect(() => {
     return () => {
-      dispatch(clearFeedback());
+      feedback && dispatch(clearFeedback());
     };
   }, [dispatch]);
   const handleSubmit = (data: any) => {

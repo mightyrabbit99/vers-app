@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ItemType, Item } from "src/kernel";
-import { DataState, MyError } from "src/types";
+import { DataState, DownloadExcelAction, MyError } from "src/types";
 
 type DetailChange = { type: ItemType; id: number; prop: string; val: any };
 
@@ -132,7 +132,7 @@ const dataSlice = createSlice({
     },
     downloadExcel: (
       state,
-      { payload }: PayloadAction<{ type: ItemType; items?: Item[] }>
+      { payload }: PayloadAction<DownloadExcelAction["payload"]>
     ) => {},
   },
 });

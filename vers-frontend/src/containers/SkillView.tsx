@@ -43,7 +43,7 @@ const SkillView: React.FC<ISkillViewProps> = (props) => {
     dispatch(delData(data));
   };
   const handleReset = () => {
-    dispatch(clearFeedback());
+    feedback && dispatch(clearFeedback());
   };
 
   let [fbOpen, setFbOpen] = React.useState(false);

@@ -47,7 +47,7 @@ import HeadcountView from "./HeadcountView";
 import { clearFeedback, fetchData } from "src/slices/sync";
 import { logout } from "src/slices/session";
 import { selPlant } from "src/slices/data";
-import { getData, getSession } from "src/selectors";
+import { getData, getSync, getSession } from "src/selectors";
 import { AccessLevel, ItemType } from "src/kernel";
 import { initViewState, ViewContext } from "src/contexts";
 import GraphView from "./GraphView";
@@ -202,6 +202,7 @@ const Dashboard: React.FC = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { selectedPlantId: pId, plants, loading } = useSelector(getData);
+  const { feedback } = useSelector(getSync);
   const { user } = useSelector(getSession);
 
   const classes = useStyles();
@@ -235,7 +236,7 @@ const Dashboard: React.FC = () => {
 
   const handleListClick = (i: DashboardView) => () => {
     if (currView === i) return;
-    dispatch(clearFeedback());
+    feedback && dispatch(clearFeedback());
     localStorage.setItem("lastDashboardView", `${i}`);
     if (getItemType(i) === ItemType.Log) dispatch(fetchData(ItemType.Log));
     setCurrView(i);

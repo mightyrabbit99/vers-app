@@ -70,6 +70,7 @@ export interface SubmitExcelAction {
   payload: {
     type: ItemType;
     data: any;
+    options?: any;
   };
 }
 

@@ -17,11 +17,12 @@ interface IMonthRangeSliderProps {
   min: Date;
   max: Date;
   value?: Date[];
+  disabled?: boolean;
   onChange?: (val: Date[]) => any;
 }
 
 const MonthRangeSlider: React.FC<IMonthRangeSliderProps> = (props) => {
-  const { min, max, value: val, onChange } = props;
+  const { min, max, value: val, onChange, disabled } = props;
   const [months, setMonths] = React.useState<Date[]>([]);
   React.useEffect(() => {
     setMonths(getMonths(min, max));
@@ -64,6 +65,7 @@ const MonthRangeSlider: React.FC<IMonthRangeSliderProps> = (props) => {
       value={value}
       onChange={handleChange}
       valuetext={valuetext}
+      disabled={disabled}
       min={0}
       max={months.length - 1}
     />

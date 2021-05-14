@@ -91,11 +91,11 @@ function* deleteItem({ payload }: EraseAction) {
 
 function* submitExcelData({ payload }: SubmitExcelAction) {
   let { selectedPlantId: pId } = yield select(getData);
-  let { type, data } = payload;
+  let { type, data, options } = payload;
   k.setPid(pId);
   let res: Result<any>[] = [];
   try {
-    res = yield k.submitExcel(type, data);
+    res = yield k.submitExcel(type, data, options);
   } catch (e) {
     yield put(submitError({ message: `${e}` }));
   }

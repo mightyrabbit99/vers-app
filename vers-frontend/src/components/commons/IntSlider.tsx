@@ -8,10 +8,11 @@ interface IIntSliderProps {
   value?: number | number[];
   valuetext?: (i: number) => string;
   onChange?: (val: number | number[]) => any;
+  disabled?: boolean;
 }
 
 const IntSlider: React.FC<IIntSliderProps> = (props) => {
-  const { min, max, value: val, onChange, valuetext } = props;
+  const { min, max, value: val, onChange, valuetext, disabled } = props;
   const [value, setValue] = React.useState<number | number[]>(0);
   React.useEffect(() => {
     if (val === undefined) return;
@@ -47,6 +48,7 @@ const IntSlider: React.FC<IIntSliderProps> = (props) => {
       min={min}
       step={1}
       max={max}
+      disabled={disabled}
     />
   );
 };

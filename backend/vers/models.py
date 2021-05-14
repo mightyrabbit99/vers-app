@@ -253,7 +253,7 @@ class ForecastTypChoices(models.IntegerChoices):
 
 class ForecastPack(models.Model):
   on = models.DateField(unique=True)
-  typ = models.IntegerField(choices=ForecastTypChoices.choices, default=ForecastTypChoices.INBOUND)
+  sector = models.ForeignKey(Sector, related_name='forecasts', on_delete=models.CASCADE)
   owner = models.ForeignKey(
       User, related_name='forecasts', on_delete=models.SET_NULL, null=True)
 

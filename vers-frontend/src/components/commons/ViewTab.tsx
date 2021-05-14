@@ -8,10 +8,11 @@ interface TabPanelProps {
   dir?: string;
   index: any;
   value: any;
+  className?: string;
 }
 
 function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
+  const { children, value, index, className, ...other } = props;
 
   return (
     <div
@@ -19,6 +20,7 @@ function TabPanel(props: TabPanelProps) {
       hidden={value !== index}
       id={`full-width-tabpanel-${index}`}
       aria-labelledby={`full-width-tab-${index}`}
+      className={className}
       {...other}
     >
       {value === index && children}
@@ -35,15 +37,17 @@ function a11yProps(index: any) {
 
 interface TabPage {
   name: string;
+  tabPanelClass?: string;
   node: React.ReactNode;
 }
 
 interface FullWidthTabsProps {
+  tabsClass?: string;
   pages: TabPage[];
 }
 
 const FullWidthTabs: React.FC<FullWidthTabsProps> = (props) => {
-  const { pages } = props;
+  const { tabsClass, pages } = props;
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
@@ -52,7 +56,7 @@ const FullWidthTabs: React.FC<FullWidthTabsProps> = (props) => {
 
   return (
     <React.Fragment>
-      <Paper square>
+      <Paper square className={tabsClass}>
         <Tabs
           value={value}
           onChange={handleChange}
@@ -67,7 +71,12 @@ const FullWidthTabs: React.FC<FullWidthTabsProps> = (props) => {
         </Tabs>
       </Paper>
       {pages.map((x, idx) => (
-        <TabPanel key={idx} value={value} index={idx}>
+        <TabPanel
+          key={idx}
+          value={value}
+          index={idx}
+          className={x.tabPanelClass}
+        >
           {x.node}
         </TabPanel>
       ))}

@@ -100,7 +100,7 @@ class UserSerializer3(serializers.ModelSerializer):
       instance.vers_user.save()
     else:
       vers_user = models.VersUser(**vers_user_data)
-      vers_user.user = instance 
+      vers_user.user = instance
       vers_user.save()
     instance = super().update(instance, validated_data)
     lg.log_update(
@@ -146,10 +146,85 @@ class PlantSerializer(serializers.ModelSerializer):
     fields = '__all__'
 
 
+class ForecastSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = models.Forecast
+    fields = ['n', 'val']
+
+
+class ForecastPackSerializer(serializers.ModelSerializer):
+  on = serializers.DateField()
+  sector = serializers.PrimaryKeyRelatedField(
+      queryset=models.Sector.objects.all())
+  forecasts = ForecastSerializer(many=True)
+
+  def get_request_user(self):
+    user = None
+    request = self.context.get("request")
+    if request and hasattr(request, "user"):
+      user = request.user
+    return user
+
+  def create(self, validated_data):
+    g = lg.log_create(
+        data_type=lg.FORECAST,
+        user=self.get_request_user(), data=validated_data)
+    forecasts_data = validated_data.pop("forecasts")
+    new_fc = models.ForecastPack(**validated_data)
+    new_fc.save()
+
+    processed_n: Set = set()
+    for s in forecasts_data:
+      if s['n'] in processed_n:
+        continue
+      processed_n.add(s['n'])
+      new_f = models.Forecast(pack=new_fc, **s)
+      new_f.save()
+
+    g.save()
+    return new_fc
+
+  def update(self, instance, validated_data):
+    g = lg.log_update(
+        data_type=lg.FORECAST,
+        user=self.get_request_user(), data=validated_data, origin=instance)
+    forecasts_data = validated_data.pop("forecasts")
+    origin_forecasts = instance.forecasts.all()
+    n_map = {}
+    for s in origin_forecasts:
+      n_map[s.n] = s
+
+    processed_n: Set = set()
+    for s in forecasts_data:
+      if s['n'] in processed_n:
+        continue
+      processed_n.add(s['n'])
+      if s['n'] in n_map:
+        orig = n_map[s['n']]
+        orig.val = s['val']
+        orig.save()
+        n_map.pop(s['n'])
+      else:
+        new_f = models.Forecast(pack=instance, **s)
+        new_f.save()
+
+    for n in n_map:
+      n_map[n].delete()
+
+    g.save()
+    res = super().update(instance, validated_data)
+    return res
+
+  class Meta:
+    model = models.ForecastPack
+    fields = '__all__'
+
+
 class SectorSerializer(serializers.ModelSerializer):
   owner = serializers.ReadOnlyField(source=OWNER_USERNAME)
   subsectors = serializers.PrimaryKeyRelatedField(
       many=True, read_only=True)
+  forecasts = ForecastPackSerializer(many=True, read_only=True)
 
   def get_request_user(self):
     user = None
@@ -419,78 +494,6 @@ class SkillSerializer(serializers.ModelSerializer):
 class LogSerializer(serializers.ModelSerializer):
   class Meta:
     model = models.Log
-    fields = '__all__'
-
-
-class ForecastSerializer(serializers.ModelSerializer):
-  class Meta:
-    model = models.Forecast
-    fields = ['n', 'val']
-
-
-class ForecastPackSerializer(serializers.ModelSerializer):
-  on = serializers.DateField()
-  forecasts = ForecastSerializer(many=True)
-
-  def get_request_user(self):
-    user = None
-    request = self.context.get("request")
-    if request and hasattr(request, "user"):
-      user = request.user
-    return user
-
-  def create(self, validated_data):
-    g = lg.log_create(
-        data_type=lg.FORECAST,
-        user=self.get_request_user(), data=validated_data)
-    forecasts_data = validated_data.pop("forecasts")
-    new_fc = models.ForecastPack(**validated_data)
-    new_fc.save()
-
-    processed_n: Set = set()
-    for s in forecasts_data:
-      if s['n'] in processed_n:
-        continue
-      processed_n.add(s['n'])
-      new_f = models.Forecast(pack=new_fc, **s)
-      new_f.save()
-
-    g.save()
-    return new_fc
-
-  def update(self, instance, validated_data):
-    g = lg.log_update(
-        data_type=lg.FORECAST,
-        user=self.get_request_user(), data=validated_data, origin=instance)
-    forecasts_data = validated_data.pop("forecasts")
-    origin_forecasts = instance.forecasts.all()
-    n_map = {}
-    for s in origin_forecasts:
-      n_map[s.n] = s
-
-    processed_n: Set = set()
-    for s in forecasts_data:
-      if s['n'] in processed_n:
-        continue
-      processed_n.add(s['n'])
-      if s['n'] in n_map:
-        orig = n_map[s['n']]
-        orig.val = s['val']
-        orig.save()
-        n_map.pop(s['n'])
-      else:
-        new_f = models.Forecast(pack=instance, **s)
-        new_f.save()
-
-    for n in n_map:
-      n_map[n].delete()
-
-    g.save()
-    res = super().update(instance, validated_data)
-    return res
-
-  class Meta:
-    model = models.ForecastPack
     fields = '__all__'
 
 

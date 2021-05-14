@@ -924,12 +924,13 @@ class ExcelObjConverter {
     return items.map(f);
   };
 
-  convObjsToForecasts = (objs: ForecastObj[]): Forecast[] => {
+  convObjsToForecasts = (objs: ForecastObj[], options?: any): Forecast[] => {
     const st = this.forecastStore;
     let f = (obj: ForecastObj): Forecast => {
       return st.getNew({
         ...obj,
         on: new Date(obj.on).toISOString().slice(0, 10),
+        ...options,
       });
     };
     return objs.map(f);

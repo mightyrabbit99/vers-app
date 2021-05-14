@@ -41,8 +41,9 @@ const GraphForecastSettingsForm: React.FC<IGraphForecastSettingsFormProps> = (
       </Grid>
       <Grid item xs={10}>
         <MonthRangeSlider
-          min={months[0]}
-          max={months[months.length - 1]}
+          min={months[0] ?? defaultSettings.range[0]}
+          max={months[months.length - 1] ?? defaultSettings.range[1]}
+          disabled={months.length < 2}
           value={value.range}
           onChange={(x: any) => handleChange(x, "range")}
         />

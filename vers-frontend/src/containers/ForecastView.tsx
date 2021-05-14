@@ -37,7 +37,7 @@ const ForecastView: React.FC<IForecastViewProps> = (props) => {
     dispatch(delData(f));
   };
   const handleReset = () => {
-    dispatch(clearFeedback());
+    feedback && dispatch(clearFeedback());
   };
 
   let [fbOpen, setFbOpen] = React.useState(false);

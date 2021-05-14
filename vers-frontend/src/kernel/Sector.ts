@@ -1,4 +1,5 @@
 import { SectorData } from "./data";
+import { Forecast } from "./Forecast";
 import Fetcher from "./Fetcher";
 import store, { ItemT, ItemType } from "./Store";
 
@@ -7,6 +8,7 @@ interface Sector extends ItemT {
   name: string;
   plant: number;
   subsectors: number[];
+  forecasts: Forecast[];
 }
 
 function dataToObj(x: SectorData): Sector {
@@ -17,6 +19,7 @@ function dataToObj(x: SectorData): Sector {
     plant: x.plant,
     subsectors: x.subsectors,
     non_field_errors: x.non_field_errors,
+    forecasts: x.forecasts.map((y) => ({ ...y, _type: ItemType.Forecast })),
   };
 }
 
@@ -26,12 +29,13 @@ function objToData(x: Sector): SectorData {
     name: x.name,
     plant: x.plant,
     subsectors: x.subsectors,
+    forecasts: x.forecasts,
   };
 }
 
 const get = async () => {
   let res = await Fetcher.getSecs();
-  if (res.headers['content-type'] !== "application/json") return [];
+  if (res.headers["content-type"] !== "application/json") return [];
   return res.data.map(dataToObj);
 };
 
@@ -43,7 +47,11 @@ const post = async (t: Sector) => {
     if (!error.response) throw error;
     res = error.response;
   }
-  return { success: res.status === 201, statusText: res.statusText, data: dataToObj(res.data) };
+  return {
+    success: res.status === 201,
+    statusText: res.statusText,
+    data: dataToObj(res.data),
+  };
 };
 
 const put = async (t: Sector) => {
@@ -54,7 +62,11 @@ const put = async (t: Sector) => {
     if (!error.response) throw error;
     res = error.response;
   }
-  return { success: res.status === 200, statusText: res.statusText, data: dataToObj(res.data) };
+  return {
+    success: res.status === 200,
+    statusText: res.statusText,
+    data: dataToObj(res.data),
+  };
 };
 
 const del = async (t: Sector) => {
@@ -73,8 +85,15 @@ const generator = (init?: any): Sector => ({
 
 const hasher = (t: Sector) => t.name.trim().toLowerCase();
 
-const SectorStore = store<Sector>(get, post, put, del, generator, dataToObj, hasher);
-
+const SectorStore = store<Sector>(
+  get,
+  post,
+  put,
+  del,
+  generator,
+  dataToObj,
+  hasher
+);
 
 export type { Sector };
 export default SectorStore;

@@ -57,17 +57,27 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const getForecastMonths = (fs: Forecast[]) => {
-  const months = fs.map((x) => new Date(x.on));
-  return months.sort((a: Date, b: Date) => (a < b ? -1 : a === b ? 0 : 1));
+  const months = fs.flatMap((x) => {
+    let d = new Date(x.on);
+    return x.forecasts.map((y) => {
+      let dd = new Date(d);
+      dd.setMonth(dd.getMonth() + y.n);
+      return dd;
+    });
+  });
+  const cleanedMonth = [
+    ...new Set(months.map((x) => x.toISOString().slice(0, 7))),
+  ].map((x) => new Date(x));
+  return cleanedMonth.sort((a: Date, b: Date) =>
+    a < b ? -1 : a === b ? 0 : 1
+  );
 };
 
 interface IGraphForecastWidgetProps {
   forecasts: { [id: number]: Forecast };
 }
 
-const GraphForecastWidget: React.FC<IGraphForecastWidgetProps> = (
-  props
-) => {
+const GraphForecastWidget: React.FC<IGraphForecastWidgetProps> = (props) => {
   const classes = useStyles();
   const { forecasts } = props;
 

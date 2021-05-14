@@ -1,9 +1,11 @@
 import { Data } from "./Data";
+import { ForecastData } from "./ForecastData";
 
 interface SectorData extends Data {
   name: string;
   plant: number;
   subsectors: number[];
+  forecasts: ForecastData[];
 }
 
 const empty: SectorData = {
@@ -11,6 +13,7 @@ const empty: SectorData = {
   name: "",
   plant: 0,
   subsectors: [],
+  forecasts: [],
 };
 
 export type { SectorData };
