@@ -28,8 +28,8 @@ def gen_log_data(origin, data_type=None, namespace=None):
   return json.loads(json.dumps(origin, default=str))
 
 
-def log(type, data_type, user, desc, *args, **kwargs):
-  lg = Log(type=type,
+def log(typ, data_type, user, desc, *args, **kwargs):
+  lg = Log(typ=typ,
            data_type=data_type.value,
            user=user, desc={**desc, **kwargs})
   return lg
