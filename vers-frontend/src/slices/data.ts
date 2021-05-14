@@ -1,6 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ItemType, Item } from "src/kernel";
-import { DataState, DownloadExcelAction, MyError } from "src/types";
+import {
+  DataState,
+  DownloadExcelAction,
+  SaveDataAction,
+  MyError,
+  DeleteDataAction,
+} from "src/types";
 
 type DetailChange = { type: ItemType; id: number; prop: string; val: any };
 
@@ -84,9 +90,18 @@ const dataSlice = createSlice({
     calculateSuccess: (state) => {
       state.calculating = false;
     },
-    saveData: (state, { payload }: PayloadAction<Item | Item[]>) => {},
-    delData: (state, { payload }: PayloadAction<Item | Item[]>) => {},
-    _saveData: (state, { payload }: PayloadAction<Item | Item[]>) => {
+    saveData: (
+      state,
+      { payload }: PayloadAction<SaveDataAction["payload"]>
+    ) => {},
+    delData: (
+      state,
+      { payload }: PayloadAction<DeleteDataAction["payload"]>
+    ) => {},
+    _saveData: (
+      state,
+      { payload }: PayloadAction<SaveDataAction["payload"]>
+    ) => {
       if (!(payload instanceof Array)) {
         payload = [payload];
       }
@@ -100,7 +115,10 @@ const dataSlice = createSlice({
         }
       }
     },
-    _delData: (state, { payload }: PayloadAction<Item | Item[]>) => {
+    _delData: (
+      state,
+      { payload }: PayloadAction<DeleteDataAction["payload"]>
+    ) => {
       if (!(payload instanceof Array)) {
         payload = [payload];
       }

@@ -47,7 +47,7 @@ export interface EraseAction {
 
 export interface CreateNewAction {
   type: typeof createNew.type;
-  payload: Item;
+  payload: Item | Item[];
 }
 
 export interface ModifyAction {
@@ -57,7 +57,7 @@ export interface ModifyAction {
 
 export interface SaveDataAction {
   type: typeof saveData.type;
-  payload: Item;
+  payload: Item | Item[];
 }
 
 export interface DownloadExcelAction {

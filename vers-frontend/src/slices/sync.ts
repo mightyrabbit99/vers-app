@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Item, Feedback, ItemType, Result } from "src/kernel";
-import { MyError, SyncState, SubmitExcelAction } from "src/types";
+import { MyError, SyncState, SubmitExcelAction, CreateNewAction, ModifyAction, EraseAction } from "src/types";
 
 export const initialState: SyncState = {
   syncing: false,
@@ -29,15 +29,15 @@ const syncSlice = createSlice({
       state.syncing = false;
       state.feedback = payload?.data;
     },
-    createNew: (state, { payload }: PayloadAction<Item>) => {
+    createNew: (state, { payload }: PayloadAction<CreateNewAction["payload"]>) => {
       state.syncing = true;
       delete state.feedback;
     },
-    modify: (state, { payload }: PayloadAction<Item | Item[]>) => {
+    modify: (state, { payload }: PayloadAction<ModifyAction["payload"]>) => {
       state.syncing = true;
       delete state.feedback;
     },
-    erase: (state, { payload }: PayloadAction<Item | Item[]>) => {
+    erase: (state, { payload }: PayloadAction<EraseAction["payload"]>) => {
       state.syncing = true;
     },
     submitExcel: (

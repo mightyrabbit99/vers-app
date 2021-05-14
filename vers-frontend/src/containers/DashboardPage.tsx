@@ -39,10 +39,10 @@ import SectorView from "./SectorView";
 import SubsectorView from "./SubsectorView";
 import SkillView from "./SkillView";
 import EmployeeView from "./EmployeeView";
-import ForecastView from "./ForecastView";
+import ForecastView from "./ForecastView2";
 import ChangeLogView from "./ChangeLogView";
 import CalendarView from "./CalendarView";
-import HeadcountView from "./HeadcountView";
+import HeadcountView from "./HeadcountView2";
 
 import { clearFeedback, fetchData } from "src/slices/sync";
 import { logout } from "src/slices/session";
@@ -51,7 +51,6 @@ import { getData, getSync, getSession } from "src/selectors";
 import { AccessLevel, ItemType } from "src/kernel";
 import { initViewState, ViewContext } from "src/contexts";
 import GraphView from "./GraphView";
-
 
 function Copyright() {
   return (
@@ -132,15 +131,22 @@ const useStyles = makeStyles((theme) => ({
       width: theme.spacing(9),
     },
   },
-  appBarSpacer: theme.mixins.toolbar,
   content: {
     flexGrow: 1,
     height: "100vh",
     overflow: "auto",
   },
+  appBarSpacer: theme.mixins.toolbar,
   container: {
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
+    minHeight: "89vh",
+  },
+  innerContent: {
+    height: "95%",
+  },
+  footer: {
+    height: "5%",
   },
   fixedHeight: {
     height: 240,
@@ -198,7 +204,7 @@ function getItemType(i: DashboardView) {
   }
 }
 
-const Dashboard: React.FC = () => {
+const DashboardPage: React.FC = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { selectedPlantId: pId, plants, loading } = useSelector(getData);
@@ -215,13 +221,10 @@ const Dashboard: React.FC = () => {
     });
   }, [open]);
   const [currView, setCurrView] = React.useState(lastI ? parseInt(lastI) : 0);
-  const [mainAnchorEl, setMainAnchorEl] = React.useState<null | HTMLElement>(
-    null
-  );
-  const [
-    settingsAnchorEl,
-    setSettingsAnchorEl,
-  ] = React.useState<null | HTMLElement>(null);
+  const [mainAnchorEl, setMainAnchorEl] =
+    React.useState<null | HTMLElement>(null);
+  const [settingsAnchorEl, setSettingsAnchorEl] =
+    React.useState<null | HTMLElement>(null);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -487,10 +490,12 @@ const Dashboard: React.FC = () => {
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
           <Container maxWidth="lg" className={classes.container}>
-            <ViewContext.Provider value={viewState}>
-              {genView()}
-            </ViewContext.Provider>
-            <Box pt={1}>
+            <div className={classes.innerContent}>
+              <ViewContext.Provider value={viewState}>
+                {genView()}
+              </ViewContext.Provider>
+            </div>
+            <Box pt={1} className={classes.footer}>
               <Copyright />
             </Box>
           </Container>
@@ -525,4 +530,4 @@ const Dashboard: React.FC = () => {
   );
 };
 
-export default Dashboard;
+export default DashboardPage;

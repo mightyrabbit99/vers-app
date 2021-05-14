@@ -39,13 +39,18 @@ function* fetchDatas({ payload }: FetchDataAction) {
 }
 
 function* postItemThenSave({ payload }: CreateNewAction) {
+  if (!(payload instanceof Array)) {
+    payload = [payload];
+  }
   try {
-    const feedback: Result<any> = yield k.saveNew(payload);
-    if (feedback.success) {
-      yield put(submitSuccess(undefined));
-    } else {
-      yield put(submitSuccess(feedback));
+    let res: Result<any> = { success: true, statusText: "", data: {} };
+    for (let p of payload) {
+      res = yield k.saveNew(p);
+      if (!res.success) {
+        break;
+      }
     }
+    yield put(submitSuccess(res.success ? undefined : res));
   } catch (error) {
     yield put(submitError({ message: error.message }));
   }
@@ -60,7 +65,6 @@ function* putItem({ payload }: ModifyAction) {
     for (let p of payload) {
       res = yield k.save(p);
       if (!res.success) {
-        yield k.refresh();
         break;
       }
     }

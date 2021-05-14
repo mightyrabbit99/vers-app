@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row",
     height: "15%",
-    maxHeight: 60,
+    maxHeight: 55,
   },
   searchBar: {
     maxWidth: 250,
@@ -36,7 +36,8 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {},
   content: {
-    height: "100%",
+    height: "85%",
+    minHeight: 150,
     width: "100%",
     overflowX: "hidden",
   },

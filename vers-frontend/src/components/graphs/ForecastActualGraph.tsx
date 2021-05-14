@@ -74,6 +74,8 @@ const ForecastActualG: React.FC<IForecastActualGProps> = (
           display: true,
           position: "right",
         },
+        responsive: true,
+        maintainAspectRatio: false,
       }}
     />
   );

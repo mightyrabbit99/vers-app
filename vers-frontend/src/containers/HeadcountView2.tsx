@@ -6,7 +6,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import HeadcountListWidget from "src/components/HeadcountListWidget";
 import ViewTab, { TabPage } from "src/components/commons/ViewTab";
 import { getData } from "src/selectors";
-import { Forecast } from "src/kernel";
+import { Forecast, Skill } from "src/kernel";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,10 +20,24 @@ const useStyles = makeStyles((theme) => ({
 
 interface IHeadcountViewProps {}
 
+type SecSkillDict = { [secId: number]: { [id: number]: Skill } };
+
 const HeadcountView: React.FC<IHeadcountViewProps> = (props) => {
   const classes = useStyles();
   const { sectors, subsectors, calEvents, skills, employees } =
     useSelector(getData);
+
+  const [secSkillPart, setSecSkillPart] = React.useState<SecSkillDict>({});
+  React.useEffect(() => {
+    setSecSkillPart(
+      Object.values(skills).reduce((pr, cu) => {
+        let secId = sectors[subsectors[cu.subsector].sector].id;
+        if (!(secId in pr)) pr[secId] = {};
+        pr[secId][cu.id] = cu;
+        return pr;
+      }, {} as SecSkillDict)
+    );
+  }, [sectors, subsectors, skills]);
 
   const [sectorTabs, setSectorTabs] = React.useState<number[]>([]);
   const genPages = React.useCallback(
@@ -32,7 +46,7 @@ const HeadcountView: React.FC<IHeadcountViewProps> = (props) => {
         name: sectors[x].name,
         node: (
           <HeadcountListWidget
-            skills={skills}
+            skills={secSkillPart[x] ?? {}}
             subsectors={subsectors}
             forecasts={sectors[x].forecasts.reduce((pr, cu) => {
               pr[cu.id] = cu;
@@ -43,7 +57,7 @@ const HeadcountView: React.FC<IHeadcountViewProps> = (props) => {
           />
         ),
       })),
-    [sectors, sectorTabs]
+    [sectorTabs, sectors, subsectors, secSkillPart, employees, calEvents]
   );
   React.useEffect(() => {
     setSectorTabs(

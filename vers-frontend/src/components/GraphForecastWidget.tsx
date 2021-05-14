@@ -24,12 +24,9 @@ const getMonths = (min: Date, max: Date) => {
 };
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-    height: "100%",
-  },
   settingsContainer: {
     height: "10%",
+    minHeight: 50,
     width: "100%",
     position: "relative",
   },
@@ -38,6 +35,7 @@ const useStyles = makeStyles((theme) => ({
   },
   graph: {
     height: "90%",
+    minHeight: 250,
     width: "100%",
   },
   form: {
@@ -97,7 +95,7 @@ const GraphForecastWidget: React.FC<IGraphForecastWidgetProps> = (props) => {
   };
 
   return (
-    <div className={classes.root}>
+    <React.Fragment>
       <div className={classes.settingsContainer}>
         <IconButton
           className={classes.settingsIcon}
@@ -142,7 +140,7 @@ const GraphForecastWidget: React.FC<IGraphForecastWidgetProps> = (props) => {
           </div>
         </div>
       </MyDialog>
-    </div>
+    </React.Fragment>
   );
 };
 

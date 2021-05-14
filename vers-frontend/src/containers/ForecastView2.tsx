@@ -24,11 +24,10 @@ const useStyles = makeStyles((theme) => ({
     height: "10%",
   },
   widget2: {
-    height: "80%",
+    height: "90%",
+    minHeight: 400,
   },
 }));
-
-type ForecastState = { [sector: number]: { [id: number]: Forecast } };
 
 interface IForecastViewProps {}
 
@@ -38,57 +37,53 @@ const ForecastView: React.FC<IForecastViewProps> = (props) => {
   const { sectors, newForecast } = useSelector(getData);
   const { feedback } = useSelector(getSync);
 
-  const handleForecastSubmit = (...f: Forecast[]) => {
-    dispatch(saveData(f));
-  };
-
-  const handleForecastDelete = (...f: Forecast[]) => {
-    dispatch(delData(f));
-  };
-  const handleReset = () => {
-    feedback && dispatch(clearFeedback());
-  };
-
   const [sbOpen, setSbOpen] = React.useState(false);
-  const [fb, setFb] = React.useState<Feedback<Forecast>>();
-  React.useEffect(() => {
-    setFb(feedback as Feedback<Forecast>);
-  }, [feedback]);
-  const handleUploadExcel = async (sectorId: number, file: File) => {
-    try {
-      let ans = await ExcelProcessor3.readForecastFile(file);
-      dispatch(
-        submitExcel({
-          type: ItemType.Forecast,
-          data: ans,
-          options: { sector: sectorId },
-        })
-      );
-    } catch (e) {
-      setSbOpen(true);
-    }
-  };
-
   const handleFbClose = () => {
     setSbOpen(false);
   };
 
-  const handleExcelDownloadClick = async (items: Forecast[]) => {
-    dispatch(
-      downloadExcel({
-        type: ItemType.Forecast,
-        items,
-      })
-    );
-  };
-
   const [sectorTabs, setSectorTabs] = React.useState<number[]>([]);
-  const genPages = React.useCallback(
-    (): TabPage[] =>
-      sectorTabs.map((x) => ({
-        name: sectors[x].name,
-        tabPanelClass: classes.widget2,
-        node: (
+  const genPages = React.useCallback((): TabPage[] => {
+    const handleForecastSubmit = (...f: Forecast[]) => {
+      dispatch(saveData(f));
+    };
+
+    const handleForecastDelete = (...f: Forecast[]) => {
+      dispatch(delData(f));
+    };
+
+    const handleReset = () => {
+      feedback && dispatch(clearFeedback());
+    };
+
+    const handleUploadExcel = async (sectorId: number, file: File) => {
+      try {
+        let ans = await ExcelProcessor3.readForecastFile(file);
+        dispatch(
+          submitExcel({
+            type: ItemType.Forecast,
+            data: ans,
+            options: { sector: sectorId },
+          })
+        );
+      } catch (e) {
+        setSbOpen(true);
+      }
+    };
+
+    const handleExcelDownloadClick = async (items: Forecast[]) => {
+      dispatch(
+        downloadExcel({
+          type: ItemType.Forecast,
+          items,
+        })
+      );
+    };
+
+    return sectorTabs.map((x) => ({
+      name: sectors[x].name,
+      node: (
+        <div className={classes.widget2}>
           <ForecastListWidget
             title="Forecasts"
             lst={sectors[x].forecasts.reduce((pr, cu) => {
@@ -100,7 +95,11 @@ const ForecastView: React.FC<IForecastViewProps> = (props) => {
                 ? { ...newForecast, sector: sectors[x].id }
                 : undefined
             }
-            feedback={fb?.id === sectors[x].id ? fb : undefined}
+            feedback={
+              feedback?.id === sectors[x].id
+                ? (feedback as Feedback<Forecast>)
+                : undefined
+            }
             onSubmit={handleForecastSubmit}
             onDelete={handleForecastDelete}
             onReset={handleReset}
@@ -110,10 +109,11 @@ const ForecastView: React.FC<IForecastViewProps> = (props) => {
               sectors[x].forecasts
             )}
           />
-        ),
-      })),
-    [sectors, sectorTabs]
-  );
+        </div>
+      ),
+    }));
+  }, [classes.widget2, feedback, newForecast, sectors, sectorTabs, dispatch]);
+
   React.useEffect(() => {
     setSectorTabs(
       Object.values(sectors)

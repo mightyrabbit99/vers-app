@@ -124,11 +124,19 @@ function* delDataCascadeThenCalculate({ payload }: DeleteDataAction): any {
 }
 
 function* saveDataCascadeThenCalculate({ payload }: SaveDataAction) {
-  if (payload.id === -1) {
-    yield put(createNew(payload));
-  } else {
-    yield put(modify(payload));
+  if (!(payload instanceof Array)) {
+    payload = [payload];
   }
+  let part = payload.reduce((pr, cu) => {
+    if (cu.id === -1) {
+      pr.create.push(cu);
+    } else {
+      pr.modify.push(cu);
+    }
+    return pr;
+  }, { create: [] as typeof payload, modify: [] as typeof payload});
+  yield part.create.length > 0 && put(createNew(payload));
+  yield part.modify.length > 0 && put(modify(payload));
 }
 
 function* downExcel({ payload }: DownloadExcelAction) {

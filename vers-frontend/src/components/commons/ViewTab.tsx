@@ -1,7 +1,24 @@
 import * as React from "react";
+import clsx from "clsx";
+import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
+
+const r = (x: number | undefined, n: number, d: number) => x ? x * n / d : x;
+
+const useStyles = makeStyles((theme) => ({
+  tabs: {
+    height: "10%",
+    minHeight: (props: any) => r(props.minHeight, 10, 100) ?? 45,
+    width: "100%",
+  },
+  tabContent: {
+    height: "90%",
+    minHeight: (props: any) => r(props.minHeight, 90, 100) ?? 240,
+    width: "100%",
+  },
+}));
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -44,10 +61,12 @@ interface TabPage {
 interface FullWidthTabsProps {
   tabsClass?: string;
   pages: TabPage[];
+  [style: string]: any;
 }
 
 const FullWidthTabs: React.FC<FullWidthTabsProps> = (props) => {
-  const { tabsClass, pages } = props;
+  const { tabsClass, pages, ...styles } = props;
+  const classes = useStyles(styles);
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
@@ -56,7 +75,7 @@ const FullWidthTabs: React.FC<FullWidthTabsProps> = (props) => {
 
   return (
     <React.Fragment>
-      <Paper square className={tabsClass}>
+      <Paper square className={clsx(classes.tabs, tabsClass)}>
         <Tabs
           value={value}
           onChange={handleChange}
@@ -75,7 +94,7 @@ const FullWidthTabs: React.FC<FullWidthTabsProps> = (props) => {
           key={idx}
           value={value}
           index={idx}
-          className={x.tabPanelClass}
+          className={clsx(classes.tabContent, x.tabPanelClass)}
         >
           {x.node}
         </TabPanel>
