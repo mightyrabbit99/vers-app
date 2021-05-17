@@ -501,7 +501,7 @@ class Kernel {
       case ItemType.Forecast:
         return Promise.all(
           conv
-            .convObjsToForecasts(data as ForecastObj[], options)
+            .convObjsToForecasts(data as ForecastObj[])
             .map(this.forecastStore.submitOrNew)
         );
       case ItemType.CalEvent:

@@ -5,6 +5,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
 import SettingsIcon from "@material-ui/icons/Settings";
 import Typography from "@material-ui/core/Typography";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 
@@ -153,18 +155,21 @@ const GraphForecastWidget: React.FC<IGraphForecastWidgetProps> = (props) => {
         >
           Forecasts
         </Typography>
-        <Select
-          labelId="demo-simple-select-label"
-          value={selSectorId ?? ""}
-          disabled={_.isEmpty(sectors)}
-          onClick={handleSelSector}
-        >
-          {Object.values(sectors).map((x, idx) => (
-            <MenuItem key={idx} value={x.id}>
-              {x.name}
-            </MenuItem>
-          ))}
-        </Select>
+        <FormControl>
+          <InputLabel id="demo-simple-select-label">Sector</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            value={selSectorId ?? ""}
+            disabled={_.isEmpty(sectors)}
+            onClick={handleSelSector}
+          >
+            {Object.values(sectors).map((x, idx) => (
+              <MenuItem key={idx} value={x.id}>
+                {x.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <IconButton
           className={classes.settingsIcon}
           onClick={() => setFormOpen(true)}

@@ -77,6 +77,7 @@ interface CalEventObj extends ExcelObjT {
 interface ForecastObj extends ExcelObjT {
   _type: ItemType.Forecast;
   on: number;
+  sector: string;
   forecasts: { n: number; val: number }[];
 }
 
@@ -132,7 +133,8 @@ function checkSkillObj(o: SkillObj) {
   // TODO
 }
 
-const readSectorSheet = (ws: Excel.Worksheet): SectorObj[] => {
+const readSectorBook = (wb: Excel.Workbook): SectorObj[] => {
+  let ws = wb.worksheets[0];
   let ans: SectorObj[] = [];
   let plant, name;
   function checkRow(row: Excel.Row) {
@@ -164,7 +166,8 @@ const readSectorSheet = (ws: Excel.Worksheet): SectorObj[] => {
   return ans;
 };
 
-const readSubsectorSheet = (ws: Excel.Worksheet): SubsectorObj[] => {
+const readSubsectorBook = (wb: Excel.Workbook): SubsectorObj[] => {
+  let ws = wb.worksheets[0];
   let ans: SubsectorObj[] = [];
   let plant, sector, name, unit, cycleTime, efficiency;
   function checkRow(row: Excel.Row) {
@@ -176,12 +179,7 @@ const readSubsectorSheet = (ws: Excel.Worksheet): SubsectorObj[] => {
       if (rowIndex === 1 || !checkRow(row)) return;
       const values: CValMap = row.values as Excel.CellValue[];
       [plant, sector, name, unit, cycleTime, efficiency] = [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
+        1, 2, 3, 4, 5, 6,
       ].map((x) => (values[x] ? `${values[x]}`.trim() : ""));
       if (name.length === 0) return;
       if (plant.length > 0 || sector.length > 0) {
@@ -210,7 +208,8 @@ const readSubsectorSheet = (ws: Excel.Worksheet): SubsectorObj[] => {
   return ans;
 };
 
-const readSkillSheet = (ws: Excel.Worksheet): SkillObj[] => {
+const readSkillBook = (wb: Excel.Workbook): SkillObj[] => {
+  let ws = wb.worksheets[0];
   let ans: SkillObj[] = [];
   let plant, sector, subsector, name, priority, percentageOfSubsector;
   function checkRow(row: Excel.Row) {
@@ -263,13 +262,14 @@ const readSkillSheet = (ws: Excel.Worksheet): SkillObj[] => {
   return ans;
 };
 
-const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
+const readEmployeeBook = (wb: Excel.Workbook): EmployeeObj[] => {
+  let ws = wb.worksheets[0];
   function getSkillDict() {
     function checkEmpSkillCol(c: Excel.Column) {
       return !checkColAllEmpty([1, 2, 3])(c);
     }
     let sector, subsec, name;
-    let skillDict: { [i: number]: SkillObj } = {};
+    let ans: { [i: number]: SkillObj } = {};
     let lastSector = emptySector,
       lastSubsector = emptySubsector;
     for (let i = 13; checkEmpSkillCol(ws.getColumn(i)); i++) {
@@ -294,14 +294,14 @@ const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
         };
       }
 
-      skillDict[i] = {
+      ans[i] = {
         _type: ItemType.Skill,
         line: i,
         name,
         subsector: lastSubsector,
       };
     }
-    return skillDict;
+    return ans;
   }
   const skillDict = getSkillDict();
   let no,
@@ -371,7 +371,8 @@ const readEmployeeSheet = (ws: Excel.Worksheet): EmployeeObj[] => {
   return ans;
 };
 
-const readCalEventSheet = (ws: Excel.Worksheet): CalEventObj[] => {
+const readCalEventBook = (wb: Excel.Workbook): CalEventObj[] => {
+  let ws = wb.worksheets[0];
   let ans: CalEventObj[] = [];
   let name, start, end, eventType;
   function checkRow(row: Excel.Row) {
@@ -396,41 +397,46 @@ const readCalEventSheet = (ws: Excel.Worksheet): CalEventObj[] => {
   return ans;
 };
 
-const readForecastSheet = (ws: Excel.Worksheet): ForecastObj[] => {
+const readForecastBook = (wb: Excel.Workbook): ForecastObj[] => {
   let ans: ForecastObj[] = [];
-  let on: string, forecasts: string[];
-  function checkRow(row: Excel.Row) {
-    return (
-      !checkRowSomeEmpty([1])(row) &&
-      checkRowLegal({
-        1: (s) => !isNaN(new Date(s).getTime()),
-      })(row)
-    );
-  }
-  ws.eachRow((row, rowIndex) => {
-    if (rowIndex === 1 || !checkRow(row)) return;
-    const values: CValMap = row.values as Excel.CellValue[];
-    [on, ...forecasts] = [...Array(14).keys()]
-      .map((x) => x + 1)
-      .map((x) => `${values[x]}`.trim());
-    ans.push({
-      _type: ItemType.Forecast,
-      line: rowIndex,
-      on: Date.parse(on),
-      forecasts: forecasts.map((x, idx) => ({
-        n: idx,
-        val: isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10),
-      })),
+  wb.eachSheet((ws, id) => {
+    let sectorName = ws.name;
+    let on: string, forecasts: string[];
+    function checkRow(row: Excel.Row) {
+      return (
+        !checkRowSomeEmpty([1])(row) &&
+        checkRowLegal({
+          1: (s) => !isNaN(new Date(s).getTime()),
+        })(row)
+      );
+    }
+    ws.eachRow((row, rowIndex) => {
+      if (rowIndex === 1 || !checkRow(row)) return;
+      const values: CValMap = row.values as Excel.CellValue[];
+      [on, ...forecasts] = [...Array(14).keys()]
+        .map((x) => x + 1)
+        .map((x) => `${values[x]}`.trim());
+      ans.push({
+        _type: ItemType.Forecast,
+        line: rowIndex,
+        on: Date.parse(on),
+        sector: sectorName,
+        forecasts: forecasts.map((x, idx) => ({
+          n: idx,
+          val: isNaN(parseInt(x, 10)) ? 0 : parseInt(x, 10),
+        })),
+      });
     });
   });
   return ans;
 };
 
-const employeeSheetWriter = (emps: EmployeeObj[]) => (ws: Excel.Worksheet) => {
+const employeeBookWriter = (emps: EmployeeObj[]) => (wb: Excel.Workbook) => {
   let skillSet = emps.reduce((prev, curr) => {
     curr.skills.forEach((x) => prev.add(x.skill.name));
     return prev;
   }, new Set());
+  const ws = wb.addWorksheet("Sheet1");
   ws.columns = [
     { header: "Sesa Id", key: "sesaId" },
     { header: "First Name", key: "firstName" },
@@ -455,7 +461,8 @@ const employeeSheetWriter = (emps: EmployeeObj[]) => (ws: Excel.Worksheet) => {
   ws.addRows(emps.map(genEmpCol));
 };
 
-const skillSheetWriter = (skills: SkillObj[]) => (ws: Excel.Worksheet) => {
+const skillBookWriter = (skills: SkillObj[]) => (wb: Excel.Workbook) => {
+  const ws = wb.addWorksheet("Sheet1");
   ws.columns = [
     { header: "Name", key: "name", width: 20 },
     { header: "Subsector", key: "subsector" },
@@ -466,21 +473,22 @@ const skillSheetWriter = (skills: SkillObj[]) => (ws: Excel.Worksheet) => {
   ws.addRows(skills);
 };
 
-const subsectorSheetWriter = (subsectors: SubsectorObj[]) => (
-  ws: Excel.Worksheet
-) => {
-  ws.columns = [
-    { header: "Name", key: "name", width: 20 },
-    { header: "Sector", key: "sector" },
-    { header: "Unit", key: "unit" },
-    { header: "Cycle Time", key: "cycleTime" },
-    { header: "Efficiency", key: "efficiency" },
-  ] as Excel.Column[];
+const subsectorBookWriter =
+  (subsectors: SubsectorObj[]) => (wb: Excel.Workbook) => {
+    const ws = wb.addWorksheet("Sheet1");
+    ws.columns = [
+      { header: "Name", key: "name", width: 20 },
+      { header: "Sector", key: "sector" },
+      { header: "Unit", key: "unit" },
+      { header: "Cycle Time", key: "cycleTime" },
+      { header: "Efficiency", key: "efficiency" },
+    ] as Excel.Column[];
 
-  ws.addRows(subsectors);
-};
+    ws.addRows(subsectors);
+  };
 
-const sectorSheetWriter = (sectors: SectorObj[]) => (ws: Excel.Worksheet) => {
+const sectorBookWriter = (sectors: SectorObj[]) => (wb: Excel.Workbook) => {
+  const ws = wb.addWorksheet("Sheet1");
   ws.columns = [
     { header: "Name", key: "name", width: 20 },
     { header: "Plant", key: "plant" },
@@ -489,56 +497,62 @@ const sectorSheetWriter = (sectors: SectorObj[]) => (ws: Excel.Worksheet) => {
   ws.addRows(sectors);
 };
 
-const calEventSheetWriter = (calEvents: CalEventObj[]) => (
-  ws: Excel.Worksheet
-) => {
-  ws.columns = [
-    { header: "Start Date", key: "start" },
-    { header: "End Date", key: "end" },
-    { header: "Event", key: "name" },
-    { header: "Event Type", key: "eventType" },
-  ] as Excel.Column[];
+const calEventBookWriter =
+  (calEvents: CalEventObj[]) => (wb: Excel.Workbook) => {
+    const ws = wb.addWorksheet("Sheet1");
+    ws.columns = [
+      { header: "Start Date", key: "start" },
+      { header: "End Date", key: "end" },
+      { header: "Event", key: "name" },
+      { header: "Event Type", key: "eventType" },
+    ] as Excel.Column[];
 
-  ws.addRows(
-    calEvents.map((x) => ({
-      ...x,
-      start: new Date(x.start).toISOString().slice(0, 10),
-      end: new Date(x.end).toISOString().slice(0, 10),
-    }))
-  );
-};
+    ws.addRows(
+      calEvents.map((x) => ({
+        ...x,
+        start: new Date(x.start).toISOString().slice(0, 10),
+        end: new Date(x.end).toISOString().slice(0, 10),
+      }))
+    );
+  };
 
-const forecastSheetWriter = (forecasts: ForecastObj[]) => (
-  ws: Excel.Worksheet
-) => {
-  let zwoelf = [...Array(12).keys()].map((x) => x + 1);
-  ws.columns = [
-    { header: "On", key: "on" },
-    { header: "Actual", key: 0 },
-    ...zwoelf.map((x) => ({ header: `n + ${x}`, key: x })),
-  ] as Excel.Column[];
+const forecastBookWriter =
+  (forecasts: ForecastObj[]) => (wb: Excel.Workbook) => {
+    if (forecasts.length === 0) {
+      wb.addWorksheet("Sheet1");
+      return;
+    }
+    const forecastMap = genMap(forecasts, (x) => x.sector);
+    Object.entries(forecastMap).forEach(([kk, fLst]) => {
+      const ws = wb.addWorksheet(kk);
+      let zwoelf = [...Array(12).keys()].map((x) => x + 1);
+      ws.columns = [
+        { header: "On", key: "on" },
+        { header: "Actual", key: 0 },
+        ...zwoelf.map((x) => ({ header: `n + ${x}`, key: x })),
+      ] as Excel.Column[];
 
-  ws.addRows(
-    forecasts.map((fo) => ({
-      on: new Date(fo.on).toISOString().slice(0, 7),
-      ...fo.forecasts.reduce((pr, cu) => {
-        pr[cu.n] = cu.val;
-        return pr;
-      }, {} as { [n: number]: number }),
-    }))
-  );
-};
+      ws.addRows(
+        fLst.map((fo) => ({
+          on: new Date(fo.on).toISOString().slice(0, 7),
+          ...fo.forecasts.reduce((pr, cu) => {
+            pr[cu.n] = cu.val;
+            return pr;
+          }, {} as { [n: number]: number }),
+        }))
+      );
+    });
+  };
 
 async function readBuffer<T>(
   b: Buffer,
-  read: (ws: Excel.Worksheet) => T
+  read: (ws: Excel.Workbook) => T
 ): Promise<T> {
   return new Promise(async (res, rej) => {
     try {
       const wb = new Excel.Workbook();
       const r = await wb.xlsx.load(b);
-      let sheet = r.getWorksheet("Sheet1");
-      res(read(sheet));
+      res(read(r));
     } catch (e) {
       rej(e);
     }
@@ -547,7 +561,7 @@ async function readBuffer<T>(
 
 async function readFile<T>(
   f: File,
-  read: (ws: Excel.Worksheet) => T
+  read: (ws: Excel.Workbook) => T
 ): Promise<T> {
   return new Promise((res, rej) => {
     const reader = new FileReader();
@@ -563,98 +577,92 @@ async function readFile<T>(
   });
 }
 
-async function genFile(...sheetWriters: Array<(ws: Excel.Worksheet) => void>) {
+async function genFile(writer: (wb: Excel.Workbook) => void) {
   const wb = new Excel.Workbook();
   wb.creator = "Me";
   wb.lastModifiedBy = "Her";
   wb.created = new Date();
   wb.modified = new Date();
-
-  for (let i = 0; i < sheetWriters.length; i++) {
-    const writer = sheetWriters[i];
-    const sheet = wb.addWorksheet(`Sheet${i + 1}`);
-    writer(sheet);
-  }
-
-  return await wb.xlsx.writeBuffer();
+  writer(wb);
+  return wb.xlsx.writeBuffer();
 }
 
 class ExcelProcessor3 {
   static readSectorFile = async (file: File) => {
-    return await readFile(file, readSectorSheet);
+    return readFile(file, readSectorBook);
   };
   static readSubsectorFile = async (file: File) => {
-    return await readFile(file, readSubsectorSheet);
+    return readFile(file, readSubsectorBook);
   };
   static readSkillFile = async (file: File) => {
-    return await readFile(file, readSkillSheet);
+    return readFile(file, readSkillBook);
   };
   static readEmployeeFile = async (file: File) => {
-    return await readFile(file, readEmployeeSheet);
+    return readFile(file, readEmployeeBook);
   };
   static readCalEventFile = async (file: File) => {
-    return await readFile(file, readCalEventSheet);
+    return readFile(file, readCalEventBook);
   };
   static readForecastFile = async (file: File) => {
-    return await readFile(file, readForecastSheet);
+    return readFile(file, readForecastBook);
   };
   static readBuffer = async (type: ItemType, buffer: Buffer) => {
     switch (type) {
       case ItemType.Sector:
-        return await readBuffer(buffer, readSectorSheet);
+        return readBuffer(buffer, readSectorBook);
       case ItemType.Subsector:
-        return await readBuffer(buffer, readSubsectorSheet);
+        return readBuffer(buffer, readSubsectorBook);
       case ItemType.Skill:
-        return await readBuffer(buffer, readSkillSheet);
+        return readBuffer(buffer, readSkillBook);
       case ItemType.Employee:
-        return await readBuffer(buffer, readEmployeeSheet);
+        return readBuffer(buffer, readEmployeeBook);
       case ItemType.CalEvent:
-        return await readBuffer(buffer, readCalEventSheet);
+        return readBuffer(buffer, readCalEventBook);
       case ItemType.Forecast:
-        return await readBuffer(buffer, readForecastSheet);
+        return readBuffer(buffer, readForecastBook);
       default:
         return [];
     }
   };
 
   static genSectorFile = async (sectors: SectorObj[]) => {
-    return await genFile(sectorSheetWriter(sectors));
+    return genFile(sectorBookWriter(sectors));
   };
 
   static genSubsectorFile = async (subsectors: SubsectorObj[]) => {
-    return await genFile(subsectorSheetWriter(subsectors));
+    return genFile(subsectorBookWriter(subsectors));
   };
 
   static genSkillFile = async (skills: SkillObj[]) => {
-    return await genFile(skillSheetWriter(skills));
+    return genFile(skillBookWriter(skills));
   };
 
   static genEmployeeFile = async (emps: EmployeeObj[]) => {
-    return await genFile(employeeSheetWriter(emps));
+    return genFile(employeeBookWriter(emps));
   };
 
   static genCalEventFile = async (calEvents: CalEventObj[]) => {
-    return await genFile(calEventSheetWriter(calEvents));
+    return genFile(calEventBookWriter(calEvents));
   };
 
   static genForecastFile = async (forecasts: ForecastObj[]) => {
-    return await genFile(forecastSheetWriter(forecasts));
+    return genFile(forecastBookWriter(forecasts));
   };
 
   static genFile = async (type: ItemType, objs: ExcelObj[]) => {
     switch (type) {
       case ItemType.Sector:
-        return await ExcelProcessor3.genSectorFile(objs as SectorObj[]);
+        return ExcelProcessor3.genSectorFile(objs as SectorObj[]);
       case ItemType.Subsector:
-        return await ExcelProcessor3.genSubsectorFile(objs as SubsectorObj[]);
+        return ExcelProcessor3.genSubsectorFile(objs as SubsectorObj[]);
       case ItemType.Skill:
-        return await ExcelProcessor3.genSkillFile(objs as SkillObj[]);
+        return ExcelProcessor3.genSkillFile(objs as SkillObj[]);
       case ItemType.Employee:
-        return await ExcelProcessor3.genEmployeeFile(objs as EmployeeObj[]);
+        return ExcelProcessor3.genEmployeeFile(objs as EmployeeObj[]);
       case ItemType.CalEvent:
-        return await ExcelProcessor3.genCalEventFile(objs as CalEventObj[]);
+        return ExcelProcessor3.genCalEventFile(objs as CalEventObj[]);
       case ItemType.Forecast:
-        return await ExcelProcessor3.genForecastFile(objs as ForecastObj[]);
+        return ExcelProcessor3.genForecastFile(objs as ForecastObj[]);
       default:
         return null;
     }
@@ -924,13 +932,17 @@ class ExcelObjConverter {
     return items.map(f);
   };
 
-  convObjsToForecasts = (objs: ForecastObj[], options?: any): Forecast[] => {
+  convObjsToForecasts = (objs: ForecastObj[]): Forecast[] => {
     const st = this.forecastStore;
+    const sectorMap = genMap(this.secStore.getLst(), (x) => x.name);
     let f = (obj: ForecastObj): Forecast => {
+      if (!(obj.sector in sectorMap)) {
+        throw new Error(`Sector ${obj.sector} does not exist`);
+      }
       return st.getNew({
         ...obj,
+        sector: sectorMap[obj.sector][0].id,
         on: new Date(obj.on).toISOString().slice(0, 10),
-        ...options,
       });
     };
     return objs.map(f);
@@ -941,6 +953,7 @@ class ExcelObjConverter {
       _type: x._type,
       line: idx,
       on: new Date(x.on).getTime(),
+      sector: this.secStore.get(x.sector).name,
       forecasts: x.forecasts,
     });
     return items.map(f);
