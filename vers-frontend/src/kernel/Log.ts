@@ -8,7 +8,8 @@ interface Log extends ItemT {
   typ: LogType;
   user: number;
   dataType: DataType;
-  timestamp: Date;
+  dateStr: string;
+  timeStr: string;
   desc: {
     original?: any;
     data?: any;
@@ -23,7 +24,8 @@ function dataToObj(x: LogData): Log {
     typ: x.typ,
     user: x.user,
     dataType: x.data_type,
-    timestamp: new Date(x.timestamp),
+    dateStr: new Date(x.timestamp).toLocaleDateString("my-MS"),
+    timeStr: new Date(x.timestamp).toLocaleTimeString("my-MS"),
     desc: x.desc,
     non_field_errors: x.non_field_errors,
   };
@@ -35,14 +37,14 @@ function objToData(x: Log): LogData {
     typ: x.typ,
     user: x.user,
     data_type: x.dataType,
-    timestamp: '',
+    timestamp: "",
     desc: x.desc,
   };
 }
 
 const get = async () => {
   let res = await Fetcher.getLogs();
-  if (res.headers['content-type'] !== "application/json") return [];
+  if (res.headers["content-type"] !== "application/json") return [];
   return res.data.map(dataToObj);
 };
 
@@ -69,7 +71,8 @@ const generator = (init?: any): Log => ({
   typ: LogType.CREATE,
   user: -1,
   dataType: DataType.EMPLOYEE,
-  timestamp: new Date(),
+  dateStr: "",
+  timeStr: "",
   desc: {},
 });
 

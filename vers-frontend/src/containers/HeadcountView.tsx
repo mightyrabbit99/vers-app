@@ -1,7 +1,7 @@
 import * as React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useSelector } from "react-redux";
-import HeadcountListWidget from "src/components/HeadcountListWidget";
+import HeadcountListWidget from "src/components/HeadcountListWidget2";
 import { getData } from "src/selectors";
 
 const useStyles = makeStyles((theme) => ({
@@ -15,7 +15,7 @@ interface IHeadcountViewProps {}
 
 const HeadcountView: React.FC<IHeadcountViewProps> = (props) => {
   const classes = useStyles();
-  const { skills, subsectors, forecasts, calEvents, employees } = useSelector(
+  const { sectors, subsectors, skills, calEvents, employees } = useSelector(
     getData
   );
   return (
@@ -23,7 +23,7 @@ const HeadcountView: React.FC<IHeadcountViewProps> = (props) => {
       <HeadcountListWidget
         skills={skills}
         subsectors={subsectors}
-        forecasts={forecasts}
+        sectors={sectors}
         calEvents={calEvents}
         employees={employees}
       />

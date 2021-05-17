@@ -17,6 +17,13 @@ const useStyles = makeStyles((theme) => ({
     height: "15%",
     maxHeight: 55,
   },
+  leftFiller: {
+    minWidth: 20,
+    width: "5%",
+  },
+  snippets: {
+    padding: 10,
+  },
   searchBar: {
     maxWidth: 250,
     minWidth: 200,
@@ -66,6 +73,7 @@ interface IListWidgetProps {
   excelFeedback?: any;
   excelTemplateUrl?: string;
   children: React.ReactNode;
+  snippets?: React.ReactNode;
 }
 
 const ListWidget: React.FC<IListWidgetProps> = (props) => {
@@ -82,6 +90,7 @@ const ListWidget: React.FC<IListWidgetProps> = (props) => {
     excelFeedback,
     excelTemplateUrl,
     children,
+    snippets,
   } = props;
 
   const handleSearchBarChange = (e: React.ChangeEvent<any>) => {
@@ -115,6 +124,10 @@ const ListWidget: React.FC<IListWidgetProps> = (props) => {
         >
           {title}
         </Typography>
+        <div className={classes.leftFiller} />
+        {snippets ? (
+          <div className={classes.snippets}>{snippets}</div>
+        ) : null}
         {searchOnChange ? (
           <TextField
             className={classes.searchBar}

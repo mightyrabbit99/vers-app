@@ -4,7 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 
-import ForecastListWidget from "src/components/ForecastListWidget";
+import ForecastListWidget from "src/components/ForecastListWidget2";
 import { getData, getSync } from "src/selectors";
 import { delData, saveData, downloadExcel } from "src/slices/data";
 import { clearFeedback, submitExcel } from "src/slices/sync";
@@ -26,7 +26,7 @@ interface IForecastViewProps {}
 const ForecastView: React.FC<IForecastViewProps> = (props) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const { forecasts, newForecast } = useSelector(getData);
+  const { sectors, newForecast } = useSelector(getData);
   const { feedback } = useSelector(getSync);
 
   const handleForecastSubmit = (...f: Forecast[]) => {
@@ -63,7 +63,7 @@ const ForecastView: React.FC<IForecastViewProps> = (props) => {
       <div className={classes.widget}>
         <ForecastListWidget
           title="Forecast"
-          lst={forecasts}
+          lst={sectors}
           newForecast={newForecast}
           feedback={feedback as Feedback<Forecast>}
           onSubmit={handleForecastSubmit}

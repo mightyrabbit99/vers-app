@@ -13,6 +13,7 @@ const colors = [
   "rgb(255, 99, 132)",
   "rgb(75, 192, 192)",
   "rgba(117, 210, 50, 1)",
+  "rgba(128, 128, 100, 1)",
 ];
 
 const ForecastActualG: React.FC<IForecastActualGProps> = (

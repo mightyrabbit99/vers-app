@@ -127,7 +127,7 @@ const SkillFF: React.FC<ISkillFFProps> = (props) => {
           <TextField
             required
             fullWidth
-            label="% of Sector"
+            label="% of Subsector"
             variant="filled"
             {...genActiveProps("percentageOfSubsector")}
             onBlur={numValueSetter}

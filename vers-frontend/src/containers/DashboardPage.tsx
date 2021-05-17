@@ -39,10 +39,10 @@ import SectorView from "./SectorView";
 import SubsectorView from "./SubsectorView";
 import SkillView from "./SkillView";
 import EmployeeView from "./EmployeeView";
-import ForecastView from "./ForecastView2";
+import ForecastView from "./ForecastView";
 import ChangeLogView from "./ChangeLogView";
 import CalendarView from "./CalendarView";
-import HeadcountView from "./HeadcountView2";
+import HeadcountView from "./HeadcountView";
 
 import { clearFeedback, fetchData } from "src/slices/sync";
 import { logout } from "src/slices/session";

@@ -71,11 +71,11 @@ const SubsectorFF: React.FC<ISubsectorFFProps> = (props) => {
     name,
     value: getDataProp(name),
     onChange: handleChange,
+    error: getFeedback(name) !== "",
   });
 
   const genActiveProps = (name: keyof Subsector) => ({
     ...genProps(name),
-    error: getFeedback(name) !== "",
     helperText: getFeedback(name),
     InputLabelProps: {
       shrink: getDataProp(name) !== "",

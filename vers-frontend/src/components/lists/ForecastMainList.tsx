@@ -85,7 +85,9 @@ const ForecastMainList: React.FC<IForecastMainListProps> = (props) => {
       setState((state) => ({
         chgLst: state.chgLst.filter((x) => x in lst),
         stateLst: {
-          ...state.stateLst,
+          ...Object.fromEntries(
+            Object.entries(state.stateLst).filter(([x, y]) => x in lst)
+          ),
           ...Object.fromEntries(
             Object.entries(lst).filter(([x, y]) => !state.chgLst.includes(y.id))
           ),
