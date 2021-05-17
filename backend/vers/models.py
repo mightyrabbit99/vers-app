@@ -252,13 +252,14 @@ class ForecastTypChoices(models.IntegerChoices):
   OUTBOUND = 1, 'OUTBOUND'
 
 class ForecastPack(models.Model):
-  on = models.DateField(unique=True)
+  on = models.DateField()
   sector = models.ForeignKey(Sector, related_name='forecasts', on_delete=models.CASCADE)
   owner = models.ForeignKey(
       User, related_name='forecasts', on_delete=models.SET_NULL, null=True)
 
   class Meta:
     db_table = 'forecast_packs'
+    unique_together = (('on', 'sector',),)
 
 
 class Forecast(models.Model):
