@@ -37,7 +37,6 @@ function TabPanel(props: TabPanelProps) {
       hidden={value !== index}
       id={`full-width-tabpanel-${index}`}
       aria-labelledby={`full-width-tab-${index}`}
-      className={className}
       {...other}
     >
       {value === index && children}
@@ -54,7 +53,6 @@ function a11yProps(index: any) {
 
 interface TabPage {
   name: string;
-  tabPanelClass?: string;
   node: React.ReactNode;
 }
 
@@ -94,7 +92,6 @@ const FullWidthTabs: React.FC<FullWidthTabsProps> = (props) => {
           key={idx}
           value={value}
           index={idx}
-          className={clsx(classes.tabContent, x.tabPanelClass)}
         >
           {x.node}
         </TabPanel>

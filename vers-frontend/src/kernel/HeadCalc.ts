@@ -18,27 +18,41 @@ const initVars: CalcVars = {
   noTeaBreak: 2,
   noLunchBreak: 1,
   absentism: 0.15,
-}
+};
 
 class HeadCalc {
-  vars: CalcVars;
+  _vars: CalcVars;
 
   constructor(vars: CalcVars = initVars) {
-    this.vars = vars;
+    this._vars = vars;
   }
 
-  setVars = (vars?: CalcVars) => {
-    this.vars = vars ?? initVars;
+  set vars(vars: CalcVars) {
+    this._vars = vars;
   }
 
-  getVars = () => this.vars;
+  get vars() {
+    return this._vars;
+  }
 
   private totalAvailTime = () => {
     return (
-      this.vars.minPerDayPerOp -
-      this.vars.teaBreak * this.vars.noTeaBreak -
-      this.vars.lunchBreak * this.vars.noLunchBreak
+      this._vars.minPerDayPerOp -
+      this._vars.teaBreak * this._vars.noTeaBreak -
+      this._vars.lunchBreak * this._vars.noLunchBreak
     );
+  };
+
+  calcSubsecHeadcountReq = (
+    subsec: Subsector,
+    forecast: number,
+    workingDays: number = 30
+  ) => {
+    let workingMinsReq =
+      (forecast * subsec.cycleTime) / (subsec.efficiency / 100);
+    let availMinsPerDayPerOp = this.totalAvailTime();
+    let availMinsPerOp = availMinsPerDayPerOp * workingDays;
+    return workingMinsReq / availMinsPerOp / (1 - this._vars.absentism);
   };
 
   calcHeadcountReq = (
@@ -47,10 +61,10 @@ class HeadCalc {
     forecast: number,
     workingDays: number = 30
   ) => {
-    let workingMinsReq = (forecast * subsec.cycleTime) / (subsec.efficiency / 100);
-    let availMinsPerDayPerOp = this.totalAvailTime();
-    let availMinsPerOp = availMinsPerDayPerOp * workingDays;
-    return workingMinsReq / availMinsPerOp * (skill.percentageOfSubsector / 100) / (1 - this.vars.absentism);
+    return (
+      this.calcSubsecHeadcountReq(subsec, forecast, workingDays) *
+      (skill.percentageOfSubsector / 100)
+    );
   };
 }
 

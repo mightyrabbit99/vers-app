@@ -147,14 +147,14 @@ const GraphForecastWidget: React.FC<IGraphForecastWidgetProps> = (props) => {
   return (
     <React.Fragment>
       <div className={classes.settingsContainer}>
-        <Typography
+        {/*<Typography
           className={classes.title}
           component="h2"
           variant="h6"
           color="primary"
         >
           Forecasts
-        </Typography>
+        </Typography>*/}
         <FormControl>
           <InputLabel id="demo-simple-select-label">Sector</InputLabel>
           <Select

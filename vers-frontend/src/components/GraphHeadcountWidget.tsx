@@ -12,6 +12,7 @@ import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import SettingsIcon from "@material-ui/icons/Settings";
 
+import MyDialog from "src/components/commons/Dialog";
 import k, {
   Skill,
   Subsector,
@@ -21,9 +22,8 @@ import k, {
   Employee,
   Forecast,
 } from "src/kernel";
-import MyDialog from "src/components/commons/Dialog";
-import HeadcountMainList from "./lists/HeadcountMainList";
-import CalcVarsForm from "./forms/CalcVarsForm";
+import HeadcountBarChart from "src/components/graphs/HeadcountBarChart";
+import CalcVarsForm from "src/components/forms/CalcVarsForm";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,19 +33,16 @@ const useStyles = makeStyles((theme) => ({
     width: "inherit",
     height: "15%",
   },
-  content: {
-    height: "85%",
-  },
-  searchBar: {
-    maxWidth: 250,
-    marginLeft: "auto",
-    marginRight: "auto",
-  },
   formControl: {
     width: "inherit",
   },
   settingsIcon: {
     marginLeft: "auto",
+  },
+  graph: {
+    height: "90%",
+    minHeight: 250,
+    width: "100%",
   },
   title: {
     height: "15%",
@@ -62,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface IHeadcountListWidgetProps {
+interface IGraphHeadcountWidgetProps {
   sectors: { [id: number]: Sector };
   subsectors: { [id: number]: Subsector };
   skills: { [id: number]: Skill };
@@ -86,14 +83,14 @@ interface IHeadcountListWidgetState {
   selectedSector?: number;
   selectedMonth?: string;
   selectedForecast?: number;
-  skillLst: { [id: number]: Skill }; // headcound calculated
+  countDict: { [subsecId: number]: number }; // headcound calculated
   formOpen: boolean;
 }
 
 const initState: IHeadcountListWidgetState = {
   forecasts: [],
   displaces: {},
-  skillLst: {},
+  countDict: {},
   formOpen: false,
   formData: k.getVars(),
 };
@@ -132,8 +129,8 @@ function reducer(
           valM.length > 0 ? parseInt(valM[0][0], 10) : undefined,
         forecastVal: valM[0][1],
       };
-    case "setSkillLst":
-      return { ...state, skillLst: action.data };
+    case "setCountDict":
+      return { ...state, countDict: action.data };
     case "setFormOpen":
       return { ...state, formOpen: action.data };
     case "setFormData":
@@ -145,9 +142,9 @@ function reducer(
   }
 }
 
-const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
+const GraphHeadcountWidget: React.FC<IGraphHeadcountWidgetProps> = (props) => {
+  const classes = useStyles();
   const { skills, subsectors, sectors, employees } = props;
-  const classes = useStyles(props);
 
   const [state, dispatch] = React.useReducer(reducer, initState);
 
@@ -224,47 +221,6 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
     };
   }, [state.selectedMonth]);
 
-  const genSkillLst = React.useCallback(
-    async (vars?: CalcVars, forecastVal?: number, selectedMonth?: string) => {
-      if (vars) k.setVars(vars);
-      return Object.fromEntries(
-        Object.entries(skills)
-          .filter(
-            ([kk, v]) =>
-              state.selectedSector === undefined ||
-              subsectors[v.subsector].sector === state.selectedSector
-          )
-          .map(([kk, v]) => [
-            kk,
-            {
-              ...v,
-              headcount: selectedMonth
-                ? k.calcHeadcountReq(v, forecastVal ?? 0, selectedMonth)
-                : 0,
-            },
-          ])
-      );
-    },
-    [skills, subsectors, state.selectedSector]
-  );
-
-  React.useEffect(() => {
-    // calculate skill list and update calc vars
-    let isCancelled = false;
-    let f = async () => {
-      let skillLst = await genSkillLst(
-        state.formData,
-        state.forecastVal,
-        state.selectedMonth
-      );
-      if (!isCancelled) dispatch({ type: "setSkillLst", data: skillLst });
-    };
-    f();
-    return () => {
-      isCancelled = true;
-    };
-  }, [genSkillLst, state.formData, state.selectedMonth, state.forecastVal]);
-
   const handleSelMonth = (e: React.ChangeEvent<any>) => {
     let { value } = e.target;
     dispatch({ type: "setMonth", data: value });
@@ -274,6 +230,38 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
     let { value } = e.target;
     dispatch({ type: "setSelForecast", data: value });
   };
+
+  const genCountDict = React.useCallback(
+    async (vars?: CalcVars, forecastVal?: number, selectedMonth?: string) => {
+      if (vars) k.setVars(vars);
+      return Object.fromEntries(
+        Object.entries(subsectors).map(([kk, v]) => [
+          kk,
+          selectedMonth
+            ? k.calcSubsecHeadcountReq(v, forecastVal ?? 0, selectedMonth)
+            : 0,
+        ])
+      );
+    },
+    [subsectors]
+  );
+
+  React.useEffect(() => {
+    // calculate skill list and update calc vars
+    let isCancelled = false;
+    let f = async () => {
+      let countDict = await genCountDict(
+        state.formData,
+        state.forecastVal,
+        state.selectedMonth
+      );
+      if (!isCancelled) dispatch({ type: "setCountDict", data: countDict });
+    };
+    f();
+    return () => {
+      isCancelled = true;
+    };
+  }, [genCountDict, state.formData, state.selectedMonth, state.forecastVal]);
 
   const genForecastMenuItem = React.useCallback(() => {
     if (!(state.selectedMonth && state.selectedMonth in state.displaces))
@@ -285,15 +273,6 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
       </MenuItem>
     ));
   }, [state.selectedMonth, state.displaces]);
-
-  const setFormOpen = (o: boolean) => {
-    dispatch({ type: "setFormOpen", data: o });
-  };
-
-  const handleSubmit = (data: CalcVars) => {
-    dispatch({ type: "setFormData", data });
-    setFormOpen(false);
-  };
 
   const genHeader = () => {
     return (
@@ -378,17 +357,23 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
     );
   };
 
+  const setFormOpen = (o: boolean) => {
+    dispatch({ type: "setFormOpen", data: o });
+  };
+
+  const handleSubmit = (data: CalcVars) => {
+    dispatch({ type: "setFormData", data });
+    setFormOpen(false);
+  };
+
   return (
-    <React.Fragment>
-      <div className={classes.root}>
-        <div className={classes.ctrlPanel}>{genHeader()}</div>
-        <div className={classes.content}>
-          <HeadcountMainList
-            lst={state.skillLst}
-            subsectorLst={subsectors}
-            employeeLst={employees}
-          />
-        </div>
+    <>
+      <div className={classes.ctrlPanel}>{genHeader()}</div>
+      <div className={classes.graph}>
+        <HeadcountBarChart
+          subsectors={subsectors}
+          countDict={state.countDict}
+        />
       </div>
       <MyDialog open={state.formOpen} onClose={() => setFormOpen(false)}>
         <div className={classes.form}>
@@ -412,8 +397,8 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
           </div>
         </div>
       </MyDialog>
-    </React.Fragment>
+    </>
   );
 };
 
-export default HeadcountListWidget;
+export default GraphHeadcountWidget;

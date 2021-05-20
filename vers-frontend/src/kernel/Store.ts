@@ -230,10 +230,10 @@ function store<T extends ItemT>(
       if (hasher) {
         let v = this.hStore[hasher(t)];
         return v
-          ? await this.submit({ ...t, id: v.id })
-          : await this.submitNew(t);
+          ? this.submit({ ...t, id: v.id })
+          : this.submitNew(t);
       } else {
-        return t.id === -1 ? await this.submitNew(t) : await this.submit(t);
+        return t.id === -1 ? this.submitNew(t) : this.submit(t);
       }
     };
 

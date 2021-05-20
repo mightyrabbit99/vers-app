@@ -562,10 +562,19 @@ class Kernel {
   };
 
   setVars = (vars: CalcVars) => {
-    this.calc.setVars(vars);
+    this.calc.vars = vars;
   };
 
-  getVars = () => this.calc.getVars();
+  getVars = () => this.calc.vars;
+
+  calcSubsecHeadcountReq = (
+    subsec: Subsector,
+    forecast: number,
+    month?: string
+  ) => {
+    let workingDays = month ? this.cal.getDaysLeftInMonth(new Date(month)) : 27;
+    return this.calc.calcSubsecHeadcountReq(subsec, forecast, workingDays);
+  };
 
   calcHeadcountReq = (skill: Skill, forecast: number, month?: string) => {
     let workingDays = month ? this.cal.getDaysLeftInMonth(new Date(month)) : 27;
