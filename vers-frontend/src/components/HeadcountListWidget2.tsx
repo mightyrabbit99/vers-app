@@ -86,14 +86,14 @@ interface IHeadcountListWidgetState {
   selectedSector?: number;
   selectedMonth?: string;
   selectedForecast?: number;
-  skillLst: { [id: number]: Skill }; // headcound calculated
+  skillLst: Skill[]; // headcound calculated
   formOpen: boolean;
 }
 
 const initState: IHeadcountListWidgetState = {
   forecasts: [],
   displaces: {},
-  skillLst: {},
+  skillLst: [],
   formOpen: false,
   formData: k.getVars(),
 };
@@ -227,23 +227,18 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
   const genSkillLst = React.useCallback(
     async (vars?: CalcVars, forecastVal?: number, selectedMonth?: string) => {
       if (vars) k.setVars(vars);
-      return Object.fromEntries(
-        Object.entries(skills)
-          .filter(
-            ([kk, v]) =>
-              state.selectedSector === undefined ||
-              subsectors[v.subsector].sector === state.selectedSector
-          )
-          .map(([kk, v]) => [
-            kk,
-            {
-              ...v,
-              headcount: selectedMonth
-                ? k.calcHeadcountReq(v, forecastVal ?? 0, selectedMonth)
-                : 0,
-            },
-          ])
-      );
+      return Object.values(skills)
+        .filter(
+          (v) =>
+            state.selectedSector === undefined ||
+            subsectors[v.subsector].sector === state.selectedSector
+        )
+        .map((v) => ({
+          ...v,
+          headcount: selectedMonth
+            ? k.calcHeadcountReq(v, forecastVal ?? 0, selectedMonth)
+            : 0,
+        }));
     },
     [skills, subsectors, state.selectedSector]
   );
@@ -385,6 +380,7 @@ const HeadcountListWidget: React.FC<IHeadcountListWidgetProps> = (props) => {
         <div className={classes.content}>
           <HeadcountMainList
             lst={state.skillLst}
+            skillLst={skills}
             subsectorLst={subsectors}
             employeeLst={employees}
           />

@@ -13,14 +13,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface IHeadcountMainListProps {
-  lst: { [id: number]: Skill };
+  lst: Skill[];
+  skillLst: { [id: number]: Skill };
   subsectorLst: { [id: number]: Subsector };
   employeeLst?: { [id: number]: Employee };
 }
 
 const HeadcountMainList: React.FC<IHeadcountMainListProps> = (props) => {
   const classes = useStyles();
-  const { lst, subsectorLst, employeeLst } = props;
+  const { lst, skillLst, subsectorLst, employeeLst } = props;
 
   const [empSkillLstOpen, setEmpSkillLstOpen] = React.useState(false);
   const [emps, setEmps] = React.useState<Employee[]>([]);
@@ -87,13 +88,13 @@ const HeadcountMainList: React.FC<IHeadcountMainListProps> = (props) => {
 
   return (
     <React.Fragment>
-      <MainList lst={Object.values(lst)} cols={cols} />
+      <MainList lst={lst} cols={cols} />
       <MyDialog
         open={empSkillLstOpen}
         onClose={() => setEmpSkillLstOpen(false)}
         className={classes.empSkillLst}
       >
-        <EmpSkillDispList lst={emps} skills={lst} />
+        <EmpSkillDispList lst={emps} skills={skillLst} />
       </MyDialog>
     </React.Fragment>
   );
