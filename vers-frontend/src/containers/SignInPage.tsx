@@ -22,6 +22,7 @@ import { green, purple } from "@material-ui/core/colors";
 import Container from "@material-ui/core/Container";
 
 import SignInForm from "src/components/forms/SignInForm";
+import Path from "src/kernel/Path";
 
 function Copyright() {
   return (
@@ -90,7 +91,7 @@ const SignIn: React.FC = () => {
         remember: data.remember,
       })
     );
-    history.push("/");
+    history.push(Path.ROOT_PATH);
   };
 
   return (

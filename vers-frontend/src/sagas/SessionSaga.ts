@@ -11,6 +11,7 @@ import {
 } from "src/slices/session";
 import { fetchData } from "src/slices/sync";
 import { EditUserAction, LoginAction } from "src/types";
+import Path from "src/kernel/Path";
 
 function* init() {
   if (k.isLoggedIn()) {
@@ -18,7 +19,7 @@ function* init() {
     if (res.success) {
       yield put(fetchData());
       yield put(_setAuthenticated({ authenticated: true, user: res.data }));
-      yield put(push('/plants'));
+      yield put(push(Path.PLANTS_PATH));
     } else {
       k.logout();
       yield put(_setAuthenticated({ authenticated: false }));

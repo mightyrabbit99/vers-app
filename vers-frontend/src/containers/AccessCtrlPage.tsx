@@ -18,6 +18,7 @@ import { logout } from "src/slices/session";
 import { User } from "src/kernel";
 import { saveData, selPlant } from "src/slices/data";
 import SchneiderLogo from "src/components/commons/SchneiderLogo";
+import Path from "src/kernel/Path";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -88,7 +89,7 @@ const BasePage: React.FC<IBasePageProps> = (props) => {
 
   const toPlant = () => {
     dispatch(selPlant());
-    history.push("/plants");
+    history.push(Path.PLANTS_PATH);
   };
 
   const [mainAnchorEl, setMainAnchorEl] = React.useState<null | HTMLElement>(
@@ -116,11 +117,11 @@ const BasePage: React.FC<IBasePageProps> = (props) => {
   };
 
   const handleViewProfile = () => {
-    history.push("/user");
+    history.push(Path.USER_PATH);
   };
 
   const handleViewAccessCtrl = () => {
-    history.push("/access_ctrl");
+    history.push(Path.ACCESS_CTRL_PATH);
   };
 
   const handleMainTitleClick = (e: React.ChangeEvent<any>) => {

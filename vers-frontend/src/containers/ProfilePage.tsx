@@ -4,6 +4,7 @@ import { useHistory } from "react-router-dom";
 import { getSession } from "src/selectors";
 
 import Button from "@material-ui/core/Button";
+import Path from "src/kernel/Path";
 
 interface IProfileProps {}
 
@@ -12,7 +13,7 @@ const ProfilePage: React.FC<IProfileProps> = (props) => {
   const history = useHistory();
 
   const handleEditClick = (e: React.ChangeEvent<any>) => {
-    history.push('/user_edit');
+    history.push(Path.USER_EDIT_PATH);
   }
 
   return (

@@ -19,6 +19,7 @@ import { initLogin } from "src/slices/session";
 import { clearFeedback } from "src/slices/sync";
 import k from "src/kernel";
 import { reload } from "src/slices/data";
+import Path from "src/kernel/Path";
 
 interface IAppProps {}
 
@@ -92,42 +93,42 @@ const App: React.FC<IAppProps> = (props) => {
   return (
     <ThemeProvider theme={theme}>
       <Switch>
-        <Route exact path="/">
+        <Route exact path={Path.ROOT_PATH}>
           {auth ? (
             pId ? (
-              <Redirect to="/dashboard" />
+              <Redirect to={Path.DASHBOARD_PATH} />
             ) : (
-              <Redirect to="/plants" />
+              <Redirect to={Path.PLANTS_PATH} />
             )
           ) : (
-            <Redirect to="/signin" />
+            <Redirect to={Path.SIGNIN_PATH} />
           )}
         </Route>
-        <Route exact path="/dashboard">
+        <Route exact path={Path.DASHBOARD_PATH}>
           {auth ? (
             pId ? (
               <DashboardPage />
             ) : (
-              <Redirect to="/plants" />
+              <Redirect to={Path.PLANTS_PATH} />
             )
           ) : (
-            <Redirect to="/" />
+            <Redirect to={Path.ROOT_PATH} />
           )}
         </Route>
-        <Route exact path="/plants">
-          {auth ? <PlantPage /> : <Redirect to="/" />}
+        <Route exact path={Path.PLANTS_PATH}>
+          {auth ? <PlantPage /> : <Redirect to={Path.ROOT_PATH} />}
         </Route>
-        <Route exact path="/access_ctrl">
-          {auth ? <AccessCtrlPage /> : <Redirect to="/" />}
+        <Route exact path={Path.ACCESS_CTRL_PATH}>
+          {auth ? <AccessCtrlPage /> : <Redirect to={Path.ROOT_PATH} />}
         </Route>
-        <Route exact path="/user">
-          {auth ? <ProfilePage /> : <Redirect to="/" />}
+        <Route exact path={Path.USER_PATH}>
+          {auth ? <ProfilePage /> : <Redirect to={Path.ROOT_PATH} />}
         </Route>
-        <Route exact path="/user_edit">
-          {auth ? <UserEditPage /> : <Redirect to="/" />}
+        <Route exact path={Path.USER_EDIT_PATH}>
+          {auth ? <UserEditPage /> : <Redirect to={Path.ROOT_PATH} />}
         </Route>
-        <Route exact path="/signin">
-          {auth ? <Redirect to="/" /> : <SigninPage />}
+        <Route exact path={Path.SIGNIN_PATH}>
+          {auth ? <Redirect to={Path.ROOT_PATH} /> : <SigninPage />}
         </Route>
       </Switch>
       <Snackbar

@@ -247,9 +247,6 @@ class Log(models.Model):
   class Meta:
     db_table = 'logs'
 
-class ForecastTypChoices(models.IntegerChoices):
-  INBOUND = 0, 'INBOUND'
-  OUTBOUND = 1, 'OUTBOUND'
 
 class ForecastPack(models.Model):
   on = models.DateField()

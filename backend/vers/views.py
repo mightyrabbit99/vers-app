@@ -629,10 +629,11 @@ class UserView(viewsets.ModelViewSet):
 
 class IndexView(View):
   def get(self, request, *args, **kwargs):
-    return render(request, 'index.html', {})
+    print(request.build_absolute_uri())
+    return render(request, 'index.html', { "url": "http://%s/" % request.get_host() })
 
   def post(self, request, *args, **kwargs):
-    return render(request, 'index.html', {})
+    return render(request, 'index.html', { "url": "http://%s/" % request.get_host() })
 
 
 class DeleteAllLogView(APIView):

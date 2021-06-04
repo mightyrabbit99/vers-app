@@ -33,6 +33,7 @@ import PlantForm from "src/components/forms/PlantForm";
 import { logout } from "src/slices/session";
 import SchneiderLogo from "src/components/commons/SchneiderLogo";
 import { UserData } from "src/kernel/data";
+import Path from "src/kernel/Path";
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -102,7 +103,7 @@ const PlantPage: React.FC<IPlantPageProps> = (props) => {
 
   const handlePlantSelect = (id: number) => {
     dispatch(selPlant(id));
-    history.push("/dashboard");
+    history.push(Path.DASHBOARD_PATH);
   };
 
   const [confirmDel, setConfirmDel] = React.useState<number | undefined>(
@@ -180,11 +181,11 @@ const PlantPage: React.FC<IPlantPageProps> = (props) => {
   };
 
   const handleViewProfile = () => {
-    history.push("/user");
+    history.push(Path.USER_PATH);
   };
 
   const handleViewAccessCtrl = () => {
-    history.push("/access_ctrl");
+    history.push(Path.ACCESS_CTRL_PATH);
   };
 
   return (

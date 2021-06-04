@@ -51,6 +51,7 @@ import { getData, getSync, getSession } from "src/selectors";
 import { AccessLevel, ItemType } from "src/kernel";
 import { initViewState, ViewContext } from "src/contexts";
 import GraphView from "./GraphView";
+import Path from "src/kernel/Path";
 
 function Copyright() {
   return (
@@ -262,7 +263,7 @@ const DashboardPage: React.FC = () => {
   };
 
   const handleViewProfile = () => {
-    history.push("/user");
+    history.push(Path.USER_PATH);
   };
 
   const toPlant = () => {
@@ -270,7 +271,7 @@ const DashboardPage: React.FC = () => {
   };
 
   const handleViewAccessCtrl = () => {
-    history.push("/access_ctrl");
+    history.push(Path.ACCESS_CTRL_PATH);
   };
 
   const cannotView = (i: DashboardView) => {
