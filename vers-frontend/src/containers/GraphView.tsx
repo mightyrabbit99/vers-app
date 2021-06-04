@@ -56,7 +56,11 @@ const GraphView: React.FC = () => {
     },
   ];
 
-  return <ViewTab pages={genPages()} />;
+  return (
+    <div className={classes.tabPage}>
+      <GraphForecastWidget sectors={sectors} />
+    </div>
+  );
 };
 
 export default GraphView;

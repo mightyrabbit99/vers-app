@@ -127,7 +127,7 @@ const EmployeeView: React.FC<IEmployeeViewProps> = (props) => {
             </div>
           </Paper>
         </Grid>
-        <Grid item xs={12}>
+        {/*<Grid item xs={12}>
           <Paper className={classes.list}>
             <div className={classes.header}>
               <Typography
@@ -149,7 +149,7 @@ const EmployeeView: React.FC<IEmployeeViewProps> = (props) => {
               />
             </div>
           </Paper>
-        </Grid>
+  </Grid>*/}
       </Grid>
       <Snackbar open={fbOpen} autoHideDuration={6000} onClose={handleFbClose}>
         <Alert onClose={handleFbClose} severity={"error"}>

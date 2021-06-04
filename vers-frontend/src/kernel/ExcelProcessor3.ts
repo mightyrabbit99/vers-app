@@ -964,6 +964,7 @@ class ExcelObjConverter {
     let f = (obj: CalEventObj): CalEvent => {
       return st.getNew({
         ...obj,
+        title: obj.name,
         start: new Date(obj.start).toISOString().slice(0, 10),
         end: new Date(obj.end).toISOString().slice(0, 10),
       });
