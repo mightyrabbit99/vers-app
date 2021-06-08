@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'vers',
     'django_celery_results',
     'captcha',
+    'dg',
 ]
 
 MIDDLEWARE = [
@@ -66,8 +67,10 @@ ROOT_URLCONF = 'backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
+        'DIRS': [
+            BASE_DIR / "templates/",
+        ],
+        'APP_DIRS': False,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -117,7 +120,7 @@ DATABASES = {
         'NAME': 'vers_backend',
         'USER': 'benn',
         'PASSWORD': 'ahrg@35SAzx',
-        'HOST': 'localhost',
+        'HOST': '10.184.22.213',
         'PORT': '3306',
     }
 }
@@ -162,7 +165,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    BASE_DIR / "vers/static",
+    BASE_DIR / "static",
 ]
 
 # Media files (other files)

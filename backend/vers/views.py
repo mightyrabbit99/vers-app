@@ -30,7 +30,7 @@ def new_user_register(request):
     form = UserCreateForm()
 
   context = {'form': form, 'title': title}
-  return render(request, 'registration.html', context=context)
+  return render(request, 'vers/registration.html', context=context)
 
 
 class UserDetail(generics.RetrieveUpdateAPIView):
@@ -630,10 +630,10 @@ class UserView(viewsets.ModelViewSet):
 class IndexView(View):
   def get(self, request, *args, **kwargs):
     print(request.build_absolute_uri())
-    return render(request, 'index.html', { "url": "http://%s/" % request.get_host() })
+    return render(request, 'vers/index.html', { "url": "http://%s/" % request.get_host() })
 
   def post(self, request, *args, **kwargs):
-    return render(request, 'index.html', { "url": "http://%s/" % request.get_host() })
+    return render(request, 'vers/index.html', { "url": "http://%s/" % request.get_host() })
 
 
 class DeleteAllLogView(APIView):

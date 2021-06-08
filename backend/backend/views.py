@@ -5,5 +5,5 @@ def index(request):
 		return render(request, 'index.html', {})
 
 def redirect_view(request):
-	response = redirect('/vers/')
+	response = redirect('/dg/')
 	return response
