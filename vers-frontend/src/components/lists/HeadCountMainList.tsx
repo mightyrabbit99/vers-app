@@ -8,7 +8,7 @@ import EmpSkillDispList from "./EmployeeSkillDispList";
 
 const useStyles = makeStyles((theme) => ({
   empSkillLst: {
-    height: 500,
+    height: "80vh",
   },
 }));
 

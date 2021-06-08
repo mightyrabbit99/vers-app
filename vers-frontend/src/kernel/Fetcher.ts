@@ -25,7 +25,7 @@ let socHost =
     ? process.env.REACT_APP_SOC_URL
     : `ws://${window.location.host}`;
 
-let xlsxTemplateHost = `${process.env.MEDIA_URL}${process.env.REACT_APP_EXCEL_TEMPLATE_PATH}`;
+let xlsxTemplateHost = `${process.env.REACT_APP_MEDIA_URL}${process.env.REACT_APP_EXCEL_TEMPLATE_PATH}`;
 
 const userUrl = `${host}${process.env.REACT_APP_REST_USER_MODIFY_PATH}/`;
 const apiTokenAuth = `${host}${process.env.REACT_APP_REST_TOKEN_AUTH_PATH}/`;

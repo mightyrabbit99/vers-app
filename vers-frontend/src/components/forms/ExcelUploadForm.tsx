@@ -33,7 +33,7 @@ const ExcelUploadForm: React.FC<IExcelUploadFormProps> = (props) => {
         {templateUrl ? (
           <Typography variant="body2" color="textSecondary" align="center">
             {"Click "}
-            <Link color="inherit" href={templateUrl}>
+            <Link color="inherit" href={templateUrl} download>
               here
             </Link>
             {" for template"}
