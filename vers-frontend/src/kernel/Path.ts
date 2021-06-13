@@ -1,5 +1,5 @@
 class Path {
-  static ROOT_PATH = `${process.env.REACT_APP_BASE_PATH}`;
+  static ROOT_PATH = `${process.env.REACT_APP_BASE_PATH}/`;
   static DASHBOARD_PATH = `${process.env.REACT_APP_BASE_PATH}/dashboard`;
   static PLANTS_PATH = `${process.env.REACT_APP_BASE_PATH}/plants`;
   static ACCESS_CTRL_PATH = `${process.env.REACT_APP_BASE_PATH}/access_ctrl`;
